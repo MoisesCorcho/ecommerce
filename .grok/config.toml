@@ -1,3 +1,13 @@
 [mcp_servers.laravel-boost]
 command = "vendor/bin/sail"
-args = ["artisan", "boost:mcp"]
+args = [
+    "artisan",
+    "boost:mcp",
+]
+
+[mcp_servers.context7]
+url = "https://mcp.context7.com/mcp"
+enabled = true
+
+[mcp_servers.context7.headers]
+CONTEXT7_API_KEY = "${CONTEXT7_API_KEY}"
