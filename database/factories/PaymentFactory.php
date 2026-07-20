@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\CurrencyEnum;
-use App\Enums\PaymentProviderEnum;
-use App\Enums\PaymentStatusEnum;
+use App\Enums\Commerce\CurrencyEnum;
+use App\Enums\Payments\PaymentProviderEnum;
+use App\Enums\Payments\PaymentStatusEnum;
 use App\Models\Order;
 use App\Models\Payment;
 use Illuminate\Database\Eloquent\Factories\Factory;

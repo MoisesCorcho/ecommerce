@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\CurrencyEnum;
+use App\Enums\Commerce\CurrencyEnum;
 use App\Models\ProductVariant;
 use App\Models\ProductVariantPrice;
 use Illuminate\Database\Eloquent\Factories\Factory;

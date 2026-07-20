@@ -255,7 +255,7 @@ Tras reporte de auditoría, o si el usuario confirma explícitamente corregir si
 ### 2. `design.md`
 
 - Referenciar steering (01, convenciones, esquema)
-- Alinear con layout plano `app/Actions|Services|…`, sufijos, Filament/Livewire del proyecto
+- Alinear con layout tipo+área `app/Actions/{Area}|Services/{Area}|…`, sufijos, Filament/Livewire del proyecto
 - Contratos observables (eventos, jobs, webhooks, DTOs de borde) referenciados desde requirements
 - Verificar APIs con Boost/docs
 - Diagrama o flujo **específico** de la feature (no plantilla vacía)

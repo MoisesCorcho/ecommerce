@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\Commerce\CurrencyEnum;
 use Database\Factories\ProductVariantFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -33,6 +35,37 @@ class ProductVariant extends Model
             'stock' => 'integer',
             'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * @param  Builder<ProductVariant>  $query
+     * @return Builder<ProductVariant>
+     */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * @param  Builder<ProductVariant>  $query
+     * @return Builder<ProductVariant>
+     */
+    public function scopeWithPriceIn(Builder $query, CurrencyEnum $currency): Builder
+    {
+        return $query->whereHas('prices', function (Builder $prices) use ($currency): void {
+            $prices->where('currency', $currency->value);
+        });
+    }
+
+    public function priceIn(CurrencyEnum $currency): ?ProductVariantPrice
+    {
+        if ($this->relationLoaded('prices')) {
+            return $this->prices->first(
+                fn (ProductVariantPrice $price): bool => $price->currency === $currency
+            );
+        }
+
+        return $this->prices()->where('currency', $currency->value)->first();
     }
 
     /**

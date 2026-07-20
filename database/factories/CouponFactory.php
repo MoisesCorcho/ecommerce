@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\CouponTypeEnum;
-use App\Enums\CurrencyEnum;
+use App\Enums\Commerce\CurrencyEnum;
+use App\Enums\Coupons\CouponTypeEnum;
 use App\Models\Coupon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

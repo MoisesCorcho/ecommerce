@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain;
 
-use App\Enums\CurrencyEnum;
-use App\Enums\OrderStatusEnum;
-use App\Enums\PaymentProviderEnum;
-use App\Enums\PaymentStatusEnum;
+use App\Enums\Commerce\CurrencyEnum;
+use App\Enums\Orders\OrderStatusEnum;
+use App\Enums\Payments\PaymentProviderEnum;
+use App\Enums\Payments\PaymentStatusEnum;
 use App\Models\Address;
 use App\Models\Category;
 use App\Models\Order;

@@ -2,22 +2,56 @@
 
 These rules define how this Laravel application is structured. Follow them for all new code. Prefer pragmatic SOLID: clear organization without ceremonial layers.
 
-## Directory layout (flat)
+## Directory layout (type first, area second)
 
-Use flat, type-based folders under `app/`. Do not introduce domain-module trees unless explicitly requested.
+Top-level folders under `app/` are **by role/type**, not by vertical domain modules.  
+**Do not** create trees like `app/Catalog/Actions` or `app/Domains/Orders/...` unless explicitly requested.
+
+Inside each type folder, group by **area** (plural noun: `Products`, `Categories`, `Cart`, `Orders`, `Payments`, `Coupons`, `Commerce`, …) when there is more than a one-off class—or as soon as a cluster forms.
 
 ```text
 app/
   Actions/
+    Categories/
+    Products/
+    Cart/            # when it exists
   Services/
+    Cart/            # example when shared capability appears
   DTOs/
+    Products/
   Enums/
+    Commerce/        # cross-cutting commerce vocab (e.g. CurrencyEnum)
+    Orders/
+    Payments/
+    Coupons/
+  Exceptions/
+    Products/
   Contracts/
+    Payments/        # when multiple payment ports appear
   Gateways/
-  Models/
+    Payments/
+  Models/            # Eloquent stays flat by default (no area subfolders unless approved)
   Http/
   Providers/
+  Filament/
 ```
+
+### Namespace = path
+
+| Path | Namespace example |
+|------|-------------------|
+| `app/Actions/Products/CreateProductAction.php` | `App\Actions\Products\CreateProductAction` |
+| `app/DTOs/Products/UpsertProductDTO.php` | `App\DTOs\Products\UpsertProductDTO` |
+| `app/Enums/Commerce/CurrencyEnum.php` | `App\Enums\Commerce\CurrencyEnum` |
+| `app/Exceptions/Products/ProductCannotBePublishedException.php` | `App\Exceptions\Products\ProductCannotBePublishedException` |
+
+### Area folder rules
+
+- Prefer **one area name** per cluster and reuse it across types (`Actions/Cart`, `Services/Cart`, `DTOs/Cart`).
+- **Shared / cross-cutting** vocab that is not owned by one feature → `Commerce` (or another single agreed umbrella)—do not dump everything in the type root.
+- A single class may live at the type root only as a temporary exception; prefer an area folder as soon as a second related class appears.
+- **Models** remain flat under `app/Models` unless the team explicitly adopts model area folders.
+- Do not add new top-level `app/` folders without approval.
 
 Livewire components follow `config/livewire.php` (project default: multi-file / MFC, no ⚡ emoji prefix).
 
@@ -27,12 +61,12 @@ Every class name and filename must include its role as a suffix to avoid ambigui
 
 | Role | Suffix | Example class / file |
 |------|--------|----------------------|
-| Action | `Action` | `CreateOrderAction.php` |
-| Service | `Service` | `BillingService.php` |
-| DTO | `DTO` | `CreateOrderDTO.php` |
-| Enum | `Enum` | `DocumentTypeEnum.php` |
-| Contract / interface | `Interface` | `PaymentGatewayInterface.php` |
-| Gateway | `Gateway` | `StripePaymentGateway.php` |
+| Action | `Action` | `Actions/Orders/CreateOrderAction.php` |
+| Service | `Service` | `Services/Cart/CartPricingService.php` |
+| DTO | `DTO` | `DTOs/Orders/CreateOrderDTO.php` |
+| Enum | `Enum` | `Enums/Commerce/CurrencyEnum.php` |
+| Contract / interface | `Interface` | `Contracts/Payments/PaymentGatewayInterface.php` |
+| Gateway | `Gateway` | `Gateways/Payments/StripePaymentGateway.php` |
 
 Actions are named as verbs + suffix: `CreateUserAction`, `MarkInvoicePaidAction`.  
 Services are named as capabilities + suffix: `InvoiceCalculatorService`.  
@@ -75,7 +109,7 @@ Validation lives at the edge (Form Request, Livewire rules, Filament). The Actio
 
 ## Enums and migrations
 
-- Encapsulate fixed domain vocabularies in **backed enums** (`app/Enums/*Enum.php`): document types, statuses, channels, etc.
+- Encapsulate fixed domain vocabularies in **backed enums** under `app/Enums/{Area}/*Enum.php`: document types, statuses, channels, etc.
 - Prefer `string` backed enums; use `int` only with a strong reason.
 - Put domain helpers on the enum when useful (`label()`, `isFinal()`, etc.).
 - Do **not** use PHP class constants for sets that should be enums.
@@ -140,4 +174,4 @@ When specifying or implementing a product feature:
 1. Read `specs/_global/00`, `01`, and `02` first.
 2. Follow the feature’s three artifacts; acceptance criteria use EARS with `R1…Rn` and tasks cite `_(cubre Rx)_`.
 3. Code still follows the conventions above (Actions, enums as strings, etc.).
-4. Domain schema truth remains `app/Models`, `app/Enums`, and migrations—update those when a feature changes data shape.
+4. Domain schema truth remains `app/Models`, `app/Enums/{Area}`, and migrations—update those when a feature changes data shape.

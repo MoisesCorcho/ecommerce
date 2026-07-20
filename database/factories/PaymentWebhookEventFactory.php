@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\PaymentProviderEnum;
+use App\Enums\Payments\PaymentProviderEnum;
 use App\Models\PaymentWebhookEvent;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
