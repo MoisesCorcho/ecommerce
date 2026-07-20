@@ -127,6 +127,24 @@ Do not use enums for admin-managed catalogs that change at runtime—those belon
 
 Apply SOLID to keep structure clear—not to maximize the number of classes.
 
+## Spec-Driven Development (product features)
+
+Product features are specified under `specs/`. **Do not restate** this file or Laravel Boost docs inside specs—**link** them.
+
+| Path | Role |
+|------|------|
+| `specs/_global/00-how-to-use.md` | How to work with SDD in this repo; canonical source map |
+| `specs/_global/01-product-and-roadmap.md` | Product vision, feature order, dependencies (F01…) |
+| `specs/_global/02-feature-quality.md` | EARS criteria, R-ids, tasks traceability, audit & correction |
+| `specs/features/<NN-slug>/` | Per feature: `requirements.md`, `design.md`, `tasks.md` |
+
+When specifying or implementing a product feature:
+
+1. Read `specs/_global/00`, `01`, and `02` first.
+2. Follow the feature’s three artifacts; acceptance criteria use EARS with `R1…Rn` and tasks cite `_(cubre Rx)_`.
+3. Code still follows the conventions above (Actions, enums as strings, etc.).
+4. Domain schema truth remains `app/Models`, `app/Enums`, and migrations—update those when a feature changes data shape.
+
 === foundation rules ===
 
 # Laravel Boost Guidelines
@@ -148,6 +166,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/pint (PINT) - v1
 - laravel/sail (SAIL) - v1
 - phpunit/phpunit (PHPUNIT) - v12
+- tailwindcss (TAILWINDCSS) - v4
 
 ## Skills Activation
 
@@ -248,6 +267,13 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
     - Execute Node commands: `vendor/bin/sail npm run dev`
     - Execute PHP scripts: `vendor/bin/sail php [script]`
 - View all available Sail commands by running `vendor/bin/sail` without arguments.
+
+=== tests rules ===
+
+# Test Enforcement
+
+- Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
+- Run the minimum number of tests needed to ensure code quality and speed. Use `vendor/bin/sail artisan test --compact` with a specific filename or filter.
 
 === laravel/core rules ===
 

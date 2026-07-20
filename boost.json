@@ -13,6 +13,7 @@
     ],
     "sail": true,
     "skills": [
-        "laravel-best-practices"
+        "laravel-best-practices",
+        "tailwindcss-development"
     ]
 }
