@@ -254,7 +254,7 @@ final class ProductForm
     {
         return [
             Section::make('Galería del producto')
-                ->description('Imágenes en disco público (`products/`). Arrastrá para reordenar. Solo una puede ser primaria.')
+                ->description('Vista en cuadrícula. Arrastrá las tarjetas (o usá ↑↓) para reordenar. Solo una puede ser primaria.')
                 ->schema([
                     Repeater::make('images')
                         ->label('Imágenes')
@@ -266,20 +266,25 @@ final class ProductForm
                                 ->directory('products')
                                 ->visibility('public')
                                 ->image()
-                                ->imagePreviewHeight('140')
+                                ->imagePreviewHeight('120')
                                 ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                 ->maxSize(5120)
-                                ->helperText('JPG, PNG o WebP. Máximo 5 MB.')
+                                ->helperText('JPG, PNG o WebP · máx. 5 MB')
                                 ->required()
                                 ->columnSpanFull(),
                             ExclusiveToggleInRepeater::make(
                                 name: 'is_primary',
-                                label: 'Imagen primaria',
-                                helperText: 'Solo una por producto: al activarla se desmarcan las demás.',
+                                label: 'Primaria',
+                                helperText: 'Al activarla se desmarcan las demás.',
                                 repeaterField: 'images',
                             ),
                         ])
                         ->defaultItems(0)
+                        ->grid([
+                            'default' => 1,
+                            'md' => 2,
+                            'xl' => 3,
+                        ])
                         ->collapsible()
                         ->cloneable(false)
                         ->reorderable()
