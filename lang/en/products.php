@@ -148,6 +148,8 @@ return [
         'variant_not_owned' => 'One of the variants does not belong to this product.',
         'price_not_owned' => 'A price does not belong to the indicated variant.',
         'image_not_owned' => 'An image does not belong to this product.',
+        'price_non_negative' => 'The price must be a non-negative integer.',
+        'compare_at_price_non_negative' => 'The compare-at price must be a non-negative integer.',
     ],
 
     'exceptions' => [

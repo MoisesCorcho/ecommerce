@@ -16,11 +16,11 @@ readonly class UpsertProductVariantPriceDTO
         public ?int $id = null,
     ) {
         if ($price < 0) {
-            throw new InvalidArgumentException('El precio debe ser un entero no negativo.');
+            throw new InvalidArgumentException(__('products.validation.price_non_negative'));
         }
 
         if ($compareAtPrice !== null && $compareAtPrice < 0) {
-            throw new InvalidArgumentException('El precio de comparación debe ser un entero no negativo.');
+            throw new InvalidArgumentException(__('products.validation.compare_at_price_non_negative'));
         }
     }
 
@@ -34,13 +34,13 @@ readonly class UpsertProductVariantPriceDTO
             : CurrencyEnum::from((string) $data['currency']);
 
         if (! is_numeric($data['price']) || (string) (int) $data['price'] !== (string) $data['price']) {
-            throw new InvalidArgumentException('El precio debe ser un entero no negativo.');
+            throw new InvalidArgumentException(__('products.validation.price_non_negative'));
         }
 
         $compareAt = $data['compare_at_price'] ?? null;
         if ($compareAt !== null && $compareAt !== '') {
             if (! is_numeric($compareAt) || (string) (int) $compareAt !== (string) $compareAt) {
-                throw new InvalidArgumentException('El precio de comparación debe ser un entero no negativo.');
+                throw new InvalidArgumentException(__('products.validation.compare_at_price_non_negative'));
             }
             $compareAt = (int) $compareAt;
         } else {

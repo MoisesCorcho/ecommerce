@@ -12,8 +12,8 @@ enum PaymentProviderEnum: string
     public function label(): string
     {
         return match ($this) {
-            self::Stripe => 'Stripe',
-            self::Bold => 'Bold',
+            self::Stripe => __('enums.payment_provider.stripe'),
+            self::Bold => __('enums.payment_provider.bold'),
         };
     }
 }

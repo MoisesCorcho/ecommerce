@@ -164,7 +164,8 @@ Operator-facing UI and domain validation messages use Laravel localization. No t
 |---------|------|
 | Code | Stable English **short keys**: `__('users.fields.phone')`, never hardcode ES/EN copy in Resources/Actions |
 | Files | `lang/{locale}/{domain}.php` — e.g. `lang/en/users.php`, `lang/es/users.php` |
-| Domains | Prefer area names: `users`, `addresses`, `categories`, `products`, `navigation`, `filament_support` |
+| Domains | Prefer area names: `users`, `addresses`, `categories`, `products`, `navigation`, `filament_support`, `enums` |
+| Enums | Human labels via `__('enums.{group}.{value}')` in `label()` / `getLabel()` — never hardcode locale copy |
 | Runtime | `APP_LOCALE` (operators often `es`) + `APP_FALLBACK_LOCALE=en` |
 | Filament chrome | Built-in package translations follow app locale — do not publish unless overriding one string |
 | Content / DB | Product names multi-language etc. are **out of scope** of this pattern (separate decision later) |

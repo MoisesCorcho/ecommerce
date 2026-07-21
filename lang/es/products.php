@@ -148,6 +148,8 @@ return [
         'variant_not_owned' => 'Una de las variantes no pertenece a este producto.',
         'price_not_owned' => 'Un precio no pertenece a la variante indicada.',
         'image_not_owned' => 'Una imagen no pertenece a este producto.',
+        'price_non_negative' => 'El precio debe ser un entero no negativo.',
+        'compare_at_price_non_negative' => 'El precio de comparación debe ser un entero no negativo.',
     ],
 
     'exceptions' => [

@@ -12,8 +12,8 @@ enum CouponTypeEnum: string
     public function label(): string
     {
         return match ($this) {
-            self::Percentage => 'Porcentaje',
-            self::Fixed => 'Monto fijo',
+            self::Percentage => __('enums.coupon_type.percentage'),
+            self::Fixed => __('enums.coupon_type.fixed'),
         };
     }
 
