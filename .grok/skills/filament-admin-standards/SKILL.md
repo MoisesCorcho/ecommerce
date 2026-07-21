@@ -165,6 +165,8 @@ Aim for **calm density**: clear hierarchy, short labels, helpers only when neede
 | Progressive disclosure | `visible()` / `live()` only when it reduces noise |
 | Defaults | Safe `default()` for booleans/currency; never surprise-publish |
 | Create vs Edit | Password/immutable keys only where relevant; slug editable with unique ignore self |
+| Name → slug | Always use `App\Filament\Support\NameSlugInputs` for name+slug pairs: live auto-slug from name, stops overwriting once the operator edits the slug manually |
+| Exclusive toggles in repeaters | Use `App\Filament\Support\ExclusiveToggleInRepeater` (e.g. one `is_primary` image per product) |
 | Selects | `searchable()` + `preload()` when options are small; search without full dump when large |
 | Money | Integers only; helper states unit (pesos enteros vs centavos EUR); use `CurrencyEnum` options |
 | Uploads | Disk, directory (`products/`), `visibility('public')` when public, mime + size limits — never unbounded |

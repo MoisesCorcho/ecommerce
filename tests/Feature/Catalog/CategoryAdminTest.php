@@ -72,6 +72,35 @@ class CategoryAdminTest extends TestCase
             ->assertHasFormErrors(['name' => 'required']);
     }
 
+    public function test_category_slug_syncs_live_from_name_until_manually_edited(): void
+    {
+        $this->actingAsAdmin();
+
+        Livewire::test(CreateCategory::class)
+            ->fillForm([
+                'name' => 'Bolsos de mano',
+                'sort_order' => 0,
+            ])
+            ->assertFormSet([
+                'slug' => 'bolsos-de-mano',
+            ])
+            ->fillForm([
+                'name' => 'Bolsos de viaje',
+            ])
+            ->assertFormSet([
+                'slug' => 'bolsos-de-viaje',
+            ])
+            ->fillForm([
+                'slug' => 'mi-slug',
+            ])
+            ->fillForm([
+                'name' => 'Otra categoría',
+            ])
+            ->assertFormSet([
+                'slug' => 'mi-slug',
+            ]);
+    }
+
     public function test_admin_can_update_category(): void
     {
         $this->actingAsAdmin();

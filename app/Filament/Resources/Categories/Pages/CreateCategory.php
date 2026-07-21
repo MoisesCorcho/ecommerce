@@ -13,6 +13,13 @@ class CreateCategory extends CreateRecord
 {
     protected static string $resource = CategoryResource::class;
 
+    protected static ?string $title = 'Nueva categoría';
+
+    protected function getCreatedNotificationTitle(): ?string
+    {
+        return 'Categoría creada';
+    }
+
     protected function handleRecordCreation(array $data): Model
     {
         return app(CreateCategoryAction::class)($data);

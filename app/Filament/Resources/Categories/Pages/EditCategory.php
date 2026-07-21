@@ -16,10 +16,20 @@ class EditCategory extends EditRecord
 {
     protected static string $resource = CategoryResource::class;
 
+    protected function getSavedNotificationTitle(): ?string
+    {
+        return 'Categoría actualizada';
+    }
+
     protected function getHeaderActions(): array
     {
         return [
             DeleteAction::make()
+                ->label('Eliminar')
+                ->requiresConfirmation()
+                ->modalHeading('Eliminar categoría')
+                ->modalDescription('Los productos asociados quedarán sin categoría.')
+                ->modalSubmitActionLabel('Sí, eliminar')
                 ->using(function (Category $record): void {
                     app(DeleteCategoryAction::class)($record);
                 }),

@@ -21,12 +21,28 @@ class EditProduct extends EditRecord
 {
     protected static string $resource = ProductResource::class;
 
+    protected function getSavedNotificationTitle(): ?string
+    {
+        return 'Producto actualizado';
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
-            ForceDeleteAction::make(),
-            RestoreAction::make(),
+            DeleteAction::make()
+                ->label('Mover a papelera')
+                ->requiresConfirmation()
+                ->modalHeading('Eliminar producto')
+                ->modalDescription('El producto se moverá a la papelera. Podrás restaurarlo después.')
+                ->modalSubmitActionLabel('Sí, eliminar'),
+            ForceDeleteAction::make()
+                ->label('Eliminar definitivamente')
+                ->requiresConfirmation()
+                ->modalHeading('Eliminar definitivamente')
+                ->modalDescription('Esta acción no se puede deshacer.')
+                ->modalSubmitActionLabel('Eliminar para siempre'),
+            RestoreAction::make()
+                ->label('Restaurar'),
         ];
     }
 

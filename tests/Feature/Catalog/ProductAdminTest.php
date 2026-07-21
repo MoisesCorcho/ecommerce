@@ -286,4 +286,84 @@ class ProductAdminTest extends TestCase
             ->call('create')
             ->assertHasFormErrors(['name' => 'required']);
     }
+
+    public function test_product_slug_syncs_live_from_name_until_manually_edited(): void
+    {
+        $this->actingAsAdmin();
+
+        Livewire::test(CreateProduct::class)
+            ->fillForm([
+                'name' => 'Bolso Honey',
+                'is_active' => false,
+            ])
+            ->assertFormSet([
+                'slug' => 'bolso-honey',
+            ])
+            ->fillForm([
+                'name' => 'Bolso Honey XL',
+            ])
+            ->assertFormSet([
+                'slug' => 'bolso-honey-xl',
+            ])
+            ->fillForm([
+                'slug' => 'slug-personalizado',
+            ])
+            ->fillForm([
+                'name' => 'Otro Nombre',
+            ])
+            ->assertFormSet([
+                'slug' => 'slug-personalizado',
+            ]);
+    }
+
+    public function test_only_one_product_image_can_be_primary_in_form(): void
+    {
+        $this->actingAsAdmin();
+
+        $component = Livewire::test(CreateProduct::class)
+            ->fillForm([
+                'name' => 'Con Imágenes',
+                'is_active' => false,
+                'variants' => [],
+                'images' => [
+                    [
+                        'path' => 'products/a.jpg',
+                        'sort_order' => 0,
+                        'is_primary' => true,
+                    ],
+                    [
+                        'path' => 'products/b.jpg',
+                        'sort_order' => 1,
+                        'is_primary' => false,
+                    ],
+                ],
+            ]);
+
+        /** @var array<string, array<string, mixed>> $images */
+        $images = $component->get('data.images');
+        $this->assertIsArray($images);
+        $keys = array_keys($images);
+        $this->assertCount(2, $keys);
+
+        $firstKey = $keys[0];
+        $secondKey = $keys[1];
+
+        // fillFormDataForTesting triggers Filament afterStateUpdated (relative paths).
+        $component
+            ->call('fillFormDataForTesting', [
+                "data.images.{$secondKey}.is_primary" => true,
+            ], 'data');
+
+        $this->assertFalse((bool) $component->get("data.images.{$firstKey}.is_primary"));
+        $this->assertTrue((bool) $component->get("data.images.{$secondKey}.is_primary"));
+
+        // Flip primary back to the first image.
+        $component
+            ->call('fillFormDataForTesting', [
+                "data.images.{$firstKey}.is_primary" => true,
+            ], 'data');
+
+        $this->assertTrue((bool) $component->get("data.images.{$firstKey}.is_primary"));
+        $this->assertFalse((bool) $component->get("data.images.{$secondKey}.is_primary"));
+    }
 }
