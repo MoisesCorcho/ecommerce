@@ -32,82 +32,81 @@ class AddressesRelationManager extends RelationManager
 {
     protected static string $relationship = 'addresses';
 
-    protected static ?string $title = 'Direcciones';
-
-    protected static ?string $modelLabel = 'dirección';
-
-    protected static ?string $pluralModelLabel = 'direcciones';
-
     protected static string|BackedEnum|null $icon = Heroicon::OutlinedMapPin;
+
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('addresses.relation.title');
+    }
 
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Dirección de envío')
-                    ->description('Datos que se usarán en el checkout. Solo una dirección puede ser predeterminada por usuario.')
+                Section::make(__('addresses.section.shipping'))
+                    ->description(__('addresses.section.shipping_description'))
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('label')
-                                    ->label('Etiqueta')
-                                    ->placeholder('Casa, Oficina…')
+                                    ->label(__('addresses.fields.label'))
+                                    ->placeholder(__('addresses.placeholders.label'))
                                     ->maxLength(64)
                                     ->columnSpan(1),
                                 Toggle::make('is_default')
-                                    ->label('Dirección predeterminada')
-                                    ->helperText('Si la marcás, cualquier otra predeterminada del usuario se desmarca.')
+                                    ->label(__('addresses.fields.is_default'))
+                                    ->helperText(__('addresses.helpers.is_default'))
                                     ->default(false)
                                     ->inline(false)
                                     ->columnSpan(1),
                                 TextInput::make('full_name')
-                                    ->label('Nombre completo')
-                                    ->placeholder('Ana Pérez')
+                                    ->label(__('addresses.fields.full_name'))
+                                    ->placeholder(__('addresses.placeholders.full_name'))
                                     ->required()
                                     ->maxLength(255)
                                     ->columnSpan(1),
                                 TextInput::make('phone')
-                                    ->label('Teléfono')
+                                    ->label(__('addresses.fields.phone'))
                                     ->tel()
-                                    ->placeholder('+57 300 123 4567')
+                                    ->placeholder(__('addresses.placeholders.phone'))
                                     ->required()
                                     ->maxLength(32)
                                     ->columnSpan(1),
                                 TextInput::make('address_line_1')
-                                    ->label('Línea 1')
-                                    ->placeholder('Calle 10 #20-30')
+                                    ->label(__('addresses.fields.address_line_1'))
+                                    ->placeholder(__('addresses.placeholders.address_line_1'))
                                     ->required()
                                     ->maxLength(255)
                                     ->columnSpanFull(),
                                 TextInput::make('address_line_2')
-                                    ->label('Línea 2')
-                                    ->placeholder('Apto 401, Torre B')
+                                    ->label(__('addresses.fields.address_line_2'))
+                                    ->placeholder(__('addresses.placeholders.address_line_2'))
                                     ->maxLength(255)
                                     ->columnSpanFull(),
                                 TextInput::make('city')
-                                    ->label('Ciudad')
-                                    ->placeholder('Medellín')
+                                    ->label(__('addresses.fields.city'))
+                                    ->placeholder(__('addresses.placeholders.city'))
                                     ->required()
                                     ->maxLength(120)
                                     ->columnSpan(1),
                                 TextInput::make('state')
-                                    ->label('Estado / departamento')
-                                    ->placeholder('Antioquia')
+                                    ->label(__('addresses.fields.state'))
+                                    ->placeholder(__('addresses.placeholders.state'))
                                     ->required()
                                     ->maxLength(120)
                                     ->columnSpan(1),
                                 TextInput::make('country')
-                                    ->label('País (ISO)')
-                                    ->placeholder('CO')
+                                    ->label(__('addresses.fields.country'))
+                                    ->placeholder(__('addresses.placeholders.country'))
                                     ->required()
                                     ->length(2)
                                     ->default('CO')
-                                    ->helperText('Código de 2 letras (ISO 3166-1 alpha-2).')
+                                    ->helperText(__('addresses.helpers.country'))
                                     ->maxLength(2)
                                     ->columnSpan(1),
                                 TextInput::make('postal_code')
-                                    ->label('Código postal')
-                                    ->placeholder('050001')
+                                    ->label(__('addresses.fields.postal_code'))
+                                    ->placeholder(__('addresses.placeholders.postal_code'))
                                     ->maxLength(32)
                                     ->columnSpan(1),
                             ]),
@@ -120,40 +119,42 @@ class AddressesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('full_name')
+            ->modelLabel(__('addresses.model.label'))
+            ->pluralModelLabel(__('addresses.model.plural'))
             ->columns([
                 TextColumn::make('label')
-                    ->label('Etiqueta')
-                    ->placeholder('—')
+                    ->label(__('addresses.fields.label'))
+                    ->placeholder(__('addresses.placeholders.empty'))
                     ->toggleable(),
                 TextColumn::make('full_name')
-                    ->label('Nombre')
+                    ->label(__('addresses.fields.full_name'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('phone')
-                    ->label('Teléfono')
+                    ->label(__('addresses.fields.phone'))
                     ->searchable(),
                 TextColumn::make('city')
-                    ->label('Ciudad')
+                    ->label(__('addresses.fields.city'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('state')
-                    ->label('Estado')
+                    ->label(__('addresses.fields.state_short'))
                     ->toggleable(),
                 TextColumn::make('country')
-                    ->label('País')
+                    ->label(__('addresses.fields.country_short'))
                     ->badge()
                     ->color('gray'),
                 IconColumn::make('is_default')
-                    ->label('Predet.')
+                    ->label(__('addresses.fields.is_default_short'))
                     ->boolean(),
                 TextColumn::make('address_line_1')
-                    ->label('Dirección')
+                    ->label(__('addresses.fields.address'))
                     ->limit(30)
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label('Nueva dirección')
+                    ->label(__('addresses.actions.create'))
                     ->icon(Heroicon::Plus)
                     ->using(function (array $data, string $model): Model {
                         /** @var User $owner */
@@ -167,7 +168,7 @@ class AddressesRelationManager extends RelationManager
             ])
             ->recordActions([
                 EditAction::make()
-                    ->label('Editar')
+                    ->label(__('addresses.actions.edit'))
                     ->using(function (Model $record, array $data): Model {
                         /** @var Address $record */
                         return app(UpdateAddressAction::class)($record, UpsertAddressDTO::fromArray([
@@ -176,7 +177,7 @@ class AddressesRelationManager extends RelationManager
                         ]));
                     }),
                 DeleteAction::make()
-                    ->label('Eliminar')
+                    ->label(__('addresses.actions.delete'))
                     ->requiresConfirmation()
                     ->using(function (Model $record): bool {
                         /** @var Address $record */
@@ -188,16 +189,16 @@ class AddressesRelationManager extends RelationManager
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->label('Eliminar seleccionadas')
+                        ->label(__('addresses.actions.delete_selected'))
                         ->requiresConfirmation(),
                 ]),
             ])
             ->emptyStateIcon(Heroicon::OutlinedMapPin)
-            ->emptyStateHeading('Sin direcciones')
-            ->emptyStateDescription('Agregá una dirección de envío para este usuario.')
+            ->emptyStateHeading(__('addresses.empty.heading'))
+            ->emptyStateDescription(__('addresses.empty.description'))
             ->emptyStateActions([
                 CreateAction::make()
-                    ->label('Nueva dirección')
+                    ->label(__('addresses.actions.create'))
                     ->icon(Heroicon::Plus)
                     ->using(function (array $data, string $model): Model {
                         /** @var User $owner */

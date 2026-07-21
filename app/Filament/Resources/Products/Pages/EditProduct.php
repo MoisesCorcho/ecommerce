@@ -23,26 +23,26 @@ class EditProduct extends EditRecord
 
     protected function getSavedNotificationTitle(): ?string
     {
-        return 'Producto actualizado';
+        return __('products.notifications.updated');
     }
 
     protected function getHeaderActions(): array
     {
         return [
             DeleteAction::make()
-                ->label('Mover a papelera')
+                ->label(__('products.actions.move_to_trash'))
                 ->requiresConfirmation()
-                ->modalHeading('Eliminar producto')
-                ->modalDescription('El producto se moverá a la papelera. Podrás restaurarlo después.')
-                ->modalSubmitActionLabel('Sí, eliminar'),
+                ->modalHeading(__('products.modals.delete_heading'))
+                ->modalDescription(__('products.modals.delete_description'))
+                ->modalSubmitActionLabel(__('products.actions.confirm_delete')),
             ForceDeleteAction::make()
-                ->label('Eliminar definitivamente')
+                ->label(__('products.actions.force_delete'))
                 ->requiresConfirmation()
-                ->modalHeading('Eliminar definitivamente')
-                ->modalDescription('Esta acción no se puede deshacer.')
-                ->modalSubmitActionLabel('Eliminar para siempre'),
+                ->modalHeading(__('products.modals.force_delete_heading'))
+                ->modalDescription(__('products.modals.force_delete_description'))
+                ->modalSubmitActionLabel(__('products.actions.confirm_force_delete')),
             RestoreAction::make()
-                ->label('Restaurar'),
+                ->label(__('products.actions.restore')),
         ];
     }
 

@@ -27,47 +27,49 @@ final class ProductsTable
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nombre')
+                    ->label(__('products.fields.name'))
                     ->searchable()
                     ->sortable()
                     ->description(fn (Product $record): ?string => $record->slug)
                     ->wrap(),
                 TextColumn::make('category.name')
-                    ->label('Categoría')
-                    ->placeholder('Sin categoría')
+                    ->label(__('products.fields.category'))
+                    ->placeholder(__('products.placeholders.no_category'))
                     ->badge()
                     ->color('gray')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('is_active')
-                    ->label('Estado')
+                    ->label(__('products.fields.status'))
                     ->badge()
-                    ->formatStateUsing(fn (bool $state): string => $state ? 'Publicado' : 'Borrador')
+                    ->formatStateUsing(fn (bool $state): string => $state
+                        ? __('products.status.published')
+                        : __('products.status.draft'))
                     ->color(fn (bool $state): string => $state ? 'success' : 'gray')
                     ->sortable(),
                 IconColumn::make('is_preorder')
-                    ->label('Preventa')
+                    ->label(__('products.fields.is_preorder'))
                     ->boolean()
                     ->trueIcon(Heroicon::OutlinedClock)
                     ->falseIcon(Heroicon::OutlinedMinus)
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('variants_count')
                     ->counts('variants')
-                    ->label('Variantes')
+                    ->label(__('products.fields.variants_count'))
                     ->sortable()
                     ->alignEnd(),
                 TextColumn::make('created_at')
-                    ->label('Creado')
+                    ->label(__('products.fields.created_at'))
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label('Actualizado')
+                    ->label(__('products.fields.updated_at'))
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('deleted_at')
-                    ->label('Eliminado')
+                    ->label(__('products.fields.deleted_at'))
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -75,51 +77,51 @@ final class ProductsTable
             ->defaultSort('name')
             ->filters([
                 TernaryFilter::make('is_active')
-                    ->label('Publicado')
-                    ->placeholder('Todos')
-                    ->trueLabel('Solo publicados')
-                    ->falseLabel('Solo borradores'),
+                    ->label(__('products.filters.published'))
+                    ->placeholder(__('products.placeholders.filter_all'))
+                    ->trueLabel(__('products.filters.published_only'))
+                    ->falseLabel(__('products.filters.drafts_only')),
                 TernaryFilter::make('is_preorder')
-                    ->label('Preventa')
-                    ->placeholder('Todos')
-                    ->trueLabel('En preventa')
-                    ->falseLabel('Sin preventa'),
+                    ->label(__('products.filters.preorder'))
+                    ->placeholder(__('products.placeholders.filter_all'))
+                    ->trueLabel(__('products.filters.preorder_only'))
+                    ->falseLabel(__('products.filters.no_preorder')),
                 SelectFilter::make('category_id')
-                    ->label('Categoría')
+                    ->label(__('products.fields.category'))
                     ->relationship('category', 'name')
                     ->searchable()
                     ->preload(),
                 TrashedFilter::make()
-                    ->label('Eliminados'),
+                    ->label(__('products.filters.trashed')),
             ])
             ->recordActions([
                 EditAction::make()
-                    ->label('Editar'),
+                    ->label(__('products.actions.edit')),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->label('Mover a papelera')
+                        ->label(__('products.actions.move_to_trash'))
                         ->requiresConfirmation()
-                        ->modalHeading('Eliminar productos')
-                        ->modalDescription('Se moverán a la papelera (soft delete). Podrás restaurarlos después.')
-                        ->modalSubmitActionLabel('Sí, eliminar'),
+                        ->modalHeading(__('products.modals.delete_bulk_heading'))
+                        ->modalDescription(__('products.modals.delete_bulk_description'))
+                        ->modalSubmitActionLabel(__('products.actions.confirm_delete')),
                     RestoreBulkAction::make()
-                        ->label('Restaurar seleccionados'),
+                        ->label(__('products.actions.restore_selected')),
                     ForceDeleteBulkAction::make()
-                        ->label('Eliminar definitivamente')
+                        ->label(__('products.actions.force_delete'))
                         ->requiresConfirmation()
-                        ->modalHeading('Eliminar definitivamente')
-                        ->modalDescription('Esta acción no se puede deshacer.')
-                        ->modalSubmitActionLabel('Eliminar para siempre'),
+                        ->modalHeading(__('products.modals.force_delete_heading'))
+                        ->modalDescription(__('products.modals.force_delete_description'))
+                        ->modalSubmitActionLabel(__('products.actions.confirm_force_delete')),
                 ]),
             ])
             ->emptyStateIcon(Heroicon::OutlinedShoppingBag)
-            ->emptyStateHeading('No hay productos todavía')
-            ->emptyStateDescription('Crea el primer producto con al menos una variante y precio para poder publicarlo.')
+            ->emptyStateHeading(__('products.empty.heading'))
+            ->emptyStateDescription(__('products.empty.description'))
             ->emptyStateActions([
                 CreateAction::make()
-                    ->label('Nuevo producto')
+                    ->label(__('products.actions.create'))
                     ->icon(Heroicon::Plus),
             ])
             ->striped()

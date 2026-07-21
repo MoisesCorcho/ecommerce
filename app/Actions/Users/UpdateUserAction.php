@@ -39,13 +39,13 @@ class UpdateUserAction
         $errors = [];
 
         if ($dto->name === '') {
-            $errors['name'] = 'El nombre es obligatorio.';
+            $errors['name'] = __('users.validation.name_required');
         }
 
         if ($dto->email === '') {
-            $errors['email'] = 'El email es obligatorio.';
+            $errors['email'] = __('users.validation.email_required');
         } elseif (! filter_var($dto->email, FILTER_VALIDATE_EMAIL)) {
-            $errors['email'] = 'El email no es válido.';
+            $errors['email'] = __('users.validation.email_invalid');
         }
 
         if ($errors !== []) {
@@ -65,7 +65,7 @@ class UpdateUserAction
 
         if ($exists) {
             throw ValidationException::withMessages([
-                'email' => 'El email ya está en uso por otro usuario.',
+                'email' => __('users.validation.email_unique'),
             ]);
         }
     }

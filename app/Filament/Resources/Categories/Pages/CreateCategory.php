@@ -7,17 +7,21 @@ namespace App\Filament\Resources\Categories\Pages;
 use App\Actions\Categories\CreateCategoryAction;
 use App\Filament\Resources\Categories\CategoryResource;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 
 class CreateCategory extends CreateRecord
 {
     protected static string $resource = CategoryResource::class;
 
-    protected static ?string $title = 'Nueva categoría';
+    public function getTitle(): string|Htmlable
+    {
+        return __('categories.pages.create_title');
+    }
 
     protected function getCreatedNotificationTitle(): ?string
     {
-        return 'Categoría creada';
+        return __('categories.notifications.created');
     }
 
     protected function handleRecordCreation(array $data): Model

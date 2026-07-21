@@ -28,15 +28,15 @@ final class ProductForm
     {
         return $schema
             ->components([
-                Tabs::make('Producto')
+                Tabs::make(__('products.tabs.product'))
                     ->tabs([
-                        Tab::make('Datos')
+                        Tab::make(__('products.tabs.details'))
                             ->icon('heroicon-o-information-circle')
                             ->schema(self::detailsSchema()),
-                        Tab::make('Variantes y precios')
+                        Tab::make(__('products.tabs.variants_prices'))
                             ->icon('heroicon-o-squares-2x2')
                             ->schema(self::variantsSchema()),
-                        Tab::make('Imágenes')
+                        Tab::make(__('products.tabs.images'))
                             ->icon('heroicon-o-photo')
                             ->schema(self::imagesSchema()),
                     ])
@@ -51,8 +51,8 @@ final class ProductForm
     private static function detailsSchema(): array
     {
         return [
-            Section::make('Identidad del producto')
-                ->description('Nombre, categoría y visibilidad en el catálogo. Publicar exige al menos una variante activa con precio.')
+            Section::make(__('products.section.identity'))
+                ->description(__('products.section.identity_description'))
                 ->schema([
                     Grid::make(2)
                         ->schema([
@@ -60,49 +60,49 @@ final class ProductForm
                                 static fn ($field) => $field->columnSpan(1),
                                 NameSlugInputs::make(
                                     modelClass: Product::class,
-                                    namePlaceholder: 'Ej. Bolso Honey',
-                                    slugPlaceholder: 'bolso-honey',
+                                    namePlaceholder: __('products.placeholders.name'),
+                                    slugPlaceholder: __('products.placeholders.slug'),
                                 ),
                             ),
                         ]),
                     Select::make('category_id')
-                        ->label('Categoría')
+                        ->label(__('products.fields.category'))
                         ->relationship('category', 'name')
                         ->searchable()
                         ->preload()
                         ->nullable()
-                        ->placeholder('Sin categoría')
-                        ->helperText('Opcional. Puedes asignarla o cambiarla más tarde.'),
+                        ->placeholder(__('products.placeholders.no_category'))
+                        ->helperText(__('products.helpers.category_optional')),
                     Textarea::make('description')
-                        ->label('Descripción')
+                        ->label(__('products.fields.description'))
                         ->rows(4)
                         ->columnSpanFull()
-                        ->placeholder('Materiales, uso recomendado, detalles de la pieza…'),
+                        ->placeholder(__('products.placeholders.description')),
                 ]),
-            Section::make('Atributos y estado')
-                ->description('Detalles comerciales y flags de publicación.')
+            Section::make(__('products.section.attributes'))
+                ->description(__('products.section.attributes_description'))
                 ->schema([
                     Grid::make(2)
                         ->schema([
                             TextInput::make('material')
-                                ->label('Material')
+                                ->label(__('products.fields.material'))
                                 ->maxLength(255)
-                                ->placeholder('Cuero, lona, etc.'),
+                                ->placeholder(__('products.placeholders.material')),
                             TextInput::make('dimensions')
-                                ->label('Dimensiones')
+                                ->label(__('products.fields.dimensions'))
                                 ->maxLength(255)
-                                ->placeholder('30 × 20 × 10 cm'),
+                                ->placeholder(__('products.placeholders.dimensions')),
                         ]),
                     Grid::make(2)
                         ->schema([
                             Toggle::make('is_preorder')
-                                ->label('Preventa')
-                                ->helperText('Marca si el producto se vende antes de stock físico.')
+                                ->label(__('products.fields.is_preorder'))
+                                ->helperText(__('products.helpers.is_preorder'))
                                 ->default(false)
                                 ->inline(false),
                             Toggle::make('is_active')
-                                ->label('Publicado')
-                                ->helperText('Requiere ≥1 variante activa con ≥1 precio (cualquier moneda). Si no se cumple, el guardado fallará con un mensaje claro.')
+                                ->label(__('products.fields.is_active'))
+                                ->helperText(__('products.helpers.is_active'))
                                 ->default(false)
                                 ->inline(false),
                         ]),
@@ -117,18 +117,18 @@ final class ProductForm
     private static function variantsSchema(): array
     {
         return [
-            Section::make('Variantes vendibles')
-                ->description('Cada variante es una opción de compra (SKU). Los precios son enteros: COP en pesos; EUR en centavos.')
+            Section::make(__('products.section.variants'))
+                ->description(__('products.section.variants_description'))
                 ->schema([
                     Repeater::make('variants')
-                        ->label('Variantes')
+                        ->label(__('products.fields.variants'))
                         ->schema([
                             Hidden::make('id'),
                             Grid::make(3)
                                 ->schema([
                                     TextInput::make('sku')
-                                        ->label('SKU')
-                                        ->placeholder('LHB-HONEY-01')
+                                        ->label(__('products.fields.sku'))
+                                        ->placeholder(__('products.placeholders.sku'))
                                         ->required()
                                         ->maxLength(255)
                                         ->distinct()
@@ -146,56 +146,56 @@ final class ProductForm
                                                 }
 
                                                 if ($query->exists()) {
-                                                    $fail("El SKU «{$value}» ya pertenece a otra variante.");
+                                                    $fail(__('products.validation.sku_unique', ['sku' => $value]));
                                                 }
                                             };
                                         }),
                                     TextInput::make('color')
-                                        ->label('Color')
+                                        ->label(__('products.fields.color'))
                                         ->maxLength(255)
-                                        ->placeholder('Negro'),
+                                        ->placeholder(__('products.placeholders.color')),
                                     TextInput::make('size')
-                                        ->label('Talla / tamaño')
+                                        ->label(__('products.fields.size'))
                                         ->maxLength(255)
-                                        ->placeholder('Única, M, 30cm…'),
+                                        ->placeholder(__('products.placeholders.size')),
                                 ]),
                             Grid::make(3)
                                 ->schema([
                                     TextInput::make('stock')
-                                        ->label('Stock')
+                                        ->label(__('products.fields.stock'))
                                         ->numeric()
                                         ->integer()
                                         ->minValue(0)
                                         ->default(0)
                                         ->required(),
                                     Toggle::make('is_active')
-                                        ->label('Variante activa')
-                                        ->helperText('Solo las activas cuentan para publicar el producto.')
+                                        ->label(__('products.fields.variant_active'))
+                                        ->helperText(__('products.helpers.variant_active'))
                                         ->default(true)
                                         ->inline(false),
                                 ]),
                             Repeater::make('prices')
-                                ->label('Precios por moneda')
+                                ->label(__('products.fields.prices'))
                                 ->schema([
                                     Hidden::make('id'),
                                     Select::make('currency')
-                                        ->label('Moneda')
+                                        ->label(__('products.fields.currency'))
                                         ->options(CurrencyEnum::class)
                                         ->required()
                                         ->distinct()
                                         ->live(onBlur: true)
                                         ->native(false),
                                     TextInput::make('price')
-                                        ->label('Precio (entero)')
-                                        ->helperText('COP: pesos enteros. EUR: centavos (12900 = €129,00).')
+                                        ->label(__('products.fields.price'))
+                                        ->helperText(__('products.helpers.price_units'))
                                         ->numeric()
                                         ->integer()
                                         ->minValue(0)
                                         ->required()
-                                        ->placeholder('799000'),
+                                        ->placeholder(__('products.placeholders.price')),
                                     TextInput::make('compare_at_price')
-                                        ->label('Precio de comparación')
-                                        ->helperText('Opcional. Precio “antes” para mostrar descuento.')
+                                        ->label(__('products.fields.compare_at_price'))
+                                        ->helperText(__('products.helpers.compare_at_price'))
                                         ->numeric()
                                         ->integer()
                                         ->minValue(0)
@@ -206,7 +206,7 @@ final class ProductForm
                                 ->minItems(0)
                                 ->collapsible()
                                 ->cloneable()
-                                ->addActionLabel('Añadir precio')
+                                ->addActionLabel(__('products.actions.add_price'))
                                 ->itemLabel(function (array $state): ?string {
                                     $currency = $state['currency'] ?? null;
                                     if ($currency instanceof CurrencyEnum) {
@@ -216,7 +216,7 @@ final class ProductForm
                                     }
 
                                     if ($code === null) {
-                                        return 'Precio';
+                                        return __('products.item_labels.price');
                                     }
 
                                     $amount = $state['price'] ?? null;
@@ -231,16 +231,18 @@ final class ProductForm
                         ->collapsible()
                         ->cloneable()
                         ->reorderable(false)
-                        ->addActionLabel('Añadir variante')
+                        ->addActionLabel(__('products.actions.add_variant'))
                         ->itemLabel(function (array $state): ?string {
                             $sku = $state['sku'] ?? null;
                             if (! is_string($sku) || $sku === '') {
-                                return 'Nueva variante';
+                                return __('products.item_labels.new_variant');
                             }
 
                             $active = (bool) ($state['is_active'] ?? true);
 
-                            return $active ? $sku : "{$sku} (inactiva)";
+                            return $active
+                                ? $sku
+                                : __('products.item_labels.variant_inactive', ['sku' => $sku]);
                         })
                         ->columnSpanFull(),
                 ]),
@@ -253,15 +255,15 @@ final class ProductForm
     private static function imagesSchema(): array
     {
         return [
-            Section::make('Galería del producto')
-                ->description('Vista en cuadrícula. Arrastrá las tarjetas (o usá ↑↓) para reordenar. Solo una puede ser primaria.')
+            Section::make(__('products.section.gallery'))
+                ->description(__('products.section.gallery_description'))
                 ->schema([
                     Repeater::make('images')
-                        ->label('Imágenes')
+                        ->label(__('products.fields.images'))
                         ->schema([
                             Hidden::make('id'),
                             FileUpload::make('path')
-                                ->label('Archivo')
+                                ->label(__('products.fields.file'))
                                 ->disk('public')
                                 ->directory('products')
                                 ->visibility('public')
@@ -269,13 +271,13 @@ final class ProductForm
                                 ->imagePreviewHeight('120')
                                 ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                 ->maxSize(5120)
-                                ->helperText('JPG, PNG o WebP · máx. 5 MB')
+                                ->helperText(__('products.helpers.image_file'))
                                 ->required()
                                 ->columnSpanFull(),
                             ExclusiveToggleInRepeater::make(
                                 name: 'is_primary',
-                                label: 'Primaria',
-                                helperText: 'Al activarla se desmarcan las demás.',
+                                label: __('products.fields.primary'),
+                                helperText: __('products.helpers.primary_image'),
                                 repeaterField: 'images',
                             ),
                         ])
@@ -289,10 +291,10 @@ final class ProductForm
                         ->cloneable(false)
                         ->reorderable()
                         ->reorderableWithButtons()
-                        ->addActionLabel('Añadir imagen')
+                        ->addActionLabel(__('products.actions.add_image'))
                         ->itemLabel(function (array $state): ?string {
                             if (($state['is_primary'] ?? false) === true) {
-                                return 'Primaria';
+                                return __('products.item_labels.primary');
                             }
 
                             $path = $state['path'] ?? null;
@@ -300,7 +302,7 @@ final class ProductForm
                                 return basename($path);
                             }
 
-                            return 'Nueva imagen';
+                            return __('products.item_labels.new_image');
                         })
                         ->columnSpanFull(),
                 ]),

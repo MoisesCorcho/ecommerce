@@ -49,27 +49,27 @@ class CreateAddressAction
         $errors = [];
 
         if ($dto->fullName === '') {
-            $errors['full_name'] = 'El nombre completo es obligatorio.';
+            $errors['full_name'] = __('addresses.validation.full_name_required');
         }
 
         if ($dto->phone === '') {
-            $errors['phone'] = 'El teléfono es obligatorio.';
+            $errors['phone'] = __('addresses.validation.phone_required');
         }
 
         if ($dto->addressLine1 === '') {
-            $errors['address_line_1'] = 'La línea 1 de dirección es obligatoria.';
+            $errors['address_line_1'] = __('addresses.validation.address_line_1_required');
         }
 
         if ($dto->city === '') {
-            $errors['city'] = 'La ciudad es obligatoria.';
+            $errors['city'] = __('addresses.validation.city_required');
         }
 
         if ($dto->state === '') {
-            $errors['state'] = 'El estado o departamento es obligatorio.';
+            $errors['state'] = __('addresses.validation.state_required');
         }
 
         if ($dto->country === '' || ! preg_match('/^[A-Z]{2}$/', $dto->country)) {
-            $errors['country'] = 'El país debe ser un código ISO de 2 letras.';
+            $errors['country'] = __('addresses.validation.country_invalid');
         }
 
         if ($errors !== []) {

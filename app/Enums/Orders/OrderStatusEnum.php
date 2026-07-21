@@ -17,13 +17,13 @@ enum OrderStatusEnum: string
     public function label(): string
     {
         return match ($this) {
-            self::Pending => 'Pendiente',
-            self::Paid => 'Pagado',
-            self::Processing => 'En proceso',
-            self::Shipped => 'Enviado',
-            self::Delivered => 'Entregado',
-            self::Cancelled => 'Cancelado',
-            self::Refunded => 'Reembolsado',
+            self::Pending => __('enums.order_status.pending'),
+            self::Paid => __('enums.order_status.paid'),
+            self::Processing => __('enums.order_status.processing'),
+            self::Shipped => __('enums.order_status.shipped'),
+            self::Delivered => __('enums.order_status.delivered'),
+            self::Cancelled => __('enums.order_status.cancelled'),
+            self::Refunded => __('enums.order_status.refunded'),
         };
     }
 

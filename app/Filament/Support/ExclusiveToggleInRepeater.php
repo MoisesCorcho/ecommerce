@@ -128,13 +128,13 @@ final class ExclusiveToggleInRepeater
      */
     public static function make(
         string $name = 'is_primary',
-        string $label = 'Imagen primaria',
-        ?string $helperText = 'Solo una por producto: al activarla se desmarcan las demás.',
+        ?string $label = null,
+        ?string $helperText = null,
         string $repeaterField = 'images',
     ): Toggle {
         return Toggle::make($name)
-            ->label($label)
-            ->helperText($helperText)
+            ->label($label ?? __('products.fields.primary_image'))
+            ->helperText($helperText ?? __('products.helpers.primary_image_default'))
             ->default(false)
             ->inline(false)
             ->live()
