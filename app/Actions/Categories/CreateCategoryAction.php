@@ -18,7 +18,7 @@ class CreateCategoryAction
         $name = trim((string) $data['name']);
         if ($name === '') {
             throw ValidationException::withMessages([
-                'name' => 'El nombre de la categoría es obligatorio.',
+                'name' => __('categories.validation.name_required'),
             ]);
         }
 

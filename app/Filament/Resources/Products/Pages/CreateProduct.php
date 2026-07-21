@@ -9,6 +9,7 @@ use App\DTOs\Products\UpsertProductDTO;
 use App\Exceptions\Products\ProductCannotBePublishedException;
 use App\Filament\Resources\Products\ProductResource;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
@@ -17,11 +18,14 @@ class CreateProduct extends CreateRecord
 {
     protected static string $resource = ProductResource::class;
 
-    protected static ?string $title = 'Nuevo producto';
+    public function getTitle(): string|Htmlable
+    {
+        return __('products.pages.create_title');
+    }
 
     protected function getCreatedNotificationTitle(): ?string
     {
-        return 'Producto creado';
+        return __('products.notifications.created');
     }
 
     protected function handleRecordCreation(array $data): Model

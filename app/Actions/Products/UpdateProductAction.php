@@ -77,7 +77,7 @@ class UpdateProductAction
             $variant = $product->variants()->whereKey($variantDto->id)->first();
             if ($variant === null) {
                 throw ValidationException::withMessages([
-                    'variants' => 'Una de las variantes no pertenece a este producto.',
+                    'variants' => __('products.validation.variant_not_owned'),
                 ]);
             }
 
@@ -114,7 +114,7 @@ class UpdateProductAction
                 $price = $variant->prices()->whereKey($priceDto->id)->first();
                 if ($price === null) {
                     throw ValidationException::withMessages([
-                        'variants' => 'Un precio no pertenece a la variante indicada.',
+                        'variants' => __('products.validation.price_not_owned'),
                     ]);
                 }
 
@@ -161,7 +161,7 @@ class UpdateProductAction
                 $image = $product->images()->whereKey($imageDto->id)->first();
                 if ($image === null) {
                     throw ValidationException::withMessages([
-                        'images' => 'Una imagen no pertenece a este producto.',
+                        'images' => __('products.validation.image_not_owned'),
                     ]);
                 }
 
@@ -221,7 +221,7 @@ class UpdateProductAction
 
         if ($exists) {
             throw ValidationException::withMessages([
-                'slug' => 'El slug ya está en uso por otro producto.',
+                'slug' => __('products.validation.slug_unique'),
             ]);
         }
 
@@ -237,7 +237,7 @@ class UpdateProductAction
 
         if ($query->exists()) {
             throw ValidationException::withMessages([
-                'variants' => "El SKU «{$sku}» ya pertenece a otra variante.",
+                'variants' => __('products.validation.sku_unique', ['sku' => $sku]),
             ]);
         }
     }

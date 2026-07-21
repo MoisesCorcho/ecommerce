@@ -137,7 +137,7 @@ class CreateProductAction
 
         if ($query->exists()) {
             throw ValidationException::withMessages([
-                'variants' => "El SKU «{$sku}» ya pertenece a otra variante.",
+                'variants' => __('products.validation.sku_unique', ['sku' => $sku]),
             ]);
         }
     }

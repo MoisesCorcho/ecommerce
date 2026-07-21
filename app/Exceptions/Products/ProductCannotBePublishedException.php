@@ -14,7 +14,7 @@ class ProductCannotBePublishedException extends RuntimeException
     public static function missingActiveVariantWithPrice(): self
     {
         return new self(
-            'No se puede publicar el producto: se requiere al menos una variante activa con al menos un precio en una moneda soportada.'
+            __('products.exceptions.cannot_publish_missing_variant_price')
         );
     }
 }

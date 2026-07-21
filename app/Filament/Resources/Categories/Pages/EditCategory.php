@@ -18,18 +18,18 @@ class EditCategory extends EditRecord
 
     protected function getSavedNotificationTitle(): ?string
     {
-        return 'Categoría actualizada';
+        return __('categories.notifications.updated');
     }
 
     protected function getHeaderActions(): array
     {
         return [
             DeleteAction::make()
-                ->label('Eliminar')
+                ->label(__('categories.actions.delete'))
                 ->requiresConfirmation()
-                ->modalHeading('Eliminar categoría')
-                ->modalDescription('Los productos asociados quedarán sin categoría.')
-                ->modalSubmitActionLabel('Sí, eliminar')
+                ->modalHeading(__('categories.modals.delete_heading'))
+                ->modalDescription(__('categories.modals.delete_description'))
+                ->modalSubmitActionLabel(__('categories.actions.confirm_delete'))
                 ->using(function (Category $record): void {
                     app(DeleteCategoryAction::class)($record);
                 }),
