@@ -20,7 +20,8 @@ Ubicación: `specs/features/<NN-slug>/`.
 |------|-----------------|-------|
 | Convenciones de código (Actions, DTOs, enums, layout) | `.ai/guidelines/project-conventions.md` → reflejado en `AGENTS.md` / `CLAUDE.md` | Actualizar **solo** el guideline; no reescribir en `specs/` |
 | Stack, Sail, Pint, PHPUnit, Filament idioms | Laravel Boost + guidelines del proyecto | Usar `search-docs` / Boost al implementar |
-| Modelo de datos de dominio | `app/Models`, `app/Enums`, migrations | Si una feature **cambia** el esquema, actualizar models/enums + migrations |
+| Modelo de datos de dominio | `app/Models`, `app/Enums/{Area}`, migrations | Si una feature **cambia** el esquema, actualizar models/enums + migrations |
+| Layout de código (Actions, DTOs, …) | project-conventions / `AGENTS.md` | Tipo primero, área después: `app/Actions/{Area}`, no módulos verticales |
 | Setup del entorno | `README.md` | Fuera de SDD de features |
 | Producto, roadmap, dependencias | [`01-product-and-roadmap.md`](01-product-and-roadmap.md) | Unico lugar del “qué construimos y en qué orden” |
 | Calidad de specs (EARS, audit, fix) | [`02-feature-quality.md`](02-feature-quality.md) | Barra de robustez de cada feature |

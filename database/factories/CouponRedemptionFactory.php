@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\CurrencyEnum;
+use App\Enums\Commerce\CurrencyEnum;
 use App\Models\Coupon;
 use App\Models\CouponRedemption;
 use App\Models\Order;

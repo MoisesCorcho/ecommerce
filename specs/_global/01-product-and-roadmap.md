@@ -35,7 +35,7 @@ Fuera del roadmap de features de producto, pero **prerequisito global**:
 
 | Entrega | Estado | Ubicación |
 |---------|--------|-----------|
-| Enums de dominio | Completa | `app/Enums/*Enum.php` |
+| Enums de dominio | Completa | `app/Enums/{Area}/*Enum.php` (tipo + área) |
 | Migrations + models + factories | Completa | `database/migrations`, `app/Models`, `database/factories` |
 | Tests de grafo de dominio | Completa | `tests/Feature/Domain/` |
 | Esquema en código (models/enums/migrations) | Completa | `app/Models`, `app/Enums`, `database/migrations` |
@@ -49,7 +49,8 @@ Rutas de specs se crean al iniciar cada feature (`specs/features/<slug>/`).
 
 | ID | Feature | Fase | Estado | Prerequisitos |
 |----|---------|------|--------|---------------|
-| F01 | Catálogo (categorías, productos, variantes, precios, imágenes) | 0 · Fundación comercio | No iniciada | Fundación de dominio |
+| F01 | Catálogo **admin** (Filament: categorías, productos, variantes, precios, imágenes) | 0 · Fundación comercio | Completa | Fundación de dominio |
+| F01-S | Storefront catálogo (UI pública; manual de marca) | 0 · Fundación comercio | No iniciada (diferido) | F01; manual de marca |
 | F02 | Cuentas y direcciones | 0 · Fundación comercio | No iniciada | Fundación de dominio |
 | F03 | Carrito | 1 · Compra | No iniciada | F01 |
 | F04 | Checkout y órdenes | 1 · Compra | No iniciada | F01, F02, F03 |
@@ -62,11 +63,18 @@ Sincronizar la columna **Estado** con el bloque `> Estado:` de cada `requirement
 
 ### Notas de alcance (evitar solapamiento)
 
-#### F01 Catálogo
+#### F01 Catálogo (admin)
 
-- **Incluye:** CRUD admin (Filament) y/o lectura pública del catálogo; categorías; productos; variantes; precios por moneda; imágenes.
-- **No incluye:** carrito, stock “reservado” en checkout, ni pricing de cupones (F03/F04/F06).
-- Primera feature natural: sin variantes con precio no hay carrito ni orden.
+- **Incluye:** CRUD admin (Filament); categorías; productos; variantes; precios por moneda; imágenes; gate de panel; invariante de publicación.
+- **No incluye:** storefront Livewire / UI de tienda (eso es **F01-S**); carrito; stock reservado; cupones (F03/F04/F06).
+- Primera feature natural de **datos**: sin variantes con precio no hay carrito ni orden.
+- Specs: `specs/features/01-catalog/` (R11–R13, R17 marcados **Diferido**).
+
+#### F01-S Storefront catálogo
+
+- **Incluye:** listado y detalle públicos (Livewire/UI) cuando exista manual de marca; criterios diferidos R11–R13, R17 de F01.
+- **No incluye:** rehacer el admin ni cambiar el grafo de dominio salvo gaps reales.
+- Puede reutilizar scopes `publishedForStorefront` y/o código Livewire ya presente en el repo (adelanto no-DoD de F01).
 
 #### F02 Cuentas y direcciones
 
@@ -98,12 +106,13 @@ Sincronizar la columna **Estado** con el bloque `> Estado:` de cada `requirement
 
 ## Orden de corrección / implementación
 
-1. F01 → F02 (pueden solaparse en branches si no compiten por los mismos archivos de dominio críticos).
-2. F03 solo con F01 estable.
-3. F04 con F01+F02+F03.
-4. F05 sobre F04.
-5. F06 cuando el punto de aplicación (carrito vs orden) esté decidido.
-6. F07/F08 cuando el catálogo (y, si aplica, la compra) estén listos.
+1. F01 (admin) → F02 (pueden solaparse en branches si no compiten por archivos críticos).
+2. F01-S (storefront UI) cuando haya manual de marca; **no** bloquea F03 si el admin ya carga catálogo.
+3. F03 solo con F01 admin estable (datos publicables en dominio).
+4. F04 con F01+F02+F03.
+5. F05 sobre F04.
+6. F06 cuando el punto de aplicación (carrito vs orden) esté decidido.
+7. F07/F08 cuando el catálogo (y, si aplica, la compra) estén listos.
 
 ## Cuando una feature toca el esquema
 

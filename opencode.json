@@ -5,9 +5,10 @@
             "type": "local",
             "enabled": true,
             "command": [
-                "vendor/bin/sail",
-                "artisan",
-                "boost:mcp"
+                "wsl",
+                "bash",
+                "-c",
+                "cd /home/noro/proyectos/ecommerce && exec vendor/bin/sail artisan boost:mcp"
             ]
         }
     }

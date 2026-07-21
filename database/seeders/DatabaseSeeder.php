@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Models\User;
@@ -12,10 +14,16 @@ class DatabaseSeeder extends Seeder
 
     /**
      * Seed the application's database.
+     *
+     * Admin access: set ADMIN_EMAILS to include the email below (see .env.example).
+     * Public images: run `php artisan storage:link` once per environment.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@example.com',
+        ]);
 
         User::factory()->create([
             'name' => 'Test User',
