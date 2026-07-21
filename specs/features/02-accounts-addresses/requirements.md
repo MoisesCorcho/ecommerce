@@ -1,6 +1,6 @@
 # F02 — Cuentas y direcciones (admin Filament)
 
-> **Estado:** Lista para implementar  
+> **Estado:** Completa  
 > **ID:** F02 · **Slug:** `02-accounts-addresses`  
 > **Prerequisitos:** Fundación de dominio (models, migrations, factories) — ver [`01-product-and-roadmap.md`](../../_global/01-product-and-roadmap.md)  
 > **Dependencia blanda:** F01 (gate de panel `admin_emails` reutilizable; no bloquea si el panel ya existe)
