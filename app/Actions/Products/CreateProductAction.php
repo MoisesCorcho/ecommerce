@@ -98,7 +98,7 @@ class CreateProductAction
                 'product_id' => $product->id,
                 'product_variant_id' => $imageDto->productVariantId,
                 'path' => $imageDto->path,
-                'sort_order' => $imageDto->sortOrder !== 0 ? $imageDto->sortOrder : $index,
+                'sort_order' => $index,
                 'is_primary' => $isPrimary,
             ]);
         }

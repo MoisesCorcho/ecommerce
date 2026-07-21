@@ -71,14 +71,17 @@ class EditProduct extends EditRecord
             ];
         })->values()->all();
 
-        $data['images'] = $product->images->map(static function ($image): array {
-            return [
-                'id' => $image->id,
-                'path' => $image->path,
-                'sort_order' => $image->sort_order,
-                'is_primary' => $image->is_primary,
-            ];
-        })->values()->all();
+        $data['images'] = $product->images
+            ->sortBy('sort_order')
+            ->values()
+            ->map(static function ($image): array {
+                return [
+                    'id' => $image->id,
+                    'path' => $image->path,
+                    'is_primary' => $image->is_primary,
+                ];
+            })
+            ->all();
 
         return $data;
     }

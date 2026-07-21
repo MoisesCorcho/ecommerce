@@ -15,7 +15,6 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -48,7 +47,7 @@ class CategoryResource extends Resource
         return $schema
             ->components([
                 Section::make('Datos de la categoría')
-                    ->description('Organiza el catálogo en una jerarquía opcional. El slug se usa en URLs y listados.')
+                    ->description('Organiza el catálogo en una jerarquía opcional. El slug se usa en URLs y listados. El orden se define arrastrando filas en el listado.')
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -61,36 +60,23 @@ class CategoryResource extends Resource
                                     ),
                                 ),
                             ]),
-                        Grid::make(2)
-                            ->schema([
-                                Select::make('parent_id')
-                                    ->label('Categoría padre')
-                                    ->relationship(
-                                        name: 'parent',
-                                        titleAttribute: 'name',
-                                        modifyQueryUsing: function (Builder $query, ?Category $record): Builder {
-                                            if ($record?->exists) {
-                                                $query->whereKeyNot($record->getKey());
-                                            }
+                        Select::make('parent_id')
+                            ->label('Categoría padre')
+                            ->relationship(
+                                name: 'parent',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: function (Builder $query, ?Category $record): Builder {
+                                    if ($record?->exists) {
+                                        $query->whereKeyNot($record->getKey());
+                                    }
 
-                                            return $query->orderBy('name');
-                                        },
-                                    )
-                                    ->searchable()
-                                    ->preload()
-                                    ->nullable()
-                                    ->helperText('Opcional. Deja vacío para una categoría de nivel raíz.')
-                                    ->columnSpan(1),
-                                TextInput::make('sort_order')
-                                    ->label('Orden de listado')
-                                    ->helperText('Menor número = aparece antes en listados y selects.')
-                                    ->numeric()
-                                    ->integer()
-                                    ->minValue(0)
-                                    ->default(0)
-                                    ->required()
-                                    ->columnSpan(1),
-                            ]),
+                                    return $query->orderBy('name');
+                                },
+                            )
+                            ->searchable()
+                            ->preload()
+                            ->nullable()
+                            ->helperText('Opcional. Deja vacío para una categoría de nivel raíz.'),
                     ])
                     ->columnSpanFull(),
             ]);
@@ -122,7 +108,8 @@ class CategoryResource extends Resource
                     ->label('Orden')
                     ->numeric()
                     ->sortable()
-                    ->alignEnd(),
+                    ->alignEnd()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label('Creada')
                     ->dateTime('d/m/Y H:i')
@@ -135,6 +122,7 @@ class CategoryResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('sort_order')
+            ->reorderable('sort_order')
             ->filters([
                 SelectFilter::make('parent_id')
                     ->label('Categoría padre')

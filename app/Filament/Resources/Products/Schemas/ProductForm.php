@@ -254,7 +254,7 @@ final class ProductForm
     {
         return [
             Section::make('Galería del producto')
-                ->description('Imágenes en disco público (`products/`). Solo una puede ser primaria.')
+                ->description('Imágenes en disco público (`products/`). Arrastrá para reordenar. Solo una puede ser primaria.')
                 ->schema([
                     Repeater::make('images')
                         ->label('Imágenes')
@@ -272,26 +272,18 @@ final class ProductForm
                                 ->helperText('JPG, PNG o WebP. Máximo 5 MB.')
                                 ->required()
                                 ->columnSpanFull(),
-                            Grid::make(2)
-                                ->schema([
-                                    TextInput::make('sort_order')
-                                        ->label('Orden')
-                                        ->helperText('Menor número = primero en la galería.')
-                                        ->numeric()
-                                        ->integer()
-                                        ->default(0)
-                                        ->minValue(0),
-                                    ExclusiveToggleInRepeater::make(
-                                        name: 'is_primary',
-                                        label: 'Imagen primaria',
-                                        helperText: 'Solo una por producto: al activarla se desmarcan las demás.',
-                                        repeaterField: 'images',
-                                    ),
-                                ]),
+                            ExclusiveToggleInRepeater::make(
+                                name: 'is_primary',
+                                label: 'Imagen primaria',
+                                helperText: 'Solo una por producto: al activarla se desmarcan las demás.',
+                                repeaterField: 'images',
+                            ),
                         ])
                         ->defaultItems(0)
                         ->collapsible()
                         ->cloneable(false)
+                        ->reorderable()
+                        ->reorderableWithButtons()
                         ->addActionLabel('Añadir imagen')
                         ->itemLabel(function (array $state): ?string {
                             if (($state['is_primary'] ?? false) === true) {

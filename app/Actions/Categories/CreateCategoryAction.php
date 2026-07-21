@@ -24,11 +24,15 @@ class CreateCategoryAction
 
         $slug = $this->resolveSlug($data['slug'] ?? null, $name);
 
+        $sortOrder = array_key_exists('sort_order', $data) && $data['sort_order'] !== null
+            ? (int) $data['sort_order']
+            : ((int) Category::query()->max('sort_order')) + 1;
+
         return Category::query()->create([
             'name' => $name,
             'slug' => $slug,
             'parent_id' => $data['parent_id'] ?? null,
-            'sort_order' => (int) ($data['sort_order'] ?? 0),
+            'sort_order' => $sortOrder,
         ]);
     }
 

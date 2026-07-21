@@ -211,6 +211,52 @@ class ProductAdminTest extends TestCase
         $this->assertSame(1, $product->images->where('is_primary', true)->count());
     }
 
+    public function test_image_sort_order_follows_array_position(): void
+    {
+        $product = app(CreateProductAction::class)(UpsertProductDTO::fromArray([
+            'name' => 'Ordered Images',
+            'is_active' => false,
+            'is_preorder' => false,
+            'variants' => [],
+            'images' => [
+                ['path' => 'products/first.jpg', 'is_primary' => true],
+                ['path' => 'products/second.jpg', 'is_primary' => false],
+                ['path' => 'products/third.jpg', 'is_primary' => false],
+            ],
+        ]));
+
+        $pathsByOrder = $product->images()->orderBy('sort_order')->pluck('path')->all();
+
+        $this->assertSame([
+            'products/first.jpg',
+            'products/second.jpg',
+            'products/third.jpg',
+        ], $pathsByOrder);
+
+        $updated = app(UpdateProductAction::class)($product, UpsertProductDTO::fromArray([
+            'name' => 'Ordered Images',
+            'is_active' => false,
+            'is_preorder' => false,
+            'variants' => [],
+            'images' => [
+                ['path' => 'products/third.jpg', 'is_primary' => false],
+                ['path' => 'products/first.jpg', 'is_primary' => true],
+                ['path' => 'products/second.jpg', 'is_primary' => false],
+            ],
+        ]));
+
+        $reordered = $updated->images()->orderBy('sort_order')->pluck('path')->all();
+
+        $this->assertSame([
+            'products/third.jpg',
+            'products/first.jpg',
+            'products/second.jpg',
+        ], $reordered);
+        $this->assertSame(0, $updated->images()->where('path', 'products/third.jpg')->value('sort_order'));
+        $this->assertSame(1, $updated->images()->where('path', 'products/first.jpg')->value('sort_order'));
+        $this->assertSame(2, $updated->images()->where('path', 'products/second.jpg')->value('sort_order'));
+    }
+
     public function test_non_integer_price_is_rejected(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -328,12 +374,10 @@ class ProductAdminTest extends TestCase
                 'images' => [
                     [
                         'path' => 'products/a.jpg',
-                        'sort_order' => 0,
                         'is_primary' => true,
                     ],
                     [
                         'path' => 'products/b.jpg',
-                        'sort_order' => 1,
                         'is_primary' => false,
                     ],
                 ],

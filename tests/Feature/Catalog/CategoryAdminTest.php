@@ -44,7 +44,6 @@ class CategoryAdminTest extends TestCase
             ->fillForm([
                 'name' => 'Bolsos',
                 'slug' => null,
-                'sort_order' => 1,
             ])
             ->call('create')
             ->assertHasNoFormErrors()
@@ -58,6 +57,52 @@ class CategoryAdminTest extends TestCase
 
         Livewire::test(ListCategories::class)
             ->assertCanSeeTableRecords(Category::query()->where('slug', 'bolsos')->get());
+    }
+
+    public function test_admin_can_reorder_categories_via_table(): void
+    {
+        $this->actingAsAdmin();
+
+        $first = Category::factory()->create([
+            'name' => 'Primera',
+            'slug' => 'primera',
+            'sort_order' => 0,
+        ]);
+        $second = Category::factory()->create([
+            'name' => 'Segunda',
+            'slug' => 'segunda',
+            'sort_order' => 1,
+        ]);
+        $third = Category::factory()->create([
+            'name' => 'Tercera',
+            'slug' => 'tercera',
+            'sort_order' => 2,
+        ]);
+
+        Livewire::test(ListCategories::class)
+            ->call('reorderTable', [
+                (string) $third->getKey(),
+                (string) $first->getKey(),
+                (string) $second->getKey(),
+            ]);
+
+        // Filament writes 1-based positions when reordering.
+        $this->assertSame(1, $third->fresh()->sort_order);
+        $this->assertSame(2, $first->fresh()->sort_order);
+        $this->assertSame(3, $second->fresh()->sort_order);
+    }
+
+    public function test_create_category_appends_sort_order_when_omitted(): void
+    {
+        Category::factory()->create(['sort_order' => 5]);
+        Category::factory()->create(['sort_order' => 10]);
+
+        $category = app(CreateCategoryAction::class)([
+            'name' => 'Al final',
+            'slug' => null,
+        ]);
+
+        $this->assertSame(11, $category->sort_order);
     }
 
     public function test_category_name_is_required(): void
@@ -79,7 +124,6 @@ class CategoryAdminTest extends TestCase
         Livewire::test(CreateCategory::class)
             ->fillForm([
                 'name' => 'Bolsos de mano',
-                'sort_order' => 0,
             ])
             ->assertFormSet([
                 'slug' => 'bolsos-de-mano',
