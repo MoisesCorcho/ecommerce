@@ -62,36 +62,43 @@ class AddressesRelationManager extends RelationManager
                                     ->columnSpan(1),
                                 TextInput::make('full_name')
                                     ->label('Nombre completo')
+                                    ->placeholder('Ana Pérez')
                                     ->required()
                                     ->maxLength(255)
                                     ->columnSpan(1),
                                 TextInput::make('phone')
                                     ->label('Teléfono')
                                     ->tel()
+                                    ->placeholder('+57 300 123 4567')
                                     ->required()
                                     ->maxLength(32)
                                     ->columnSpan(1),
                                 TextInput::make('address_line_1')
                                     ->label('Línea 1')
+                                    ->placeholder('Calle 10 #20-30')
                                     ->required()
                                     ->maxLength(255)
                                     ->columnSpanFull(),
                                 TextInput::make('address_line_2')
                                     ->label('Línea 2')
+                                    ->placeholder('Apto 401, Torre B')
                                     ->maxLength(255)
                                     ->columnSpanFull(),
                                 TextInput::make('city')
                                     ->label('Ciudad')
+                                    ->placeholder('Medellín')
                                     ->required()
                                     ->maxLength(120)
                                     ->columnSpan(1),
                                 TextInput::make('state')
                                     ->label('Estado / departamento')
+                                    ->placeholder('Antioquia')
                                     ->required()
                                     ->maxLength(120)
                                     ->columnSpan(1),
                                 TextInput::make('country')
                                     ->label('País (ISO)')
+                                    ->placeholder('CO')
                                     ->required()
                                     ->length(2)
                                     ->default('CO')
@@ -100,6 +107,7 @@ class AddressesRelationManager extends RelationManager
                                     ->columnSpan(1),
                                 TextInput::make('postal_code')
                                     ->label('Código postal')
+                                    ->placeholder('050001')
                                     ->maxLength(32)
                                     ->columnSpan(1),
                             ]),

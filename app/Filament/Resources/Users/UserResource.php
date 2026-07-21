@@ -64,6 +64,7 @@ class UserResource extends Resource
                                 TextInput::make('phone')
                                     ->label('Teléfono')
                                     ->tel()
+                                    ->placeholder('+57 300 123 4567')
                                     ->maxLength(32)
                                     ->helperText('Opcional. Formato libre (recomendado E.164).')
                                     ->columnSpan(1),
