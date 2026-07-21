@@ -30,53 +30,62 @@ class UserResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Cuentas';
-
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $modelLabel = 'usuario';
-
-    protected static ?string $pluralModelLabel = 'usuarios';
-
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getNavigationGroup(): string|UnitEnum|null
+    {
+        return __('navigation.groups.accounts');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('users.model.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('users.model.plural');
+    }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Datos de la cuenta')
-                    ->description('Información de acceso y contacto del comprador o administrador.')
+                Section::make(__('users.section.account_details'))
+                    ->description(__('users.section.account_details_description'))
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('name')
-                                    ->label('Nombre')
+                                    ->label(__('users.fields.name'))
                                     ->required()
                                     ->maxLength(255)
                                     ->columnSpan(1),
                                 TextInput::make('email')
-                                    ->label('Email')
+                                    ->label(__('users.fields.email'))
                                     ->email()
                                     ->required()
                                     ->maxLength(255)
                                     ->unique(ignoreRecord: true)
                                     ->columnSpan(1),
                                 TextInput::make('phone')
-                                    ->label('Teléfono')
+                                    ->label(__('users.fields.phone'))
                                     ->tel()
-                                    ->placeholder('+57 300 123 4567')
+                                    ->placeholder(__('users.placeholders.phone'))
                                     ->maxLength(32)
-                                    ->helperText('Opcional. Formato libre (recomendado E.164).')
+                                    ->helperText(__('users.helpers.phone_optional'))
                                     ->columnSpan(1),
                                 TextInput::make('password')
-                                    ->label('Contraseña')
+                                    ->label(__('users.fields.password'))
                                     ->password()
                                     ->revealable()
                                     ->required(fn (string $operation): bool => $operation === 'create')
                                     ->dehydrated(fn (?string $state): bool => filled($state))
                                     ->maxLength(255)
                                     ->helperText(fn (string $operation): ?string => $operation === 'edit'
-                                        ? 'Dejá vacío para mantener la contraseña actual.'
+                                        ? __('users.helpers.password_keep')
                                         : null)
                                     ->columnSpan(1),
                             ]),
@@ -91,31 +100,31 @@ class UserResource extends Resource
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nombre')
+                    ->label(__('users.fields.name'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('email')
-                    ->label('Email')
+                    ->label(__('users.fields.email'))
                     ->searchable()
                     ->sortable()
                     ->copyable(),
                 TextColumn::make('phone')
-                    ->label('Teléfono')
-                    ->placeholder('—')
+                    ->label(__('users.fields.phone'))
+                    ->placeholder(__('users.placeholders.empty'))
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('addresses_count')
                     ->counts('addresses')
-                    ->label('Direcciones')
+                    ->label(__('users.fields.addresses_count'))
                     ->alignEnd()
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->label('Creado')
+                    ->label(__('users.fields.created_at'))
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label('Actualizado')
+                    ->label(__('users.fields.updated_at'))
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -124,24 +133,24 @@ class UserResource extends Resource
             ->filters([])
             ->recordActions([
                 EditAction::make()
-                    ->label('Editar'),
+                    ->label(__('users.actions.edit')),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->label('Eliminar seleccionados')
+                        ->label(__('users.actions.delete_selected'))
                         ->requiresConfirmation()
-                        ->modalHeading('Eliminar usuarios')
-                        ->modalDescription('Los usuarios se eliminarán de forma lógica (soft delete) y dejarán de verse en el listado.')
-                        ->modalSubmitActionLabel('Sí, eliminar'),
+                        ->modalHeading(__('users.modals.delete_bulk_heading'))
+                        ->modalDescription(__('users.modals.delete_bulk_description'))
+                        ->modalSubmitActionLabel(__('users.actions.confirm_delete')),
                 ]),
             ])
             ->emptyStateIcon(Heroicon::OutlinedUsers)
-            ->emptyStateHeading('No hay usuarios todavía')
-            ->emptyStateDescription('Creá la primera cuenta de comprador o administrador.')
+            ->emptyStateHeading(__('users.empty.heading'))
+            ->emptyStateDescription(__('users.empty.description'))
             ->emptyStateActions([
                 CreateAction::make()
-                    ->label('Nuevo usuario')
+                    ->label(__('users.actions.create'))
                     ->icon(Heroicon::Plus),
             ])
             ->striped()

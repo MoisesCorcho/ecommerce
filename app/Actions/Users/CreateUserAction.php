@@ -34,17 +34,17 @@ class CreateUserAction
         $errors = [];
 
         if ($dto->name === '') {
-            $errors['name'] = 'El nombre es obligatorio.';
+            $errors['name'] = __('users.validation.name_required');
         }
 
         if ($dto->email === '') {
-            $errors['email'] = 'El email es obligatorio.';
+            $errors['email'] = __('users.validation.email_required');
         } elseif (! filter_var($dto->email, FILTER_VALIDATE_EMAIL)) {
-            $errors['email'] = 'El email no es válido.';
+            $errors['email'] = __('users.validation.email_invalid');
         }
 
         if ($dto->password === null || $dto->password === '') {
-            $errors['password'] = 'La contraseña es obligatoria al crear un usuario.';
+            $errors['password'] = __('users.validation.password_required_on_create');
         }
 
         if ($errors !== []) {
@@ -63,7 +63,7 @@ class CreateUserAction
 
         if ($exists) {
             throw ValidationException::withMessages([
-                'email' => 'El email ya está en uso por otro usuario.',
+                'email' => __('users.validation.email_unique'),
             ]);
         }
     }

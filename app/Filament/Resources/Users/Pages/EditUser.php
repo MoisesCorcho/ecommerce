@@ -19,18 +19,18 @@ class EditUser extends EditRecord
 
     protected function getSavedNotificationTitle(): ?string
     {
-        return 'Usuario actualizado';
+        return __('users.notifications.updated');
     }
 
     protected function getHeaderActions(): array
     {
         return [
             DeleteAction::make()
-                ->label('Eliminar')
+                ->label(__('users.actions.delete'))
                 ->requiresConfirmation()
-                ->modalHeading('Eliminar usuario')
-                ->modalDescription('El usuario se eliminará de forma lógica (soft delete) y dejará de verse en el listado.')
-                ->modalSubmitActionLabel('Sí, eliminar')
+                ->modalHeading(__('users.modals.delete_heading'))
+                ->modalDescription(__('users.modals.delete_description'))
+                ->modalSubmitActionLabel(__('users.actions.confirm_delete'))
                 ->using(function (User $record): void {
                     app(DeleteUserAction::class)($record);
                 }),
