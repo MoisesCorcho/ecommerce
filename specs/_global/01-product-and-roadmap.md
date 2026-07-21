@@ -51,7 +51,7 @@ Rutas de specs se crean al iniciar cada feature (`specs/features/<slug>/`).
 |----|---------|------|--------|---------------|
 | F01 | Catálogo **admin** (Filament: categorías, productos, variantes, precios, imágenes) | 0 · Fundación comercio | Completa | Fundación de dominio |
 | F01-S | Storefront catálogo (UI pública; manual de marca) | 0 · Fundación comercio | No iniciada (diferido) | F01; manual de marca |
-| F02 | Cuentas y direcciones | 0 · Fundación comercio | No iniciada | Fundación de dominio |
+| F02 | Cuentas y direcciones (**admin** Filament: users + addresses; sin Livewire storefront) | 0 · Fundación comercio | Completa | Fundación de dominio |
 | F03 | Carrito | 1 · Compra | No iniciada | F01 |
 | F04 | Checkout y órdenes | 1 · Compra | No iniciada | F01, F02, F03 |
 | F05 | Pagos (Stripe / Bold + webhooks) | 2 · Cobro | No iniciada | F04 |
@@ -78,8 +78,9 @@ Sincronizar la columna **Estado** con el bloque `> Estado:` de cada `requirement
 
 #### F02 Cuentas y direcciones
 
-- **Incluye:** datos de usuario necesarios para compra (p. ej. teléfono ya en schema), CRUD de `addresses`.
-- **No incluye:** checkout completo ni métodos de pago guardados de terceros (eso es F05 si aplica).
+- **Incluye:** CRUD **admin Filament** de usuarios (name, email, phone, password) y de `addresses` (RelationManager / ownership por user); invariante de una dirección `is_default` por usuario; Actions/DTOs; reutiliza gate `admin_emails`.
+- **No incluye:** Livewire storefront (login/registro/perfil/libreta del comprador); checkout completo; métodos de pago guardados de terceros (F05 si aplica).
+- Specs: `specs/features/02-accounts-addresses/`.
 
 #### F03 Carrito
 
