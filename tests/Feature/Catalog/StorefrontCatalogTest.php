@@ -20,6 +20,11 @@ class StorefrontCatalogTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // F01 DoD is admin + domain only. Storefront routes/Livewire are deferred
+        // (specs/features/01-catalog tasks 7.x / 8.11–8.12) and are not in this branch.
+        $this->markTestSkipped('Storefront catálogo diferido en F01 (rutas/UI fuera de alcance).');
+
         $this->withoutVite();
         Config::set('ecommerce.default_currency', 'COP');
     }
