@@ -99,35 +99,46 @@
                         <span class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa">
                             {{ __('storefront.shop.sort_label') }}
                         </span>
-                        <select
-                            wire:model.live="sort"
-                            class="cursor-pointer border-none bg-transparent p-0 pr-8 text-body-md text-intense-cocoa focus:ring-0"
-                        >
-                            <option value="newest">{{ __('storefront.shop.sort_newest') }}</option>
-                            <option value="price_asc">{{ __('storefront.shop.sort_price_asc') }}</option>
-                            <option value="price_desc">{{ __('storefront.shop.sort_price_desc') }}</option>
-                        </select>
+                        <div class="relative">
+                            <select
+                                wire:model.live="sort"
+                                class="cursor-pointer appearance-none border border-intense-cocoa/20 rounded-sm bg-transparent px-3 py-2 pr-10 text-body-md text-intense-cocoa focus:ring-0 focus:border-intense-cocoa"
+                            >
+                                <option value="newest">{{ __('storefront.shop.sort_newest') }}</option>
+                                <option value="price_asc">{{ __('storefront.shop.sort_price_asc') }}</option>
+                                <option value="price_desc">{{ __('storefront.shop.sort_price_desc') }}</option>
+                            </select>
+                            <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-intense-cocoa/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </div>
                     </div>
                 </div>
 
                 {{-- Sort on mobile --}}
                 <div class="mb-6 flex items-center justify-end lg:hidden">
-                    <select
-                        wire:model.live="sort"
-                        class="cursor-pointer border-none bg-transparent p-0 pr-8 text-body-md text-intense-cocoa focus:ring-0"
-                    >
-                        <option value="newest">{{ __('storefront.shop.sort_newest') }}</option>
-                        <option value="price_asc">{{ __('storefront.shop.sort_price_asc') }}</option>
-                        <option value="price_desc">{{ __('storefront.shop.sort_price_desc') }}</option>
-                    </select>
+                    <div class="relative">
+                        <select
+                            wire:model.live="sort"
+                            class="cursor-pointer appearance-none border border-intense-cocoa/20 rounded-sm bg-transparent px-3 py-2 pr-10 text-body-md text-intense-cocoa focus:ring-0 focus:border-intense-cocoa"
+                        >
+                            <option value="newest">{{ __('storefront.shop.sort_newest') }}</option>
+                            <option value="price_asc">{{ __('storefront.shop.sort_price_asc') }}</option>
+                            <option value="price_desc">{{ __('storefront.shop.sort_price_desc') }}</option>
+                        </select>
+                        <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-intense-cocoa/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </div>
                 </div>
 
                 {{-- Products --}}
                 @if ($products->isEmpty())
                     {{-- Empty state --}}
                     <div class="flex flex-col items-center justify-center py-24 text-center">
-                        <svg class="mb-6 h-16 w-16 text-intense-cocoa/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                        <svg class="mb-6 h-20 w-20 text-intense-cocoa/10" fill="none" viewBox="0 0 64 64" stroke="currentColor" stroke-width="1">
+                            <path d="M16 24h32l-4 28H20L16 24z" />
+                            <path d="M22 24V16a10 10 0 0 1 20 0v8" />
                         </svg>
                         <h2 class="mb-2 font-chillax text-headline-sm text-intense-cocoa">
                             {{ __('storefront.shop.empty_title') }}
