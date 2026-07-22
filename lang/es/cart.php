@@ -9,7 +9,7 @@ return [
         'quantity_max' => 'La cantidad no puede superar :max unidades por línea.',
         'quantity_invalid' => 'La cantidad debe ser cero (para quitar) o un entero positivo.',
         'currency_blocked' => 'No se puede cambiar la moneda: una o más líneas no tienen precio en :currency.',
-        'access_denied' => 'No tenés permiso para modificar este carrito.',
+        'access_denied' => 'No tiene permiso para modificar este carrito.',
         'item_not_found' => 'No se encontró la línea del carrito.',
         'variant_not_found' => 'No se encontró la variante de producto.',
     ],

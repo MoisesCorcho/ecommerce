@@ -20,6 +20,9 @@
                     <a href="{{ route('cart.page') }}" class="text-stone-600 hover:text-stone-900" data-nav-cart>
                         Carrito
                     </a>
+                    <a href="{{ route('checkout.show') }}" class="text-stone-600 hover:text-stone-900" data-nav-checkout>
+                        Checkout
+                    </a>
                 </nav>
             </div>
         </header>

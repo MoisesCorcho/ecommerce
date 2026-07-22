@@ -6,5 +6,6 @@ return [
     'groups' => [
         'accounts' => 'Accounts',
         'catalog' => 'Catalog',
+        'orders' => 'Orders',
     ],
 ];
