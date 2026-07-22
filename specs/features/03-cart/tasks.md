@@ -7,57 +7,57 @@
 **Alcance DoD:** dominio Cart (Actions/DTOs/excepciones/pricing) + entrypoint HTTP/Livewire mínimo + tests.  
 **Fuera de DoD:** Filament de carritos; storefront de marca; checkout; cupones; reserva de stock.
 
-**Estado de implementación:** no iniciado (specs listas; código pendiente de autorización explícita).
+**Estado de implementación:** completa (dominio + entrypoint HTTP mínimo + tests verdes).
 
 ---
 
 ## 1. Fundación de mensajes y errores
 
-- [ ] 1.1 `lang/en/cart.php` + `lang/es/cart.php` con keys de errores/labels de carrito. _(cubre R11, R12, R13, R14, R15)_
-- [ ] 1.2 Excepciones de dominio en `app/Exceptions/Cart/` (elegibilidad, stock, qty, moneda, acceso). _(cubre R11–R16)_
+- [x] 1.1 `lang/en/cart.php` + `lang/es/cart.php` con keys de errores/labels de carrito. _(cubre R11, R12, R13, R14, R15)_
+- [x] 1.2 Excepciones de dominio en `app/Exceptions/Cart/` (elegibilidad, stock, qty, moneda, acceso). _(cubre R11–R16)_
 
 ## 2. Dominio — resolución y mutaciones
 
-- [ ] 2.1 DTOs en `app/DTOs/Cart/` (`ResolveCart`, `AddCartItem`, `UpdateCartItemQuantity`, `ChangeCartCurrency` según design). _(cubre R1–R5, R9)_
-- [ ] 2.2 `GetOrCreateCartAction` (guest por session_id, user por user_id, default COP). _(cubre R1, R2)_
-- [ ] 2.3 `AddCartItemAction` (elegibilidad, stock, max 99, upsert sumando). _(cubre R3, R11, R12, R13, R15, R17)_
-- [ ] 2.4 `UpdateCartItemQuantityAction` (1..N update; 0 remove). _(cubre R4, R5, R12, R13, R15)_
-- [ ] 2.5 `RemoveCartItemAction` + `ClearCartAction` (conservar cabecera cart). _(cubre R6)_
-- [ ] 2.6 Ownership / acceso en mutaciones (session o user dueño). _(cubre R16)_
+- [x] 2.1 DTOs en `app/DTOs/Cart/` (`ResolveCart`, `AddCartItem`, `UpdateCartItemQuantity`, `ChangeCartCurrency` según design). _(cubre R1–R5, R9)_
+- [x] 2.2 `GetOrCreateCartAction` (guest por session_id, user por user_id, default COP). _(cubre R1, R2)_
+- [x] 2.3 `AddCartItemAction` (elegibilidad, stock, max 99, upsert sumando). _(cubre R3, R11, R12, R13, R15, R17)_
+- [x] 2.4 `UpdateCartItemQuantityAction` (1..N update; 0 remove). _(cubre R4, R5, R12, R13, R15)_
+- [x] 2.5 `RemoveCartItemAction` + `ClearCartAction` (conservar cabecera cart). _(cubre R6)_
+- [x] 2.6 Ownership / acceso en mutaciones (session o user dueño). _(cubre R16)_
 
 ## 3. Dominio — precio, moneda, merge
 
-- [ ] 3.1 `CartPricingService` o view Action: unit/line/total enteros en moneda del cart. _(cubre R8, D13)_
-- [ ] 3.2 `ChangeCartCurrencyAction` (todas las líneas con precio o vacío; si no → block). _(cubre R9, R14)_
-- [ ] 3.3 `MergeGuestCartIntoUserCartAction` (suma qty, caps, limpia guest). _(cubre R7)_
-- [ ] 3.4 Hook de merge en login o request autenticada (mínimo testeable). _(cubre R7)_
+- [x] 3.1 `CartPricingService` o view Action: unit/line/total enteros en moneda del cart. _(cubre R8, D13)_
+- [x] 3.2 `ChangeCartCurrencyAction` (todas las líneas con precio o vacío; si no → block). _(cubre R9, R14)_
+- [x] 3.3 `MergeGuestCartIntoUserCartAction` (suma qty, caps, limpia guest). _(cubre R7)_
+- [x] 3.4 Hook de merge en login o request autenticada (mínimo testeable). _(cubre R7)_
 
 ## 4. Entrada mínima
 
-- [ ] 4.1 Elegir Livewire **o** controller+routes (design §5); cablear resolve + mutaciones + lectura. _(cubre R10)_
-- [ ] 4.2 Validación de borde (qty, currency, variant id) antes del Action. _(cubre R10, R15)_
+- [x] 4.1 Elegir Livewire **o** controller+routes (design §5); cablear resolve + mutaciones + lectura. _(cubre R10)_
+- [x] 4.2 Validación de borde (qty, currency, variant id) antes del Action. _(cubre R10, R15)_
 
 ## 5. Tests (PHPUnit)
 
-- [ ] 5.1 Guest get-or-create reutiliza session. _(cubre R1)_
-- [ ] 5.2 User get-or-create un cart activo. _(cubre R2)_
-- [ ] 5.3 Add nueva línea + add misma variante suma. _(cubre R3)_
-- [ ] 5.4 Update qty; qty 0 elimina. _(cubre R4, R5)_
-- [ ] 5.5 Remove línea; clear vacía ítems. _(cubre R6)_
-- [ ] 5.6 Merge guest→user suma y guest deja de ser canónico. _(cubre R7)_
-- [ ] 5.7 Pricing totales enteros en COP y EUR. _(cubre R8)_
-- [ ] 5.8 Cambio moneda OK; bloqueado si falta precio. _(cubre R9, R14)_
-- [ ] 5.9 Variante no elegible rechazada. _(cubre R11)_
-- [ ] 5.10 Stock insuficiente y qty > 99 rechazados. _(cubre R12, R13)_
-- [ ] 5.11 Qty negativa rechazada; stock no decrementa al add. _(cubre R15, R17)_
-- [ ] 5.12 Mutación de carrito ajeno denegada. _(cubre R16)_
-- [ ] 5.13 Happy path entrypoint mínimo (HTTP o Livewire). _(cubre R10)_
+- [x] 5.1 Guest get-or-create reutiliza session. _(cubre R1)_
+- [x] 5.2 User get-or-create un cart activo. _(cubre R2)_
+- [x] 5.3 Add nueva línea + add misma variante suma. _(cubre R3)_
+- [x] 5.4 Update qty; qty 0 elimina. _(cubre R4, R5)_
+- [x] 5.5 Remove línea; clear vacía ítems. _(cubre R6)_
+- [x] 5.6 Merge guest→user suma y guest deja de ser canónico. _(cubre R7)_
+- [x] 5.7 Pricing totales enteros en COP y EUR. _(cubre R8)_
+- [x] 5.8 Cambio moneda OK; bloqueado si falta precio. _(cubre R9, R14)_
+- [x] 5.9 Variante no elegible rechazada. _(cubre R11)_
+- [x] 5.10 Stock insuficiente y qty > 99 rechazados. _(cubre R12, R13)_
+- [x] 5.11 Qty negativa rechazada; stock no decrementa al add. _(cubre R15, R17)_
+- [x] 5.12 Mutación de carrito ajeno denegada. _(cubre R16)_
+- [x] 5.13 Happy path entrypoint mínimo (HTTP o Livewire). _(cubre R10)_
 
 ## 6. Cierre de calidad
 
-- [ ] 6.1 Tests del alcance F03 en verde vía Sail.
-- [ ] 6.2 Pint en PHP tocado (`vendor/bin/sail bin pint --dirty --format agent`).
-- [ ] 6.3 Estado F03 = **Completa** en requirements + roadmap (solo al cerrar implementación).
+- [x] 6.1 Tests del alcance F03 en verde vía Sail.
+- [x] 6.2 Pint en PHP tocado (`vendor/bin/sail bin pint --dirty --format agent`).
+- [x] 6.3 Estado F03 = **Completa** en requirements + roadmap (solo al cerrar implementación).
 
 ---
 
@@ -87,12 +87,12 @@
 
 ## Definition of Done (F03)
 
-- [ ] Criterios **R1–R17** implementados y testeados.
-- [ ] Actions/DTOs (y Service de pricing si aplica) en área **Cart**.
-- [ ] Sin Filament de carritos; sin UI de marca de catálogo como DoD.
-- [ ] Sin reserva de stock; sin snapshot de precio en `cart_items`.
-- [ ] Guest + user + merge sumando; techo `min(stock, 99)`; qty 0 = remove.
-- [ ] Cambio de moneda con bloqueo si falta precio.
-- [ ] Entrypoint mínimo cableado.
-- [ ] PHPUnit del alcance en verde vía Sail; Pint OK.
-- [ ] Specs + roadmap con estado **Completa** (al cerrar).
+- [x] Criterios **R1–R17** implementados y testeados.
+- [x] Actions/DTOs (y Service de pricing si aplica) en área **Cart**.
+- [x] Sin Filament de carritos; sin UI de marca de catálogo como DoD.
+- [x] Sin reserva de stock; sin snapshot de precio en `cart_items`.
+- [x] Guest + user + merge sumando; techo `min(stock, 99)`; qty 0 = remove.
+- [x] Cambio de moneda con bloqueo si falta precio.
+- [x] Entrypoint mínimo cableado.
+- [x] PHPUnit del alcance en verde vía Sail; Pint OK.
+- [x] Specs + roadmap con estado **Completa** (al cerrar).

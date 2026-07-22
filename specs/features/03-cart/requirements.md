@@ -1,6 +1,6 @@
 # F03 — Carrito
 
-> **Estado:** Lista para implementar  
+> **Estado:** Completa  
 > **ID:** F03 · **Slug:** `03-cart`  
 > **Prerequisitos:** F01 catálogo admin (variantes, precios multi-moneda, elegibilidad de venta) — ver [`01-product-and-roadmap.md`](../../_global/01-product-and-roadmap.md)  
 > **No bloquea:** F01-S (storefront de marca); F02 admin de cuentas (el carrito guest no depende de UI de auth comprador)
