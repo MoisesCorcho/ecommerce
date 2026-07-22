@@ -84,7 +84,7 @@ Página institucional que presenta la historia, identidad y propósito de Leen H
 
 - **Premium, artesanal, atemporal.** Sensación de exclusividad y autenticidad.
 - Paleta neutra/tierra (Silk Cream, Soft Sand, Intense Cocoa, Soft Gold).
-- Tipografía serif (Chillax) para títulos, sans-serif (Montserrat) para cuerpo.
+- Tipografía sans-serif (Chillax) para títulos, sans-serif (Montserrat) para cuerpo.
 - Fotografía de alta calidad: lifestyle, taller, materiales, detalles, campañas.
 - Mucho espacio en blanco. El contenido respira.
 - Secciones con ritmo visual (alternar dirección de columnas).
