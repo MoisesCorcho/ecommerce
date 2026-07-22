@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Cart\CartController;
+use App\Http\Controllers\Orders\OrderThankYouController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -10,6 +11,9 @@ Route::get('/', function () {
 Route::livewire('/products', 'catalog-list')->name('products.index');
 Route::livewire('/products/{slug}', 'product-detail')->name('products.show');
 Route::livewire('/cart', 'cart-page')->name('cart.page');
+Route::livewire('/checkout', 'checkout-page')->name('checkout.show');
+
+Route::get('/orders/{order}/thank-you', OrderThankYouController::class)->name('orders.thank-you');
 
 Route::prefix('api/cart')->name('cart.')->group(function (): void {
     Route::get('/', [CartController::class, 'show'])->name('show');

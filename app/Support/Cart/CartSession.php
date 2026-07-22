@@ -35,6 +35,11 @@ final class CartSession
         return $id;
     }
 
+    public static function setId(string $id): void
+    {
+        Session::put(self::KEY, $id);
+    }
+
     public static function forget(): void
     {
         Session::forget(self::KEY);

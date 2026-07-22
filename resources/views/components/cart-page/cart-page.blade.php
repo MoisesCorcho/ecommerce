@@ -115,10 +115,19 @@
                 >
                     Vaciar carrito
                 </button>
-                <p class="text-lg font-semibold tabular-nums" data-cart-total>
-                    Total: {{ number_format($cartView->total, 0, ',', '.') }}
-                    <span class="text-sm font-normal text-stone-500">{{ $cartView->currency->value }}</span>
-                </p>
+                <div class="flex flex-wrap items-center gap-4">
+                    <p class="text-lg font-semibold tabular-nums" data-cart-total>
+                        Total: {{ number_format($cartView->total, 0, ',', '.') }}
+                        <span class="text-sm font-normal text-stone-500">{{ $cartView->currency->value }}</span>
+                    </p>
+                    <a
+                        href="{{ route('checkout.show') }}"
+                        class="rounded-md bg-stone-900 px-4 py-2 text-sm font-semibold text-white hover:bg-stone-800"
+                        data-cart-checkout
+                    >
+                        Checkout
+                    </a>
+                </div>
             </div>
         </div>
     @endif
