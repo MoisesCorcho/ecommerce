@@ -14,6 +14,7 @@ use App\Exceptions\Payments\PaymentGatewayException;
 use App\Models\Order;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class BoldPaymentGateway implements PaymentGatewayInterface
@@ -30,37 +31,66 @@ class BoldPaymentGateway implements PaymentGatewayInterface
             throw PaymentGatewayException::make();
         }
 
+        $payload = [
+            'amount_type' => 'CLOSE',
+            'amount' => [
+                'currency' => $order->currency->value,
+                'total_amount' => (int) $payment->amount,
+                'tip_amount' => 0,
+            ],
+            'reference' => 'pay-'.$payment->id,
+            'description' => 'Order '.$order->order_number,
+        ];
+
+        // Bold rejects localhost / non-public callbacks with 403 Forbidden.
+        // Only send when the return URL is public HTTPS (e.g. production or tunnel).
+        if ($this->isPublicHttpsUrl($returns->successUrl)) {
+            $payload['callback_url'] = $returns->successUrl;
+        }
+
         try {
-            $response = Http::withHeaders([
-                'Authorization' => 'x-api-key '.$apiKey,
-                'Content-Type' => 'application/json',
-            ])->post($base.'/online/link/v1', [
-                'amount_type' => 'CLOSE',
-                'amount' => [
-                    'currency' => $order->currency->value,
-                    'total_amount' => (int) $payment->amount,
-                    'tip_amount' => 0,
-                ],
-                'reference' => 'pay-'.$payment->id,
-                'description' => 'Order '.$order->order_number,
-                'callback_url' => $returns->successUrl,
-            ]);
+            $response = Http::timeout(15)
+                ->connectTimeout(5)
+                ->withHeaders([
+                    'Authorization' => 'x-api-key '.$apiKey,
+                    'Content-Type' => 'application/json',
+                ])
+                ->post($base.'/online/link/v1', $payload);
         } catch (Throwable $e) {
+            Log::warning('Bold createHostedCheckout transport error', [
+                'order_id' => $order->id,
+                'payment_id' => $payment->id,
+                'message' => $e->getMessage(),
+            ]);
+
             throw PaymentGatewayException::make($e);
         }
 
         if (! $response->successful()) {
+            Log::warning('Bold createHostedCheckout rejected', [
+                'order_id' => $order->id,
+                'payment_id' => $payment->id,
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+
             throw PaymentGatewayException::make();
         }
 
         /** @var array<string, mixed> $body */
         $body = $response->json() ?? [];
-        /** @var array<string, mixed> $payload */
-        $payload = $body['payload'] ?? [];
-        $externalId = (string) ($payload['payment_link'] ?? '');
-        $url = (string) ($payload['url'] ?? '');
+        /** @var array<string, mixed> $payloadBody */
+        $payloadBody = $body['payload'] ?? [];
+        $externalId = (string) ($payloadBody['payment_link'] ?? '');
+        $url = (string) ($payloadBody['url'] ?? '');
 
         if ($externalId === '' || $url === '') {
+            Log::warning('Bold createHostedCheckout missing payload fields', [
+                'order_id' => $order->id,
+                'payment_id' => $payment->id,
+                'body' => $body,
+            ]);
+
             throw PaymentGatewayException::make();
         }
 
@@ -133,5 +163,34 @@ class BoldPaymentGateway implements PaymentGatewayInterface
             externalId: $externalId,
             paymentMethod: $paymentMethod,
         );
+    }
+
+    /**
+     * Bold only accepts public HTTPS callback URLs (not localhost / private hosts).
+     */
+    private function isPublicHttpsUrl(string $url): bool
+    {
+        $parts = parse_url($url);
+
+        if (! is_array($parts)) {
+            return false;
+        }
+
+        $scheme = strtolower((string) ($parts['scheme'] ?? ''));
+        $host = strtolower((string) ($parts['host'] ?? ''));
+
+        if ($scheme !== 'https' || $host === '') {
+            return false;
+        }
+
+        if (in_array($host, ['localhost', '127.0.0.1', '::1'], true)) {
+            return false;
+        }
+
+        if (str_ends_with($host, '.local') || str_ends_with($host, '.test') || str_ends_with($host, '.localhost')) {
+            return false;
+        }
+
+        return true;
     }
 }
