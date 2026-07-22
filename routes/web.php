@@ -4,9 +4,7 @@ use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Orders\OrderThankYouController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', fn () => view('home'))->name('home');
 
 Route::livewire('/products', 'catalog-list')->name('products.index');
 Route::livewire('/products/{slug}', 'product-detail')->name('products.show');
