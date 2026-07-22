@@ -7,7 +7,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::prefix('cart')->name('cart.')->group(function (): void {
+Route::livewire('/products', 'catalog-list')->name('products.index');
+Route::livewire('/products/{slug}', 'product-detail')->name('products.show');
+Route::livewire('/cart', 'cart-page')->name('cart.page');
+
+Route::prefix('api/cart')->name('cart.')->group(function (): void {
     Route::get('/', [CartController::class, 'show'])->name('show');
     Route::post('/items', [CartController::class, 'storeItem'])->name('items.store');
     Route::patch('/items/{productVariant}', [CartController::class, 'updateItem'])->name('items.update');
