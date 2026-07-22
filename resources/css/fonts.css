@@ -1,0 +1,81 @@
+/**
+ * Brand font @font-face declarations — self-hosted from /fonts/.
+ * Fonts are deployed to public/fonts/{chillax,montserrat,labelle-aurore}/.
+ * All faces use font-display: swap for optimal text rendering.
+ */
+
+/* ── Chillax (headings/logo) — per-weight 200-700 ── */
+
+@font-face {
+    font-family: 'Chillax';
+    src: url('/fonts/chillax/Chillax-Extralight.woff2') format('woff2'),
+         url('/fonts/chillax/Chillax-Extralight.woff') format('woff');
+    font-weight: 200;
+    font-display: swap;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Chillax';
+    src: url('/fonts/chillax/Chillax-Light.woff2') format('woff2'),
+         url('/fonts/chillax/Chillax-Light.woff') format('woff');
+    font-weight: 300;
+    font-display: swap;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Chillax';
+    src: url('/fonts/chillax/Chillax-Regular.woff2') format('woff2'),
+         url('/fonts/chillax/Chillax-Regular.woff') format('woff');
+    font-weight: 400;
+    font-display: swap;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Chillax';
+    src: url('/fonts/chillax/Chillax-Medium.woff2') format('woff2'),
+         url('/fonts/chillax/Chillax-Medium.woff') format('woff');
+    font-weight: 500;
+    font-display: swap;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Chillax';
+    src: url('/fonts/chillax/Chillax-Semibold.woff2') format('woff2'),
+         url('/fonts/chillax/Chillax-Semibold.woff') format('woff');
+    font-weight: 600;
+    font-display: swap;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Chillax';
+    src: url('/fonts/chillax/Chillax-Bold.woff2') format('woff2'),
+         url('/fonts/chillax/Chillax-Bold.woff') format('woff');
+    font-weight: 700;
+    font-display: swap;
+    font-style: normal;
+}
+
+/* ── Montserrat (body/default sans) — variable font 100-900 ── */
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('/fonts/montserrat/Montserrat-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-display: swap;
+    font-style: normal;
+}
+
+/* ── La Belle Aurore (script accent) — Regular 400 ── */
+
+@font-face {
+    font-family: 'La Belle Aurore';
+    src: url('/fonts/labelle-aurore/LaBelleAurore-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-display: swap;
+    font-style: normal;
+}
