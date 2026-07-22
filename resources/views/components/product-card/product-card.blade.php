@@ -1,4 +1,4 @@
-<article class="group">
+<article class="group transition-shadow duration-300 ease-out hover:shadow-ambient">
     <div class="relative">
         <a href="{{ $detailUrl }}" class="block overflow-hidden">
             <div class="aspect-[4/5] overflow-hidden rounded-none bg-soft-sand">
@@ -24,8 +24,12 @@
             </div>
         </a>
 
-        <div class="absolute top-3 right-3 z-10">
+        {{-- Hover actions group (Heart + Cart) --}}
+        <div class="absolute top-3 right-3 z-10 flex flex-col gap-2 opacity-0 translate-x-2 transition-all duration-200 ease-out group-hover:opacity-100 group-hover:translate-x-0">
             <livewire:favorite-button :product-id="$product->id" wire:key="fb-{{ $product->id }}" />
+            @if (! $isOutOfStock && $variant)
+                <livewire:add-to-cart-button :product-variant-id="$variant->id" wire:key="atcb-hover-{{ $product->id }}" />
+            @endif
         </div>
     </div>
 
@@ -62,8 +66,4 @@
             </div>
         @endif
     </div>
-
-    @if (! $isOutOfStock && $variant)
-        <livewire:add-to-cart-button :product-variant-id="$variant->id" wire:key="atcb-{{ $variant->id }}" />
-    @endif
 </article>

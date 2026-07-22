@@ -133,7 +133,7 @@ class ProductCardTest extends TestCase
 
         Livewire::test('product-card', ['product' => $product, 'currency' => 'COP'])
             ->assertOk()
-            ->assertSeeHtml('class="group"');
+            ->assertSeeHtml('group');
     }
 
     /**
