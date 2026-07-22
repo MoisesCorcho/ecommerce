@@ -21,4 +21,10 @@ return [
         'tiktok' => 'TikTok',
         'copyright' => '© :year Leen Handbags. Todos los derechos reservados.',
     ],
+
+    'add_to_cart' => 'Agregar al carrito',
+    'adding_to_cart' => 'Agregando...',
+    'added_to_cart' => 'Agregado al carrito',
+    'view_cart' => 'Ver carrito',
+    'no_image' => 'Sin imagen',
 ];
