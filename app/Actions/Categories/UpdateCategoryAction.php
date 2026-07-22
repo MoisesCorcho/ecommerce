@@ -19,7 +19,7 @@ class UpdateCategoryAction
             $name = trim((string) $data['name']);
             if ($name === '') {
                 throw ValidationException::withMessages([
-                    'name' => 'El nombre de la categoría es obligatorio.',
+                    'name' => __('categories.validation.name_required'),
                 ]);
             }
             $category->name = $name;
@@ -42,7 +42,7 @@ class UpdateCategoryAction
 
             if ($exists) {
                 throw ValidationException::withMessages([
-                    'slug' => 'El slug ya está en uso por otra categoría.',
+                    'slug' => __('categories.validation.slug_unique'),
                 ]);
             }
 

@@ -32,22 +32,31 @@ class CategoryResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Catálogo';
-
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $modelLabel = 'categoría';
-
-    protected static ?string $pluralModelLabel = 'categorías';
-
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getNavigationGroup(): string|UnitEnum|null
+    {
+        return __('navigation.groups.catalog');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('categories.model.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('categories.model.plural');
+    }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Datos de la categoría')
-                    ->description('Organiza el catálogo en una jerarquía opcional. El slug se usa en URLs y listados. El orden se define arrastrando filas en el listado.')
+                Section::make(__('categories.section.details'))
+                    ->description(__('categories.section.details_description'))
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -55,13 +64,13 @@ class CategoryResource extends Resource
                                     static fn ($field) => $field->columnSpan(1),
                                     NameSlugInputs::make(
                                         modelClass: Category::class,
-                                        namePlaceholder: 'Ej. Bolsos de mano',
-                                        slugPlaceholder: 'bolsos-de-mano',
+                                        namePlaceholder: __('categories.placeholders.name'),
+                                        slugPlaceholder: __('categories.placeholders.slug'),
                                     ),
                                 ),
                             ]),
                         Select::make('parent_id')
-                            ->label('Categoría padre')
+                            ->label(__('categories.fields.parent_category'))
                             ->relationship(
                                 name: 'parent',
                                 titleAttribute: 'name',
@@ -76,7 +85,7 @@ class CategoryResource extends Resource
                             ->searchable()
                             ->preload()
                             ->nullable()
-                            ->helperText('Opcional. Deja vacío para una categoría de nivel raíz.'),
+                            ->helperText(__('categories.helpers.parent_optional')),
                     ])
                     ->columnSpanFull(),
             ]);
@@ -88,35 +97,35 @@ class CategoryResource extends Resource
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nombre')
+                    ->label(__('categories.fields.name'))
                     ->searchable()
                     ->sortable()
                     ->description(fn (Category $record): ?string => $record->slug),
                 TextColumn::make('parent.name')
-                    ->label('Padre')
-                    ->placeholder('Raíz')
+                    ->label(__('categories.fields.parent'))
+                    ->placeholder(__('categories.placeholders.root'))
                     ->badge()
                     ->color('gray')
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('products_count')
                     ->counts('products')
-                    ->label('Productos')
+                    ->label(__('categories.fields.products_count'))
                     ->sortable()
                     ->alignEnd(),
                 TextColumn::make('sort_order')
-                    ->label('Orden')
+                    ->label(__('categories.fields.sort_order'))
                     ->numeric()
                     ->sortable()
                     ->alignEnd()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
-                    ->label('Creada')
+                    ->label(__('categories.fields.created_at'))
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label('Actualizada')
+                    ->label(__('categories.fields.updated_at'))
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -125,31 +134,31 @@ class CategoryResource extends Resource
             ->reorderable('sort_order')
             ->filters([
                 SelectFilter::make('parent_id')
-                    ->label('Categoría padre')
+                    ->label(__('categories.fields.parent_category'))
                     ->relationship('parent', 'name')
                     ->searchable()
                     ->preload(),
             ])
             ->recordActions([
                 EditAction::make()
-                    ->label('Editar'),
+                    ->label(__('categories.actions.edit')),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->label('Eliminar seleccionadas')
+                        ->label(__('categories.actions.delete_selected'))
                         ->requiresConfirmation()
-                        ->modalHeading('Eliminar categorías')
-                        ->modalDescription('Los productos asociados quedarán sin categoría. Esta acción no se puede deshacer desde aquí.')
-                        ->modalSubmitActionLabel('Sí, eliminar'),
+                        ->modalHeading(__('categories.modals.delete_bulk_heading'))
+                        ->modalDescription(__('categories.modals.delete_bulk_description'))
+                        ->modalSubmitActionLabel(__('categories.actions.confirm_delete')),
                 ]),
             ])
             ->emptyStateIcon(Heroicon::OutlinedTag)
-            ->emptyStateHeading('No hay categorías todavía')
-            ->emptyStateDescription('Crea la primera categoría para organizar el catálogo de productos.')
+            ->emptyStateHeading(__('categories.empty.heading'))
+            ->emptyStateDescription(__('categories.empty.description'))
             ->emptyStateActions([
                 CreateAction::make()
-                    ->label('Nueva categoría')
+                    ->label(__('categories.actions.create'))
                     ->icon(Heroicon::Plus),
             ])
             ->striped()

@@ -27,13 +27,14 @@ final class NameSlugInputs
         string $modelClass,
         string $nameField = 'name',
         string $slugField = 'slug',
-        string $nameLabel = 'Nombre',
-        string $slugLabel = 'Slug',
+        ?string $nameLabel = null,
+        ?string $slugLabel = null,
         ?string $namePlaceholder = null,
         ?string $slugPlaceholder = null,
+        ?string $slugHelperText = null,
     ): array {
         $name = TextInput::make($nameField)
-            ->label($nameLabel)
+            ->label($nameLabel ?? __('filament_support.name_slug.name'))
             ->required()
             ->maxLength(255)
             ->live(debounce: 400)
@@ -54,9 +55,9 @@ final class NameSlugInputs
         }
 
         $slug = TextInput::make($slugField)
-            ->label($slugLabel)
+            ->label($slugLabel ?? __('filament_support.name_slug.slug'))
             ->maxLength(255)
-            ->helperText('Se genera al escribir el nombre; podés editarlo manualmente. Debe ser único.')
+            ->helperText($slugHelperText ?? __('filament_support.name_slug.slug_helper'))
             ->nullable()
             ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? $state : null)
             ->unique(

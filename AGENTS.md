@@ -156,6 +156,25 @@ Do not use enums for admin-managed catalogs that change at runtime—those belon
 - Follow existing sibling files for style; Pint (`vendor/bin/sail bin pint --dirty`) before finishing PHP changes.
 - Do not add new top-level `app/` folders without approval.
 
+## Internationalization (i18n)
+
+Operator-facing UI and domain validation messages use Laravel localization. No third-party i18n package for app strings.
+
+| Concern | Rule |
+|---------|------|
+| Code | Stable English **short keys**: `__('users.fields.phone')`, never hardcode ES/EN copy in Resources/Actions |
+| Files | `lang/{locale}/{domain}.php` — e.g. `lang/en/users.php`, `lang/es/users.php` |
+| Domains | Prefer area names: `users`, `addresses`, `categories`, `products`, `navigation`, `filament_support`, `enums` |
+| Enums | Human labels via `__('enums.{group}.{value}')` in `label()` / `getLabel()` — never hardcode locale copy |
+| Runtime | `APP_LOCALE` (operators often `es`) + `APP_FALLBACK_LOCALE=en` |
+| Filament chrome | Built-in package translations follow app locale — do not publish unless overriding one string |
+| Content / DB | Product names multi-language etc. are **out of scope** of this pattern (separate decision later) |
+| Tests | Prefer asserting validation keys or set a fixed locale (`App::setLocale('en')`) when asserting message text |
+
+Scaffold framework files with `php artisan lang:publish`. Add only the domain files the feature needs.
+
+Reference implementations: F01 catalog (`categories`, `products`, `ProductCannotBePublishedException`) and F02 accounts (`users`, `addresses`) under `lang/{en,es}/` + matching Actions/Filament resources.
+
 ## SOLID (pragmatic)
 
 - **S** — Actions and focused Services; no god classes.

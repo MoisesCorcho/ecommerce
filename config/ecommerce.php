@@ -31,4 +31,19 @@ return [
 
     'default_currency' => env('ECOMMERCE_DEFAULT_CURRENCY', 'COP'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Standard shipping (F04)
+    |--------------------------------------------------------------------------
+    |
+    | Single shipping option "Envío estándar". Costs are integers in the same
+    | minor-unit convention as catalog prices (COP pesos, EUR cents).
+    |
+    */
+
+    'shipping' => [
+        'standard_cost_cop' => (int) env('ECOMMERCE_SHIPPING_STANDARD_COST_COP', 0),
+        'standard_cost_eur' => (int) env('ECOMMERCE_SHIPPING_STANDARD_COST_EUR', 0),
+    ],
+
 ];

@@ -23,8 +23,8 @@ enum CurrencyEnum: string implements HasLabel
     public function label(): string
     {
         return match ($this) {
-            self::Cop => 'Peso colombiano',
-            self::Eur => 'Euro',
+            self::Cop => __('enums.currency.COP'),
+            self::Eur => __('enums.currency.EUR'),
         };
     }
 
