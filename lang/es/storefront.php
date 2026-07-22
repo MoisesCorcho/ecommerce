@@ -28,6 +28,7 @@ return [
     'view_cart' => 'Ver carrito',
     'no_image' => 'Sin imagen',
     'favorite_login_required' => 'Inicia sesión para guardar favoritos',
+    'out_of_stock' => 'Agotado',
 
     'home' => [
         'categories' => 'Compra por Categoría',

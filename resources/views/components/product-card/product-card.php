@@ -2,6 +2,7 @@
 
 use App\Enums\Commerce\CurrencyEnum;
 use App\Models\Product;
+use App\Support\ColorMap;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
@@ -30,6 +31,8 @@ new class extends Component
             'variant' => $variant,
             'price' => $variant?->priceIn($currencyEnum),
             'detailUrl' => route('products.show', $this->product->slug),
+            'isOutOfStock' => $this->product->isOutOfStock(),
+            'availableColors' => $this->product->availableColors(),
         ];
     }
 };

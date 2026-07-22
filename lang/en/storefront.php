@@ -28,6 +28,7 @@ return [
     'view_cart' => 'View cart',
     'no_image' => 'No image',
     'favorite_login_required' => 'Log in to save favorites',
+    'out_of_stock' => 'Out of stock',
 
     'home' => [
         'categories' => 'Shop by Category',
