@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Orders;
 
 use App\Enums\Orders\OrderStatusEnum;
+use App\Enums\Payments\PaymentProviderEnum;
+use App\Enums\Payments\PaymentStatusEnum;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
@@ -92,6 +94,37 @@ class OrderInfolist
                                     ->label(__('orders.fields.quantity')),
                             ])
                             ->columns(5)
+                            ->columnSpanFull(),
+                    ]),
+                Section::make(__('payments.sections.payments'))
+                    ->schema([
+                        RepeatableEntry::make('payments')
+                            ->label(__('payments.sections.payments'))
+                            ->schema([
+                                TextEntry::make('provider')
+                                    ->label(__('payments.fields.provider'))
+                                    ->formatStateUsing(fn (PaymentProviderEnum $state): string => $state->label()),
+                                TextEntry::make('status')
+                                    ->label(__('payments.fields.status'))
+                                    ->badge()
+                                    ->formatStateUsing(fn (PaymentStatusEnum $state): string => $state->label()),
+                                TextEntry::make('amount')
+                                    ->label(__('payments.fields.amount'))
+                                    ->numeric(),
+                                TextEntry::make('currency')
+                                    ->label(__('payments.fields.currency')),
+                                TextEntry::make('external_id')
+                                    ->label(__('payments.fields.external_id'))
+                                    ->placeholder('—'),
+                                TextEntry::make('paid_at')
+                                    ->label(__('payments.fields.paid_at'))
+                                    ->dateTime()
+                                    ->placeholder('—'),
+                                TextEntry::make('created_at')
+                                    ->label(__('payments.fields.created_at'))
+                                    ->dateTime(),
+                            ])
+                            ->columns(4)
                             ->columnSpanFull(),
                     ]),
             ]);

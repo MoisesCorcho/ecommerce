@@ -28,6 +28,14 @@ class OrderPolicy
         return $this->isAdmin($user);
     }
 
+    /**
+     * Storefront payment start (owner only; guests use signed URLs outside policy).
+     */
+    public function pay(User $user, Order $order): bool
+    {
+        return $order->user_id !== null && (int) $order->user_id === (int) $user->id;
+    }
+
     private function isAdmin(User $user): bool
     {
         $emails = config('ecommerce.admin_emails', []);

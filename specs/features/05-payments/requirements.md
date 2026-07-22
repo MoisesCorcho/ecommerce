@@ -1,6 +1,6 @@
 # F05 — Pagos (Stripe / Bold + webhooks)
 
-> **Estado:** Lista para implementar  
+> **Estado:** Completa  
 > **ID:** F05 · **Slug:** `05-payments`  
 > **Prerequisitos:** F04 (checkout y órdenes `pending`) — ver [`01-product-and-roadmap.md`](../../_global/01-product-and-roadmap.md)  
 > **Desbloquea:** cobro real; stock al `paid`; base para fulfillment / F07 si exige compra

@@ -54,7 +54,7 @@ Rutas de specs se crean al iniciar cada feature (`specs/features/<slug>/`).
 | F02 | Cuentas y direcciones (**admin** Filament: users + addresses; sin Livewire storefront) | 0 · Fundación comercio | Completa | Fundación de dominio |
 | F03 | Carrito | 1 · Compra | Completa | F01 |
 | F04 | Checkout y órdenes | 1 · Compra | Completa | F01, F02, F03 |
-| F05 | Pagos (Stripe / Bold + webhooks) | 2 · Cobro | Lista para implementar | F04 |
+| F05 | Pagos (Stripe / Bold + webhooks) | 2 · Cobro | Completa | F04 |
 | F06 | Cupones y redenciones | 2 · Cobro | No iniciada | F03 o F04 (definir en specs: carrito vs orden) |
 | F07 | Reviews | 3 · Post-compra | No iniciada | F01; idealmente F04/F05 si se exige compra |
 | F08 | Wishlist | 3 · Post-compra | No iniciada | F01, F02 |

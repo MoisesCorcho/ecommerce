@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Orders\OrderThankYouController;
+use App\Http\Controllers\Orders\StartOrderPaymentController;
+use App\Http\Controllers\Payments\PaymentWebhookController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -14,6 +16,10 @@ Route::livewire('/cart', 'cart-page')->name('cart.page');
 Route::livewire('/checkout', 'checkout-page')->name('checkout.show');
 
 Route::get('/orders/{order}/thank-you', OrderThankYouController::class)->name('orders.thank-you');
+Route::post('/orders/{order}/pay', StartOrderPaymentController::class)->name('orders.pay');
+
+Route::post('/webhooks/stripe', [PaymentWebhookController::class, 'stripe'])->name('webhooks.stripe');
+Route::post('/webhooks/bold', [PaymentWebhookController::class, 'bold'])->name('webhooks.bold');
 
 Route::prefix('api/cart')->name('cart.')->group(function (): void {
     Route::get('/', [CartController::class, 'show'])->name('show');
