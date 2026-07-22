@@ -53,7 +53,7 @@ Rutas de specs se crean al iniciar cada feature (`specs/features/<slug>/`).
 | F01-S | Storefront catálogo (UI pública; manual de marca) | 0 · Fundación comercio | No iniciada (diferido) | F01; manual de marca |
 | F02 | Cuentas y direcciones (**admin** Filament: users + addresses; sin Livewire storefront) | 0 · Fundación comercio | Completa | Fundación de dominio |
 | F03 | Carrito | 1 · Compra | Completa | F01 |
-| F04 | Checkout y órdenes | 1 · Compra | No iniciada | F01, F02, F03 |
+| F04 | Checkout y órdenes | 1 · Compra | Completa | F01, F02, F03 |
 | F05 | Pagos (Stripe / Bold + webhooks) | 2 · Cobro | No iniciada | F04 |
 | F06 | Cupones y redenciones | 2 · Cobro | No iniciada | F03 o F04 (definir en specs: carrito vs orden) |
 | F07 | Reviews | 3 · Post-compra | No iniciada | F01; idealmente F04/F05 si se exige compra |
@@ -90,7 +90,9 @@ Sincronizar la columna **Estado** con el bloque `> Estado:` de cada `requirement
 
 #### F04 Checkout y órdenes
 
+- Specs: `specs/features/04-checkout-orders/`.
 - Crea `orders` / `order_items` con snapshots; consume carrito y dirección.
+- Decisiones cerradas en requirements (D1–D28): guest + user; revalidar al entrar y confirmar; **sin** descontar stock (F05 al pagar); carrito se vacía al crear; orden solo `pending`; admin `pending→cancelled`; sin paso de pago; envío estándar configurable; signed URL guest; Filament de pedidos; thank-you simple; perfil “mis pedidos” diferido.
 - Transición de estados de orden: alinear con `OrderStatusEnum`; no inventar estados fuera del enum sin actualizar enum + esquema doc.
 
 #### F05 Pagos
