@@ -64,8 +64,8 @@ return [
     ],
 
     'thank_you' => [
-        'title' => 'Gracias por tu compra',
-        'body' => 'Tu pedido :number fue recibido y está pendiente de pago.',
+        'title' => 'Gracias por su compra',
+        'body' => 'Su pedido :number fue recibido y está pendiente de pago.',
         'status' => 'Estado: :status',
     ],
 
@@ -76,14 +76,14 @@ return [
     ],
 
     'errors' => [
-        'cart_empty' => 'Tu carrito está vacío. Agregá productos antes del checkout.',
-        'cart_not_ready' => 'Uno o más ítems del carrito no están disponibles. Volvé al carrito y revisá cantidades o disponibilidad.',
+        'cart_empty' => 'Su carrito está vacío. Agregue productos antes del checkout.',
+        'cart_not_ready' => 'Uno o más ítems del carrito no están disponibles. Vuelva al carrito y revise las cantidades o la disponibilidad.',
         'insufficient_stock' => 'No hay stock suficiente para ":product". Máximo disponible: :max.',
         'not_eligible' => '":product" no está disponible para compra en la moneda del carrito.',
-        'access_denied' => 'No tenés permiso para acceder a este pedido.',
-        'cart_access_denied' => 'No tenés permiso para hacer checkout de este carrito.',
+        'access_denied' => 'No tiene permiso para acceder a este pedido.',
+        'cart_access_denied' => 'No tiene permiso para hacer checkout de este carrito.',
         'cannot_cancel' => 'Solo se pueden cancelar pedidos pendientes.',
-        'invalid_address' => 'La dirección seleccionada no es válida o no te pertenece.',
+        'invalid_address' => 'La dirección seleccionada no es válida o no le pertenece.',
     ],
 
     'notifications' => [
