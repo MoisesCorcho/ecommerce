@@ -27,6 +27,7 @@ return [
     'added_to_cart' => 'Agregado al carrito',
     'view_cart' => 'Ver carrito',
     'no_image' => 'Sin imagen',
+    'favorite_login_required' => 'Inicia sesión para guardar favoritos',
 
     'home' => [
         'categories' => 'Compra por Categoría',

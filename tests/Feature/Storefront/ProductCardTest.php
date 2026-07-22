@@ -107,6 +107,16 @@ class ProductCardTest extends TestCase
             ->assertSeeHtml('data-add-to-cart');
     }
 
+    public function test_product_card_nests_favorite_button(): void
+    {
+        $product = $this->createStorefrontProduct();
+
+        Livewire::test('product-card', ['product' => $product, 'currency' => 'COP'])
+            ->assertOk()
+            ->assertSeeHtml('data-favorite-button')
+            ->assertSee(__('storefront.favorite_login_required'), false);
+    }
+
     public function test_product_card_renders_placeholder_when_no_image(): void
     {
         $product = $this->createStorefrontProduct(withImage: false);

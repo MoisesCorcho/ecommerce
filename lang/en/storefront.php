@@ -27,6 +27,7 @@ return [
     'added_to_cart' => 'Added to cart',
     'view_cart' => 'View cart',
     'no_image' => 'No image',
+    'favorite_login_required' => 'Log in to save favorites',
 
     'home' => [
         'categories' => 'Shop by Category',
