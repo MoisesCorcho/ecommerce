@@ -46,4 +46,30 @@ return [
         'standard_cost_eur' => (int) env('ECOMMERCE_SHIPPING_STANDARD_COST_EUR', 0),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Payments (F05)
+    |--------------------------------------------------------------------------
+    |
+    | Hosted checkout providers. Keys never committed; use env only.
+    | COP → Bold, EUR → Stripe (see CurrencyEnum::paymentProvider()).
+    |
+    */
+
+    'payments' => [
+        'stripe' => [
+            'secret_key' => env('STRIPE_SECRET_KEY'),
+            'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+            'api_base' => env('STRIPE_API_BASE', 'https://api.stripe.com'),
+        ],
+        'bold' => [
+            'api_key' => env('BOLD_API_KEY'),
+            'secret_key' => env('BOLD_SECRET_KEY'),
+            // Explicit value wins (including empty string for Bold test mode).
+            // Leave unset to fall back to secret_key in production.
+            'webhook_secret' => env('BOLD_WEBHOOK_SECRET'),
+            'api_base' => env('BOLD_API_BASE', 'https://integrations.api.bold.co'),
+        ],
+    ],
+
 ];

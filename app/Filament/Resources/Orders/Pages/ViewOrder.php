@@ -17,6 +17,15 @@ class ViewOrder extends ViewRecord
 {
     protected static string $resource = OrderResource::class;
 
+    protected function resolveRecord(int|string $key): Order
+    {
+        /** @var Order $record */
+        $record = parent::resolveRecord($key);
+        $record->loadMissing(['items', 'payments']);
+
+        return $record;
+    }
+
     protected function getHeaderActions(): array
     {
         return [

@@ -28,6 +28,31 @@
                 <p class="mt-2 text-sm text-stone-600" data-order-status>
                     {{ __('orders.thank_you.status', ['status' => $order->status->label()]) }}
                 </p>
+
+                @if (($paymentReturn ?? null) === 'processing' && $order->status === \App\Enums\Orders\OrderStatusEnum::Pending)
+                    <p class="mt-4 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900" data-payment-processing>
+                        {{ __('payments.return.processing') }}
+                    </p>
+                @endif
+
+                @if (($paymentReturn ?? null) === 'cancelled' && $order->status === \App\Enums\Orders\OrderStatusEnum::Pending)
+                    <p class="mt-4 rounded-lg bg-stone-100 px-4 py-3 text-sm text-stone-800" data-payment-cancelled>
+                        {{ __('payments.return.cancelled') }}
+                    </p>
+                @endif
+
+                @if ($order->status === \App\Enums\Orders\OrderStatusEnum::Paid)
+                    <p class="mt-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-900" data-payment-paid>
+                        {{ __('payments.return.paid') }}
+                    </p>
+                @endif
+
+                @if (session('payment_error'))
+                    <p class="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800" data-payment-error>
+                        {{ session('payment_error') }}
+                    </p>
+                @endif
+
                 <dl class="mt-6 space-y-2 text-left text-sm">
                     <div class="flex justify-between border-b border-stone-100 py-2">
                         <dt class="text-stone-500">{{ __('orders.fields.order_number') }}</dt>
@@ -42,6 +67,20 @@
                         <dd>{{ $order->email }}</dd>
                     </div>
                 </dl>
+
+                @if (! empty($payUrl) && $order->status === \App\Enums\Orders\OrderStatusEnum::Pending)
+                    <form method="POST" action="{{ $payUrl }}" class="mt-6" data-pay-form>
+                        @csrf
+                        <button
+                            type="submit"
+                            class="inline-flex items-center rounded-lg bg-stone-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-stone-800"
+                            data-pay-button
+                        >
+                            {{ ($paymentReturn ?? null) === 'cancelled' ? __('payments.actions.retry') : __('payments.actions.pay') }}
+                        </button>
+                    </form>
+                @endif
+
                 <a href="{{ route('products.index') }}" class="mt-8 inline-block text-sm font-medium text-stone-900 underline">
                     Seguir comprando
                 </a>
@@ -49,4 +88,3 @@
         </main>
     </body>
 </html>
-

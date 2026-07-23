@@ -54,7 +54,7 @@ Rutas de specs se crean al iniciar cada feature (`specs/features/<slug>/`).
 | F02 | Cuentas y direcciones (**admin** Filament: users + addresses; sin Livewire storefront) | 0 · Fundación comercio | Completa | Fundación de dominio |
 | F03 | Carrito | 1 · Compra | Completa | F01 |
 | F04 | Checkout y órdenes | 1 · Compra | Completa | F01, F02, F03 |
-| F05 | Pagos (Stripe / Bold + webhooks) | 2 · Cobro | No iniciada | F04 |
+| F05 | Pagos (Stripe / Bold + webhooks) | 2 · Cobro | Completa | F04 |
 | F06 | Cupones y redenciones | 2 · Cobro | No iniciada | F03 o F04 (definir en specs: carrito vs orden) |
 | F07 | Reviews | 3 · Post-compra | No iniciada | F01; idealmente F04/F05 si se exige compra |
 | F08 | Wishlist | 3 · Post-compra | No iniciada | F01, F02 |
@@ -97,6 +97,8 @@ Sincronizar la columna **Estado** con el bloque `> Estado:` de cada `requirement
 
 #### F05 Pagos
 
+- Specs: `specs/features/05-payments/`.
+- Decisiones cerradas en requirements (D1–D43): hosted checkout; COP→Bold / EUR→Stripe; webhook como fuente de verdad de `paid`; multi-intento `payments`; stock al `approved` (D25 si falta stock: payment approved sin order paid); guest signed pay; auth storefront out; refunds solo por webhook sin reponer stock.
 - `PaymentGatewayInterface` + gateways; `payments` + `payment_webhook_events`.
 - Idempotencia de webhooks y mapeo a `PaymentStatusEnum` / efectos en orden: obligatorios en AC de error.
 
