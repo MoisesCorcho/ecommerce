@@ -1,151 +1,505 @@
-<div>
-    <p class="mb-4 text-sm">
-        <a href="{{ route('products.index') }}" class="text-stone-600 hover:text-stone-900 hover:underline">
-            ← Volver al catálogo
-        </a>
-    </p>
+{{--
+  Product Detail — Two-column layout with gallery, info, and actions.
+  Requirements: R1-R18
+--}}
+@php
+    use App\Support\ColorMap;
+@endphp
 
-    <div class="grid gap-8 lg:grid-cols-2">
-        <div class="space-y-3">
-            @forelse ($product->images as $image)
-                <div class="overflow-hidden rounded-xl border border-stone-200 bg-stone-100" wire:key="image-{{ $image->id }}">
+<div
+    x-data="{
+        toastMessage: '',
+        toastVisible: false,
+        lightbox: false,
+        lightboxIndex: @js($mainImageIndex),
+        showToast(message) {
+            this.toastMessage = message;
+            this.toastVisible = true;
+            setTimeout(() => { this.toastVisible = false; }, 3000);
+        },
+        openLightbox(index) {
+            this.lightboxIndex = index;
+            this.lightbox = true;
+        },
+        closeLightbox() {
+            this.lightbox = false;
+        },
+        nextImage() {
+            if (this.lightboxIndex < {{ $product->images->count() - 1 }}) {
+                this.lightboxIndex++;
+            }
+        },
+        prevImage() {
+            if (this.lightboxIndex > 0) {
+                this.lightboxIndex--;
+            }
+        }
+    }"
+    x-on:toast.window="showToast($event.detail.message)"
+    x-on:cart-updated.window="showToast('{{ __('storefront.added_to_cart') }}')"
+    class="relative"
+>
+    {{-- Toast Notification (R18) --}}
+    <div
+        x-show="toastVisible"
+        x-cloak
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 -translate-y-4"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 -translate-y-4"
+        class="fixed top-4 right-4 z-50 rounded-lg bg-intense-cocoa px-5 py-3 text-sm font-medium text-silk-cream shadow-ambient"
+        role="status"
+        aria-live="polite"
+    >
+        <span x-text="toastMessage"></span>
+    </div>
+
+    {{-- Breadcrumb (R12) --}}
+    <nav aria-label="Breadcrumb" class="mb-6 text-sm text-intense-cocoa/60">
+        <ol class="flex flex-wrap items-center gap-1.5">
+            <li>
+                <a href="{{ route('home') }}" class="transition-colors hover:text-intense-cocoa hover:underline">
+                    {{ __('storefront.products.breadcrumb_home') }}
+                </a>
+            </li>
+            <li aria-hidden="true" class="text-intense-cocoa/30">/</li>
+            <li>
+                <a href="{{ route('products.index') }}" class="transition-colors hover:text-intense-cocoa hover:underline">
+                    {{ __('storefront.products.breadcrumb_shop') }}
+                </a>
+            </li>
+            @if ($product->category)
+                <li aria-hidden="true" class="text-intense-cocoa/30">/</li>
+                <li>
+                    <a href="{{ route('products.index', ['category' => $product->category->slug]) }}" class="transition-colors hover:text-intense-cocoa hover:underline">
+                        {{ $product->category->name }}
+                    </a>
+                </li>
+            @endif
+            <li aria-hidden="true" class="text-intense-cocoa/30">/</li>
+            <li aria-current="page" class="font-medium text-intense-cocoa">
+                {{ $product->name }}
+            </li>
+        </ol>
+    </nav>
+
+    {{-- Two-column grid (R1: lg+ two columns, sm/md single column) --}}
+    <div class="grid gap-8 lg:grid-cols-[1.2fr_1fr] lg:gap-12">
+
+        {{-- LEFT: Gallery (R2, R3, R4) --}}
+        <div>
+            {{-- Main image — 4:5 aspect ratio --}}
+            <div class="group relative cursor-zoom-in overflow-hidden" wire:click="openLightbox({{ $mainImageIndex }})">
+                @if ($product->images->count() > 0)
+                    @php
+                        $currentImage = $product->images->get($mainImageIndex) ?? $product->images->first();
+                    @endphp
                     <img
-                        src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($image->path) }}"
+                        src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($currentImage->path) }}"
                         alt="{{ $product->name }}"
-                        class="w-full object-cover {{ $loop->first ? 'aspect-[4/3]' : 'aspect-video' }}"
+                        class="aspect-[4/5] w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                        wire:key="main-image-{{ $mainImageIndex }}"
                     >
-                </div>
-            @empty
-                <div class="flex aspect-[4/3] items-center justify-center rounded-xl border border-dashed border-stone-300 bg-white text-stone-400">
-                    Sin imagen
-                </div>
-            @endforelse
-        </div>
-
-        <div class="space-y-6">
-            <div>
-                @if ($product->category)
-                    <p class="text-xs uppercase tracking-wide text-stone-500">{{ $product->category->name }}</p>
-                @endif
-                <h1 class="mt-1 text-3xl font-semibold tracking-tight">{{ $product->name }}</h1>
-                @if ($product->description)
-                    <p class="mt-3 text-stone-700 whitespace-pre-line">{{ $product->description }}</p>
+                    {{-- Zoom hint --}}
+                    <div class="absolute inset-0 flex items-center justify-center bg-intense-cocoa/0 transition-colors group-hover:bg-intense-cocoa/10">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-8 w-8 text-silk-cream opacity-0 transition-opacity group-hover:opacity-80" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6" />
+                        </svg>
+                    </div>
+                @else
+                    <div class="flex aspect-[4/5] items-center justify-center bg-soft-sand text-intense-cocoa/40">
+                        <span class="text-label-caps">{{ __('storefront.no_image') }}</span>
+                    </div>
                 @endif
             </div>
 
-            <dl class="grid grid-cols-2 gap-3 text-sm">
-                @if ($product->material)
-                    <div>
-                        <dt class="text-stone-500">Material</dt>
-                        <dd class="font-medium">{{ $product->material }}</dd>
-                    </div>
-                @endif
-                @if ($product->dimensions)
-                    <div>
-                        <dt class="text-stone-500">Dimensiones</dt>
-                        <dd class="font-medium">{{ $product->dimensions }}</dd>
-                    </div>
-                @endif
-                @if ($product->is_preorder)
-                    <div>
-                        <dt class="text-stone-500">Disponibilidad</dt>
-                        <dd class="font-medium">Preventa</dd>
-                    </div>
-                @endif
-            </dl>
-
-            <div>
-                <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-stone-500">
-                    Opciones ({{ $currencyEnum->value }})
-                </h2>
-
-                @if ($statusMessage)
-                    <p class="mb-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800" data-add-status>
-                        {{ $statusMessage }}
-                        <a href="{{ route('cart.page') }}" class="ml-2 font-medium underline">Ver carrito</a>
-                    </p>
-                @endif
-
-                @if ($errorMessage)
-                    <p class="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800" data-add-error>
-                        {{ $errorMessage }}
-                    </p>
-                @endif
-
-                <div class="space-y-3 rounded-xl border border-stone-200 bg-white p-4">
-                    <fieldset class="space-y-2" data-variant-options>
-                        <legend class="sr-only">Variante</legend>
-                        @foreach ($pricedVariants as $variant)
-                            @php
-                                $price = $variant->priceIn($currencyEnum);
-                            @endphp
-                            @if ($price)
-                                <label
-                                    class="flex cursor-pointer items-center justify-between gap-4 rounded-lg border border-stone-200 px-3 py-2 has-[:checked]:border-stone-900 has-[:checked]:bg-stone-50"
-                                    wire:key="variant-{{ $variant->id }}"
-                                    data-variant-option="{{ $variant->id }}"
-                                >
-                                    <span class="flex items-start gap-3">
-                                        <input
-                                            type="radio"
-                                            wire:model="selectedVariantId"
-                                            value="{{ $variant->id }}"
-                                            class="mt-1"
-                                            name="selectedVariantId"
-                                        >
-                                        <span>
-                                            <span class="block font-medium">
-                                                {{ $variant->color ?? $variant->sku }}
-                                                @if ($variant->size)
-                                                    <span class="text-stone-500">· {{ $variant->size }}</span>
-                                                @endif
-                                            </span>
-                                            <span class="block text-xs text-stone-500">
-                                                SKU {{ $variant->sku }} · stock {{ $variant->stock }}
-                                            </span>
-                                        </span>
-                                    </span>
-                                    <span class="text-right text-sm font-semibold tabular-nums" data-price="{{ $price->price }}" data-currency="{{ $currencyEnum->value }}">
-                                        {{ number_format($price->price, 0, ',', '.') }}
-                                        <span class="block text-xs font-normal text-stone-500">{{ $currencyEnum->value }}</span>
-                                    </span>
-                                </label>
-                            @endif
-                        @endforeach
-                    </fieldset>
-
-                    @error('selectedVariantId')
-                        <p class="text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-
-                    <div class="flex flex-wrap items-end gap-3 border-t border-stone-100 pt-3">
-                        <div>
-                            <label for="add-qty" class="mb-1 block text-xs font-medium text-stone-600">Cantidad</label>
-                            <input
-                                id="add-qty"
-                                type="number"
-                                min="1"
-                                max="99"
-                                wire:model="quantity"
-                                class="w-24 rounded-md border border-stone-300 px-2 py-2 text-sm tabular-nums"
-                                data-add-qty
-                            >
-                            @error('quantity')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
+            {{-- Thumbnail row (R2) --}}
+            @if ($product->images->count() > 1)
+                <div class="mt-3 flex gap-2 overflow-x-auto pb-1" role="listbox" aria-label="Product images">
+                    @foreach ($product->images as $index => $image)
                         <button
                             type="button"
-                            wire:click="addToCart"
-                            class="rounded-md bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-800"
-                            data-add-to-cart
+                            wire:click="$set('mainImageIndex', {{ $index }})"
+                            role="option"
+                            aria-selected="{{ $mainImageIndex === $index ? 'true' : 'false' }}"
+                            aria-label="Image {{ $loop->iteration }}"
+                            class="group/thumbnail relative flex-shrink-0 overflow-hidden border-2 transition-all duration-200 {{ $mainImageIndex === $index ? 'border-intense-cocoa' : 'border-transparent hover:border-intense-cocoa/30' }}"
                         >
-                            Agregar al carrito
+                            <img
+                                src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($image->path) }}"
+                                alt="{{ $product->name }} — {{ $loop->iteration }}"
+                                class="h-16 w-16 object-cover sm:h-20 sm:w-20"
+                            >
+                        </button>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+
+        {{-- RIGHT: Purchase Info (R5, R6, R7, R8, R9, R10, R11) --}}
+        <div class="flex flex-col gap-6">
+
+            {{-- Product name (R5) --}}
+            <div>
+                @if ($product->category)
+                    <p class="mb-2 text-label-caps uppercase tracking-[0.2em] text-intense-cocoa/50">
+                        {{ $product->category->name }}
+                    </p>
+                @endif
+                <h1 class="font-[family-name:var(--font-chillax)] text-3xl font-semibold tracking-tight text-intense-cocoa sm:text-4xl">
+                    {{ $product->name }}
+                </h1>
+            </div>
+
+            {{-- Price + Stock (R5, R18) --}}
+            <div class="flex flex-wrap items-baseline gap-3">
+                @if ($selectedVariant && $selectedVariant->priceIn($currencyEnum))
+                    @php
+                        $price = $selectedVariant->priceIn($currencyEnum);
+                    @endphp
+                    <span class="font-[family-name:var(--font-sans)] text-2xl font-semibold tabular-nums text-intense-cocoa">
+                        {{ number_format($price->price, 0, ',', '.') }}
+                    </span>
+                    <span class="text-sm font-medium text-intense-cocoa/60">{{ $currencyEnum->value }}</span>
+                @elseif($pricedVariants->first()?->priceIn($currencyEnum))
+                    @php
+                        $price = $pricedVariants->first()->priceIn($currencyEnum);
+                    @endphp
+                    <span class="font-[family-name:var(--font-sans)] text-2xl font-semibold tabular-nums text-intense-cocoa">
+                        {{ number_format($price->price, 0, ',', '.') }}
+                    </span>
+                    <span class="text-sm font-medium text-intense-cocoa/60">{{ $currencyEnum->value }}</span>
+                @endif
+
+                {{-- Out of stock badge (R18) --}}
+                @if ($selectedVariant && $selectedVariant->stock <= 0 && ! $product->is_preorder)
+                    <span class="rounded bg-soft-gold px-2.5 py-1 text-label-caps font-semibold uppercase tracking-wider text-intense-cocoa">
+                        {{ __('storefront.out_of_stock') }}
+                    </span>
+                @endif
+            </div>
+
+            {{-- Stock status text (R5) --}}
+            @if ($selectedVariant)
+                @if ($selectedVariant->stock > 0 && $selectedVariant->stock <= 5)
+                    <p class="text-sm text-intense-cocoa/70">
+                        {{ __('storefront.products.stock_low', ['count' => $selectedVariant->stock]) }}
+                    </p>
+                @elseif ($selectedVariant->stock > 5)
+                    <p class="text-sm text-intense-cocoa/70">
+                        {{ __('storefront.products.stock_available', ['count' => $selectedVariant->stock]) }}
+                    </p>
+                @endif
+            @endif
+
+            {{-- SKU (R5) --}}
+            @if ($selectedVariant?->sku)
+                <p class="text-label-caps text-intense-cocoa/40">
+                    {{ __('storefront.products.sku_label') }}: {{ $selectedVariant->sku }}
+                </p>
+            @endif
+
+            {{-- Brief description (R5) --}}
+            @if ($product->description)
+                <p class="leading-relaxed text-intense-cocoa/80 line-clamp-3">
+                    {{ Str::limit($product->description, 200) }}
+                </p>
+            @endif
+
+            {{-- Color selector (R6) --}}
+            @if ($availableColors->count() > 0)
+                <div>
+                    <p class="mb-2.5 text-sm font-medium text-intense-cocoa">
+                        {{ __('storefront.products.color_label') }}:
+                        <span class="font-normal text-intense-cocoa/60">{{ $selectedColor }}</span>
+                    </p>
+                    <div class="flex flex-wrap gap-2.5" role="radiogroup" aria-label="{{ __('storefront.products.color_label') }}">
+                        @foreach ($availableColors as $colorName)
+                            @php
+                                $hex = ColorMap::HEX[strtolower($colorName)] ?? '#8B8B8B';
+                                $isSelected = $selectedColor === $colorName;
+                            @endphp
+                            <button
+                                type="button"
+                                wire:click="$set('selectedColor', '{{ $colorName }}')"
+                                role="radio"
+                                aria-checked="{{ $isSelected ? 'true' : 'false' }}"
+                                aria-label="{{ $colorName }}"
+                                title="{{ $colorName }}"
+                                class="relative h-9 w-9 rounded-full border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-intense-cocoa/30 focus:ring-offset-2 {{ $isSelected ? 'border-intense-cocoa ring-2 ring-intense-cocoa/20 ring-offset-2' : 'border-intense-cocoa/15 hover:border-intense-cocoa/40' }}"
+                                style="background-color: {{ $hex }}"
+                            >
+                                @if ($isSelected)
+                                    <span class="absolute inset-0 flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4 {{ in_array(strtolower($colorName), ['negro', 'black', 'chocolate', 'cocoa', 'navy', 'blue', 'burdeos', 'burgundy', 'wine', 'vino', 'marrón', 'marron', 'brown']) ? 'text-silk-cream' : 'text-intense-cocoa' }}">
+                                            <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </span>
+                                @endif
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            {{-- Size selector (R7) --}}
+            @if ($availableSizes->count() > 0)
+                <div>
+                    <p class="mb-2.5 text-sm font-medium text-intense-cocoa">
+                        {{ __('storefront.products.size_label') }}:
+                        <span class="font-normal text-intense-cocoa/60">{{ $selectedSize ?? '—' }}</span>
+                    </p>
+                    <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="{{ __('storefront.products.size_label') }}">
+                        @foreach ($availableSizes as $sizeName)
+                            @php
+                                $isSelected = $selectedSize === $sizeName;
+                            @endphp
+                            <button
+                                type="button"
+                                wire:click="$set('selectedSize', '{{ $sizeName }}')"
+                                role="radio"
+                                aria-checked="{{ $isSelected ? 'true' : 'false' }}"
+                                class="min-h-[44px] min-w-[44px] rounded-md border px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-intense-cocoa/30 focus:ring-offset-2 {{ $isSelected ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-intense-cocoa/20 bg-white text-intense-cocoa hover:border-intense-cocoa/50' }}"
+                            >
+                                {{ $sizeName }}
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            {{-- Select variant hint (R18) --}}
+            @if (! $selectedVariant)
+                <p class="rounded-lg bg-soft-sand px-4 py-2.5 text-sm text-intense-cocoa/70" data-select-variant-hint>
+                    {{ __('storefront.products.select_variant') }}
+                </p>
+            @endif
+
+            {{-- Quantity selector (R8) --}}
+            @if ($selectedVariant && $selectedVariant->stock > 0)
+                <div>
+                    <label for="product-qty" class="mb-2 block text-sm font-medium text-intense-cocoa">
+                        {{ __('storefront.products.quantity_label') }}
+                    </label>
+                    <div class="inline-flex items-center overflow-hidden rounded-md border border-intense-cocoa/20">
+                        <button
+                            type="button"
+                            wire:click="if ($quantity > 1) $set('quantity', $quantity - 1)"
+                            aria-label="Decrease quantity"
+                            class="flex h-11 w-11 items-center justify-center text-intense-cocoa transition-colors hover:bg-soft-sand disabled:cursor-not-allowed disabled:text-intense-cocoa/30 disabled:hover:bg-transparent"
+                            @if ($quantity <= 1) disabled @endif
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
+                                <path fill-rule="evenodd" d="M4 10a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H4.75A.75.75 0 0 1 4 10Z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <input
+                            id="product-qty"
+                            type="number"
+                            min="1"
+                            max="{{ $selectedVariant->stock }}"
+                            wire:model.live="quantity"
+                            class="h-11 w-14 border-x border-intense-cocoa/20 bg-transparent text-center text-sm font-medium tabular-nums text-intense-cocoa focus:outline-none"
+                            aria-label="{{ __('storefront.products.quantity_label') }}"
+                        >
+                        <button
+                            type="button"
+                            wire:click="if ($quantity < {{ $selectedVariant->stock }}) $set('quantity', $quantity + 1)"
+                            aria-label="Increase quantity"
+                            class="flex h-11 w-11 items-center justify-center text-intense-cocoa transition-colors hover:bg-soft-sand disabled:cursor-not-allowed disabled:text-intense-cocoa/30 disabled:hover:bg-transparent"
+                            @if ($quantity >= $selectedVariant->stock) disabled @endif
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
+                                <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                            </svg>
                         </button>
                     </div>
                 </div>
+            @endif
+
+            {{-- Action buttons (R9, R10, R11) --}}
+            <div class="flex flex-col gap-3 pt-2">
+                @php
+                    $canAddToCart = $selectedVariant && $selectedVariant->stock > 0;
+                @endphp
+
+                {{-- Add to cart (R9) --}}
+                <button
+                    type="button"
+                    @if ($canAddToCart) wire:click="addToCart" @else disabled @endif
+                    class="flex h-12 w-full items-center justify-center rounded-md bg-intense-cocoa text-sm font-semibold text-silk-cream transition-colors duration-200 hover:bg-intense-cocoa/90 focus:outline-none focus:ring-2 focus:ring-intense-cocoa/30 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-intense-cocoa/40"
+                    data-add-to-cart
+                    aria-label="{{ __('storefront.products.add_to_cart') }}"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mr-2 h-5 w-5" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.46 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM11.25 10.5h.008v.008h-.008V10.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                    </svg>
+                    {{ __('storefront.products.add_to_cart') }}
+                </button>
+
+                {{-- Buy now (R10) --}}
+                <button
+                    type="button"
+                    @if ($canAddToCart) wire:click="buyNow" @else disabled @endif
+                    class="flex h-12 w-full items-center justify-center rounded-md border-2 border-intense-cocoa bg-transparent text-sm font-semibold text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none focus:ring-2 focus:ring-intense-cocoa/30 focus:ring-offset-2 disabled:cursor-not-allowed disabled:border-intense-cocoa/30 disabled:text-intense-cocoa/30 disabled:hover:bg-transparent disabled:hover:text-intense-cocoa/30"
+                    aria-label="{{ __('storefront.products.buy_now') }}"
+                >
+                    {{ __('storefront.products.buy_now') }}
+                </button>
+
+                {{-- Favorites heart (R11) --}}
+                <button
+                    type="button"
+                    wire:click="toggleFavorite"
+                    class="flex h-12 w-full items-center justify-center rounded-md border border-intense-cocoa/20 text-sm font-medium text-intense-cocoa transition-colors duration-200 hover:border-intense-cocoa/40 hover:bg-soft-sand focus:outline-none focus:ring-2 focus:ring-intense-cocoa/30 focus:ring-offset-2"
+                    aria-label="{{ $isFavorited ? __('storefront.products.removed_from_favorites') : __('storefront.products.added_to_favorites') }}"
+                    data-favorite-button
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        @if ($isFavorited) fill="currentColor" @else fill="none" stroke="currentColor" stroke-width="1.5" @endif
+                        class="mr-2 h-5 w-5 {{ $isFavorited ? 'text-soft-gold' : '' }}"
+                        aria-hidden="true"
+                    >
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                    </svg>
+                    {{ $isFavorited ? __('storefront.products.removed_from_favorites') : __('storefront.products.added_to_favorites') }}
+                </button>
             </div>
+
+            {{-- Error message --}}
+            @if ($errorMessage)
+                <div class="rounded-lg border border-error/20 bg-error/5 px-4 py-3 text-sm text-error" role="alert" data-add-error>
+                    {{ $errorMessage }}
+                </div>
+            @endif
         </div>
     </div>
+
+    {{-- Description section (R13) --}}
+    @if ($product->description)
+        <section class="mt-16 bg-soft-sand py-12 sm:py-16" aria-labelledby="description-heading">
+            <div class="mx-auto max-w-4xl px-6">
+                <h2 id="description-heading" class="mb-6 font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
+                    {{ __('storefront.products.description_title') }}
+                </h2>
+                <div class="space-y-4 leading-relaxed text-intense-cocoa/80">
+                    @if ($product->material)
+                        <div>
+                            <span class="text-sm font-medium text-intense-cocoa">{{ __('storefront.products.material_label') }}:</span>
+                            <span class="text-intense-cocoa/70">{{ $product->material }}</span>
+                        </div>
+                    @endif
+                    @if ($product->dimensions)
+                        <div>
+                            <span class="text-sm font-medium text-intense-cocoa">{{ __('storefront.products.dimensions_label') }}:</span>
+                            <span class="text-intense-cocoa/70">{{ $product->dimensions }}</span>
+                        </div>
+                    @endif
+                    <p class="whitespace-pre-line">{{ $product->description }}</p>
+                </div>
+            </div>
+        </section>
+    @endif
+
+    {{-- Related products (R14) --}}
+    @if ($relatedProducts->count() > 0)
+        <section class="mt-16 sm:mt-20" aria-labelledby="related-heading">
+            <div class="mb-8 flex items-end justify-between">
+                <h2 id="related-heading" class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
+                    {{ __('storefront.products.related_title') }}
+                </h2>
+                <a href="{{ route('products.index', ['category' => $product->category?->slug]) }}" class="text-sm font-medium text-intense-cocoa/60 transition-colors hover:text-intense-cocoa hover:underline">
+                    {{ __('storefront.home.view_all') }} →
+                </a>
+            </div>
+            <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                @foreach ($relatedProducts as $relatedProduct)
+                    <x-product-card
+                        :product="$relatedProduct"
+                        :currency="$currencyEnum"
+                    />
+                @endforeach
+            </div>
+        </section>
+    @endif
+
+    {{-- Lightbox overlay (R3) --}}
+    @if ($product->images->count() > 0)
+        <div
+            x-show="lightbox"
+            x-cloak
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            @keydown.escape.window="closeLightbox()"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-intense-cocoa/80 backdrop-blur-sm"
+            role="dialog"
+            aria-modal="true"
+            aria-label="{{ __('storefront.products.close_lightbox') }}"
+        >
+            {{-- Backdrop click to close --}}
+            <div class="absolute inset-0" @click="closeLightbox()"></div>
+
+            {{-- Close button --}}
+            <button
+                type="button"
+                @click="closeLightbox()"
+                class="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-silk-cream/90 text-intense-cocoa transition-colors hover:bg-silk-cream focus:outline-none focus:ring-2 focus:ring-silk-cream/50"
+                aria-label="{{ __('storefront.products.close_lightbox') }}"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            {{-- Previous arrow --}}
+            @if ($product->images->count() > 1)
+                <button
+                    type="button"
+                    @click="prevImage()"
+                    :disabled="lightboxIndex === 0"
+                    class="absolute left-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-silk-cream/90 text-intense-cocoa transition-colors hover:bg-silk-cream disabled:cursor-not-allowed disabled:opacity-30"
+                    aria-label="Previous image"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                        <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            @endif
+
+            {{-- Next arrow --}}
+            @if ($product->images->count() > 1)
+                <button
+                    type="button"
+                    @click="nextImage()"
+                    :disabled="lightboxIndex === {{ $product->images->count() - 1 }}"
+                    class="absolute right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-silk-cream/90 text-intense-cocoa transition-colors hover:bg-silk-cream disabled:cursor-not-allowed disabled:opacity-30"
+                    aria-label="Next image"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                        <path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            @endif
+
+            {{-- Lightbox image --}}
+            <div class="relative z-10 max-h-[85vh] max-w-[90vw]">
+                @foreach ($product->images as $index => $image)
+                    <img
+                        x-show="lightboxIndex === {{ $index }}"
+                        src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($image->path) }}"
+                        alt="{{ $product->name }} — {{ $loop->iteration }}"
+                        class="max-h-[85vh] max-w-[90vw] object-contain"
+                    >
+                @endforeach
+            </div>
+        </div>
+    @endif
 </div>
