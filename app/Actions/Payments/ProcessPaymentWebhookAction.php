@@ -152,12 +152,57 @@ class ProcessPaymentWebhookAction
             return;
         }
 
+        if (
+            $parsed->outcome === PaymentWebhookOutcomeEnum::Approved
+            && ! $this->matchesPaymentMoney($payment, $parsed)
+        ) {
+            return;
+        }
+
         match ($parsed->outcome) {
             PaymentWebhookOutcomeEnum::Approved => $this->applyApproved($payment, $parsed),
             PaymentWebhookOutcomeEnum::Declined => $this->applyDeclined($payment, $parsed),
             PaymentWebhookOutcomeEnum::Refunded => $this->applyRefunded($payment, $parsed),
             PaymentWebhookOutcomeEnum::Ignored => null,
         };
+    }
+
+    /**
+     * Defense in depth: when the provider payload exposes amount/currency, they must match the Payment.
+     * Missing fields are ignored (do not reject — avoids blocking providers that omit totals).
+     */
+    private function matchesPaymentMoney(Payment $payment, ParsedWebhookEventDTO $parsed): bool
+    {
+        if ($parsed->amount !== null && $parsed->amount !== (int) $payment->amount) {
+            Log::error('payments.webhook.amount_mismatch', [
+                'payment_id' => $payment->id,
+                'order_id' => $payment->order_id,
+                'event_id' => $parsed->eventId,
+                'expected_amount' => (int) $payment->amount,
+                'webhook_amount' => $parsed->amount,
+            ]);
+
+            return false;
+        }
+
+        if ($parsed->currency !== null) {
+            $expected = strtoupper($payment->currency->value);
+            $actual = strtoupper($parsed->currency);
+
+            if ($actual !== $expected) {
+                Log::error('payments.webhook.currency_mismatch', [
+                    'payment_id' => $payment->id,
+                    'order_id' => $payment->order_id,
+                    'event_id' => $parsed->eventId,
+                    'expected_currency' => $expected,
+                    'webhook_currency' => $actual,
+                ]);
+
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private function resolvePayment(PaymentProviderEnum $provider, ParsedWebhookEventDTO $parsed): ?Payment
@@ -225,7 +270,7 @@ class ProcessPaymentWebhookAction
 
         // TX2: mark order paid + decrement stock when possible.
         try {
-            DB::transaction(function () use ($payment): void {
+            DB::transaction(function () use ($payment, $parsed): void {
                 /** @var Payment $lockedPayment */
                 $lockedPayment = Payment::query()->lockForUpdate()->findOrFail($payment->id);
 
@@ -236,6 +281,13 @@ class ProcessPaymentWebhookAction
                     ->findOrFail($lockedPayment->order_id);
 
                 if ($order->status === OrderStatusEnum::Paid) {
+                    // Residual RES-01: another payment may still reach approved after the order is paid.
+                    Log::warning('payments.webhook.approved_on_already_paid_order', [
+                        'order_id' => $order->id,
+                        'payment_id' => $lockedPayment->id,
+                        'event_id' => $parsed->eventId,
+                    ]);
+
                     return;
                 }
 
@@ -243,6 +295,7 @@ class ProcessPaymentWebhookAction
                     Log::info('payments.webhook.approved_on_cancelled_order', [
                         'order_id' => $order->id,
                         'payment_id' => $lockedPayment->id,
+                        'event_id' => $parsed->eventId,
                     ]);
 
                     return;

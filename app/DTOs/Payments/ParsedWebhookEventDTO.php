@@ -20,5 +20,9 @@ readonly class ParsedWebhookEventDTO
         public ?string $externalId = null,
         public ?string $paymentMethod = null,
         public ?string $providerPaymentIntent = null,
+        /** Minor units when the provider exposes them; null = skip amount check. */
+        public ?int $amount = null,
+        /** ISO currency code when present (normalized upper); null = skip currency check. */
+        public ?string $currency = null,
     ) {}
 }

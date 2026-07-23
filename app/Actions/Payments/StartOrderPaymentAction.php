@@ -37,7 +37,10 @@ class StartOrderPaymentAction
      */
     public function __invoke(int $orderId): StartOrderPaymentResultDTO
     {
-        return DB::transaction(function () use ($orderId): StartOrderPaymentResultDTO {
+        // Keep DB locks only for order validation + Payment insert.
+        // Provider HTTP must not run inside lockForUpdate (availability under load).
+        /** @var array{order: Order, payment: Payment, returns: HostedCheckoutReturnDTO} $prepared */
+        $prepared = DB::transaction(function () use ($orderId): array {
             /** @var Order $order */
             $order = Order::query()
                 ->with(['items'])
@@ -69,6 +72,7 @@ class StartOrderPaymentAction
                 'refunded_at' => null,
             ]);
 
+            // Signed return URLs are bearer tokens — only passed to the provider, never logged.
             $returns = new HostedCheckoutReturnDTO(
                 successUrl: URL::temporarySignedRoute(
                     'orders.thank-you',
@@ -82,19 +86,50 @@ class StartOrderPaymentAction
                 ),
             );
 
+            return [
+                'order' => $order,
+                'payment' => $payment,
+                'returns' => $returns,
+            ];
+        });
+
+        $order = $prepared['order'];
+        $payment = $prepared['payment'];
+        $returns = $prepared['returns'];
+        $provider = $payment->provider;
+
+        try {
             $gateway = $this->gatewayResolver->for($provider);
             $session = $gateway->createHostedCheckout($order, $payment, $returns);
+        } catch (PaymentGatewayException $e) {
+            $this->discardUnstartedPayment($payment);
+            throw $e;
+        } catch (Throwable $e) {
+            $this->discardUnstartedPayment($payment);
+            throw PaymentGatewayException::make($e);
+        }
 
-            $payment->update([
-                'external_id' => $session->externalId,
-                'raw_response' => $session->raw,
-            ]);
+        $payment->update([
+            'external_id' => $session->externalId,
+            'raw_response' => $session->raw,
+        ]);
 
-            return new StartOrderPaymentResultDTO(
-                payment: $payment->fresh() ?? $payment,
-                redirectUrl: $session->redirectUrl,
-            );
-        });
+        return new StartOrderPaymentResultDTO(
+            payment: $payment->fresh() ?? $payment,
+            redirectUrl: $session->redirectUrl,
+        );
+    }
+
+    /**
+     * Remove a pending payment that never obtained a provider session (failed create).
+     */
+    private function discardUnstartedPayment(Payment $payment): void
+    {
+        if ($payment->external_id !== null || $payment->status !== PaymentStatusEnum::Pending) {
+            return;
+        }
+
+        $payment->delete();
     }
 
     /**

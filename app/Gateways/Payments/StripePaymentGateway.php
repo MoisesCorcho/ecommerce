@@ -32,6 +32,7 @@ class StripePaymentGateway implements PaymentGatewayInterface
 
         try {
             $response = Http::asForm()
+                ->timeout(15)
                 ->withToken($secret)
                 ->post($base.'/v1/checkout/sessions', [
                     'mode' => 'payment',
@@ -130,6 +131,18 @@ class StripePaymentGateway implements PaymentGatewayInterface
         $paymentIntent = isset($object['payment_intent']) ? (string) $object['payment_intent'] : null;
         $paymentMethod = null;
 
+        $amount = null;
+        if (isset($object['amount_total']) && is_numeric($object['amount_total'])) {
+            $amount = (int) $object['amount_total'];
+        } elseif (isset($object['amount']) && is_numeric($object['amount'])) {
+            $amount = (int) $object['amount'];
+        }
+
+        $currency = null;
+        if (isset($object['currency']) && is_string($object['currency']) && $object['currency'] !== '') {
+            $currency = strtoupper($object['currency']);
+        }
+
         $outcome = match ($eventType) {
             'checkout.session.completed',
             'payment_intent.succeeded' => PaymentWebhookOutcomeEnum::Approved,
@@ -157,6 +170,8 @@ class StripePaymentGateway implements PaymentGatewayInterface
             externalId: $externalId,
             paymentMethod: $paymentMethod,
             providerPaymentIntent: $paymentIntent,
+            amount: $amount,
+            currency: $currency,
         );
     }
 }

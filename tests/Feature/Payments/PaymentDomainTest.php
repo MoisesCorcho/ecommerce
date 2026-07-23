@@ -12,6 +12,7 @@ use App\Enums\Payments\PaymentProviderEnum;
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Exceptions\Payments\InvalidPaymentWebhookSignatureException;
 use App\Exceptions\Payments\OrderNotPayableException;
+use App\Exceptions\Payments\PaymentGatewayException;
 use App\Exceptions\Payments\PaymentStockUnavailableException;
 use App\Gateways\Payments\FakePaymentGateway;
 use App\Models\Order;
@@ -104,6 +105,23 @@ class PaymentDomainTest extends TestCase
             app(StartOrderPaymentAction::class)($order->id);
             $this->fail('Expected PaymentStockUnavailableException');
         } catch (PaymentStockUnavailableException) {
+            $this->assertSame(0, Payment::query()->count());
+            $this->assertCount(0, $this->fakeGateway->createdSessions);
+        }
+    }
+
+    public function test_start_pay_discards_payment_when_gateway_create_fails(): void
+    {
+        $user = User::factory()->create();
+        $variant = $this->createVariant(stock: 4);
+        $order = $this->createPendingOrder($user, CurrencyEnum::Eur, 8_000, $variant, 1);
+
+        $this->fakeGateway->shouldFailCreate = true;
+
+        try {
+            app(StartOrderPaymentAction::class)($order->id);
+            $this->fail('Expected PaymentGatewayException');
+        } catch (PaymentGatewayException) {
             $this->assertSame(0, Payment::query()->count());
             $this->assertCount(0, $this->fakeGateway->createdSessions);
         }
@@ -241,6 +259,44 @@ class PaymentDomainTest extends TestCase
 
         $this->assertSame('duplicate', $again['status']);
         $this->assertSame(6, (int) $variant->fresh()->stock);
+    }
+
+    public function test_webhook_approved_with_amount_mismatch_does_not_mark_paid(): void
+    {
+        Log::spy();
+
+        $user = User::factory()->create();
+        $variant = $this->createVariant(stock: 5);
+        $order = $this->createPendingOrder($user, CurrencyEnum::Eur, 5_000, $variant, 1);
+        $payment = Payment::factory()->stripe()->create([
+            'order_id' => $order->id,
+            'status' => PaymentStatusEnum::Pending,
+            'amount' => 5_000,
+            'currency' => CurrencyEnum::Eur,
+            'external_id' => 'fake_sess_amt',
+        ]);
+
+        $payload = json_encode([
+            'event_id' => 'evt_amt_mismatch',
+            'event_type' => 'fake.approved',
+            'outcome' => 'approved',
+            'payment_id' => $payment->id,
+            'amount' => 1,
+        ], JSON_THROW_ON_ERROR);
+
+        $result = app(ProcessPaymentWebhookAction::class)(
+            PaymentProviderEnum::Stripe,
+            $payload,
+            $this->fakeGateway->sign($payload),
+        );
+
+        $this->assertSame('processed', $result['status']);
+        $this->assertSame(PaymentStatusEnum::Pending, $payment->fresh()->status);
+        $this->assertSame(OrderStatusEnum::Pending, $order->fresh()->status);
+        $this->assertSame(5, (int) $variant->fresh()->stock);
+        Log::shouldHaveReceived('error')->withArgs(
+            fn (string $message): bool => $message === 'payments.webhook.amount_mismatch',
+        );
     }
 
     public function test_webhook_approved_stock_fail_d25(): void

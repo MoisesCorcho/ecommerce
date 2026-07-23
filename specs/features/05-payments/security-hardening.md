@@ -89,13 +89,13 @@ Este documento deja **constancia** de:
 
 Usar como mini-tasks fuera del DoD original de F05:
 
-- [ ] SH-01 Bold prod reject empty signing secret  
-- [ ] SH-02 Stripe `Http::timeout`  
-- [ ] SH-03 Start pay: HTTP fuera del lock  
-- [ ] SH-04 Throttle `orders.pay`  
-- [ ] SH-05 Amount/currency check on approved webhook (si payload lo trae)  
-- [ ] SH-06 Logs/alert keys estables (D25, multi-approved, payment_not_found)  
-- [ ] SH-07 No full signed URLs in logs  
+- [ ] SH-01 Bold prod reject empty signing secret *(ops/env al deploy; no required en dev)*  
+- [x] SH-02 Stripe `Http::timeout`  
+- [x] SH-03 Start pay: HTTP fuera del lock  
+- [x] SH-04 Throttle `orders.pay`  
+- [x] SH-05 Amount/currency check on approved webhook (si payload lo trae)  
+- [x] SH-06 Logs/alert keys estables (D25, multi-approved, payment_not_found)  
+- [x] SH-07 No full signed URLs in logs *(convención en Action; no había logs con URL firmada)*  
 - [ ] SH-08 Throttle webhooks (evaluar vs WAF)  
 - [ ] SH-09–SH-11 según capacidad  
 
@@ -187,3 +187,4 @@ Checklist fuera del código de feature, **obligatorio** antes de dinero real:
 | Fecha | Cambio |
 |-------|--------|
 | 2026-07-22 | Documento inicial tras audit F05 + skill `marketplace-security`; registra FIX-01…03 y backlog SH-/RES- |
+| 2026-07-22 | Hardening en código (dev-safe): SH-02…SH-07 implementados; SH-01 dejado a ops de deploy |

@@ -71,6 +71,13 @@ class FakePaymentGateway implements PaymentGatewayInterface
 
         $outcome = PaymentWebhookOutcomeEnum::from((string) ($payload['outcome'] ?? 'ignored'));
 
+        $amount = isset($payload['amount']) && is_numeric($payload['amount'])
+            ? (int) $payload['amount']
+            : null;
+        $currency = isset($payload['currency']) && is_string($payload['currency']) && $payload['currency'] !== ''
+            ? strtoupper($payload['currency'])
+            : null;
+
         return new ParsedWebhookEventDTO(
             eventId: (string) ($payload['event_id'] ?? ''),
             eventType: (string) ($payload['event_type'] ?? 'fake.event'),
@@ -80,6 +87,8 @@ class FakePaymentGateway implements PaymentGatewayInterface
             externalId: isset($payload['external_id']) ? (string) $payload['external_id'] : null,
             paymentMethod: isset($payload['payment_method']) ? (string) $payload['payment_method'] : null,
             providerPaymentIntent: isset($payload['payment_intent']) ? (string) $payload['payment_intent'] : null,
+            amount: $amount,
+            currency: $currency,
         );
     }
 

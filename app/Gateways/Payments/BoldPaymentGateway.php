@@ -162,6 +162,20 @@ class BoldPaymentGateway implements PaymentGatewayInterface
 
         $paymentMethod = isset($data['payment_method']) ? (string) $data['payment_method'] : null;
 
+        $amount = null;
+        if (isset($data['amount']['total']) && is_numeric($data['amount']['total'])) {
+            $amount = (int) $data['amount']['total'];
+        } elseif (isset($data['amount']) && is_numeric($data['amount'])) {
+            $amount = (int) $data['amount'];
+        }
+
+        $currency = null;
+        if (isset($data['amount']['currency']) && is_string($data['amount']['currency']) && $data['amount']['currency'] !== '') {
+            $currency = strtoupper($data['amount']['currency']);
+        } elseif (isset($data['currency']) && is_string($data['currency']) && $data['currency'] !== '') {
+            $currency = strtoupper($data['currency']);
+        }
+
         $outcome = match ($eventType) {
             'SALE_APPROVED' => PaymentWebhookOutcomeEnum::Approved,
             'SALE_REJECTED' => PaymentWebhookOutcomeEnum::Declined,
@@ -177,6 +191,8 @@ class BoldPaymentGateway implements PaymentGatewayInterface
             paymentId: $paymentId,
             externalId: $externalId,
             paymentMethod: $paymentMethod,
+            amount: $amount,
+            currency: $currency,
         );
     }
 
