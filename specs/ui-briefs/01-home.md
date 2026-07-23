@@ -104,7 +104,7 @@ El usuario podrá:
 
 ## Fuera de alcance (diferido)
 
-- **Administración del contenido desde panel** — el Home es estático (D1). Cambios requieren editar Blade.
+- **Administración del contenido desde panel** — el contenido institucional del Home (Hero, historia, beneficios, redes) es estático (D1); las secciones de catálogo (categorías, productos destacados) son dinámicas vía Livewire. Cambios de contenido institucional requieren editar Blade.
 - **Integración con API de Instagram** — solo enlaces externos por ahora.
 - **Promociones temporales / banners dinámicos** — requiere CMS (no planeado).
 - **Testimonios de clientes** — requiere feature de reviews (F07).

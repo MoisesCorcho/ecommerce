@@ -120,6 +120,60 @@ Soft Sand deberá utilizarse únicamente para generar contraste entre secciones.
 
 ---
 
+# Colores Semánticos
+
+Colores para estados de validación, feedback y comunicación funcional. Deben mantener tonos cálidos consistentes con la paleta de marca.
+
+## Error
+
+Color para mensajes de error y validaciones fallidas.
+
+**HEX**
+
+```text
+#B33A3A
+```
+
+Uso:
+
+- Mensajes de error.
+- Validaciones fallidas.
+- Indicadores de fortaleza baja (contraseña débil).
+- Campos inválidos.
+
+---
+
+## Éxito
+
+Color para confirmaciones y operaciones completadas.
+
+**HEX**
+
+```text
+#5A8A4A
+```
+
+Uso:
+
+- Confirmaciones.
+- Validaciones exitosas.
+- Indicadores de fortaleza alta (contraseña fuerte).
+- Operaciones completadas.
+
+---
+
+## Advertencia
+
+Se utiliza **Soft Gold** (`#D2AE36`) ya definido en la paleta de marca.
+
+Uso:
+
+- Advertencias no críticas.
+- Indicadores de fortaleza media.
+- Mensajes informativos que requieren atención.
+
+---
+
 # Tipografía
 
 ## Resumen de familias
@@ -216,6 +270,103 @@ Para web, priorizar `.woff2` y `.woff` con `@font-face` o cargados vía CSS.
 
 ---
 
+# Escala Tipográfica
+
+Definición de tamaños, pesos y line-heights para cada nivel de la jerarquía tipográfica.
+
+## Display LG
+
+| Propiedad | Desktop | Móvil |
+|-----------|---------|-------|
+| Familia | Chillax | Chillax |
+| Tamaño | 64px | 40px |
+| Peso | 300 (Light) | 300 (Light) |
+| Line-height | 1.1 | 1.2 |
+| Letter-spacing | -0.02em | -0.01em |
+
+Uso: títulos principales de página, hero headlines.
+
+---
+
+## Headline MD
+
+| Propiedad | Valor |
+|-----------|-------|
+| Familia | Chillax |
+| Tamaño | 32px |
+| Peso | 400 (Regular) |
+| Line-height | 1.3 |
+
+Uso: subtítulos de sección, títulos de bloques.
+
+---
+
+## Headline SM
+
+| Propiedad | Valor |
+|-----------|-------|
+| Familia | Chillax |
+| Tamaño | 24px |
+| Peso | 500 (Medium) |
+| Line-height | 1.4 |
+
+Uso: títulos de tarjeta, nombres de producto, precios destacados.
+
+---
+
+## Body LG
+
+| Propiedad | Valor |
+|-----------|-------|
+| Familia | Montserrat |
+| Tamaño | 18px |
+| Peso | 400 (Regular) |
+| Line-height | 1.6 |
+
+Uso: descripciones de producto, texto editorial.
+
+---
+
+## Body MD
+
+| Propiedad | Valor |
+|-----------|-------|
+| Familia | Montserrat |
+| Tamaño | 16px |
+| Peso | 400 (Regular) |
+| Line-height | 1.6 |
+
+Uso: párrafos, cuerpo de texto, descripciones.
+
+---
+
+## Label Caps
+
+| Propiedad | Valor |
+|-----------|-------|
+| Familia | Montserrat |
+| Tamaño | 12px |
+| Peso | 600 (SemiBold) |
+| Line-height | 1.0 |
+| Letter-spacing | 0.1em |
+
+Uso: navegación, etiquetas, categorías, captions en mayúsculas con tracking amplio.
+
+---
+
+## Accent Script
+
+| Propiedad | Valor |
+|-----------|-------|
+| Familia | La Belle Aurore |
+| Tamaño | 28px |
+| Peso | 400 (Regular) |
+| Line-height | 1.0 |
+
+Uso: frases decorativas, detalles emocionales, firma de marca. Usar con moderación.
+
+---
+
 # Logo
 
 El sistema deberá soportar las diferentes variantes oficiales del logotipo.
@@ -252,6 +403,45 @@ La sensación general deberá ser limpia y premium.
 
 ---
 
+# Layout y Grid
+
+## Grid principal
+
+- **12 columnas** en desktop.
+- **Max-width**: 1440px.
+- **Márgenes laterales**: 80px en desktop, 20px en móvil.
+- **Gutter** (separación entre columnas): 24px.
+
+## Ritmo vertical
+
+- **Section-gap**: 120px entre secciones principales.
+- Esto asegura que las historias de producto o secciones editoriales no se sientan amontonadas.
+
+## Grid de productos
+
+- Máximo **3 columnas** para listados de productos.
+- Excepcionalmente 2 columnas para destacar imágenes grandes.
+- Evitar 4 o más columnas — las imágenes deben ser grandes y los detalles visibles.
+
+---
+
+# Spacing
+
+Tokens de espaciado para mantener consistencia vertical y horizontal.
+
+| Token | Valor | Uso |
+|-------|-------|-----|
+| `container-max` | 1440px | Ancho máximo del contenedor principal |
+| `gutter` | 24px | Separación entre columnas del grid |
+| `margin-desktop` | 80px | Márgenes laterales en desktop |
+| `margin-mobile` | 20px | Márgenes laterales en móvil |
+| `section-gap` | 120px | Separación vertical entre secciones |
+| `stack-lg` | 32px | Separación entre elementos grandes |
+| `stack-md` | 16px | Separación entre elementos medianos |
+| `stack-sm` | 8px | Separación entre elementos pequeños |
+
+---
+
 # Estilo Visual
 
 La interfaz deberá seguir los siguientes principios:
@@ -264,6 +454,47 @@ La interfaz deberá seguir los siguientes principios:
 - Componentes simples.
 - Bordes discretos.
 - Sombras suaves.
+
+---
+
+# Elevación y Profundidad
+
+El sistema prioriza **layering tonal** sobre sombras para crear profundidad.
+
+## Superficies
+
+Usar `Soft Sand` (`#E9DED3`) para tarjetas o secciones inset, creando profundidad sin drop shadows.
+
+## Sombras
+
+Cuando sea necesario (ej: hover sobre una product card), usar una sombra suave y difusa:
+
+```text
+0px 10px 30px rgba(55, 38, 33, 0.05)
+```
+
+La sombra debe sentirse como luz ambiental, no como un efecto digital.
+
+## Bordes
+
+Usar bordes finos de 1px en `Intense Cocoa` (`#372621`) con 10-15% de opacidad para definir límites de UI como campos de entrada y separadores de navegación.
+
+---
+
+# Formas y Radius
+
+El lenguaje de formas es **sharp to soft** — formas rectilíneas dominan el layout.
+
+| Token | Valor | Uso |
+|-------|-------|-----|
+| `sm` | 0.125rem (2px) | Elementos pequeños |
+| `DEFAULT` | 0.25rem (4px) | Botones, inputs — radio por defecto |
+| `md` | 0.375rem (6px) | Elementos medianos |
+| `lg` | 0.5rem (8px) | Cards, contenedores |
+| `xl` | 0.75rem (12px) | Elementos grandes |
+| `full` | 9999px | Elementos circulares |
+
+**Imágenes de producto**: siempre 0px (sharp) para preservar la integridad editorial y fotográfica.
 
 ---
 
@@ -341,3 +572,61 @@ Toda decisión visual deberá responder a los siguientes principios:
 - El contenido debe respirar mediante el uso de espacios en blanco.
 - La consistencia visual tiene prioridad sobre la variedad.
 - Cada componente debe tener un propósito claro dentro de la interfaz.
+
+---
+
+# Componentes
+
+Especificaciones de los componentes base del sistema.
+
+## Botones
+
+- **Primario**: fondo `Intense Cocoa`, texto `Silk Cream`, radius 4px. Hover: fondo → `Soft Gold`.
+- **Secundario**: border 1px `Intense Cocoa`, sin fill. Hover: fondo `Soft Sand`.
+- Tipografía: `Montserrat` Medium o SemiBold.
+
+---
+
+## Campos de entrada
+
+- Diseño minimalista con **solo border inferior** de `Intense Cocoa` al 30% de opacidad.
+- En focus, el border pasa a 100% de opacidad.
+- Sin border en los lados ni arriba.
+- Tipografía: `Montserrat` Regular.
+
+---
+
+## Product Cards
+
+- Sin bordes.
+- La imagen ocupa el ancho completo (aspecto 4:5).
+- Categoría en `label-caps`.
+- Nombre de producto en `body-md`.
+- Precio en `headline-sm`.
+- Hover: zoom suave de la imagen (`duration-700`).
+
+---
+
+## Navegación
+
+- Top nav con `label-caps` y tracking amplio.
+- Estado activo: subrayado de 2px en `Soft Gold`.
+- Logo centrado en la barra de navegación.
+- Iconos de acción a la derecha (búsqueda, favoritos, carrito).
+
+---
+
+## Chips y Badges
+
+- Rellenos con `Soft Sand`, texto `Intense Cocoa`.
+- Tipografía: `Montserrat` Bold 10px.
+- Uso: "New Arrival", "Limited Edition", "Agotado", estados de stock.
+
+---
+
+## Iconografía
+
+- Tamaño: 24px.
+- Grosor de trazo: 1.5pt.
+- Color principal: `Intense Cocoa`.
+- `Soft Gold` únicamente para estados destacados o activos.

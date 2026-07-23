@@ -34,7 +34,7 @@ class CartLivewireTest extends TestCase
             ->assertSet('selectedVariantId', $variant->id)
             ->set('quantity', 2)
             ->call('addToCart')
-            ->assertSet('statusMessage', 'Agregado al carrito.')
+            ->assertSet('statusMessage', __('storefront.added_to_cart'))
             ->assertHasNoErrors();
 
         $this->assertDatabaseHas('cart_items', [

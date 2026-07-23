@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 
 #[Fillable([
     'category_id',
@@ -79,6 +80,35 @@ class Product extends Model
             ->orderByDesc('is_primary')
             ->orderBy('sort_order')
             ->first();
+    }
+
+    /**
+     * Whether all active variants are out of stock.
+     * Preorder products are never considered out of stock.
+     */
+    public function isOutOfStock(): bool
+    {
+        if ($this->is_preorder) {
+            return false;
+        }
+
+        return $this->variants
+            ->filter(fn (ProductVariant $v): bool => $v->is_active)
+            ->every(fn (ProductVariant $v): bool => $v->stock <= 0);
+    }
+
+    /**
+     * Unique color strings from active variants.
+     *
+     * @return Collection<int, string>
+     */
+    public function availableColors(): Collection
+    {
+        return $this->variants
+            ->filter(fn (ProductVariant $v): bool => $v->is_active && $v->color !== null)
+            ->pluck('color')
+            ->unique()
+            ->values();
     }
 
     /**

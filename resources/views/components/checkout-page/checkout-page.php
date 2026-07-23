@@ -13,10 +13,11 @@ use App\Models\Address;
 use App\Support\Cart\ResolvesCurrentCart;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Title('Checkout')] class extends Component
+new #[Layout('layouts.storefront'), Title('Checkout')] class extends Component
 {
     use ResolvesCurrentCart;
 

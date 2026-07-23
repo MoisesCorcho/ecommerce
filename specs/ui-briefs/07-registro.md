@@ -63,7 +63,7 @@ Página de creación de cuenta para nuevos usuarios. Sensación de bienvenida, s
 - Texto, botones, íconos: **Intense Cocoa** `#372621`
 - Hover, focus, detalles: **Soft Gold** `#D2AE36`
 - Contraste (banner error): **Soft Sand** `#E9DED3`
-- Indicador de fortaleza: rojo (`#B33A3A` aprox) → amarillo (`#D2AE36`) → verde (`#5A8A4A` aprox). Mantener tonos cálidos consistentes con la paleta.
+- Indicador de fortaleza: Error (`#B33A3A`) → Advertencia/Soft Gold (`#D2AE36`) → Éxito (`#5A8A4A`). Ver colores semánticos en `00-design-tokens.md`.
 
 ## Tipografía (ver `00-design-tokens.md`)
 

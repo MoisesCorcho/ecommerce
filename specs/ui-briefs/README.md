@@ -47,7 +47,7 @@ No es necesario pasarle la sección "Para implementación" — contiene datos de
 
 | # | Decisión | Impacto |
 |---|----------|---------|
-| D1 | **Sin CMS** — Home, FAQ y About Us son estáticos en plantillas Blade. El admin NO edita contenido institucional. | Home, FAQ, About Us no requieren entidades ni Filament Resources. Cambios de contenido requieren editar código. |
+| D1 | **Sin CMS** — Home, FAQ, About Us y Contacto son estáticos en plantillas Blade. El admin NO edita contenido institucional. | Home, FAQ, About Us, Contacto no requieren entidades ni Filament Resources para contenido. Cambios de contenido requieren editar código. El formulario de contacto es componente Livewire MFC que envía email. |
 | D2 | **Carrito guest + user** — visitantes no autenticados pueden agregar al carrito y comprar. | Carrito persiste por sesión/cookie para guests; merge al login. |
 | D3 | **Variantes con atributos estructurados** — color, material, tamaño como campos separados. | Permite filtros facetados en Shop y selectores visuales en Producto. Requiere extender modelo de datos. |
 | D4 | **Stock visible** — las vistas muestran inventario disponible y estado "Agotado". | Requiere campo `stock` en modelo. Validación de cantidad en carrito y checkout. |
@@ -78,6 +78,19 @@ No es necesario pasarle la sección "Para implementación" — contiene datos de
 - **Tailwind CSS v4** para estilos.
 - **Blade** para plantillas.
 - **Filament v5** solo para admin (no storefront).
+
+## Decisiones de implementación Livewire MFC
+
+Decisiones resueltas para que los briefs sirvan como insumo sin ambigüedad al implementar las vistas. Aplican además de la convención general (Livewire MFC sin Volt, sin prefijo ⚡).
+
+| ID | Brief | Decisión |
+|----|-------|----------|
+| **PD-1** | `01-home.md` | Blade plano + componentes Livewire MFC anidados. El contenido institucional (Hero, historia, beneficios, redes) va en Blade (D1). Las secciones dinámicas usan sub-componentes Livewire reutilizables: `ProductCard`, `AddToCartButton`, `FavoriteButton` (también se usan en Shop, Wishlist, Producto). No usar un único componente Livewire que orqueste todo Home. |
+| **PD-2** | `06-login.md` | Componente Livewire MFC `LoginForm` con `Auth::attempt()`. Validación en tiempo real, feedback sin recarga. |
+| **PD-3** | `07-registro.md` | Componente Livewire MFC `RegisterForm`. Indicador de fortaleza de contraseña con reactividad Livewire (no Alpine standalone). Validación en tiempo real. |
+| **PD-4** | `10-contacto.md` | Información de contacto como Blade plano (estática D1). Solo el formulario es componente Livewire MFC `ContactForm` que envía email vía `Mail::send()` async. |
+| **PD-5** | `05-checkout.md` | Híbrido: componente orquestador `CheckoutLivewire` (mantiene state del paso actual) + sub-componentes `ShippingForm`, `PaymentForm`, `ReviewSummary` (encapsulan cada sub-formulario). |
+| **PD-6** | `11-faq.md`, `12-about-us.md` | **Diferido al `design.md` de cada feature SDD.** FAQ: acordeón con Alpine.js o `<details>` nativo. About Us: lightbox con Alpine.js o librería ligera. Ambas páginas son Blade plano sin componente Livewire (D1). |
 
 ## Convenciones de los briefs
 

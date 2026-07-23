@@ -99,8 +99,8 @@ Diseñar primero para **desktop** (`lg`/`xl`) con dos columnas. En tablet (`md`)
 
 ## Contexto del proyecto
 
-- **Página estática** (D1): la información de contacto (email, teléfono, WhatsApp, redes) vive en Blade hardcodeada. No es editable desde el panel admin.
-- **Formulario de contacto:** envía un email al correo de la marca usando el sistema de mail de Laravel (configurado en `.env`). No se guarda en base de datos en la primera versión.
+- **Información de contacto estática** (D1): la información (email, teléfono, WhatsApp, redes sociales, horario) vive en Blade hardcodeada. No es editable desde el panel admin.
+- **Formulario de contacto:** se implementa como **componente Livewire MFC** (`app/Livewire/ContactForm.php`) que envía un email al correo de la marca usando el sistema de mail de Laravel (configurado en `.env`). No se guarda en base de datos en la primera versión. Validación en tiempo real y feedback sin recarga.
 - Sin integración con CRM ni sistema de tickets.
 
 ## Acciones del usuario
