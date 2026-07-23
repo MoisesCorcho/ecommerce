@@ -5,6 +5,7 @@ use App\Actions\Orders\ValidateCartForCheckoutAction;
 use App\DTOs\Orders\CheckoutContactDTO;
 use App\DTOs\Orders\CheckoutShippingDTO;
 use App\DTOs\Orders\CreateOrderFromCartDTO;
+use App\Exceptions\Coupons\InvalidCouponException;
 use App\Exceptions\Orders\CheckoutCartEmptyException;
 use App\Exceptions\Orders\CheckoutCartNotReadyException;
 use App\Exceptions\Orders\InvalidCheckoutAddressException;
@@ -51,6 +52,8 @@ new #[Layout('layouts.storefront'), Title('Checkout')] class extends Component
 
     public string $customerNotes = '';
 
+    public string $couponCode = '';
+
     public ?string $errorMessage = null;
 
     /**
@@ -71,6 +74,18 @@ new #[Layout('layouts.storefront'), Title('Checkout')] class extends Component
             $this->addressMode = 'saved';
         }
 
+        $this->loadPreview($validateCartForCheckout);
+    }
+
+    public function updatedCouponCode(ValidateCartForCheckoutAction $validateCartForCheckout): void
+    {
+        $this->errorMessage = null;
+        $this->loadPreview($validateCartForCheckout);
+    }
+
+    public function applyCoupon(ValidateCartForCheckoutAction $validateCartForCheckout): void
+    {
+        $this->errorMessage = null;
         $this->loadPreview($validateCartForCheckout);
     }
 
@@ -127,6 +142,7 @@ new #[Layout('layouts.storefront'), Title('Checkout')] class extends Component
                 userId: $owner->userId,
                 sessionId: $owner->sessionId,
                 customerNotes: $this->customerNotes !== '' ? $this->customerNotes : null,
+                couponCode: $this->normalizedCouponCode(),
             ));
 
             if ($owner->userId !== null) {
@@ -140,6 +156,10 @@ new #[Layout('layouts.storefront'), Title('Checkout')] class extends Component
             );
 
             return $this->redirect($url, navigate: false);
+        } catch (InvalidCouponException $e) {
+            $this->errorMessage = $e->storefrontSafeMessage();
+
+            return null;
         } catch (
             CheckoutCartEmptyException|
             CheckoutCartNotReadyException|
@@ -185,6 +205,7 @@ new #[Layout('layouts.storefront'), Title('Checkout')] class extends Component
             'shippingPostalCode' => ['nullable', 'string', 'max:32'],
             'customerNotes' => ['nullable', 'string', 'max:1000'],
             'addressMode' => ['required', 'in:saved,one_shot'],
+            'couponCode' => ['nullable', 'string', 'max:32'],
         ];
     }
 
@@ -223,7 +244,47 @@ new #[Layout('layouts.storefront'), Title('Checkout')] class extends Component
     {
         try {
             $cart = $this->resolveCurrentCart();
-            $preview = $validateCartForCheckout((int) $cart->id, $this->cartOwner());
+            $preview = $validateCartForCheckout(
+                (int) $cart->id,
+                $this->cartOwner(),
+                $this->normalizedCouponCode(),
+            );
+
+            $this->preview = [
+                'cartId' => $preview->cartId,
+                'currency' => $preview->currency->value,
+                'subtotal' => $preview->subtotal,
+                'shippingCost' => $preview->shippingCost,
+                'discount' => $preview->discount,
+                'taxAmount' => $preview->taxAmount,
+                'total' => $preview->total,
+                'lines' => array_map(
+                    static fn ($line): array => [
+                        'productVariantId' => $line->productVariantId,
+                        'productName' => $line->productName,
+                        'variantLabel' => $line->variantLabel,
+                        'sku' => $line->sku,
+                        'unitPrice' => $line->unitPrice,
+                        'quantity' => $line->quantity,
+                        'lineSubtotal' => $line->lineSubtotal,
+                    ],
+                    $preview->lines,
+                ),
+            ];
+        } catch (InvalidCouponException $e) {
+            $this->errorMessage = $e->storefrontSafeMessage();
+            $this->loadPreviewWithoutCoupon($validateCartForCheckout);
+        } catch (CheckoutCartEmptyException|CheckoutCartNotReadyException|OrderAccessDeniedException $e) {
+            session()->flash('checkout_error', $e->getMessage());
+            $this->redirect(route('cart.page'), navigate: false);
+        }
+    }
+
+    private function loadPreviewWithoutCoupon(ValidateCartForCheckoutAction $validateCartForCheckout): void
+    {
+        try {
+            $cart = $this->resolveCurrentCart();
+            $preview = $validateCartForCheckout((int) $cart->id, $this->cartOwner(), null);
 
             $this->preview = [
                 'cartId' => $preview->cartId,
@@ -250,5 +311,12 @@ new #[Layout('layouts.storefront'), Title('Checkout')] class extends Component
             session()->flash('checkout_error', $e->getMessage());
             $this->redirect(route('cart.page'), navigate: false);
         }
+    }
+
+    private function normalizedCouponCode(): ?string
+    {
+        $trimmed = trim($this->couponCode);
+
+        return $trimmed === '' ? null : $trimmed;
     }
 };

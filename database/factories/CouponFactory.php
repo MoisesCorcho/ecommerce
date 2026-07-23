@@ -54,4 +54,57 @@ class CouponFactory extends Factory
             'currency' => null,
         ]);
     }
+
+    public function inactive(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_active' => false,
+        ]);
+    }
+
+    public function expired(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'starts_at' => now()->subMonths(2),
+            'expires_at' => now()->subDay(),
+        ]);
+    }
+
+    public function notStarted(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'starts_at' => now()->addDay(),
+            'expires_at' => now()->addMonth(),
+        ]);
+    }
+
+    public function unlimited(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'usage_limit' => null,
+            'usage_limit_per_user' => null,
+        ]);
+    }
+
+    public function withUsageLimit(int $limit): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'usage_limit' => $limit,
+        ]);
+    }
+
+    public function withPerUserLimit(int $limit): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'usage_limit_per_user' => $limit,
+        ]);
+    }
+
+    public function minOrder(int $amount, CurrencyEnum $currency): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'min_order_amount' => $amount,
+            'min_order_currency' => $currency,
+        ]);
+    }
 }

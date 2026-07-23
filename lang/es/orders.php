@@ -20,6 +20,7 @@ return [
         'subtotal' => 'Subtotal',
         'shipping_cost' => 'Envío',
         'discount' => 'Descuento',
+        'coupon_code' => 'Código de cupón',
         'tax_amount' => 'Impuestos',
         'total' => 'Total',
         'customer_notes' => 'Notas del pedido',

@@ -1,6 +1,6 @@
 # F06 — Cupones y redenciones
 
-> **Estado:** Lista para implementar  
+> **Estado:** Completa  
 > **ID:** F06 · **Slug:** `06-coupons`  
 > **Prerequisitos:** F03 (carrito), F04 (checkout y órdenes) — ver [`01-product-and-roadmap.md`](../../_global/01-product-and-roadmap.md)  
 > **Desbloquea:** descuento real en órdenes; handoff a F05 sin recálculo al pagar

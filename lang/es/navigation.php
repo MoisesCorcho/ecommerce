@@ -7,5 +7,6 @@ return [
         'accounts' => 'Cuentas',
         'catalog' => 'Catálogo',
         'orders' => 'Pedidos',
+        'commerce' => 'Comercio',
     ],
 ];

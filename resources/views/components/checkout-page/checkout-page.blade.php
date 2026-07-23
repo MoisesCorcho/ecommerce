@@ -122,6 +122,30 @@
                 </section>
 
                 <section class="rounded-xl border border-stone-200 bg-white p-5">
+                    <h2 class="mb-4 text-lg font-semibold">{{ __('orders.fields.coupon_code') }}</h2>
+                    <div class="flex flex-col gap-3 sm:flex-row">
+                        <input
+                            id="couponCode"
+                            type="text"
+                            wire:model="couponCode"
+                            maxlength="32"
+                            class="w-full rounded-md border border-stone-300 px-3 py-2 text-sm uppercase"
+                            data-checkout-coupon
+                            autocomplete="off"
+                        />
+                        <button
+                            type="button"
+                            wire:click="applyCoupon"
+                            class="rounded-md border border-stone-300 px-4 py-2 text-sm font-medium text-stone-800 hover:bg-stone-50"
+                            data-checkout-apply-coupon
+                        >
+                            {{ __('orders.fields.coupon_code') }}
+                        </button>
+                    </div>
+                    @error('couponCode') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                </section>
+
+                <section class="rounded-xl border border-stone-200 bg-white p-5">
                     <h2 class="mb-4 text-lg font-semibold">{{ __('orders.sections.notes') }}</h2>
                     <textarea wire:model="customerNotes" rows="3" class="w-full rounded-md border border-stone-300 px-3 py-2 text-sm" data-checkout-notes></textarea>
                     @error('customerNotes') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
@@ -163,6 +187,12 @@
                             <dt>{{ __('orders.shipping.standard') }}</dt>
                             <dd>{{ number_format($preview['shippingCost']) }} {{ $preview['currency'] }}</dd>
                         </div>
+                        @if (($preview['discount'] ?? 0) > 0)
+                            <div class="flex justify-between text-emerald-700" data-checkout-discount>
+                                <dt>{{ __('orders.fields.discount') }}</dt>
+                                <dd>−{{ number_format($preview['discount']) }} {{ $preview['currency'] }}</dd>
+                            </div>
+                        @endif
                         <div class="flex justify-between text-base font-semibold">
                             <dt>{{ __('orders.fields.total') }}</dt>
                             <dd data-checkout-total>{{ number_format($preview['total']) }} {{ $preview['currency'] }}</dd>
