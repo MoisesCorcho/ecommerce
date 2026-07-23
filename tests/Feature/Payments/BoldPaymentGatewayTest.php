@@ -9,6 +9,7 @@ use App\Enums\Commerce\CurrencyEnum;
 use App\Enums\Orders\OrderStatusEnum;
 use App\Enums\Payments\PaymentProviderEnum;
 use App\Enums\Payments\PaymentStatusEnum;
+use App\Exceptions\Payments\InvalidPaymentWebhookSignatureException;
 use App\Exceptions\Payments\PaymentGatewayException;
 use App\Gateways\Payments\BoldPaymentGateway;
 use App\Models\Order;
@@ -122,6 +123,53 @@ class BoldPaymentGatewayTest extends TestCase
                 cancelUrl: 'https://shop.example.com/cancel',
             ),
         );
+    }
+
+    public function test_webhook_signature_accepts_empty_secret_in_test_mode(): void
+    {
+        // Bold docs: test-mode webhooks are signed with secret = "".
+        config([
+            'ecommerce.payments.bold.webhook_secret' => '',
+            'ecommerce.payments.bold.secret_key' => 'should-not-be-used-in-test',
+        ]);
+
+        $payload = '{"id":"evt_test_1","type":"SALE_APPROVED","data":{}}';
+        $signature = hash_hmac('sha256', base64_encode($payload), '');
+
+        app(BoldPaymentGateway::class)->verifyWebhookSignature($payload, $signature);
+
+        $this->addToAssertionCount(1);
+    }
+
+    public function test_webhook_signature_uses_secret_key_when_webhook_secret_unset(): void
+    {
+        config([
+            'ecommerce.payments.bold.webhook_secret' => null,
+            'ecommerce.payments.bold.secret_key' => 'prod-secret-key',
+        ]);
+
+        $payload = '{"id":"evt_prod_1","type":"SALE_APPROVED","data":{}}';
+        $signature = hash_hmac('sha256', base64_encode($payload), 'prod-secret-key');
+
+        app(BoldPaymentGateway::class)->verifyWebhookSignature($payload, $signature);
+
+        $this->addToAssertionCount(1);
+    }
+
+    public function test_webhook_signature_rejects_wrong_secret(): void
+    {
+        config([
+            'ecommerce.payments.bold.webhook_secret' => '',
+            'ecommerce.payments.bold.secret_key' => 'prod-secret-key',
+        ]);
+
+        $payload = '{"id":"evt_bad","type":"SALE_APPROVED","data":{}}';
+        // Signed as if production secret were used — must fail in test mode.
+        $signature = hash_hmac('sha256', base64_encode($payload), 'prod-secret-key');
+
+        $this->expectException(InvalidPaymentWebhookSignatureException::class);
+
+        app(BoldPaymentGateway::class)->verifyWebhookSignature($payload, $signature);
     }
 
     /**

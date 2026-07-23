@@ -103,23 +103,38 @@ class BoldPaymentGateway implements PaymentGatewayInterface
 
     public function verifyWebhookSignature(string $rawPayload, string $signatureHeader): void
     {
-        $secret = (string) (
-            config('ecommerce.payments.bold.webhook_secret')
-            ?: config('ecommerce.payments.bold.secret_key')
-            ?: ''
-        );
-
-        if ($secret === '' || $signatureHeader === '') {
+        if ($signatureHeader === '') {
             throw InvalidPaymentWebhookSignatureException::make();
         }
 
-        // Bold: Base64(body) then HMAC-SHA256 hex with secret key.
+        // Bold: Base64(body) → HMAC-SHA256 hex (header x-bold-signature).
+        // Production: signature secret key.
+        // Test mode (docs): secret MUST be empty string "" — not the prod secret_key.
+        $secret = $this->webhookSigningSecret();
         $encoded = base64_encode($rawPayload);
         $expected = hash_hmac('sha256', $encoded, $secret);
 
         if (! hash_equals($expected, $signatureHeader)) {
             throw InvalidPaymentWebhookSignatureException::make();
         }
+    }
+
+    /**
+     * Resolve the HMAC key for Bold webhooks.
+     *
+     * - BOLD_WEBHOOK_SECRET set (including empty "") → use as-is (empty = test mode).
+     * - Unset → fall back to BOLD_SECRET_KEY for production.
+     */
+    private function webhookSigningSecret(): string
+    {
+        $webhookSecret = config('ecommerce.payments.bold.webhook_secret');
+
+        // null/missing: fall back. Explicit "" is valid (Bold sandbox).
+        if ($webhookSecret !== null) {
+            return (string) $webhookSecret;
+        }
+
+        return (string) (config('ecommerce.payments.bold.secret_key') ?? '');
     }
 
     public function parseWebhook(string $rawPayload): ParsedWebhookEventDTO
