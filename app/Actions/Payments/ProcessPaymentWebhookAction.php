@@ -48,15 +48,11 @@ class ProcessPaymentWebhookAction
             return ['status' => 'ignored', 'event_id' => null];
         }
 
-        $event = $this->persistEvent($provider, $parsed);
+        $event = $this->claimEventForProcessing($provider, $parsed);
 
         if ($event === null) {
-            // Duplicate (provider, event_id) — already processed or in flight; ack without re-applying.
+            // Fully processed earlier (processed_at set) — ack without re-applying.
             return ['status' => 'duplicate', 'event_id' => $parsed->eventId];
-        }
-
-        if ($event->processed_at !== null) {
-            return ['status' => 'already_processed', 'event_id' => $parsed->eventId];
         }
 
         try {
@@ -71,9 +67,11 @@ class ProcessPaymentWebhookAction
     }
 
     /**
-     * @return PaymentWebhookEvent|null Null when unique constraint hits (duplicate delivery).
+     * Insert a new webhook event or reclaim an incomplete one for retry.
+     *
+     * @return PaymentWebhookEvent|null Null when the event is already fully processed.
      */
-    private function persistEvent(PaymentProviderEnum $provider, ParsedWebhookEventDTO $parsed): ?PaymentWebhookEvent
+    private function claimEventForProcessing(PaymentProviderEnum $provider, ParsedWebhookEventDTO $parsed): ?PaymentWebhookEvent
     {
         try {
             return PaymentWebhookEvent::query()->create([
@@ -84,12 +82,36 @@ class ProcessPaymentWebhookAction
                 'processed_at' => null,
             ]);
         } catch (QueryException $e) {
-            if ($this->isUniqueViolation($e)) {
+            if (! $this->isUniqueViolation($e)) {
+                throw $e;
+            }
+        }
+
+        // Unique hit: either fully processed (ack) or incomplete after a prior 5xx (re-apply).
+        return DB::transaction(function () use ($provider, $parsed): ?PaymentWebhookEvent {
+            /** @var PaymentWebhookEvent|null $existing */
+            $existing = PaymentWebhookEvent::query()
+                ->where('provider', $provider)
+                ->where('event_id', $parsed->eventId)
+                ->lockForUpdate()
+                ->first();
+
+            if ($existing === null) {
                 return null;
             }
 
-            throw $e;
-        }
+            if ($existing->processed_at !== null) {
+                return null;
+            }
+
+            // Keep the latest parsed payload/type for debugging incomplete retries.
+            $existing->update([
+                'event_type' => $parsed->eventType,
+                'payload' => $parsed->payload,
+            ]);
+
+            return $existing->fresh();
+        });
     }
 
     private function isUniqueViolation(QueryException $e): bool

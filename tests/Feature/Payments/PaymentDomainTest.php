@@ -189,6 +189,60 @@ class PaymentDomainTest extends TestCase
         $this->assertSame(OrderStatusEnum::Paid, $order->fresh()->status);
     }
 
+    public function test_webhook_retries_incomplete_event_when_processed_at_still_null(): void
+    {
+        $user = User::factory()->create();
+        $variant = $this->createVariant(stock: 8);
+        $order = $this->createPendingOrder($user, CurrencyEnum::Eur, 4_000, $variant, 2);
+        $payment = Payment::factory()->stripe()->create([
+            'order_id' => $order->id,
+            'status' => PaymentStatusEnum::Pending,
+            'amount' => 4_000,
+            'currency' => CurrencyEnum::Eur,
+            'external_id' => 'fake_sess_retry',
+        ]);
+
+        // Simulate: event inserted, apply failed mid-flight (provider will 5xx-retry).
+        PaymentWebhookEvent::query()->create([
+            'provider' => PaymentProviderEnum::Stripe,
+            'event_id' => 'evt_incomplete_1',
+            'event_type' => 'fake.approved',
+            'payload' => ['stale' => true],
+            'processed_at' => null,
+        ]);
+
+        $payload = json_encode([
+            'event_id' => 'evt_incomplete_1',
+            'event_type' => 'fake.approved',
+            'outcome' => 'approved',
+            'payment_id' => $payment->id,
+            'external_id' => 'fake_sess_retry',
+        ], JSON_THROW_ON_ERROR);
+
+        $result = app(ProcessPaymentWebhookAction::class)(
+            PaymentProviderEnum::Stripe,
+            $payload,
+            $this->fakeGateway->sign($payload),
+        );
+
+        $this->assertSame('processed', $result['status']);
+        $this->assertSame(1, PaymentWebhookEvent::query()->where('event_id', 'evt_incomplete_1')->count());
+        $this->assertNotNull(PaymentWebhookEvent::query()->where('event_id', 'evt_incomplete_1')->value('processed_at'));
+        $this->assertSame(PaymentStatusEnum::Approved, $payment->fresh()->status);
+        $this->assertSame(OrderStatusEnum::Paid, $order->fresh()->status);
+        $this->assertSame(6, (int) $variant->fresh()->stock);
+
+        // Fully processed redelivery must not double-apply stock.
+        $again = app(ProcessPaymentWebhookAction::class)(
+            PaymentProviderEnum::Stripe,
+            $payload,
+            $this->fakeGateway->sign($payload),
+        );
+
+        $this->assertSame('duplicate', $again['status']);
+        $this->assertSame(6, (int) $variant->fresh()->stock);
+    }
+
     public function test_webhook_approved_stock_fail_d25(): void
     {
         Log::spy();
