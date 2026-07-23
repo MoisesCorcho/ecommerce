@@ -9,7 +9,7 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 translate-y-0"
         x-transition:leave-end="opacity-0 -translate-y-4"
-        class="fixed top-4 right-4 z-50 rounded-lg bg-intense-cocoa px-5 py-3 text-sm font-medium text-silk-cream shadow-ambient"
+        class="fixed top-20 right-4 z-50 bg-intense-cocoa px-6 py-4 text-base font-medium text-silk-cream shadow-ambient"
         role="status"
         aria-live="polite"
     >
@@ -118,13 +118,13 @@
                         <div class="relative">
                             <select
                                 wire:model.live="sort"
-                                class="cursor-pointer appearance-none border border-intense-cocoa/20 rounded-sm bg-transparent px-3 py-2 pr-10 text-body-md text-intense-cocoa focus:ring-0 focus:border-intense-cocoa"
+                                class="peer cursor-pointer appearance-none border border-intense-cocoa bg-transparent px-3 py-2 pr-10 text-body-md text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none focus:bg-intense-cocoa focus:text-silk-cream"
                             >
-                                <option value="newest">{{ __('storefront.shop.sort_newest') }}</option>
-                                <option value="price_asc">{{ __('storefront.shop.sort_price_asc') }}</option>
-                                <option value="price_desc">{{ __('storefront.shop.sort_price_desc') }}</option>
+                                <option value="newest" class="bg-silk-cream text-intense-cocoa hover:bg-soft-gold hover:text-intense-cocoa">{{ __('storefront.shop.sort_newest') }}</option>
+                                <option value="price_asc" class="bg-silk-cream text-intense-cocoa hover:bg-soft-gold hover:text-intense-cocoa">{{ __('storefront.shop.sort_price_asc') }}</option>
+                                <option value="price_desc" class="bg-silk-cream text-intense-cocoa hover:bg-soft-gold hover:text-intense-cocoa">{{ __('storefront.shop.sort_price_desc') }}</option>
                             </select>
-                            <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-intense-cocoa/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                            <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-intense-cocoa transition-all duration-200 peer-focus:text-silk-cream peer-focus:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                             </svg>
                         </div>
@@ -136,13 +136,13 @@
                     <div class="relative">
                         <select
                             wire:model.live="sort"
-                            class="cursor-pointer appearance-none border border-intense-cocoa/20 rounded-sm bg-transparent px-3 py-2 pr-10 text-body-md text-intense-cocoa focus:ring-0 focus:border-intense-cocoa"
+                                class="peer cursor-pointer appearance-none border border-intense-cocoa bg-transparent px-3 py-2 pr-10 text-body-md text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none focus:bg-intense-cocoa focus:text-silk-cream"
                         >
-                            <option value="newest">{{ __('storefront.shop.sort_newest') }}</option>
-                            <option value="price_asc">{{ __('storefront.shop.sort_price_asc') }}</option>
-                            <option value="price_desc">{{ __('storefront.shop.sort_price_desc') }}</option>
+                            <option value="newest" class="bg-silk-cream text-intense-cocoa hover:bg-soft-gold hover:text-intense-cocoa">{{ __('storefront.shop.sort_newest') }}</option>
+                            <option value="price_asc" class="bg-silk-cream text-intense-cocoa hover:bg-soft-gold hover:text-intense-cocoa">{{ __('storefront.shop.sort_price_asc') }}</option>
+                            <option value="price_desc" class="bg-silk-cream text-intense-cocoa hover:bg-soft-gold hover:text-intense-cocoa">{{ __('storefront.shop.sort_price_desc') }}</option>
                         </select>
-                        <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-intense-cocoa/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-intense-cocoa transition-all duration-200 peer-focus:text-silk-cream peer-focus:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                         </svg>
                     </div>
@@ -165,7 +165,7 @@
                         <button
                             type="button"
                             wire:click="clearFilters"
-                            class="rounded border border-intense-cocoa px-6 py-3 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:bg-soft-sand"
+                            class="border border-intense-cocoa px-6 py-3 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:bg-intense-cocoa hover:text-silk-cream"
                         >
                             {{ __('storefront.shop.clear_filters') }}
                         </button>

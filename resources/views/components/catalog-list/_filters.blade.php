@@ -13,12 +13,17 @@
         @foreach ($categories as $cat)
             <li>
                 <label class="flex cursor-pointer items-center gap-3 transition-colors hover:text-soft-gold">
-                    <input
-                        type="checkbox"
-                        wire:model.live="category"
-                        value="{{ $cat['slug'] }}"
-                        class="rounded border-intense-cocoa/20 text-soft-gold focus:ring-soft-gold"
-                    >
+                    <span class="relative flex items-center justify-center">
+                        <input
+                            type="checkbox"
+                            wire:model.live="category"
+                            value="{{ $cat['slug'] }}"
+                            class="peer h-4 w-4 appearance-none border border-intense-cocoa bg-white checked:bg-intense-cocoa checked:border-intense-cocoa focus:outline-none"
+                        >
+                        <svg class="pointer-events-none absolute h-3 w-3 text-silk-cream opacity-0 peer-checked:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                        </svg>
+                    </span>
                     {{ $cat['name'] }}
                     <span class="text-intense-cocoa/40">({{ $cat['count'] }})</span>
                 </label>
@@ -44,7 +49,7 @@
                     wire:click="toggleColor('{{ $colorName }}')"
                     aria-label="{{ $colorName }}"
                     title="{{ $colorName }}"
-                    class="h-6 w-6 rounded-full border border-intense-cocoa/20 transition-all hover:ring-2 hover:ring-soft-gold hover:ring-offset-2 {{ $isSelected ? 'ring-2 ring-intense-cocoa ring-offset-2' : '' }}"
+                    class="h-6 w-6 border border-intense-cocoa/20 transition-all hover:ring-2 hover:ring-soft-gold hover:ring-offset-2 {{ $isSelected ? 'ring-2 ring-intense-cocoa ring-offset-2' : '' }}"
                     style="background-color: {{ $hex }}"
                 ></button>
             @endforeach
@@ -65,7 +70,7 @@
                 placeholder="{{ number_format($globalMinPrice, 0, ',', '.') }}"
                 min="{{ $globalMinPrice }}"
                 max="{{ $globalMaxPrice }}"
-                class="w-full border-b border-intense-cocoa/30 bg-transparent py-2 text-body-md text-intense-cocoa placeholder:text-intense-cocoa/30 focus:border-intense-cocoa focus:outline-none"
+                class="w-full border-b border-intense-cocoa/30 bg-transparent py-2 text-body-md text-intense-cocoa placeholder:text-intense-cocoa/60 focus:border-intense-cocoa focus:outline-none"
             >
             <span class="text-intense-cocoa/40">—</span>
             <input
@@ -74,10 +79,10 @@
                 placeholder="{{ number_format($globalMaxPrice, 0, ',', '.') }}"
                 min="{{ $globalMinPrice }}"
                 max="{{ $globalMaxPrice }}"
-                class="w-full border-b border-intense-cocoa/30 bg-transparent py-2 text-body-md text-intense-cocoa placeholder:text-intense-cocoa/30 focus:border-intense-cocoa focus:outline-none"
+                class="w-full border-b border-intense-cocoa/30 bg-transparent py-2 text-body-md text-intense-cocoa placeholder:text-intense-cocoa/60 focus:border-intense-cocoa focus:outline-none"
             >
         </div>
-        <p class="text-label-caps text-intense-cocoa/40">
+        <p class="text-label-caps text-intense-cocoa/70">
             {{ $currencyEnum->value }}
         </p>
     </div>
@@ -89,11 +94,16 @@
         {{ __('storefront.shop.filter_availability') }}
     </h3>
     <label class="flex cursor-pointer items-center gap-3 text-body-md text-intense-cocoa/80 transition-colors hover:text-soft-gold">
-        <input
-            type="checkbox"
-            wire:model.live="inStock"
-            class="rounded border-intense-cocoa/20 text-soft-gold focus:ring-soft-gold"
-        >
+        <span class="relative flex items-center justify-center">
+            <input
+                type="checkbox"
+                wire:model.live="inStock"
+                class="peer h-4 w-4 appearance-none border border-intense-cocoa bg-white checked:bg-intense-cocoa checked:border-intense-cocoa focus:outline-none"
+            >
+            <svg class="pointer-events-none absolute h-3 w-3 text-silk-cream opacity-0 peer-checked:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+            </svg>
+        </span>
         {{ __('storefront.shop.filter_in_stock') }}
     </label>
 </div>
@@ -103,7 +113,7 @@
     <button
         type="button"
         wire:click="clearFilters"
-        class="mt-2 w-full rounded border border-intense-cocoa py-3 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:bg-soft-sand"
+        class="mt-2 w-full border border-intense-cocoa py-3 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:bg-intense-cocoa hover:text-silk-cream"
     >
         {{ __('storefront.shop.clear_filters') }}
     </button>
