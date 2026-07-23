@@ -20,7 +20,7 @@ use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Layout('layouts.storefront'), Title('Producto')] class extends Component
+new #[Layout('layouts.storefront'), Title('Leen Handbags | Product')] class extends Component
 {
     use ResolvesCurrentCart;
 

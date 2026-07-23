@@ -49,7 +49,7 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 translate-y-0"
         x-transition:leave-end="opacity-0 -translate-y-4"
-        class="fixed top-4 right-4 z-50 rounded-lg bg-intense-cocoa px-5 py-3 text-sm font-medium text-silk-cream shadow-ambient"
+        class="fixed top-20 right-4 z-50 bg-intense-cocoa px-6 py-4 text-base font-medium text-silk-cream shadow-ambient"
         role="status"
         aria-live="polite"
     >
@@ -178,7 +178,7 @@
 
                 {{-- Out of stock badge (R18) --}}
                 @if ($selectedVariant && $selectedVariant->stock <= 0 && ! $product->is_preorder)
-                    <span class="rounded bg-soft-gold px-2.5 py-1 text-label-caps font-semibold uppercase tracking-wider text-intense-cocoa">
+                    <span class="bg-soft-gold px-2.5 py-1 text-label-caps font-semibold uppercase tracking-wider text-intense-cocoa">
                         {{ __('storefront.out_of_stock') }}
                     </span>
                 @endif
@@ -231,12 +231,12 @@
                                 aria-checked="{{ $isSelected ? 'true' : 'false' }}"
                                 aria-label="{{ $colorName }}"
                                 title="{{ $colorName }}"
-                                class="relative h-9 w-9 rounded-full border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-intense-cocoa/30 focus:ring-offset-2 {{ $isSelected ? 'border-intense-cocoa ring-2 ring-intense-cocoa/20 ring-offset-2' : 'border-intense-cocoa/15 hover:border-intense-cocoa/40' }}"
+                                class="relative h-9 w-9 border border-intense-cocoa/20 transition-all hover:ring-2 hover:ring-soft-gold hover:ring-offset-2 focus:outline-none {{ $isSelected ? 'border-intense-cocoa ring-2 ring-intense-cocoa ring-offset-2' : '' }}"
                                 style="background-color: {{ $hex }}"
                             >
                                 @if ($isSelected)
                                     <span class="absolute inset-0 flex items-center justify-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4 {{ in_array(strtolower($colorName), ['negro', 'black', 'chocolate', 'cocoa', 'navy', 'blue', 'burdeos', 'burgundy', 'wine', 'vino', 'marrón', 'marron', 'brown']) ? 'text-silk-cream' : 'text-intense-cocoa' }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4 text-soft-gold">
                                             <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd" />
                                         </svg>
                                     </span>
@@ -264,7 +264,7 @@
                                 wire:click="$set('selectedSize', '{{ $sizeName }}')"
                                 role="radio"
                                 aria-checked="{{ $isSelected ? 'true' : 'false' }}"
-                                class="min-h-[44px] min-w-[44px] border px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-intense-cocoa/30 focus:ring-offset-2 {{ $isSelected ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-intense-cocoa/20 bg-white text-intense-cocoa hover:border-intense-cocoa/50' }}"
+                                class="min-h-[44px] min-w-[44px] border px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none {{ $isSelected ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-intense-cocoa/20 bg-soft-sand text-intense-cocoa hover:border-intense-cocoa' }}"
                             >
                                 {{ $sizeName }}
                             </button>
@@ -297,12 +297,12 @@
                         </p>
                     @endif
 
-                    <div class="inline-flex items-center overflow-hidden border border-intense-cocoa/20">
+                    <div class="inline-flex items-center overflow-hidden border border-intense-cocoa">
                         <button
                             type="button"
                             wire:click="$set('quantity', {{ max(1, $quantity - 1) }})"
                             aria-label="Decrease quantity"
-                            class="flex h-11 w-11 items-center justify-center text-intense-cocoa transition-colors hover:bg-soft-sand disabled:cursor-not-allowed disabled:text-intense-cocoa/30 disabled:hover:bg-transparent"
+                            class="flex h-11 w-11 items-center justify-center text-intense-cocoa transition-colors hover:bg-intense-cocoa hover:text-silk-cream disabled:cursor-not-allowed disabled:text-intense-cocoa/30 disabled:hover:bg-transparent"
                             @if ($quantity <= 1) disabled @endif
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
@@ -314,17 +314,16 @@
                             type="number"
                             min="1"
                             max="{{ max(1, $availableStock) }}"
-                            value="{{ min($quantity, max(1, $availableStock)) }}"
+                            value="{{ $quantity }}"
                             readonly
-                            wire:ignore
-                            class="h-11 w-14 border-x border-intense-cocoa/20 bg-transparent text-center text-sm font-medium tabular-nums text-intense-cocoa focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-moz-appearance:textfield]"
+                            class="h-11 w-14 border-x border-intense-cocoa bg-transparent text-center text-sm font-medium tabular-nums text-intense-cocoa focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-moz-appearance:textfield]"
                             aria-label="{{ __('storefront.products.quantity_label') }}"
                         >
                         <button
                             type="button"
                             wire:click="$set('quantity', {{ min(max(1, $availableStock), $quantity + 1) }})"
                             aria-label="Increase quantity"
-                            class="flex h-11 w-11 items-center justify-center text-intense-cocoa transition-colors hover:bg-soft-sand disabled:cursor-not-allowed disabled:text-intense-cocoa/30 disabled:hover:bg-transparent"
+                            class="flex h-11 w-11 items-center justify-center text-intense-cocoa transition-colors hover:bg-soft-gold disabled:cursor-not-allowed disabled:text-intense-cocoa/30 disabled:hover:bg-transparent"
                             @if ($quantity >= $availableStock || $availableStock <= 0) disabled @endif
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
@@ -345,7 +344,7 @@
                 <button
                     type="button"
                     @if ($canAddToCart) wire:click="addToCart" @else disabled @endif
-                    class="flex h-12 w-full items-center justify-center bg-intense-cocoa text-sm font-semibold text-silk-cream transition-colors duration-200 hover:bg-intense-cocoa/90 focus:outline-none focus:ring-2 focus:ring-intense-cocoa/30 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-intense-cocoa/40"
+                    class="flex h-12 w-full items-center justify-center bg-intense-cocoa text-sm font-semibold text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa focus:outline-none disabled:cursor-not-allowed disabled:bg-intense-cocoa/40"
                     data-add-to-cart
                     aria-label="{{ __('storefront.products.add_to_cart') }}"
                 >
@@ -359,7 +358,7 @@
                 <button
                     type="button"
                     @if ($canAddToCart) wire:click="buyNow" @else disabled @endif
-                    class="flex h-12 w-full items-center justify-center border-2 border-intense-cocoa bg-transparent text-sm font-semibold text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none focus:ring-2 focus:ring-intense-cocoa/30 focus:ring-offset-2 disabled:cursor-not-allowed disabled:border-intense-cocoa/30 disabled:text-intense-cocoa/30 disabled:hover:bg-transparent disabled:hover:text-intense-cocoa/30"
+                    class="flex h-12 w-full items-center justify-center border border-intense-cocoa bg-transparent text-sm font-semibold text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none disabled:cursor-not-allowed disabled:border-intense-cocoa/30 disabled:text-intense-cocoa/30 disabled:hover:bg-transparent disabled:hover:text-intense-cocoa/30"
                     aria-label="{{ __('storefront.products.buy_now') }}"
                 >
                     {{ __('storefront.products.buy_now') }}
@@ -369,7 +368,7 @@
                 <button
                     type="button"
                     wire:click="toggleFavorite"
-                    class="flex h-12 w-full cursor-pointer items-center justify-center border border-soft-gold text-sm font-medium text-intense-cocoa transition-colors duration-200 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none focus:ring-2 focus:ring-intense-cocoa/30 focus:ring-offset-2"
+                    class="flex h-12 w-full cursor-pointer items-center justify-center border border-soft-gold text-sm font-medium text-intense-cocoa transition-colors duration-200 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none"
                     aria-label="{{ $isFavorited ? __('storefront.products.removed_from_favorites') : __('storefront.products.added_to_favorites') }}"
                     data-favorite-button
                 >
