@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Enums\Commerce;
 
+use App\Enums\Payments\PaymentProviderEnum;
 use Filament\Support\Contracts\HasLabel;
 
 /**

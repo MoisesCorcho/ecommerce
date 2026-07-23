@@ -101,6 +101,24 @@ services:
             - '/dev/shm:/dev/shm'
         networks:
             - sail
+    ngrok:
+        image: 'ngrok/ngrok:latest'
+        restart: unless-stopped
+        profiles:
+            - ngrok
+        command:
+            - 'http'
+            - 'http://laravel.test:80'
+            - '--log=stdout'
+            - '--url=${NGROK_URL}'
+        environment:
+            NGROK_AUTHTOKEN: '${NGROK_AUTHTOKEN}'
+        ports:
+            - '${FORWARD_NGROK_PORT:-4040}:4040'
+        networks:
+            - sail
+        depends_on:
+            - laravel.test
 networks:
     sail:
         driver: bridge

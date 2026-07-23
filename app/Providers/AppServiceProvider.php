@@ -5,7 +5,10 @@ namespace App\Providers;
 use App\Listeners\Cart\MergeGuestCartOnLoginListener;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,5 +29,11 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(Login::class, MergeGuestCartOnLoginListener::class);
 
         Blade::anonymousComponentPath(resource_path('views/layouts'), 'layouts');
+        // Start hosted checkout — abuse control; not a substitute for authz.
+        RateLimiter::for('payments-start', function (Request $request) {
+            $key = $request->user()?->getAuthIdentifier() ?? $request->ip();
+
+            return Limit::perMinute(20)->by('payments-start:'.$key);
+        });
     }
 }
