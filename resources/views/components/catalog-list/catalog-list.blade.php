@@ -14,10 +14,10 @@
     ></div>
 
     {{-- Main content --}}
-    <div class="mx-auto max-w-storefront px-margin-mobile py-8 lg:px-margin-desktop">
+    <div class="mx-auto max-w-storefront px-margin-mobile pt-8 pb-section-gap lg:px-margin-desktop">
         {{-- Breadcrumb --}}
         <nav aria-label="Breadcrumb" class="mb-stack-md">
-            <ol class="flex items-center gap-2 text-label-caps text-intense-cocoa/60 uppercase">
+            <ol class="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-intense-cocoa/60">
                 <li><a href="{{ url('/') }}" class="hover:text-soft-gold transition-colors">{{ __('storefront.shop.breadcrumb_home') }}</a></li>
                 <li><span class="text-intense-cocoa/30">/</span></li>
                 <li aria-current="page" class="text-intense-cocoa">{{ __('storefront.shop.breadcrumb_shop') }}</li>
@@ -52,7 +52,7 @@
 
             {{-- Sidebar filters (desktop) --}}
             <aside
-                class="hidden w-[260px] shrink-0 flex-col gap-stack-lg self-start rounded bg-soft-sand p-6 lg:sticky lg:top-32 lg:flex"
+                class="hidden w-[240px] shrink-0 flex-col gap-stack-lg self-start rounded-sm bg-soft-sand p-6 lg:sticky lg:top-32 lg:flex"
                 aria-label="{{ __('storefront.shop.filters_title') }}"
             >
                 @include('components.catalog-list._filters')
@@ -96,7 +96,7 @@
                         {{ trans_choice('storefront.shop.results_count', $products->total(), ['count' => $products->total()]) }}
                     </span>
                     <div class="flex items-center gap-4">
-                        <span class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa">
+                        <span class="text-[11px] font-semibold uppercase tracking-widest text-intense-cocoa">
                             {{ __('storefront.shop.sort_label') }}
                         </span>
                         <div class="relative">
@@ -155,7 +155,7 @@
                         </button>
                     </div>
                 @else
-                    <div class="grid grid-cols-1 gap-gutter sm:grid-cols-2 lg:grid-cols-3">
+                    <div class="grid grid-cols-1 gap-x-gutter gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
                         @foreach ($products as $product)
                             <livewire:product-card
                                 :product="$product"

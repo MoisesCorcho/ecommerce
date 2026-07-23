@@ -6,7 +6,7 @@
 
 {{-- Category filter --}}
 <div class="flex flex-col gap-stack-sm">
-    <h3 class="border-b border-intense-cocoa/10 pb-2 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa">
+    <h3 class="border-b border-intense-cocoa/10 pb-2 mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-intense-cocoa">
         {{ __('storefront.shop.filter_category') }}
     </h3>
     <ul class="flex flex-col gap-3 text-body-md text-intense-cocoa/80">
@@ -30,7 +30,7 @@
 {{-- Color filter --}}
 @if ($colors !== [])
     <div class="flex flex-col gap-stack-sm">
-        <h3 class="border-b border-intense-cocoa/10 pb-2 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa">
+        <h3 class="border-b border-intense-cocoa/10 pb-2 mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-intense-cocoa">
             {{ __('storefront.shop.filter_color') }}
         </h3>
         <div class="flex flex-wrap gap-3">
@@ -55,7 +55,7 @@
 {{-- Price filter --}}
 @if ($globalMinPrice !== null && $globalMaxPrice !== null)
     <div class="flex flex-col gap-stack-sm">
-        <h3 class="border-b border-intense-cocoa/10 pb-2 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa">
+        <h3 class="border-b border-intense-cocoa/10 pb-2 mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-intense-cocoa">
             {{ __('storefront.shop.filter_price') }}
         </h3>
         <div class="flex items-center gap-3 pt-2">
@@ -85,7 +85,7 @@
 
 {{-- Availability filter --}}
 <div class="flex flex-col gap-stack-sm">
-    <h3 class="border-b border-intense-cocoa/10 pb-2 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa">
+    <h3 class="border-b border-intense-cocoa/10 pb-2 mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-intense-cocoa">
         {{ __('storefront.shop.filter_availability') }}
     </h3>
     <label class="flex cursor-pointer items-center gap-3 text-body-md text-intense-cocoa/80 transition-colors hover:text-soft-gold">

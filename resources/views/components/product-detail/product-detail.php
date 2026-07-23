@@ -9,11 +9,12 @@ use App\Exceptions\Cart\CartQuantityNotAllowedException;
 use App\Exceptions\Cart\InsufficientCartStockException;
 use App\Models\Product;
 use App\Support\Cart\ResolvesCurrentCart;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Title('Producto')] class extends Component
+new #[Layout('layouts.storefront'), Title('Producto')] class extends Component
 {
     use ResolvesCurrentCart;
 

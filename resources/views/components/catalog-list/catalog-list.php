@@ -7,12 +7,13 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariantPrice;
 use Illuminate\Database\Eloquent\Builder;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-new #[Title('Shop')] class extends Component
+new #[Layout('layouts.storefront'), Title('Shop')] class extends Component
 {
     use WithPagination;
 

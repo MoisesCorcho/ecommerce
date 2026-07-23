@@ -27,6 +27,11 @@
         </div>
     </div>
 
+    {{-- Subtle separator --}}
+    <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
+        <hr class="border-t border-intense-cocoa/10" aria-hidden="true">
+    </div>
+
     {{-- 3. Featured products (dynamic, R7/R18) --}}
     <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
         <livewire:featured-products-grid />
