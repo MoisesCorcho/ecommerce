@@ -247,5 +247,6 @@ Severities:
 - [references/payments-webhooks.md](references/payments-webhooks.md) — Stripe/Bold controls and residual risks
 - [references/checklist.md](references/checklist.md) — pre-merge / pre-prod checklist
 - [references/anti-patterns.md](references/anti-patterns.md) — forbidden patterns with project examples
-- Specs: `specs/features/05-payments/`, `specs/_global/01-product-and-roadmap.md`
+- Specs: `specs/features/05-payments/` (incl. [`security-hardening.md`](../../../specs/features/05-payments/security-hardening.md) — SH-\* vs RES-\*)
+- Specs globales: `specs/_global/01-product-and-roadmap.md`
 - Conventions: `AGENTS.md`

@@ -2,10 +2,12 @@
 
 > **ID:** F05 · **Slug:** `05-payments`  
 > **Requirements:** [`requirements.md`](requirements.md) · **Design:** [`design.md`](design.md)  
+> **Seguridad / hardening post-DoD:** [`security-hardening.md`](security-hardening.md)  
 > **Convenciones:** [`AGENTS.md`](../../../AGENTS.md) · **Calidad:** [`02-feature-quality.md`](../../_global/02-feature-quality.md)
 
 **Alcance DoD:** dominio Payments + gateways + webhooks + entrypoint pay + botón mínimo + payments en Order admin + tests.  
-**Fuera de DoD:** auth storefront; iniciar refunds; reponer stock; emails; UI de marca; PaymentResource global; fulfillment.
+**Fuera de DoD:** auth storefront; iniciar refunds; reponer stock; emails; UI de marca; PaymentResource global; fulfillment.  
+**Post-DoD (no bloquea “F05 Completa”):** backlog SH-\* y ops en [`security-hardening.md`](security-hardening.md).
 
 **Estado de implementación:** completa.
 

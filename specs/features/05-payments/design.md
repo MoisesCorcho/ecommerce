@@ -2,6 +2,7 @@
 
 > **ID:** F05 · **Slug:** `05-payments`  
 > **Requirements:** [`requirements.md`](requirements.md)  
+> **Seguridad / residuales:** [`security-hardening.md`](security-hardening.md)  
 > **Convenciones:** [`AGENTS.md`](../../../AGENTS.md)  
 > **Producto:** [`01-product-and-roadmap.md`](../../_global/01-product-and-roadmap.md)  
 > **Dominio:** `Payment`, `PaymentWebhookEvent`, `Order`, `OrderItem`, `ProductVariant`; enums `PaymentProviderEnum`, `PaymentStatusEnum`, `OrderStatusEnum`, `CurrencyEnum`  

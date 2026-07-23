@@ -14,6 +14,7 @@
 | Convenciones de código | [`AGENTS.md`](../../../AGENTS.md) / project-conventions |
 | Esquema de dominio | `app/Models/Payment.php`, `PaymentWebhookEvent.php`, `Order.php`, `OrderItem.php`, `ProductVariant.php`; enums `PaymentProviderEnum`, `PaymentStatusEnum`, `OrderStatusEnum`, `CurrencyEnum` |
 | Handoff checkout | [`specs/features/04-checkout-orders/requirements.md`](../04-checkout-orders/requirements.md) (orden `pending`, sin stock descontado, guest signed URL) |
+| Seguridad, hardening y residuales post-F05 | [`security-hardening.md`](security-hardening.md) (SH-\* código, RES-\* producto, ops go-live) |
 
 ## User stories
 
