@@ -2,12 +2,20 @@
 
 declare(strict_types=1);
 
+use App\Actions\Cart\AddCartItemAction;
+use App\DTOs\Cart\AddCartItemDTO;
 use App\Enums\Commerce\CurrencyEnum;
+use App\Exceptions\Cart\CartAccessDeniedException;
+use App\Exceptions\Cart\CartItemNotEligibleException;
+use App\Exceptions\Cart\CartQuantityNotAllowedException;
+use App\Exceptions\Cart\InsufficientCartStockException;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariantPrice;
+use App\Support\Cart\ResolvesCurrentCart;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -16,6 +24,7 @@ use Livewire\WithPagination;
 new #[Layout('layouts.storefront'), Title('Shop')] class extends Component
 {
     use WithPagination;
+    use ResolvesCurrentCart;
 
     public string $currency;
 
@@ -109,6 +118,39 @@ new #[Layout('layouts.storefront'), Title('Shop')] class extends Component
         $this->inStock = false;
         $this->sort = 'newest';
         $this->resetPage();
+    }
+
+    /**
+     * Add a product variant to the cart (called from product-card hover button).
+     */
+    #[On('add-to-cart')]
+    public function addToCart(int $variantId): void
+    {
+        try {
+            $cart = $this->resolveCurrentCart();
+            $owner = $this->cartOwner();
+
+            app(AddCartItemAction::class)(new AddCartItemDTO(
+                cartId: $cart->id,
+                productVariantId: $variantId,
+                quantity: 1,
+                userId: $owner->userId,
+                sessionId: $owner->sessionId,
+            ));
+
+            $this->dispatch('cart-updated');
+            $this->dispatch('toast', message: __('storefront.added_to_cart'));
+        } catch (\Throwable $e) {
+            $message = match (true) {
+                $e instanceof CartAccessDeniedException,
+                $e instanceof CartItemNotEligibleException,
+                $e instanceof CartQuantityNotAllowedException,
+                $e instanceof InsufficientCartStockException => $e->getMessage(),
+                default => __('storefront.add_to_cart_error'),
+            };
+
+            $this->dispatch('toast', message: $message);
+        }
     }
 
     public function with(): array

@@ -73,6 +73,7 @@ new #[Layout('layouts.storefront'), Title('Producto')] class extends Component
         }
 
         $this->resolveAndApplyVariant($product, $currency);
+        $this->quantity = 1;
     }
 
     public function updatedSelectedSize(?string $value): void
@@ -81,6 +82,7 @@ new #[Layout('layouts.storefront'), Title('Producto')] class extends Component
         $product = $this->findPublishedProduct($currency);
 
         $this->resolveAndApplyVariant($product, $currency);
+        $this->quantity = 1;
     }
 
     public function toggleFavorite(): void
@@ -157,6 +159,7 @@ new #[Layout('layouts.storefront'), Title('Producto')] class extends Component
             ));
 
             $this->statusMessage = __('storefront.added_to_cart');
+            $this->quantity = 1;
             $this->dispatch('cart-updated');
         } catch (Throwable $e) {
             if ($e instanceof CartAccessDeniedException
@@ -187,7 +190,27 @@ new #[Layout('layouts.storefront'), Title('Producto')] class extends Component
             'isFavorited' => $this->checkIsFavorited($product),
             'availableColors' => $this->collectAvailableColors($product, $currency),
             'availableSizes' => $this->collectAvailableSizes($product, $currency),
+            'cartQuantity' => $this->getCartQuantityForVariant(),
         ];
+    }
+
+    private function getCartQuantityForVariant(): int
+    {
+        if ($this->selectedVariantId === null) {
+            return 0;
+        }
+
+        try {
+            $cart = $this->resolveCurrentCart();
+        } catch (Throwable) {
+            return 0;
+        }
+
+        $cartItem = \App\Models\CartItem::where('cart_id', $cart->id)
+            ->where('product_variant_id', $this->selectedVariantId)
+            ->first();
+
+        return $cartItem?->quantity ?? 0;
     }
 
     /**

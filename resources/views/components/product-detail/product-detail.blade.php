@@ -37,7 +37,7 @@
     }"
     x-on:toast.window="showToast($event.detail.message)"
     x-on:cart-updated.window="showToast('{{ __('storefront.added_to_cart') }}')"
-    class="relative"
+    class="relative py-8 lg:py-12"
 >
     {{-- Toast Notification (R18) --}}
     <div
@@ -57,7 +57,7 @@
     </div>
 
     {{-- Breadcrumb (R12) --}}
-    <nav aria-label="Breadcrumb" class="mb-6 text-sm text-intense-cocoa/60">
+    <nav aria-label="Breadcrumb" class="mx-auto mb-6 max-w-storefront px-margin-mobile text-sm text-intense-cocoa/60 lg:px-margin-desktop">
         <ol class="flex flex-wrap items-center gap-1.5">
             <li>
                 <a href="{{ route('home') }}" class="transition-colors hover:text-intense-cocoa hover:underline">
@@ -86,12 +86,12 @@
     </nav>
 
     {{-- Two-column grid (R1: lg+ two columns, sm/md single column) --}}
-    <div class="grid gap-8 lg:grid-cols-[1.2fr_1fr] lg:gap-12">
+    <div class="mx-auto grid max-w-storefront gap-8 px-margin-mobile lg:grid-cols-[1.2fr_1fr] lg:gap-12 lg:px-margin-desktop">
 
         {{-- LEFT: Gallery (R2, R3, R4) --}}
         <div>
-            {{-- Main image — 4:5 aspect ratio --}}
-            <div class="group relative cursor-zoom-in overflow-hidden" wire:click="openLightbox({{ $mainImageIndex }})">
+            {{-- Main image — centered in container --}}
+            <div class="group relative flex aspect-[4/5] cursor-zoom-in items-center justify-center overflow-hidden bg-soft-sand lg:max-h-[70vh]" wire:click="openLightbox({{ $mainImageIndex }})">
                 @if ($product->images->count() > 0)
                     @php
                         $currentImage = $product->images->get($mainImageIndex) ?? $product->images->first();
@@ -99,7 +99,7 @@
                     <img
                         src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($currentImage->path) }}"
                         alt="{{ $product->name }}"
-                        class="aspect-[4/5] w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                         wire:key="main-image-{{ $mainImageIndex }}"
                     >
                     {{-- Zoom hint --}}
@@ -140,6 +140,9 @@
 
         {{-- RIGHT: Purchase Info (R5, R6, R7, R8, R9, R10, R11) --}}
         <div class="flex flex-col gap-6">
+            @php
+                $availableStock = $selectedVariant ? max(0, $selectedVariant->stock - $cartQuantity) : 0;
+            @endphp
 
             {{-- Product name (R5) --}}
             <div>
@@ -261,7 +264,7 @@
                                 wire:click="$set('selectedSize', '{{ $sizeName }}')"
                                 role="radio"
                                 aria-checked="{{ $isSelected ? 'true' : 'false' }}"
-                                class="min-h-[44px] min-w-[44px] rounded-md border px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-intense-cocoa/30 focus:ring-offset-2 {{ $isSelected ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-intense-cocoa/20 bg-white text-intense-cocoa hover:border-intense-cocoa/50' }}"
+                                class="min-h-[44px] min-w-[44px] border px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-intense-cocoa/30 focus:ring-offset-2 {{ $isSelected ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-intense-cocoa/20 bg-white text-intense-cocoa hover:border-intense-cocoa/50' }}"
                             >
                                 {{ $sizeName }}
                             </button>
@@ -270,12 +273,16 @@
                 </div>
             @endif
 
-            {{-- Select variant hint (R18) --}}
-            @if (! $selectedVariant)
-                <p class="rounded-lg bg-soft-sand px-4 py-2.5 text-sm text-intense-cocoa/70" data-select-variant-hint>
-                    {{ __('storefront.products.select_variant') }}
-                </p>
-            @endif
+                {{-- Select variant hint (R18) --}}
+                @if (! $selectedVariant)
+                    <p class="rounded-lg bg-soft-sand px-4 py-2.5 text-sm text-intense-cocoa/70" data-select-variant-hint>
+                        {{ __('storefront.products.select_variant') }}
+                    </p>
+                @elseif ($selectedVariant->stock > 0 && $availableStock <= 0)
+                    <p class="rounded-lg bg-soft-gold/20 px-4 py-2.5 text-sm text-intense-cocoa/70">
+                        {{ __('storefront.products.stock_in_cart') }}
+                    </p>
+                @endif
 
             {{-- Quantity selector (R8) --}}
             @if ($selectedVariant && $selectedVariant->stock > 0)
@@ -283,10 +290,17 @@
                     <label for="product-qty" class="mb-2 block text-sm font-medium text-intense-cocoa">
                         {{ __('storefront.products.quantity_label') }}
                     </label>
-                    <div class="inline-flex items-center overflow-hidden rounded-md border border-intense-cocoa/20">
+
+                    @if ($cartQuantity > 0)
+                        <p class="mb-2 text-sm text-intense-cocoa/60">
+                            {{ __('storefront.products.already_in_cart', ['count' => $cartQuantity]) }}
+                        </p>
+                    @endif
+
+                    <div class="inline-flex items-center overflow-hidden border border-intense-cocoa/20">
                         <button
                             type="button"
-                            wire:click="if ($quantity > 1) $set('quantity', $quantity - 1)"
+                            wire:click="$set('quantity', {{ max(1, $quantity - 1) }})"
                             aria-label="Decrease quantity"
                             class="flex h-11 w-11 items-center justify-center text-intense-cocoa transition-colors hover:bg-soft-sand disabled:cursor-not-allowed disabled:text-intense-cocoa/30 disabled:hover:bg-transparent"
                             @if ($quantity <= 1) disabled @endif
@@ -299,17 +313,19 @@
                             id="product-qty"
                             type="number"
                             min="1"
-                            max="{{ $selectedVariant->stock }}"
-                            wire:model.live="quantity"
-                            class="h-11 w-14 border-x border-intense-cocoa/20 bg-transparent text-center text-sm font-medium tabular-nums text-intense-cocoa focus:outline-none"
+                            max="{{ max(1, $availableStock) }}"
+                            value="{{ min($quantity, max(1, $availableStock)) }}"
+                            readonly
+                            wire:ignore
+                            class="h-11 w-14 border-x border-intense-cocoa/20 bg-transparent text-center text-sm font-medium tabular-nums text-intense-cocoa focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-moz-appearance:textfield]"
                             aria-label="{{ __('storefront.products.quantity_label') }}"
                         >
                         <button
                             type="button"
-                            wire:click="if ($quantity < {{ $selectedVariant->stock }}) $set('quantity', $quantity + 1)"
+                            wire:click="$set('quantity', {{ min(max(1, $availableStock), $quantity + 1) }})"
                             aria-label="Increase quantity"
                             class="flex h-11 w-11 items-center justify-center text-intense-cocoa transition-colors hover:bg-soft-sand disabled:cursor-not-allowed disabled:text-intense-cocoa/30 disabled:hover:bg-transparent"
-                            @if ($quantity >= $selectedVariant->stock) disabled @endif
+                            @if ($quantity >= $availableStock || $availableStock <= 0) disabled @endif
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
                                 <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
@@ -322,14 +338,14 @@
             {{-- Action buttons (R9, R10, R11) --}}
             <div class="flex flex-col gap-3 pt-2">
                 @php
-                    $canAddToCart = $selectedVariant && $selectedVariant->stock > 0;
+                    $canAddToCart = $selectedVariant && $selectedVariant->stock > 0 && $availableStock > 0;
                 @endphp
 
                 {{-- Add to cart (R9) --}}
                 <button
                     type="button"
                     @if ($canAddToCart) wire:click="addToCart" @else disabled @endif
-                    class="flex h-12 w-full items-center justify-center rounded-md bg-intense-cocoa text-sm font-semibold text-silk-cream transition-colors duration-200 hover:bg-intense-cocoa/90 focus:outline-none focus:ring-2 focus:ring-intense-cocoa/30 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-intense-cocoa/40"
+                    class="flex h-12 w-full items-center justify-center bg-intense-cocoa text-sm font-semibold text-silk-cream transition-colors duration-200 hover:bg-intense-cocoa/90 focus:outline-none focus:ring-2 focus:ring-intense-cocoa/30 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-intense-cocoa/40"
                     data-add-to-cart
                     aria-label="{{ __('storefront.products.add_to_cart') }}"
                 >
@@ -343,7 +359,7 @@
                 <button
                     type="button"
                     @if ($canAddToCart) wire:click="buyNow" @else disabled @endif
-                    class="flex h-12 w-full items-center justify-center rounded-md border-2 border-intense-cocoa bg-transparent text-sm font-semibold text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none focus:ring-2 focus:ring-intense-cocoa/30 focus:ring-offset-2 disabled:cursor-not-allowed disabled:border-intense-cocoa/30 disabled:text-intense-cocoa/30 disabled:hover:bg-transparent disabled:hover:text-intense-cocoa/30"
+                    class="flex h-12 w-full items-center justify-center border-2 border-intense-cocoa bg-transparent text-sm font-semibold text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none focus:ring-2 focus:ring-intense-cocoa/30 focus:ring-offset-2 disabled:cursor-not-allowed disabled:border-intense-cocoa/30 disabled:text-intense-cocoa/30 disabled:hover:bg-transparent disabled:hover:text-intense-cocoa/30"
                     aria-label="{{ __('storefront.products.buy_now') }}"
                 >
                     {{ __('storefront.products.buy_now') }}
@@ -353,7 +369,7 @@
                 <button
                     type="button"
                     wire:click="toggleFavorite"
-                    class="flex h-12 w-full items-center justify-center rounded-md border border-intense-cocoa/20 text-sm font-medium text-intense-cocoa transition-colors duration-200 hover:border-intense-cocoa/40 hover:bg-soft-sand focus:outline-none focus:ring-2 focus:ring-intense-cocoa/30 focus:ring-offset-2"
+                    class="flex h-12 w-full cursor-pointer items-center justify-center border border-soft-gold text-sm font-medium text-intense-cocoa transition-colors duration-200 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none focus:ring-2 focus:ring-intense-cocoa/30 focus:ring-offset-2"
                     aria-label="{{ $isFavorited ? __('storefront.products.removed_from_favorites') : __('storefront.products.added_to_favorites') }}"
                     data-favorite-button
                 >
@@ -379,35 +395,35 @@
         </div>
     </div>
 
-    {{-- Description section (R13) --}}
+    {{-- Description section (R13) — full-width background, contained content --}}
     @if ($product->description)
-        <section class="mt-16 bg-soft-sand py-12 sm:py-16" aria-labelledby="description-heading">
-            <div class="mx-auto max-w-4xl px-6">
-                <h2 id="description-heading" class="mb-6 font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
-                    {{ __('storefront.products.description_title') }}
-                </h2>
-                <div class="space-y-4 leading-relaxed text-intense-cocoa/80">
-                    @if ($product->material)
-                        <div>
-                            <span class="text-sm font-medium text-intense-cocoa">{{ __('storefront.products.material_label') }}:</span>
-                            <span class="text-intense-cocoa/70">{{ $product->material }}</span>
-                        </div>
-                    @endif
-                    @if ($product->dimensions)
-                        <div>
-                            <span class="text-sm font-medium text-intense-cocoa">{{ __('storefront.products.dimensions_label') }}:</span>
-                            <span class="text-intense-cocoa/70">{{ $product->dimensions }}</span>
-                        </div>
-                    @endif
-                    <p class="whitespace-pre-line">{{ $product->description }}</p>
-                </div>
+        <section class="mt-16 bg-soft-sand" aria-labelledby="description-heading">
+            <div class="mx-auto max-w-4xl px-margin-mobile py-12 sm:py-16 lg:px-margin-desktop">
+                    <h2 id="description-heading" class="mb-6 font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
+                        {{ __('storefront.products.description_title') }}
+                    </h2>
+                    <div class="space-y-4 leading-relaxed text-intense-cocoa/80">
+                        @if ($product->material)
+                            <div>
+                                <span class="text-sm font-medium text-intense-cocoa">{{ __('storefront.products.material_label') }}:</span>
+                                <span class="text-intense-cocoa/70">{{ $product->material }}</span>
+                            </div>
+                        @endif
+                        @if ($product->dimensions)
+                            <div>
+                                <span class="text-sm font-medium text-intense-cocoa">{{ __('storefront.products.dimensions_label') }}:</span>
+                                <span class="text-intense-cocoa/70">{{ $product->dimensions }}</span>
+                            </div>
+                        @endif
+                        <p class="whitespace-pre-line">{{ $product->description }}</p>
+                    </div>
             </div>
         </section>
     @endif
 
     {{-- Related products (R14) --}}
     @if ($relatedProducts->count() > 0)
-        <section class="mt-16 sm:mt-20" aria-labelledby="related-heading">
+        <section class="mx-auto mt-16 max-w-storefront px-margin-mobile sm:mt-20 lg:px-margin-desktop" aria-labelledby="related-heading">
             <div class="mb-8 flex items-end justify-between">
                 <h2 id="related-heading" class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
                     {{ __('storefront.products.related_title') }}
@@ -418,9 +434,19 @@
             </div>
             <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                 @foreach ($relatedProducts as $relatedProduct)
+                    @php
+                        $relatedVariant = $relatedProduct->variants->first();
+                    @endphp
                     <x-product-card
                         :product="$relatedProduct"
-                        :currency="$currencyEnum"
+                        :currency="$currencyEnum->value"
+                        :currencyEnum="$currencyEnum"
+                        :primaryImage="$relatedProduct->primaryImage()"
+                        :variant="$relatedVariant"
+                        :price="$relatedVariant?->priceIn($currencyEnum)"
+                        :detailUrl="route('products.show', $relatedProduct->slug)"
+                        :isOutOfStock="$relatedProduct->isOutOfStock()"
+                        :availableColors="$relatedProduct->availableColors()"
                     />
                 @endforeach
             </div>

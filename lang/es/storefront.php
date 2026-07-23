@@ -81,6 +81,7 @@ return [
         'color_label' => 'Color',
         'size_label' => 'Talla',
         'quantity_label' => 'Cantidad',
+        'already_in_cart' => ':count ya en tu carrito',
         'select_variant' => 'Selecciona una variante',
         'add_to_cart' => 'Agregar al carrito',
         'buy_now' => 'Comprar ahora',
@@ -94,5 +95,7 @@ return [
         'material_label' => 'Material',
         'dimensions_label' => 'Dimensiones',
         'close_lightbox' => 'Cerrar',
+        'stock_in_cart' => 'Todo el stock disponible ya está en tu carrito',
+        'add_to_cart_error' => 'No se pudo agregar el producto al carrito',
     ],
 ];

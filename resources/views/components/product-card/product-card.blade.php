@@ -33,7 +33,7 @@
             <button
                 type="button"
                 aria-label="{{ __('storefront.favorite_login_required') }}"
-                class="flex h-10 w-10 items-center justify-center rounded-full bg-silk-cream/95 text-intense-cocoa shadow-sm transition-colors hover:bg-soft-gold hover:text-silk-cream"
+                class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-silk-cream/95 text-intense-cocoa shadow-sm transition-colors hover:bg-soft-gold hover:text-silk-cream"
                 data-favorite-button
                 data-product-id="{{ $product->id }}"
             >
@@ -46,7 +46,7 @@
                     type="button"
                     wire:click="$dispatch('add-to-cart', { variantId: {{ $variant->id }} })"
                     aria-label="{{ __('storefront.add_to_cart') }}"
-                    class="flex h-10 w-10 items-center justify-center rounded-full bg-silk-cream/95 text-intense-cocoa shadow-sm transition-colors hover:bg-soft-gold hover:text-silk-cream"
+                    class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-silk-cream/95 text-intense-cocoa shadow-sm transition-colors hover:bg-soft-gold hover:text-silk-cream"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-5 w-5" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.46 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM11.25 10.5h.008v.008h-.008V10.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />

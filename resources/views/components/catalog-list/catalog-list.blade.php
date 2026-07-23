@@ -1,4 +1,20 @@
-<div x-data="{ mobileFiltersOpen: false }" class="min-h-screen">
+<div x-data="{ mobileFiltersOpen: false, toastMessage: '', toastVisible: false }" class="min-h-screen" x-on:toast.window="toastMessage = $event.detail.message; toastVisible = true; setTimeout(() => { toastVisible = false }, 3000)">
+    {{-- Toast Notification --}}
+    <div
+        x-show="toastVisible"
+        x-cloak
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 -translate-y-4"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 -translate-y-4"
+        class="fixed top-4 right-4 z-50 rounded-lg bg-intense-cocoa px-5 py-3 text-sm font-medium text-silk-cream shadow-ambient"
+        role="status"
+        aria-live="polite"
+    >
+        <span x-text="toastMessage"></span>
+    </div>
     {{-- Mobile filter drawer overlay --}}
     <div
         x-show="mobileFiltersOpen"
