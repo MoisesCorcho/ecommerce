@@ -170,10 +170,19 @@ class ProcessPaymentWebhookAction
     /**
      * Defense in depth: when the provider payload exposes amount/currency, they must match the Payment.
      * Missing fields are ignored (do not reject — avoids blocking providers that omit totals).
+     * Non-positive amounts are treated as unusable (e.g. Bold sandbox redacts total to 0).
      */
     private function matchesPaymentMoney(Payment $payment, ParsedWebhookEventDTO $parsed): bool
     {
-        if ($parsed->amount !== null && $parsed->amount !== (int) $payment->amount) {
+        if ($parsed->amount !== null && $parsed->amount <= 0) {
+            Log::warning('payments.webhook.amount_unusable', [
+                'payment_id' => $payment->id,
+                'order_id' => $payment->order_id,
+                'event_id' => $parsed->eventId,
+                'webhook_amount' => $parsed->amount,
+            ]);
+            // Skip amount check — zero/negative is not a trustworthy provider total.
+        } elseif ($parsed->amount !== null && $parsed->amount !== (int) $payment->amount) {
             Log::error('payments.webhook.amount_mismatch', [
                 'payment_id' => $payment->id,
                 'order_id' => $payment->order_id,
