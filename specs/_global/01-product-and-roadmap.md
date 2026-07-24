@@ -56,8 +56,10 @@ Rutas de specs se crean al iniciar cada feature (`specs/features/<slug>/`).
 | F04 | Checkout y órdenes | 1 · Compra | Completa | F01, F02, F03 |
 | F05 | Pagos (Stripe / Bold + webhooks) | 2 · Cobro | Completa | F04 |
 | F06 | Cupones y redenciones | 2 · Cobro | Completa | F03, F04 (punto de aplicación: checkout/confirm; specs en `06-coupons`) |
-| F07 | Reviews | 3 · Post-compra | Lista para implementar | F01; F04/F05 (compra paid+ para elegibilidad) |
-| F08 | Wishlist | 3 · Post-compra | No iniciada | F01, F02 |
+| F07 | Reviews | 3 · Post-compra | Completa | F01; F04/F05 (compra paid+ para elegibilidad) |
+| F08 | Auth (login/registro storefront) | 3 · Post-compra | Specs en progreso | F01, F02 |
+| F09 | Cuenta/perfil del comprador (perfil, direcciones, mis pedidos, mis reseñas) | 3 · Post-compra | No iniciada | F08 |
+| F10 | Wishlist | 3 · Post-compra | No iniciada | F01, F02, F08 (requiere usuario identificado, sin modo invitado) |
 
 Sincronizar la columna **Estado** con el bloque `> Estado:` de cada `requirements.md` cuando exista.
 
@@ -113,9 +115,22 @@ Sincronizar la columna **Estado** con el bloque `> Estado:` de cada `requirement
 - Specs: `specs/features/07-reviews/`.
 - Decisiones cerradas: solo compradores autenticados; elegibilidad orden `paid|processing|shipped|delivered`; moderación manual (`is_approved` default false); edit del autor re-modera; una review por user+product; Filament moderación (sin admin create); enganche PDP con estilo de marca del storefront existente; sin migración de schema; sin guests/fotos/auto-approve/denormalize.
 
-#### F07 / F08
+#### F08 Auth (storefront)
 
-- Reviews y wishlist no bloquean el path de compra; priorizar tras F04/F05 salvo necesidad de demo.
+- Specs: `specs/features/08-auth/`.
+- Decisiones cerradas: registro/login/logout/verificación de email/reset de contraseña; checkout de invitado sin cambios; rol **cliente** por defecto, **administrador** solo por vía interna; acceso al panel admin pasa de lista de correos a rol asignado (migración de datos antes del cambio de comportamiento); sin perfil/direcciones/pedidos (F09), sin wishlist (F10), sin login social, sin 2FA, sin vincular pedidos de invitado pasados.
+- Desbloquea F09 y F10.
+
+#### F09 Cuenta/perfil del comprador
+
+- Aún sin specs (`specs/features/09-account/` a crear cuando se priorice).
+- Alcance previsto: perfil (nombre/email/teléfono), libreta de direcciones del comprador, historial de pedidos ("mis pedidos"), gestión de reseñas propias. Depende de F08.
+
+#### F10 Wishlist
+
+- Aún sin specs (`specs/features/10-wishlist/` a crear cuando se priorice).
+- Requiere usuario autenticado (F08); a diferencia de carrito/checkout/cupones, **no** admite modo invitado — `wishlists.user_id` es obligatorio en el esquema ya existente.
+- No bloquea el path de compra; priorizar tras F04/F05 salvo necesidad de demo.
 
 ## Orden de corrección / implementación
 
@@ -125,7 +140,8 @@ Sincronizar la columna **Estado** con el bloque `> Estado:` de cada `requirement
 4. F04 con F01+F02+F03.
 5. F05 sobre F04.
 6. F06 cuando el punto de aplicación (carrito vs orden) esté decidido.
-7. F07/F08 cuando el catálogo (y, si aplica, la compra) estén listos.
+7. F07 (Reviews) y F08 (Auth) cuando el catálogo (y, si aplica, la compra) estén listos; F08 no depende de F07.
+8. F09 (Cuenta/perfil) y F10 (Wishlist) después de F08 — F10 depende estrictamente de F08, F09 no bloquea a F10.
 
 ## Cuando una feature toca el esquema
 
