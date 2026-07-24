@@ -31,3 +31,5 @@ esquema-bd-bolsos.md
 # Google Stitch reference designs (generated mockups + screenshots)
 # Insumo visual para frontend; los UI Briefs (.md) siguen trackeados como fuente canónica.
 /specs/ui-briefs/stitches/
+# Local AI runtime state
+.atl/

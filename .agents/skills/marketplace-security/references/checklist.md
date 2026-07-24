@@ -21,11 +21,32 @@ Use before merge on security-sensitive work, and always before claiming **produc
 - [ ] CSRF exceptions limited to named webhook routes
 - [ ] Stripe empty webhook secret rejected
 - [ ] Bold: empty secret documented as sandbox-only; prod secret non-empty
-- [ ] Hosted amount/currency from server-side order totals
+- [ ] Hosted amount/currency from server-side order totals (**post-discount** `order.total`)
 - [ ] Provider not chosen by untrusted client input
 - [ ] Idempotent `event_id` handling; no double stock decrement
 - [ ] Incomplete process (`processed_at` null) can still be retried correctly
 - [ ] D25 / cancel+approved / multi-approved residual risks acknowledged
+- [ ] Refund webhook does **not** release coupon redemptions / `used_count`
+
+## B2. Coupons / F06 (when promo/discount code touched)
+
+Deep dive: [coupons.md](coupons.md). Hard rules H11–H13 + C1–C12.
+
+- [ ] Client input is **`couponCode` string only** (no `coupon_id`, no client `discount`/`total`)
+- [ ] Preview/validate quotes discount **without** redemption or `used_count++`
+- [ ] Confirm/create re-validates; invalid code **blocks** order create
+- [ ] Consume in one TX: lock coupon, set order money fields, redemption + `code` snapshot, `used_count++`
+- [ ] At most one coupon per order
+- [ ] Discount on line subtotal only; cap to subtotal; shipping not zeroed by 100% off
+- [ ] Fixed: currency must match; percentage: multi-currency
+- [ ] Cancel `pending→cancelled` releases redemption + decrements `used_count` (floor 0)
+- [ ] Cancel **blocked** when payment is approved/refunded (no coupon release after capture / D25)
+- [ ] Coupon code attempts rate-limited (30/min per user or IP) on non-blank codes
+- [ ] Refund / paid path does **not** release coupon
+- [ ] Storefront errors generic (no reason that enumerates valid codes)
+- [ ] Admin: no operational hard-delete; type/value/currency immutable after redemptions
+- [ ] Tests: preview no-write, confirm consume, invalid confirm, limits, cancel release, refund keep
+- [ ] Residual named: guest vs per-user (D33), stuck pending (D37), D25 burn (D39)
 
 ## C. Data & input
 
@@ -56,3 +77,4 @@ Use before merge on security-sensitive work, and always before claiming **produc
 - [ ] `STRIPE_WEBHOOK_SECRET` set; Bold signing secret **not** empty string
 - [ ] Smoke: one real small charge per provider + DB rows (`payments`, `payment_webhook_events.processed_at`, stock, order status)
 - [ ] Runbook: D25, double approved, refund without stock, secret rotation
+- [ ] Runbook coupons: global vs per-user limits, cancel pending releases, refund keeps redemption, stuck pending holds limit

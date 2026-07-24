@@ -33,26 +33,26 @@ class ProductCardTest extends TestCase
         Livewire::test('product-card', ['product' => $product, 'currency' => 'COP'])
             ->assertOk()
             ->assertSeeHtml('aspect-[4/5]')
-            ->assertSeeHtml('rounded-none');
+            ->assertDontSeeHtml('rounded');
     }
 
-    public function test_product_card_renders_category_eyebrow_with_label_caps(): void
+    public function test_product_card_renders_category_eyebrow_with_uppercase_tracking(): void
     {
         $product = $this->createStorefrontProduct();
 
         Livewire::test('product-card', ['product' => $product, 'currency' => 'COP'])
             ->assertOk()
-            ->assertSeeHtml('text-label-caps')
+            ->assertSeeHtml('tracking-wider')
             ->assertSee($product->category->name, false);
     }
 
-    public function test_product_card_renders_product_name_with_body_md(): void
+    public function test_product_card_renders_product_name_with_headline_style(): void
     {
         $product = $this->createStorefrontProduct();
 
         Livewire::test('product-card', ['product' => $product, 'currency' => 'COP'])
             ->assertOk()
-            ->assertSeeHtml('text-body-md')
+            ->assertSeeHtml('font-headline-sm text-xl')
             ->assertSee($product->name, false);
     }
 
@@ -63,7 +63,7 @@ class ProductCardTest extends TestCase
 
         Livewire::test('product-card', ['product' => $product, 'currency' => 'COP'])
             ->assertOk()
-            ->assertSeeHtml('text-headline-sm')
+            ->assertSeeHtml('font-headline-sm text-2xl')
             ->assertSee($formattedPrice, false);
     }
 
@@ -104,7 +104,7 @@ class ProductCardTest extends TestCase
         Livewire::test('product-card', ['product' => $product, 'currency' => 'COP'])
             ->assertOk()
             ->assertSee(__('storefront.add_to_cart'), false)
-            ->assertSeeHtml('data-add-to-cart');
+            ->assertSeeHtml("wire:click=\"\$dispatch('add-to-cart'");
     }
 
     public function test_product_card_nests_favorite_button(): void

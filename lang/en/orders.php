@@ -20,6 +20,7 @@ return [
         'subtotal' => 'Subtotal',
         'shipping_cost' => 'Shipping',
         'discount' => 'Discount',
+        'coupon_code' => 'Coupon code',
         'tax_amount' => 'Tax',
         'total' => 'Total',
         'customer_notes' => 'Order notes',
@@ -83,6 +84,7 @@ return [
         'access_denied' => 'You are not allowed to access this order.',
         'cart_access_denied' => 'You are not allowed to checkout this cart.',
         'cannot_cancel' => 'Only pending orders can be cancelled.',
+        'cannot_cancel_payment_captured' => 'This order has a captured payment and cannot be cancelled. Resolve via refund or ops.',
         'invalid_address' => 'The selected address is invalid or does not belong to you.',
     ],
 

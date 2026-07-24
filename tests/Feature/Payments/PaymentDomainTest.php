@@ -299,6 +299,40 @@ class PaymentDomainTest extends TestCase
         );
     }
 
+    public function test_webhook_approved_with_zero_amount_skips_money_check_and_marks_paid(): void
+    {
+        // Bold sandbox redacts amount.total to 0; SH-05 must not block approval.
+        $user = User::factory()->create();
+        $variant = $this->createVariant(stock: 5);
+        $order = $this->createPendingOrder($user, CurrencyEnum::Cop, 230_000, $variant, 1);
+        $payment = Payment::factory()->create([
+            'order_id' => $order->id,
+            'status' => PaymentStatusEnum::Pending,
+            'amount' => 230_000,
+            'currency' => CurrencyEnum::Cop,
+        ]);
+
+        $payload = json_encode([
+            'event_id' => 'evt_amt_zero',
+            'event_type' => 'fake.approved',
+            'outcome' => 'approved',
+            'payment_id' => $payment->id,
+            'amount' => 0,
+            'currency' => 'COP',
+        ], JSON_THROW_ON_ERROR);
+
+        $result = app(ProcessPaymentWebhookAction::class)(
+            PaymentProviderEnum::Bold,
+            $payload,
+            $this->fakeGateway->sign($payload),
+        );
+
+        $this->assertSame('processed', $result['status']);
+        $this->assertSame(PaymentStatusEnum::Approved, $payment->fresh()->status);
+        $this->assertSame(OrderStatusEnum::Paid, $order->fresh()->status);
+        $this->assertSame(4, (int) $variant->fresh()->stock);
+    }
+
     public function test_webhook_approved_stock_fail_d25(): void
     {
         Log::spy();

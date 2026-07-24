@@ -7,5 +7,6 @@ return [
         'accounts' => 'Accounts',
         'catalog' => 'Catalog',
         'orders' => 'Orders',
+        'commerce' => 'Commerce',
     ],
 ];

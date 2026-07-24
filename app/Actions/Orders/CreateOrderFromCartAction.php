@@ -9,14 +9,17 @@ use App\Actions\Orders\Concerns\ValidatesCartLinesForCheckout;
 use App\DTOs\Orders\CreateOrderFromCartDTO;
 use App\Enums\Orders\OrderStatusEnum;
 use App\Exceptions\Cart\CartAccessDeniedException;
+use App\Exceptions\Coupons\InvalidCouponException;
 use App\Exceptions\Orders\CheckoutCartEmptyException;
 use App\Exceptions\Orders\CheckoutCartNotReadyException;
 use App\Exceptions\Orders\InvalidCheckoutAddressException;
 use App\Exceptions\Orders\OrderAccessDeniedException;
 use App\Models\Address;
 use App\Models\Cart;
+use App\Models\CouponRedemption;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Services\Coupons\CouponPricingService;
 use App\Services\Orders\ShippingCostService;
 use App\Support\Orders\OrderNumberGenerator;
 use Illuminate\Support\Facades\DB;
@@ -30,16 +33,19 @@ class CreateOrderFromCartAction
     public function __construct(
         private readonly ShippingCostService $shippingCostService,
         private readonly OrderNumberGenerator $orderNumberGenerator,
+        private readonly CouponPricingService $couponPricingService,
     ) {}
 
     /**
      * Creates a pending order from the cart with live price snapshots.
      * Does not decrement variant stock (F05). Clears cart items on success.
+     * Optional coupon is revalidated under lock; redemption + used_count in same TX (R4/R5).
      *
      * @throws OrderAccessDeniedException
      * @throws CheckoutCartEmptyException
      * @throws CheckoutCartNotReadyException
      * @throws InvalidCheckoutAddressException
+     * @throws InvalidCouponException
      * @throws Throwable
      */
     public function __invoke(CreateOrderFromCartDTO $dto): Order
@@ -62,15 +68,34 @@ class CreateOrderFromCartAction
 
             $subtotal = array_sum(array_column($lines, 'lineSubtotal'));
             $shippingCost = $this->shippingCostService->standardCost($cart->currency);
-            $discount = 0;
             $taxAmount = 0;
+
+            $couponId = null;
+            $discount = 0;
+            $redeemCode = null;
+            $lockedCoupon = null;
+
+            if (! $this->couponPricingService->isBlank($dto->couponCode)) {
+                $quote = $this->couponPricingService->quote(
+                    code: (string) $dto->couponCode,
+                    subtotal: $subtotal,
+                    currency: $cart->currency,
+                    userId: $dto->userId,
+                    forUpdate: true,
+                );
+                $lockedCoupon = $quote->coupon;
+                $couponId = (int) $lockedCoupon->id;
+                $discount = $quote->discountAmount;
+                $redeemCode = $quote->code;
+            }
+
             $total = $subtotal + $shippingCost - $discount + $taxAmount;
 
             $order = Order::query()->create([
                 'order_number' => $this->orderNumberGenerator->generate(),
                 'user_id' => $dto->userId,
                 'email' => $dto->contact->email,
-                'coupon_id' => null,
+                'coupon_id' => $couponId,
                 'status' => OrderStatusEnum::Pending,
                 'currency' => $cart->currency,
                 'subtotal' => $subtotal,
@@ -105,9 +130,23 @@ class CreateOrderFromCartAction
                 ]);
             }
 
+            if ($lockedCoupon !== null && $redeemCode !== null) {
+                CouponRedemption::query()->create([
+                    'coupon_id' => $lockedCoupon->id,
+                    'order_id' => $order->id,
+                    'user_id' => $dto->userId,
+                    'code' => $redeemCode,
+                    'discount_amount' => $discount,
+                    'currency' => $cart->currency,
+                ]);
+
+                // Coupon row was locked in quote(forUpdate: true); bump cache in same TX.
+                $lockedCoupon->increment('used_count');
+            }
+
             $cart->items()->delete();
 
-            return $order->fresh(['items']) ?? $order;
+            return $order->fresh(['items', 'coupon', 'couponRedemption']) ?? $order;
         });
     }
 
