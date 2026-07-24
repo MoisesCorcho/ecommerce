@@ -56,7 +56,7 @@ Rutas de specs se crean al iniciar cada feature (`specs/features/<slug>/`).
 | F04 | Checkout y órdenes | 1 · Compra | Completa | F01, F02, F03 |
 | F05 | Pagos (Stripe / Bold + webhooks) | 2 · Cobro | Completa | F04 |
 | F06 | Cupones y redenciones | 2 · Cobro | Completa | F03, F04 (punto de aplicación: checkout/confirm; specs en `06-coupons`) |
-| F07 | Reviews | 3 · Post-compra | No iniciada | F01; idealmente F04/F05 si se exige compra |
+| F07 | Reviews | 3 · Post-compra | Lista para implementar | F01; F04/F05 (compra paid+ para elegibilidad) |
 | F08 | Wishlist | 3 · Post-compra | No iniciada | F01, F02 |
 
 Sincronizar la columna **Estado** con el bloque `> Estado:` de cada `requirements.md` cuando exista.
@@ -107,6 +107,11 @@ Sincronizar la columna **Estado** con el bloque `> Estado:` de cada `requirement
 - Specs: `specs/features/06-coupons/`.
 - Decisiones cerradas: aplicar en **checkout/confirm** (no en carrito); preview sin consumir; un cupón por orden; `percentage`/`fixed`; descuento sobre subtotal; consume al crear `pending`, libera al cancel pending; no libera en refund; snapshot `coupon_redemptions.code`; Filament sí; UI marca out.
 - Fuente de verdad del descuento: `orders.discount` + `orders.coupon_id` + redención (F05 cobra total ya fijado).
+
+#### F07 Reviews
+
+- Specs: `specs/features/07-reviews/`.
+- Decisiones cerradas: solo compradores autenticados; elegibilidad orden `paid|processing|shipped|delivered`; moderación manual (`is_approved` default false); edit del autor re-modera; una review por user+product; Filament moderación (sin admin create); enganche PDP con estilo de marca del storefront existente; sin migración de schema; sin guests/fotos/auto-approve/denormalize.
 
 #### F07 / F08
 
