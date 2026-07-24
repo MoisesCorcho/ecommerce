@@ -1,9 +1,11 @@
 <x-layouts::storefront title="Leen Handbags | Home">
     {{-- 1. Hero — static Blade (D1), ~70vh, CTA → products.index (PD-S4) --}}
     <section
-        class="relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-soft-sand px-margin-mobile py-24 text-center lg:px-margin-desktop"
+        class="relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-soft-sand bg-cover bg-center px-margin-mobile py-24 text-center lg:px-margin-desktop"
+        style="background-image: url('{{ asset('images/banners/banner-10.jpg') }}')"
         aria-label="{{ __('storefront.home.hero_title') }}"
     >
+        <div class="absolute inset-0 bg-silk-cream/40" aria-hidden="true"></div>
         <div class="relative z-10 flex max-w-3xl flex-col items-center gap-6">
             <p class="font-labelle-aurore text-accent-script text-intense-cocoa">
                 {{ __('storefront.home.hero_subtitle') }}
@@ -55,9 +57,12 @@
                 </a>
             </div>
             <div class="aspect-[4/5] overflow-hidden rounded-none bg-soft-sand">
-                <div class="flex h-full w-full items-center justify-center">
-                    <span class="font-labelle-aurore text-accent-script text-intense-cocoa/30">Leen</span>
-                </div>
+                <img
+                    src="{{ asset('images/banners/image00029-1-scaled.jpeg') }}"
+                    alt="{{ __('storefront.home.story_title') }}"
+                    class="h-full w-full object-cover"
+                    loading="lazy"
+                >
             </div>
         </div>
     </section>
