@@ -19,4 +19,49 @@ return [
         'currency' => 'Moneda',
         'product_variant_id' => 'Variante de producto',
     ],
+
+    'page' => [
+        'title' => 'Carrito',
+        'breadcrumb_home' => 'Inicio',
+        'breadcrumb_cart' => 'Carrito',
+        'currency_label' => 'Moneda',
+        'clear_cart' => 'Vaciar carrito',
+        'clear_cart_confirm' => '¿Vaciar todo el carrito?',
+        'clear_cart_cancel' => 'Cancelar',
+    ],
+
+    'line' => [
+        'sku_label' => 'REF',
+        'decrease_quantity' => 'Disminuir cantidad',
+        'increase_quantity' => 'Aumentar cantidad',
+        'remove' => 'Eliminar producto',
+        'out_of_stock' => 'Agotado',
+        'unit_price_suffix' => 'c/u',
+    ],
+
+    'summary' => [
+        'title' => 'Resumen del pedido',
+        'items_count' => ':count producto|:count productos',
+        'subtotal' => 'Subtotal',
+        'total' => 'Total',
+        'checkout' => 'Finalizar compra',
+        'continue_shopping' => 'Continuar comprando',
+    ],
+
+    'empty' => [
+        'title' => 'Tu carrito está vacío',
+        'message' => 'Explora nuestra colección y encuentra tu próxima pieza favorita.',
+        'cta' => 'Explorar productos',
+    ],
+
+    'status' => [
+        'quantity_updated' => 'Cantidad actualizada.',
+        'line_removed' => 'Línea eliminada.',
+        'cart_cleared' => 'Carrito vaciado.',
+        'currency_updated' => 'Moneda actualizada.',
+    ],
+
+    'stock_banner' => [
+        'message' => 'La disponibilidad de uno o más productos en tu carrito ha cambiado.',
+    ],
 ];

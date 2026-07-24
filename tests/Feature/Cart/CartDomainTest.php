@@ -25,6 +25,7 @@ use App\Exceptions\Cart\InsufficientCartStockException;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
+use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use App\Models\ProductVariantPrice;
 use App\Models\User;
@@ -218,6 +219,69 @@ class CartDomainTest extends TestCase
         $this->assertSame(1_999, $eurView->lines[0]->unitPrice);
         $this->assertSame(5_997, $eurView->total);
         $this->assertIsInt($eurView->total);
+    }
+
+    public function test_cart_view_exposes_image_stock_and_variant_attributes(): void
+    {
+        $cart = Cart::factory()->guest()->create(['currency' => CurrencyEnum::Cop]);
+        $product = Product::factory()->create([
+            'is_active' => true,
+            'slug' => 'bolso-artesanal',
+            'material' => 'Cuero',
+        ]);
+        $variant = ProductVariant::factory()->for($product)->create([
+            'sku' => 'SKU-IMG',
+            'is_active' => true,
+            'stock' => 4,
+            'color' => 'Marrón',
+            'size' => 'M',
+        ]);
+        ProductVariantPrice::factory()->for($variant, 'productVariant')->cop()->create(['price' => 30_000]);
+        ProductImage::factory()->for($product)->create([
+            'product_variant_id' => $variant->id,
+            'path' => 'products/variant-primary.jpg',
+            'is_primary' => true,
+            'sort_order' => 0,
+        ]);
+        CartItem::factory()->for($cart)->create(['product_variant_id' => $variant->id, 'quantity' => 2]);
+
+        $pricing = app(CartPricingService::class);
+        $view = $pricing->view($cart->fresh());
+
+        $line = $view->lines[0];
+        $this->assertSame('products/variant-primary.jpg', $line->imagePath);
+        $this->assertSame('bolso-artesanal', $line->productSlug);
+        $this->assertSame('Marrón', $line->color);
+        $this->assertSame('M', $line->size);
+        $this->assertSame('Cuero', $line->material);
+        $this->assertSame(4, $line->stock);
+        $this->assertTrue($line->isAvailable);
+    }
+
+    public function test_cart_view_marks_line_unavailable_when_variant_inactive_or_out_of_stock(): void
+    {
+        $cart = Cart::factory()->guest()->create(['currency' => CurrencyEnum::Cop]);
+        $product = Product::factory()->create(['is_active' => true]);
+        $variant = ProductVariant::factory()->for($product)->create([
+            'sku' => 'SKU-OOS',
+            'is_active' => true,
+            'stock' => 0,
+        ]);
+        ProductVariantPrice::factory()->for($variant, 'productVariant')->cop()->create(['price' => 10_000]);
+        CartItem::factory()->for($cart)->create(['product_variant_id' => $variant->id, 'quantity' => 1]);
+
+        $pricing = app(CartPricingService::class);
+        $view = $pricing->view($cart->fresh());
+
+        $line = $view->lines[0];
+        $this->assertSame(0, $line->stock);
+        $this->assertTrue($line->isAvailable);
+        $this->assertNull($line->imagePath);
+
+        $variant->update(['is_active' => false]);
+
+        $view2 = $pricing->view($cart->fresh());
+        $this->assertFalse($view2->lines[0]->isAvailable);
     }
 
     public function test_change_currency_succeeds_when_all_lines_have_price(): void

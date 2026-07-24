@@ -55,18 +55,18 @@ class CartLivewireTest extends TestCase
 
         Livewire::test('cart-page')
             ->assertSee('Cartera')
-            ->assertSee('Total:')
+            ->assertSee(__('cart.summary.total'))
             ->set('quantities.'.$variant->id, 3)
             ->call('updateLine', $variant->id)
-            ->assertSet('statusMessage', 'Cantidad actualizada.')
+            ->assertSet('statusMessage', __('cart.status.quantity_updated'))
             ->assertSee('60.000');
 
         $this->assertSame(3, (int) CartItem::query()->where('product_variant_id', $variant->id)->value('quantity'));
 
         Livewire::test('cart-page')
             ->call('removeLine', $variant->id)
-            ->assertSet('statusMessage', 'Línea eliminada.')
-            ->assertSee('El carrito está vacío');
+            ->assertSet('statusMessage', __('cart.status.line_removed'))
+            ->assertSee(__('cart.empty.title'));
 
         Livewire::test('product-detail', ['slug' => 'cartera-ui'])
             ->set('quantity', 1)
@@ -74,18 +74,39 @@ class CartLivewireTest extends TestCase
 
         Livewire::test('cart-page')
             ->call('clearCart')
-            ->assertSet('statusMessage', 'Carrito vaciado.')
-            ->assertSee('El carrito está vacío');
+            ->assertSet('statusMessage', __('cart.status.cart_cleared'))
+            ->assertSee(__('cart.empty.title'));
 
         $this->assertSame(0, CartItem::query()->count());
+    }
+
+    public function test_change_quantity_clamps_and_delegates_to_update_line(): void
+    {
+        $product = $this->createPublishedProduct('Mochila', 'mochila-test', stock: 5, price: 10_000);
+        $variant = $product->variants->first();
+        $this->assertNotNull($variant);
+
+        Livewire::test('product-detail', ['slug' => 'mochila-test'])
+            ->set('quantity', 1)
+            ->call('addToCart');
+
+        Livewire::test('cart-page')
+            ->call('changeQuantity', $variant->id, 3);
+
+        $this->assertSame(3, (int) CartItem::query()->where('product_variant_id', $variant->id)->value('quantity'));
+
+        Livewire::test('cart-page')
+            ->call('changeQuantity', $variant->id, 99);
+
+        $this->assertSame(5, (int) CartItem::query()->where('product_variant_id', $variant->id)->value('quantity'));
     }
 
     public function test_cart_page_route_renders(): void
     {
         $this->get(route('cart.page'))
             ->assertOk()
-            ->assertSee('Carrito')
-            ->assertSee('El carrito está vacío');
+            ->assertSee(__('cart.page.title'))
+            ->assertSee(__('cart.empty.title'));
     }
 
     public function test_add_to_cart_rejects_insufficient_stock_with_message(): void

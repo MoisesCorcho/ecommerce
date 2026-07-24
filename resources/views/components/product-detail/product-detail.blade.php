@@ -275,11 +275,11 @@
 
                 {{-- Select variant hint (R18) --}}
                 @if (! $selectedVariant)
-                    <p class="rounded-lg bg-soft-sand px-4 py-2.5 text-sm text-intense-cocoa/70" data-select-variant-hint>
+                    <p class="bg-soft-sand px-4 py-2.5 text-sm text-intense-cocoa/70" data-select-variant-hint>
                         {{ __('storefront.products.select_variant') }}
                     </p>
                 @elseif ($selectedVariant->stock > 0 && $availableStock <= 0)
-                    <p class="rounded-lg bg-soft-gold/20 px-4 py-2.5 text-sm text-intense-cocoa/70">
+                    <p class="bg-soft-gold/20 px-4 py-2.5 text-sm text-intense-cocoa/70">
                         {{ __('storefront.products.stock_in_cart') }}
                     </p>
                 @endif

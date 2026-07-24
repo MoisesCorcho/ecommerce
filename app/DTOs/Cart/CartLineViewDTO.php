@@ -14,5 +14,12 @@ readonly class CartLineViewDTO
         public int $lineSubtotal,
         public ?string $sku = null,
         public ?string $productName = null,
+        public ?string $imagePath = null,
+        public ?string $productSlug = null,
+        public ?string $color = null,
+        public ?string $size = null,
+        public ?string $material = null,
+        public int $stock = 0,
+        public bool $isAvailable = true,
     ) {}
 }
