@@ -62,16 +62,21 @@
                     {{-- Currency selector --}}
                     <div class="mb-6 flex flex-wrap items-center gap-3">
                         <label class="text-sm font-medium text-intense-cocoa" for="cart-currency">{{ __('cart.page.currency_label') }}</label>
-                        <select
-                            id="cart-currency"
-                            wire:model="currency"
-                            wire:change="changeCurrency($event.target.value)"
-                            class="border border-intense-cocoa/20 bg-transparent px-3 py-2 text-sm text-intense-cocoa focus:outline-none"
-                            data-cart-currency
-                        >
-                            <option value="COP">COP</option>
-                            <option value="EUR">EUR</option>
-                        </select>
+                        <div class="relative">
+                            <select
+                                id="cart-currency"
+                                wire:model="currency"
+                                wire:change="changeCurrency($event.target.value)"
+                                class="peer cursor-pointer appearance-none border border-intense-cocoa bg-transparent px-3 py-2 pr-10 text-sm text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream focus:bg-intense-cocoa focus:text-silk-cream focus:outline-none"
+                                data-cart-currency
+                            >
+                                <option value="COP" class="bg-silk-cream text-intense-cocoa hover:bg-soft-gold hover:text-intense-cocoa">COP</option>
+                                <option value="EUR" class="bg-silk-cream text-intense-cocoa hover:bg-soft-gold hover:text-intense-cocoa">EUR</option>
+                            </select>
+                            <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-intense-cocoa transition-all duration-200 peer-hover:text-silk-cream peer-focus:text-silk-cream peer-focus:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </div>
                         @error('currency')
                             <span class="text-sm text-error">{{ $message }}</span>
                         @enderror
@@ -91,7 +96,7 @@
                                 $variantAttributes = collect([$line->color, $line->size, $line->material])->filter()->implode(' · ');
                             @endphp
                             <li
-                                class="flex flex-col gap-4 py-6 sm:flex-row sm:items-start"
+                                class="flex flex-col gap-4 bg-silk-cream py-6 text-intense-cocoa sm:flex-row sm:items-start"
                                 wire:key="cart-line-{{ $line->productVariantId }}"
                                 data-cart-line="{{ $line->productVariantId }}"
                             >
@@ -119,10 +124,10 @@
                                             @endif
 
                                             @if ($variantAttributes !== '')
-                                                <p class="mt-1 text-sm text-intense-cocoa/60">{{ $variantAttributes }}</p>
+                                                <p class="mt-1 text-sm text-intense-cocoa/90">{{ $variantAttributes }}</p>
                                             @endif
 
-                                            <p class="mt-1 text-label-caps text-intense-cocoa/40">
+                                            <p class="mt-1 text-label-caps text-intense-cocoa/90">
                                                 {{ __('cart.line.sku_label') }} {{ $line->sku }}
                                             </p>
 
@@ -135,11 +140,11 @@
 
                                         <p class="whitespace-nowrap text-sm font-semibold tabular-nums text-intense-cocoa" data-cart-line-subtotal="{{ $line->productVariantId }}">
                                             {{ number_format($line->lineSubtotal, 0, ',', '.') }}
-                                            <span class="text-xs font-normal text-intense-cocoa/50">{{ $cartView->currency->value }}</span>
+                                            <span class="text-xs font-normal text-intense-cocoa/90">{{ $cartView->currency->value }}</span>
                                         </p>
                                     </div>
 
-                                    <p class="mt-1 text-sm tabular-nums text-intense-cocoa/70">
+                                    <p class="mt-1 text-sm tabular-nums text-intense-cocoa/90">
                                         {{ number_format($line->unitPrice, 0, ',', '.') }} {{ $cartView->currency->value }} {{ __('cart.line.unit_price_suffix') }}
                                     </p>
 
@@ -179,7 +184,7 @@
                                             type="button"
                                             wire:click="removeLine({{ $line->productVariantId }})"
                                             aria-label="{{ __('cart.line.remove') }}"
-                                            class="flex h-10 w-10 items-center justify-center bg-soft-sand text-intense-cocoa transition-colors hover:bg-soft-gold"
+                                            class="flex h-10 w-10 items-center justify-center border border-error bg-transparent text-error transition-colors hover:bg-error hover:text-silk-cream"
                                             data-cart-remove="{{ $line->productVariantId }}"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4 w-4" aria-hidden="true">
@@ -211,7 +216,7 @@
                             {{ __('cart.summary.title') }}
                         </h2>
 
-                        <div class="space-y-2 text-sm text-intense-cocoa/80">
+                        <div class="space-y-2 text-sm text-intense-cocoa">
                             <div class="flex items-center justify-between">
                                 <span data-cart-item-count>{{ trans_choice('cart.summary.items_count', $itemCount, ['count' => $itemCount]) }}</span>
                             </div>
@@ -227,7 +232,7 @@
                             <span class="text-base font-semibold text-intense-cocoa">{{ __('cart.summary.total') }}</span>
                             <span class="text-xl font-semibold tabular-nums text-intense-cocoa" data-cart-total>
                                 {{ number_format($cartView->total, 0, ',', '.') }}
-                                <span class="text-sm font-normal text-intense-cocoa/60">{{ $cartView->currency->value }}</span>
+                                <span class="text-sm font-normal text-intense-cocoa/90">{{ $cartView->currency->value }}</span>
                             </span>
                         </div>
 
@@ -241,7 +246,7 @@
 
                         <a
                             href="{{ route('products.index') }}"
-                            class="mt-3 block text-center text-sm text-intense-cocoa/60 underline hover:text-intense-cocoa"
+                            class="mt-3 block text-center text-sm font-medium text-intense-cocoa underline underline-offset-2 hover:text-soft-gold"
                         >
                             {{ __('cart.summary.continue_shopping') }}
                         </a>
@@ -270,14 +275,14 @@
                     <h2 id="clear-cart-modal-title" class="font-[family-name:var(--font-chillax)] text-xl font-semibold text-intense-cocoa">
                         {{ __('cart.page.clear_cart') }}
                     </h2>
-                    <p class="mt-2 text-sm text-intense-cocoa/70">
+                    <p class="mt-2 text-sm text-intense-cocoa/90">
                         {{ __('cart.page.clear_cart_confirm') }}
                     </p>
                     <div class="mt-6 flex justify-end gap-3">
                         <button
                             type="button"
                             x-on:click="confirmingClear = false"
-                            class="h-10 px-4 text-sm font-semibold text-intense-cocoa/60 transition-colors hover:text-intense-cocoa"
+                            class="flex h-10 cursor-pointer items-center justify-center bg-intense-cocoa px-4 text-sm font-semibold text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa"
                         >
                             {{ __('cart.page.clear_cart_cancel') }}
                         </button>
@@ -285,7 +290,7 @@
                             type="button"
                             wire:click="clearCart"
                             x-on:click="confirmingClear = false"
-                            class="h-10 border border-error bg-error px-4 text-sm font-semibold text-silk-cream transition-colors hover:bg-error/90"
+                            class="h-10 cursor-pointer border border-intense-cocoa bg-intense-cocoa px-4 text-sm font-semibold text-silk-cream transition-colors duration-200 hover:border-error hover:bg-error"
                             data-cart-clear-confirm
                         >
                             {{ __('cart.page.clear_cart') }}
