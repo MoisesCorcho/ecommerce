@@ -55,8 +55,8 @@ class DesignTokensAndFontsTest extends TestCase
         $css = (string) file_get_contents(resource_path('css/fonts.css'));
 
         $this->assertStringContainsString('@font-face', $css);
-        $this->assertStringContainsString("'Chillax'", $css);
-        $this->assertStringContainsString('/fonts/chillax/', $css);
+        $this->assertStringContainsString('"Chillax"', $css);
+        $this->assertStringContainsString('data:font/woff2;base64,', $css);
         $this->assertStringContainsString('font-display: swap', $css);
     }
 
@@ -64,16 +64,17 @@ class DesignTokensAndFontsTest extends TestCase
     {
         $css = (string) file_get_contents(resource_path('css/fonts.css'));
 
-        $this->assertStringContainsString("'Montserrat'", $css);
-        $this->assertStringContainsString('/fonts/montserrat/', $css);
+        $this->assertStringContainsString('@import', $css);
+        $this->assertStringContainsString('fonts.googleapis.com', $css);
+        $this->assertStringContainsString('family=Montserrat', $css);
     }
 
     public function test_fonts_css_contains_font_face_for_la_belle_aurore(): void
     {
         $css = (string) file_get_contents(resource_path('css/fonts.css'));
 
-        $this->assertStringContainsString("'La Belle Aurore'", $css);
-        $this->assertStringContainsString('/fonts/labelle-aurore/', $css);
+        $this->assertStringContainsString('"La Belle Aurore"', $css);
+        $this->assertStringContainsString('data:font/truetype;base64,', $css);
     }
 
     public function test_chillax_font_files_deployed_to_public(): void

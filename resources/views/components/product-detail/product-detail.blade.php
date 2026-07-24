@@ -344,7 +344,7 @@
                 <button
                     type="button"
                     @if ($canAddToCart) wire:click="addToCart" @else disabled @endif
-                    class="flex h-12 w-full items-center justify-center bg-intense-cocoa text-sm font-semibold text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa focus:outline-none disabled:cursor-not-allowed disabled:bg-intense-cocoa/40"
+                    class="flex h-12 w-full items-center justify-center bg-intense-cocoa text-sm font-semibold text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa focus:outline-none disabled:cursor-not-allowed disabled:bg-intense-cocoa/40 disabled:hover:bg-intense-cocoa/40 disabled:hover:text-silk-cream"
                     data-add-to-cart
                     aria-label="{{ __('storefront.products.add_to_cart') }}"
                 >

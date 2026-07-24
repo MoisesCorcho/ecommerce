@@ -10,6 +10,31 @@
                 "-c",
                 "cd /home/noro/proyectos/ecommerce && exec vendor/bin/sail artisan boost:mcp"
             ]
+        },
+        "codegraph": {
+            "type": "local",
+            "enabled": true,
+            "command": [
+                "wsl",
+                "/home/noro/.npm-global/bin/codegraph",
+                "serve",
+                "--mcp"
+            ]
+        },
+        "context7": {
+            "type": "remote",
+            "enabled": true,
+            "url": "https://mcp.context7.com/mcp"
+        },
+        "engram": {
+            "type": "local",
+            "enabled": true,
+            "command": [
+                "wsl",
+                "/home/noro/.local/bin/engram",
+                "mcp",
+                "--tools=agent"
+            ]
         }
     }
 }
