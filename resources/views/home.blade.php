@@ -58,7 +58,7 @@
             </div>
             <div class="aspect-[4/5] overflow-hidden rounded-none bg-soft-sand">
                 <img
-                    src="{{ asset('images/banners/image00029-1-scaled.jpeg') }}"
+                    src="{{ asset('images/banners/banner-4.jpeg') }}"
                     alt="{{ __('storefront.home.story_title') }}"
                     class="h-full w-full object-cover"
                     loading="lazy"
