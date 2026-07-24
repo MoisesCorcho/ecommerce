@@ -1,5 +1,5 @@
-<x-layouts::auth :title="__('login.meta.page_title').' | '.config('app.name', 'Leen Handbags')">
-    <div class="w-full border border-intense-cocoa/30 bg-soft-sand p-8 shadow-ambient md:p-10">
+<x-layouts::auth :title="'Leen Handbags | '.__('login.meta.page_title')">
+    <div class="w-full bg-soft-sand p-8 shadow-ambient md:p-10">
         <h1 class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
             {{ __('login.title') }}
         </h1>

@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
 
     'meta' => [
-        'page_title' => 'Sign in',
+        'page_title' => 'Login',
     ],
 
     'title' => 'Sign in',
