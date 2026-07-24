@@ -1,4 +1,4 @@
-<x-layouts::storefront title="Leen Handbags | Home">
+<x-layouts::storefront :title="'Leen Handbags | '.__('storefront.nav.home')">
     {{-- 1. Hero — static Blade (D1), ~70vh, CTA → products.index (PD-S4) --}}
     <section
         class="relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-soft-sand bg-cover bg-center px-margin-mobile py-24 text-center lg:px-margin-desktop"
@@ -58,7 +58,7 @@
             </div>
             <div class="aspect-[4/5] overflow-hidden rounded-none bg-soft-sand">
                 <img
-                    src="{{ asset('images/banners/image00029-1-scaled.jpeg') }}"
+                    src="{{ asset('images/banners/banner-4.jpeg') }}"
                     alt="{{ __('storefront.home.story_title') }}"
                     class="h-full w-full object-cover"
                     loading="lazy"

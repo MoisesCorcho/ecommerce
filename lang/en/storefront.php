@@ -11,6 +11,8 @@ return [
         'search' => 'Search',
         'favorites' => 'Favorites',
         'bag' => 'Bag',
+        'login' => 'Log in',
+        'account' => 'Account',
         'menu_toggle' => 'Menu',
     ],
 

@@ -5,6 +5,7 @@
 @source '../../storage/framework/views/*.php';
 @source '../views/layouts/*.blade.php';
 @source '../views/components/**/*.blade.php';
+@source '../views/auth/*.blade.php';
 
 @theme {
     /* Colors — brand palette (00-design-tokens.md) */
