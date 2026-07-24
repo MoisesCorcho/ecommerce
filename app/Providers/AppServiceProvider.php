@@ -42,5 +42,12 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinute(30)->by('coupons-preview:'.$key);
         });
+
+        // Product review create/update/delete from storefront PDP (F07).
+        RateLimiter::for('reviews-mutate', function (Request $request) {
+            $key = $request->user()?->getAuthIdentifier() ?? $request->ip();
+
+            return Limit::perMinute(5)->by('reviews-mutate:'.$key);
+        });
     }
 }

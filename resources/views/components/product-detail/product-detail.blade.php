@@ -420,6 +420,158 @@
         </section>
     @endif
 
+    {{-- Reviews (F07) --}}
+    <section
+        class="mx-auto mt-16 max-w-storefront px-margin-mobile sm:mt-20 lg:px-margin-desktop"
+        aria-labelledby="reviews-heading"
+        data-reviews-section
+    >
+        <div class="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-intense-cocoa/10 pb-6">
+            <div>
+                <h2 id="reviews-heading" class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
+                    {{ __('reviews.ui.section_title') }}
+                </h2>
+                <p class="mt-2 text-sm text-intense-cocoa/60">
+                    @if ($reviewsSummary->reviewsCount > 0)
+                        <span class="font-medium text-intense-cocoa">
+                            {{ number_format((float) $reviewsSummary->averageRating, 1) }}★
+                        </span>
+                        ·
+                        {{ trans_choice('reviews.ui.count_label', $reviewsSummary->reviewsCount, ['count' => $reviewsSummary->reviewsCount]) }}
+                    @else
+                        {{ __('reviews.empty.no_reviews') }}
+                    @endif
+                </p>
+            </div>
+        </div>
+
+        <div class="grid gap-10 lg:grid-cols-[1.2fr_1fr]">
+            {{-- Public approved list --}}
+            <div class="space-y-6" data-approved-reviews>
+                @forelse ($approvedReviews as $review)
+                    <article class="border-b border-intense-cocoa/10 pb-6 last:border-b-0" wire:key="review-{{ $review->id }}">
+                        <div class="mb-2 flex flex-wrap items-center gap-2">
+                            <span class="text-sm font-semibold text-soft-gold" aria-label="{{ __('reviews.ui.stars', ['rating' => $review->rating]) }}">
+                                {{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}
+                            </span>
+                            <span class="text-sm font-medium text-intense-cocoa">{{ $review->user?->name }}</span>
+                            @if ($review->is_verified_purchase)
+                                <span class="rounded-full bg-soft-sand px-2 py-0.5 text-xs font-medium text-intense-cocoa/70">
+                                    {{ __('reviews.status.verified_purchase') }}
+                                </span>
+                            @endif
+                        </div>
+                        @if ($review->comment)
+                            <p class="text-sm leading-relaxed text-intense-cocoa/80">{{ $review->comment }}</p>
+                        @endif
+                        <time class="mt-2 block text-xs text-intense-cocoa/40" datetime="{{ $review->created_at?->toIso8601String() }}">
+                            {{ $review->created_at?->format('d/m/Y') }}
+                        </time>
+                    </article>
+                @empty
+                    <p class="text-sm text-intense-cocoa/60" data-reviews-empty>
+                        {{ __('reviews.empty.no_reviews') }}
+                    </p>
+                @endforelse
+            </div>
+
+            {{-- Viewer form / notices --}}
+            <div class="rounded-sm border border-intense-cocoa/10 bg-silk-cream p-6 shadow-sm" data-review-form>
+                @auth
+                    @if ($canCreateReview || $canEditReview)
+                        <h3 class="mb-4 font-[family-name:var(--font-chillax)] text-lg font-semibold text-intense-cocoa">
+                            {{ $canEditReview ? __('reviews.ui.edit_review') : __('reviews.ui.write_review') }}
+                        </h3>
+
+                        @if ($viewerReview && ! $viewerReview->is_approved)
+                            <p class="mb-4 rounded-sm border border-soft-gold/40 bg-soft-sand/60 px-3 py-2 text-sm text-intense-cocoa/80" data-review-pending>
+                                {{ __('reviews.ui.pending_notice') }}
+                            </p>
+                        @endif
+
+                        <form wire:submit="saveReview" class="space-y-4">
+                            <div>
+                                <label class="mb-2 block text-sm font-medium text-intense-cocoa" for="review-rating">
+                                    {{ __('reviews.fields.rating') }}
+                                </label>
+                                <select
+                                    id="review-rating"
+                                    wire:model="reviewRating"
+                                    class="h-11 w-full border border-intense-cocoa/20 bg-white px-3 text-sm text-intense-cocoa focus:border-intense-cocoa focus:outline-none focus:ring-1 focus:ring-intense-cocoa"
+                                >
+                                    <option value="">{{ __('reviews.ui.rating_required') }}</option>
+                                    @for ($star = 5; $star >= 1; $star--)
+                                        <option value="{{ $star }}">{{ $star }} ★</option>
+                                    @endfor
+                                </select>
+                                @error('reviewRating')
+                                    <p class="mt-1 text-sm text-error">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="mb-2 block text-sm font-medium text-intense-cocoa" for="review-comment">
+                                    {{ __('reviews.fields.comment') }}
+                                </label>
+                                <textarea
+                                    id="review-comment"
+                                    wire:model="reviewComment"
+                                    rows="4"
+                                    maxlength="2000"
+                                    placeholder="{{ __('reviews.ui.comment_placeholder') }}"
+                                    class="w-full border border-intense-cocoa/20 bg-white px-3 py-2 text-sm text-intense-cocoa placeholder:text-intense-cocoa/40 focus:border-intense-cocoa focus:outline-none focus:ring-1 focus:ring-intense-cocoa"
+                                ></textarea>
+                                @error('reviewComment')
+                                    <p class="mt-1 text-sm text-error">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="flex flex-wrap gap-3">
+                                <button
+                                    type="submit"
+                                    class="h-11 bg-intense-cocoa px-5 text-sm font-semibold text-silk-cream transition-colors hover:bg-intense-cocoa/90 focus:outline-none"
+                                    wire:loading.attr="disabled"
+                                >
+                                    {{ $canEditReview ? __('reviews.actions.update') : __('reviews.actions.submit') }}
+                                </button>
+
+                                @if ($canEditReview)
+                                    <button
+                                        type="button"
+                                        wire:click="deleteReview"
+                                        wire:confirm="{{ __('reviews.ui.delete_confirm') }}"
+                                        class="h-11 border border-intense-cocoa/30 px-5 text-sm font-medium text-intense-cocoa transition-colors hover:border-error hover:text-error focus:outline-none"
+                                    >
+                                        {{ __('reviews.actions.delete_own') }}
+                                    </button>
+                                @endif
+                            </div>
+                        </form>
+                    @else
+                        <p class="text-sm text-intense-cocoa/70" data-review-not-eligible>
+                            {{ __('reviews.ui.not_eligible') }}
+                        </p>
+                    @endif
+                @else
+                    <p class="text-sm text-intense-cocoa/70" data-review-login-required>
+                        {{ __('reviews.ui.login_required') }}
+                    </p>
+                @endauth
+
+                @if ($reviewStatusMessage)
+                    <p class="mt-4 text-sm font-medium text-intense-cocoa" role="status" data-review-status>
+                        {{ $reviewStatusMessage }}
+                    </p>
+                @endif
+                @if ($reviewErrorMessage)
+                    <p class="mt-4 rounded-sm border border-error/20 bg-error/5 px-3 py-2 text-sm text-error" role="alert" data-review-error>
+                        {{ $reviewErrorMessage }}
+                    </p>
+                @endif
+            </div>
+        </div>
+    </section>
+
     {{-- Related products (R14) --}}
     @if ($relatedProducts->count() > 0)
         <section class="mx-auto mt-16 max-w-storefront px-margin-mobile sm:mt-20 lg:px-margin-desktop" aria-labelledby="related-heading">
