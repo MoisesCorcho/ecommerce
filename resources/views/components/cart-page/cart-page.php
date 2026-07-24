@@ -14,6 +14,7 @@ use App\Exceptions\Cart\CartItemNotEligibleException;
 use App\Exceptions\Cart\CartItemNotFoundException;
 use App\Exceptions\Cart\CartQuantityNotAllowedException;
 use App\Exceptions\Cart\InsufficientCartStockException;
+use App\Models\ProductVariant;
 use App\Support\Cart\ResolvesCurrentCart;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -62,13 +63,22 @@ new #[Layout('layouts.storefront'), Title('Carrito')] class extends Component
             ));
 
             $this->statusMessage = $quantity === 0
-                ? 'Línea eliminada.'
-                : 'Cantidad actualizada.';
+                ? __('cart.status.line_removed')
+                : __('cart.status.quantity_updated');
             $this->syncFromCart();
         } catch (Throwable $e) {
             $this->handleDomainError($e);
             $this->syncFromCart();
         }
+    }
+
+    public function changeQuantity(int $productVariantId, int $quantity): void
+    {
+        $stock = (int) (ProductVariant::query()->find($productVariantId)?->stock ?? 0);
+        $clamped = max(1, min($quantity, max(1, $stock)));
+
+        $this->quantities[$productVariantId] = $clamped;
+        $this->updateLine($productVariantId);
     }
 
     public function removeLine(int $productVariantId): void
@@ -81,7 +91,7 @@ new #[Layout('layouts.storefront'), Title('Carrito')] class extends Component
 
             app(RemoveCartItemAction::class)($cart->id, $productVariantId, $owner);
 
-            $this->statusMessage = 'Línea eliminada.';
+            $this->statusMessage = __('cart.status.line_removed');
             $this->syncFromCart();
         } catch (Throwable $e) {
             $this->handleDomainError($e);
@@ -98,7 +108,7 @@ new #[Layout('layouts.storefront'), Title('Carrito')] class extends Component
 
             app(ClearCartAction::class)($cart->id, $owner);
 
-            $this->statusMessage = 'Carrito vaciado.';
+            $this->statusMessage = __('cart.status.cart_cleared');
             $this->syncFromCart();
         } catch (Throwable $e) {
             $this->handleDomainError($e);
@@ -128,7 +138,7 @@ new #[Layout('layouts.storefront'), Title('Carrito')] class extends Component
             ));
 
             $this->currency = $target->value;
-            $this->statusMessage = 'Moneda actualizada.';
+            $this->statusMessage = __('cart.status.currency_updated');
             $this->syncFromCart();
         } catch (Throwable $e) {
             $this->handleDomainError($e);

@@ -19,4 +19,49 @@ return [
         'currency' => 'Currency',
         'product_variant_id' => 'Product variant',
     ],
+
+    'page' => [
+        'title' => 'Cart',
+        'breadcrumb_home' => 'Home',
+        'breadcrumb_cart' => 'Cart',
+        'currency_label' => 'Currency',
+        'clear_cart' => 'Clear cart',
+        'clear_cart_confirm' => 'Are you sure? This will remove all items from your cart.',
+        'clear_cart_cancel' => 'Cancel',
+    ],
+
+    'line' => [
+        'sku_label' => 'REF',
+        'decrease_quantity' => 'Decrease quantity',
+        'increase_quantity' => 'Increase quantity',
+        'remove' => 'Remove item',
+        'out_of_stock' => 'Out of stock',
+        'unit_price_suffix' => 'each',
+    ],
+
+    'summary' => [
+        'title' => 'Order summary',
+        'items_count' => ':count item|:count items',
+        'subtotal' => 'Subtotal',
+        'total' => 'Total',
+        'checkout' => 'Checkout',
+        'continue_shopping' => 'Continue shopping',
+    ],
+
+    'empty' => [
+        'title' => 'Your cart is empty',
+        'message' => 'Explore our collection and find your next favorite piece.',
+        'cta' => 'Explore products',
+    ],
+
+    'status' => [
+        'quantity_updated' => 'Quantity updated.',
+        'line_removed' => 'Item removed.',
+        'cart_cleared' => 'Cart cleared.',
+        'currency_updated' => 'Currency updated.',
+    ],
+
+    'stock_banner' => [
+        'message' => 'The availability of one or more items in your cart has changed.',
+    ],
 ];

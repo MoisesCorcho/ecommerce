@@ -15,17 +15,27 @@ class CartPricingService
 {
     public function view(Cart $cart): CartViewDTO
     {
-        $cart->loadMissing(['items.productVariant.product', 'items.productVariant.prices']);
+        $cart->loadMissing([
+            'items.productVariant.product.images',
+            'items.productVariant.prices',
+            'items.productVariant.images',
+        ]);
 
         $lines = [];
         $total = 0;
 
         foreach ($cart->items as $item) {
             $variant = $item->productVariant;
+            $product = $variant?->product;
             $priceRow = $variant?->priceIn($cart->currency);
             $unitPrice = $priceRow?->price ?? 0;
             $lineSubtotal = $unitPrice * (int) $item->quantity;
             $total += $lineSubtotal;
+
+            $variantImages = $variant?->images ?? collect();
+            $image = $variantImages->firstWhere('is_primary', true)
+                ?? $variantImages->sortBy('sort_order')->first()
+                ?? $product?->primaryImage();
 
             $lines[] = new CartLineViewDTO(
                 cartItemId: (int) $item->id,
@@ -34,7 +44,14 @@ class CartPricingService
                 unitPrice: $unitPrice,
                 lineSubtotal: $lineSubtotal,
                 sku: $variant?->sku,
-                productName: $variant?->product?->name,
+                productName: $product?->name,
+                imagePath: $image?->path,
+                productSlug: $product?->slug,
+                color: $variant?->color,
+                size: $variant?->size,
+                material: $product?->material,
+                stock: (int) ($variant?->stock ?? 0),
+                isAvailable: $variant !== null && $variant->is_active && $priceRow !== null,
             );
         }
 

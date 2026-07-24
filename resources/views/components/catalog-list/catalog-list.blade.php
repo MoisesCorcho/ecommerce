@@ -124,7 +124,7 @@
                                 <option value="price_asc" class="bg-silk-cream text-intense-cocoa hover:bg-soft-gold hover:text-intense-cocoa">{{ __('storefront.shop.sort_price_asc') }}</option>
                                 <option value="price_desc" class="bg-silk-cream text-intense-cocoa hover:bg-soft-gold hover:text-intense-cocoa">{{ __('storefront.shop.sort_price_desc') }}</option>
                             </select>
-                            <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-intense-cocoa transition-all duration-200 peer-focus:text-silk-cream peer-focus:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                            <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-intense-cocoa transition-all duration-200 peer-hover:text-silk-cream peer-focus:text-silk-cream peer-focus:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                             </svg>
                         </div>
