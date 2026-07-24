@@ -1,4 +1,4 @@
-<x-layouts::storefront>
+<x-layouts::storefront title="Leen Handbags | Home">
     {{-- 1. Hero — static Blade (D1), ~70vh, CTA → products.index (PD-S4) --}}
     <section
         class="relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-soft-sand px-margin-mobile py-24 text-center lg:px-margin-desktop"
@@ -13,7 +13,7 @@
             </h1>
             <a
                 href="{{ route('products.index') }}"
-                class="mt-4 inline-block rounded bg-intense-cocoa px-8 py-4 text-label-caps font-semibold uppercase tracking-widest text-silk-cream transition-colors duration-300 hover:bg-soft-gold hover:text-intense-cocoa"
+                class="mt-4 inline-block bg-intense-cocoa px-8 py-4 text-label-caps font-semibold uppercase tracking-widest text-silk-cream transition-colors duration-300 hover:bg-soft-gold hover:text-intense-cocoa"
             >
                 {{ __('storefront.home.hero_cta') }}
             </a>
@@ -49,7 +49,7 @@
                 </p>
                 <a
                     href="/about-us"
-                    class="mt-10 inline-block rounded border border-intense-cocoa px-8 py-3 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:bg-soft-sand"
+                    class="mt-10 inline-block border border-soft-gold px-8 py-3 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream"
                 >
                     {{ __('storefront.home.story_cta') }}
                 </a>

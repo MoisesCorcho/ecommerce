@@ -21,7 +21,7 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-new #[Layout('layouts.storefront'), Title('Shop')] class extends Component
+new #[Layout('layouts.storefront'), Title('Leen Handbags | Shop')] class extends Component
 {
     use WithPagination;
     use ResolvesCurrentCart;

@@ -20,16 +20,16 @@
         <div class="relative mx-auto flex max-w-storefront items-center justify-between px-margin-mobile py-5 lg:px-margin-desktop">
             {{-- Navigation links (desktop) — left side --}}
             <nav class="hidden flex-1 lg:flex items-center gap-8" aria-label="Primary">
-                <a href="{{ url('/') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa opacity-70 transition-opacity duration-300 hover:opacity-100 hover:text-soft-gold">
+                <a href="{{ url('/') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
                     {{ __('storefront.nav.home') }}
                 </a>
-                <a href="{{ route('products.index') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa opacity-70 transition-opacity duration-300 hover:opacity-100 hover:text-soft-gold">
+                <a href="{{ route('products.index') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
                     {{ __('storefront.nav.shop') }}
                 </a>
-                <a href="{{ url('/about-us') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa opacity-70 transition-opacity duration-300 hover:opacity-100 hover:text-soft-gold">
+                <a href="{{ url('/about-us') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
                     {{ __('storefront.nav.about') }}
                 </a>
-                <a href="{{ url('/contact') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa opacity-70 transition-opacity duration-300 hover:opacity-100 hover:text-soft-gold">
+                <a href="{{ url('/contact') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
                     {{ __('storefront.nav.contact') }}
                 </a>
             </nav>
@@ -90,18 +90,18 @@
     </main>
 
     <footer class="border-t border-intense-cocoa/5 bg-soft-sand">
-        <div class="mx-auto max-w-storefront px-margin-mobile py-14 lg:px-margin-desktop">
-            <div class="flex flex-col items-center gap-8">
+        <div class="mx-auto max-w-storefront px-margin-mobile py-10 lg:px-margin-desktop">
+            <div class="flex flex-col items-center gap-6">
                 {{-- Brand logo --}}
                 <a href="{{ url('/') }}">
-                    <img src="/images/logos/leen-brown.png" alt="{{ config('app.name', 'Leen Handbags') }}" class="h-10 w-auto">
+                    <img src="/images/logos/leen-brown.png" alt="{{ config('app.name', 'Leen Handbags') }}" class="h-20 w-auto">
                 </a>
 
                 {{-- Emotional script accent --}}
-                <p class="font-labelle-aurore text-[2.25rem] leading-none text-intense-cocoa/90">Leen Handbags</p>
+                <p class="font-labelle-aurore text-[2rem] leading-none text-intense-cocoa/80">Leen Handbags</p>
 
                 {{-- Links and social icons --}}
-                <div class="flex flex-col items-center justify-center gap-x-12 gap-y-6 md:flex-row">
+                <div class="flex flex-col items-center justify-center gap-x-8 gap-y-4 md:flex-row">
                     <nav class="flex items-center gap-8" aria-label="Footer">
                         <a href="{{ url('/faqs') }}" class="text-[11px] font-semibold uppercase tracking-widest text-intense-cocoa/80 transition-colors hover:text-soft-gold">
                             {{ __('storefront.footer.faqs') }}
@@ -111,7 +111,7 @@
                         </a>
                     </nav>
 
-                    <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-4">
                         <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="text-intense-cocoa/70 transition-colors hover:text-soft-gold" aria-label="{{ __('storefront.footer.instagram') }}">
                             <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>

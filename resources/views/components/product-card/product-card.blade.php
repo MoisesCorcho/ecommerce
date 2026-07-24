@@ -29,11 +29,11 @@
         </a>
 
         {{-- Hover actions (Heart + Cart) --}}
-        <div class="absolute top-4 right-4 flex flex-col gap-2 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+        <div class="absolute top-4 right-4 z-20 flex flex-col gap-2 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
             <button
                 type="button"
                 aria-label="{{ __('storefront.favorite_login_required') }}"
-                class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-silk-cream/95 text-intense-cocoa shadow-sm transition-colors hover:bg-soft-gold hover:text-silk-cream"
+                class="flex h-10 w-10 cursor-pointer items-center justify-center bg-soft-sand text-intense-cocoa shadow-sm transition-colors hover:bg-soft-gold hover:text-intense-cocoa"
                 data-favorite-button
                 data-product-id="{{ $product->id }}"
             >
@@ -46,7 +46,7 @@
                     type="button"
                     wire:click="$dispatch('add-to-cart', { variantId: {{ $variant->id }} })"
                     aria-label="{{ __('storefront.add_to_cart') }}"
-                    class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-silk-cream/95 text-intense-cocoa shadow-sm transition-colors hover:bg-soft-gold hover:text-silk-cream"
+                    class="flex h-10 w-10 cursor-pointer items-center justify-center bg-soft-sand text-intense-cocoa shadow-sm transition-colors hover:bg-soft-gold hover:text-intense-cocoa"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-5 w-5" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.46 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM11.25 10.5h.008v.008h-.008V10.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
@@ -57,21 +57,21 @@
     </div>
 
     {{-- Text content --}}
-    <div class="flex flex-col gap-1 p-6 {{ $isOutOfStock ? 'opacity-60' : '' }}">
+    <div class="flex flex-col gap-1.5 px-6 pb-6 pt-4 {{ $isOutOfStock ? 'opacity-60' : '' }}">
         @if ($product->category)
-            <span class="text-[10px] font-semibold uppercase tracking-[0.2em] text-intense-cocoa/50">
+            <span class="text-xs font-semibold uppercase tracking-wider text-intense-cocoa/50">
                 {{ $product->category->name }}
             </span>
         @endif
 
-        <h3 class="font-headline-sm text-lg text-intense-cocoa">
+        <h3 class="font-headline-sm text-xl text-intense-cocoa">
             <a href="{{ $detailUrl }}">{{ $product->name }}</a>
         </h3>
 
         @if ($price)
-            <p class="font-headline-sm text-xl text-soft-gold mt-1">
+            <p class="font-headline-sm text-2xl text-soft-gold">
                 {{ number_format($price->price, 0, ',', '.') }}
-                <span class="text-label-caps font-normal text-intense-cocoa/60">{{ $currencyEnum->value }}</span>
+                <span class="text-sm font-normal text-intense-cocoa/60">{{ $currencyEnum->value }}</span>
             </p>
         @endif
 
@@ -79,7 +79,7 @@
             <div class="flex items-center gap-1.5 mt-2">
                 @foreach ($availableColors->take(5) as $colorName)
                     <span
-                        class="h-2.5 w-2.5 rounded-full border border-intense-cocoa/10"
+                        class="h-3 w-3 border border-intense-cocoa/10"
                         style="background-color: {{ ColorMap::HEX[strtolower($colorName)] ?? '#8B8B8B' }}"
                         title="{{ $colorName }}"
                     ></span>
