@@ -40,6 +40,8 @@ Deep dive: [coupons.md](coupons.md). Hard rules H11–H13 + C1–C12.
 - [ ] Discount on line subtotal only; cap to subtotal; shipping not zeroed by 100% off
 - [ ] Fixed: currency must match; percentage: multi-currency
 - [ ] Cancel `pending→cancelled` releases redemption + decrements `used_count` (floor 0)
+- [ ] Cancel **blocked** when payment is approved/refunded (no coupon release after capture / D25)
+- [ ] Coupon code attempts rate-limited (30/min per user or IP) on non-blank codes
 - [ ] Refund / paid path does **not** release coupon
 - [ ] Storefront errors generic (no reason that enumerates valid codes)
 - [ ] Admin: no operational hard-delete; type/value/currency immutable after redemptions

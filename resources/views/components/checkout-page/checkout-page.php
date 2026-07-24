@@ -12,6 +12,7 @@ use App\Exceptions\Orders\InvalidCheckoutAddressException;
 use App\Exceptions\Orders\OrderAccessDeniedException;
 use App\Models\Address;
 use App\Support\Cart\ResolvesCurrentCart;
+use App\Support\Coupons\CouponAttemptRateLimiter;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Livewire\Attributes\Layout;
@@ -80,12 +81,22 @@ new #[Layout('layouts.storefront'), Title('Checkout')] class extends Component
     public function updatedCouponCode(ValidateCartForCheckoutAction $validateCartForCheckout): void
     {
         $this->errorMessage = null;
+
+        if (! $this->consumeCouponRateLimitIfNeeded()) {
+            return;
+        }
+
         $this->loadPreview($validateCartForCheckout);
     }
 
     public function applyCoupon(ValidateCartForCheckoutAction $validateCartForCheckout): void
     {
         $this->errorMessage = null;
+
+        if (! $this->consumeCouponRateLimitIfNeeded()) {
+            return;
+        }
+
         $this->loadPreview($validateCartForCheckout);
     }
 
@@ -121,6 +132,10 @@ new #[Layout('layouts.storefront'), Title('Checkout')] class extends Component
         $this->errorMessage = null;
 
         $this->validate($this->rules());
+
+        if (! $this->consumeCouponRateLimitIfNeeded()) {
+            return null;
+        }
 
         try {
             $this->loadPreview($validateCartForCheckout);
@@ -318,5 +333,29 @@ new #[Layout('layouts.storefront'), Title('Checkout')] class extends Component
         $trimmed = trim($this->couponCode);
 
         return $trimmed === '' ? null : $trimmed;
+    }
+
+    /**
+     * Rate-limit non-blank coupon attempts (preview apply / confirm) per user or IP.
+     * Empty code does not count — avoids blocking normal checkout without coupons.
+     */
+    private function consumeCouponRateLimitIfNeeded(): bool
+    {
+        if ($this->normalizedCouponCode() === null) {
+            return true;
+        }
+
+        $allowed = app(CouponAttemptRateLimiter::class)->attempt(
+            userId: Auth::id() !== null ? (int) Auth::id() : null,
+            ip: (string) request()->ip(),
+        );
+
+        if (! $allowed) {
+            $this->errorMessage = __('coupons.errors.rate_limited');
+
+            return false;
+        }
+
+        return true;
     }
 };

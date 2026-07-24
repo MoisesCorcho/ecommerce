@@ -130,6 +130,7 @@ return [
         'usage_exhausted' => 'This coupon has reached its usage limit.',
         'per_user_exhausted' => 'You have already used this coupon the maximum number of times.',
         'immutable_fields' => 'Type, value and currency cannot be changed after redemptions exist.',
+        'rate_limited' => 'Too many coupon attempts. Please wait a moment and try again.',
     ],
 
     'relation' => [

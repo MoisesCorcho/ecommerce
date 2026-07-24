@@ -130,6 +130,7 @@ return [
         'usage_exhausted' => 'Este cupón alcanzó su límite de usos.',
         'per_user_exhausted' => 'Ya usaste este cupón el máximo de veces permitido.',
         'immutable_fields' => 'Tipo, valor y moneda no se pueden cambiar si ya hay redenciones.',
+        'rate_limited' => 'Demasiados intentos de cupón. Esperá un momento e intenta nuevamente.',
     ],
 
     'relation' => [

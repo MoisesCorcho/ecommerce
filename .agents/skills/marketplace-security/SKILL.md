@@ -200,8 +200,8 @@ Full detail: [references/coupons.md](references/coupons.md). Specs: `specs/featu
 |------|------|-------------|
 | Guest bypasses per-user limit | D33 | Size **global** limits for guest traffic |
 | Abandoned pending holds limit until admin cancel | D37 | No auto-release job in F06 |
-| D25 burn without ship | D39 | Ops; coupon already consumed |
-| Code enumeration / no rate limit | — | P2 harden if campaigns are secret codes |
+| D25 burn without ship | D39 | Ops; coupon already consumed; cancel blocked when payment approved/refunded |
+| Code enumeration mitigated | — | Livewire throttle 30/min per user/IP on non-blank codes |
 
 ---
 
