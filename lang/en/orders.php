@@ -67,6 +67,16 @@ return [
         'title' => 'Thank you for your order',
         'body' => 'Your order :number has been received and is pending payment.',
         'status' => 'Status: :status',
+        'continue_shopping' => 'Continue shopping',
+        'banner' => [
+            'pending' => 'Your order is awaiting payment. Complete the payment to confirm your order.',
+            'paid' => 'Payment confirmed. We are preparing your order.',
+            'processing' => 'Your order is being prepared for shipment.',
+            'shipped' => 'Your order is on its way.',
+            'delivered' => 'Your order has been delivered.',
+            'cancelled' => 'This order has been cancelled.',
+            'refunded' => 'This order has been refunded.',
+        ],
     ],
 
     'checkout' => [

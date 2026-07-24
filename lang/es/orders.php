@@ -67,6 +67,16 @@ return [
         'title' => 'Gracias por su compra',
         'body' => 'Su pedido :number fue recibido y está pendiente de pago.',
         'status' => 'Estado: :status',
+        'continue_shopping' => 'Seguir comprando',
+        'banner' => [
+            'pending' => 'Su pedido está pendiente de pago. Complete el pago para confirmar su pedido.',
+            'paid' => 'Pago confirmado. Estamos preparando su pedido.',
+            'processing' => 'Su pedido está siendo preparado para envío.',
+            'shipped' => 'Su pedido está en camino.',
+            'delivered' => 'Su pedido ha sido entregado.',
+            'cancelled' => 'Este pedido ha sido cancelado.',
+            'refunded' => 'Este pedido ha sido reembolsado.',
+        ],
     ],
 
     'checkout' => [

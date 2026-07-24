@@ -159,6 +159,22 @@ class PaymentHttpTest extends TestCase
         $this->assertSame(OrderStatusEnum::Pending, $order->fresh()->status);
     }
 
+    public function test_thank_you_shows_payment_error_flash_banner(): void
+    {
+        $user = User::factory()->create();
+        $order = Order::factory()->create([
+            'user_id' => $user->id,
+            'status' => OrderStatusEnum::Pending,
+        ]);
+
+        $this->actingAs($user)
+            ->withSession(['payment_error' => 'The payment provider returned an error.'])
+            ->get(route('orders.thank-you', $order))
+            ->assertOk()
+            ->assertSee('The payment provider returned an error.', false)
+            ->assertSee('data-payment-error', false);
+    }
+
     public function test_thank_you_cancel_message_allows_retry_copy(): void
     {
         $user = User::factory()->create();
