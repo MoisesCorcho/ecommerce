@@ -7,11 +7,14 @@ namespace App\Actions\Reviews;
 use App\Exceptions\Reviews\ReviewForbiddenException;
 use App\Models\Review;
 use App\Models\User;
+use App\Policies\ReviewPolicy;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class DeleteReviewAction
 {
+    public function __construct(private readonly ReviewPolicy $policy) {}
+
     /**
      * Hard-delete a review. Owner or admin only.
      *
@@ -20,32 +23,12 @@ class DeleteReviewAction
      */
     public function __invoke(User $actor, Review $review): void
     {
-        if (! $this->canDelete($actor, $review)) {
+        if (! $this->policy->delete($actor, $review)) {
             throw ReviewForbiddenException::notOwner();
         }
 
         DB::transaction(function () use ($review): void {
             $review->delete();
         });
-    }
-
-    private function canDelete(User $actor, Review $review): bool
-    {
-        if ((int) $review->user_id === (int) $actor->id) {
-            return true;
-        }
-
-        return $this->isAdmin($actor);
-    }
-
-    private function isAdmin(User $user): bool
-    {
-        $emails = config('ecommerce.admin_emails', []);
-
-        if (! is_array($emails) || $emails === []) {
-            return false;
-        }
-
-        return in_array($user->email, $emails, true);
     }
 }

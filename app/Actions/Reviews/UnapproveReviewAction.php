@@ -7,18 +7,21 @@ namespace App\Actions\Reviews;
 use App\Exceptions\Reviews\ReviewForbiddenException;
 use App\Models\Review;
 use App\Models\User;
+use App\Policies\ReviewPolicy;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class UnapproveReviewAction
 {
+    public function __construct(private readonly ReviewPolicy $policy) {}
+
     /**
      * @throws ReviewForbiddenException
      * @throws Throwable
      */
     public function __invoke(User $actor, Review $review): Review
     {
-        if (! $this->isAdmin($actor)) {
+        if (! $this->policy->moderate($actor)) {
             throw ReviewForbiddenException::notOwner();
         }
 
@@ -27,16 +30,5 @@ class UnapproveReviewAction
 
             return $review->fresh() ?? $review;
         });
-    }
-
-    private function isAdmin(User $user): bool
-    {
-        $emails = config('ecommerce.admin_emails', []);
-
-        if (! is_array($emails) || $emails === []) {
-            return false;
-        }
-
-        return in_array($user->email, $emails, true);
     }
 }

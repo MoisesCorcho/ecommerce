@@ -140,6 +140,50 @@ class ProductDetailReviewsTest extends TestCase
         ]);
     }
 
+    public function test_rate_limit_blocks_sixth_review_mutation_within_window(): void
+    {
+        $user = User::factory()->create();
+        $product = $this->createPublishedProduct('Rate Limit Bag', 'rate-limit-bag');
+        $variant = $product->variants->first();
+        $this->assertNotNull($variant);
+
+        $order = Order::factory()->paid()->create(['user_id' => $user->id]);
+        OrderItem::factory()->create([
+            'order_id' => $order->id,
+            'product_variant_id' => $variant->id,
+        ]);
+
+        $this->actingAs($user);
+
+        $component = Livewire::test('product-detail', ['slug' => 'rate-limit-bag']);
+
+        foreach (range(1, 5) as $attempt) {
+            $component
+                ->set('reviewRating', 5)
+                ->set('reviewComment', "Attempt {$attempt}")
+                ->call('saveReview')
+                ->assertSet('reviewErrorMessage', null);
+        }
+
+        $component
+            ->set('reviewRating', 5)
+            ->set('reviewComment', 'Attempt 6 should be blocked')
+            ->call('saveReview')
+            ->assertSet('reviewErrorMessage', __('reviews.errors.rate_limited'));
+
+        $this->assertDatabaseHas('reviews', [
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+            'comment' => 'Attempt 5',
+        ]);
+
+        $this->assertDatabaseMissing('reviews', [
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+            'comment' => 'Attempt 6 should be blocked',
+        ]);
+    }
+
     private function createPublishedProduct(string $name, string $slug): Product
     {
         $product = Product::factory()->create([
