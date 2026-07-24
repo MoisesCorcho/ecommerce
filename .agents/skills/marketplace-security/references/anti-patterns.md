@@ -18,6 +18,15 @@
 | Auto-restore stock on refund without product change | D24: no restore unless specs change |
 | Silent second stock decrement on redelivery | Unique event + status guards |
 | Treat unique event insert as “fully processed” when `processed_at` is null | Re-apply or claim-lock incomplete events |
+| Accept client `discount`, `total`, or `coupon_id` on checkout | Only `couponCode`; server quotes via `CouponPricingService` |
+| Increment `used_count` / write redemption on **preview** | Preview is read-only (H12 / C2) |
+| Create order without re-validating coupon in same TX as consume | TOCTOU / over-limit / expired code slip |
+| Consume coupon without `lockForUpdate` on coupon row | Double-spend under `usage_limit` |
+| Release coupon on refund webhook | Abuse loop buy→refund→reuse (H13 / C9) |
+| Fail to release coupon on **pending** cancel | Unfair burn; stuck limits |
+| Persist coupon on cart (`carts.coupon_id`) in F06 | Out of scope; wrong application point |
+| Distinct storefront messages per reject reason | Code enumeration |
+| Admin hard-delete coupon or edit type/value after redemptions | Money history rewrite |
 
 ## Subtle / easy to regress
 
@@ -32,6 +41,11 @@
 | Copying `.env.example` `APP_DEBUG=true` to prod | Stack traces + env leakage |
 | New JSON “API” without CSRF/session model thought | Cart is session+CSRF today — don’t invent token API by accident |
 | Guest checkout accepting `address_id` without `user_id` check | IDOR on addresses |
+| Percentage applied including shipping | Undercharge shipping (C6) |
+| Fixed coupon currency ignored | Cross-currency arbitrage (C7) |
+| `StartOrderPayment` re-quotes coupon or uses subtotal | Charge wrong amount vs order snapshot |
+| Applying per-user limit to guests | Spec says no (D33) — but then **global** must be sized |
+| Creating order when invalid code was submitted (silent ignore) | User thinks discount applied; or attacker probes | 
 
 ## Review red flags (grep mental model)
 
@@ -41,6 +55,10 @@
 - `raw_response` / secrets in notifications or exceptions messages to clients
 - New routes under `/orders/{order}` without signature or policy
 - `Http::withToken(config(...))` logging request middleware dumps
+- Request/DTO fields named `discount`, `coupon_id`, `total` filled from client on checkout
+- `used_count` updates outside create/cancel coupon TX
+- Refund / `PaymentWebhookOutcomeEnum::Refunded` path touching `CouponRedemption` or `used_count`
+- Filament coupon form allowing type/value edit when redemptions exist
 
 ## If you find a conflict with specs
 

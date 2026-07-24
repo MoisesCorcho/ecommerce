@@ -20,6 +20,7 @@ return [
         'subtotal' => 'Subtotal',
         'shipping_cost' => 'Envío',
         'discount' => 'Descuento',
+        'coupon_code' => 'Código de cupón',
         'tax_amount' => 'Impuestos',
         'total' => 'Total',
         'customer_notes' => 'Notas del pedido',
@@ -118,6 +119,7 @@ return [
         'access_denied' => 'No tiene permiso para acceder a este pedido.',
         'cart_access_denied' => 'No tiene permiso para hacer checkout de este carrito.',
         'cannot_cancel' => 'Solo se pueden cancelar pedidos pendientes.',
+        'cannot_cancel_payment_captured' => 'Este pedido tiene un pago capturado y no se puede cancelar. Se debe resolver con reembolso u ops.',
         'invalid_address' => 'La dirección seleccionada no es válida o no le pertenece.',
     ],
 

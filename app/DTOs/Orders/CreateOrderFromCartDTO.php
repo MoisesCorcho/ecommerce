@@ -13,5 +13,6 @@ readonly class CreateOrderFromCartDTO
         public ?int $userId = null,
         public ?string $sessionId = null,
         public ?string $customerNotes = null,
+        public ?string $couponCode = null,
     ) {}
 }

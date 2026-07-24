@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'coupon_id',
     'order_id',
     'user_id',
+    'code',
     'discount_amount',
     'currency',
 ])]

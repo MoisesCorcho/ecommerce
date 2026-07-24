@@ -55,7 +55,7 @@ Rutas de specs se crean al iniciar cada feature (`specs/features/<slug>/`).
 | F03 | Carrito | 1 · Compra | Completa | F01 |
 | F04 | Checkout y órdenes | 1 · Compra | Completa | F01, F02, F03 |
 | F05 | Pagos (Stripe / Bold + webhooks) | 2 · Cobro | Completa | F04 |
-| F06 | Cupones y redenciones | 2 · Cobro | No iniciada | F03 o F04 (definir en specs: carrito vs orden) |
+| F06 | Cupones y redenciones | 2 · Cobro | Completa | F03, F04 (punto de aplicación: checkout/confirm; specs en `06-coupons`) |
 | F07 | Reviews | 3 · Post-compra | No iniciada | F01; idealmente F04/F05 si se exige compra |
 | F08 | Wishlist | 3 · Post-compra | No iniciada | F01, F02 |
 
@@ -104,7 +104,9 @@ Sincronizar la columna **Estado** con el bloque `> Estado:` de cada `requirement
 
 #### F06 Cupones
 
-- Puede validarse en carrito y/o al cerrar orden; una sola fuente de verdad del descuento aplicado en el snapshot de orden.
+- Specs: `specs/features/06-coupons/`.
+- Decisiones cerradas: aplicar en **checkout/confirm** (no en carrito); preview sin consumir; un cupón por orden; `percentage`/`fixed`; descuento sobre subtotal; consume al crear `pending`, libera al cancel pending; no libera en refund; snapshot `coupon_redemptions.code`; Filament sí; UI marca out.
+- Fuente de verdad del descuento: `orders.discount` + `orders.coupon_id` + redención (F05 cobra total ya fijado).
 
 #### F07 / F08
 

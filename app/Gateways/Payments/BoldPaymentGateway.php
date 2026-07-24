@@ -162,12 +162,9 @@ class BoldPaymentGateway implements PaymentGatewayInterface
 
         $paymentMethod = isset($data['payment_method']) ? (string) $data['payment_method'] : null;
 
-        $amount = null;
-        if (isset($data['amount']['total']) && is_numeric($data['amount']['total'])) {
-            $amount = (int) $data['amount']['total'];
-        } elseif (isset($data['amount']) && is_numeric($data['amount'])) {
-            $amount = (int) $data['amount'];
-        }
+        // Bold sandbox often redacts money fields to 0 / "XXXX". Only expose amount for SH-05
+        // when the payload carries a positive total (production SALE_APPROVED).
+        $amount = $this->parseWebhookAmount($data);
 
         $currency = null;
         if (isset($data['amount']['currency']) && is_string($data['amount']['currency']) && $data['amount']['currency'] !== '') {
@@ -194,6 +191,43 @@ class BoldPaymentGateway implements PaymentGatewayInterface
             amount: $amount,
             currency: $currency,
         );
+    }
+
+    /**
+     * Extract minor-unit amount from a Bold webhook data node.
+     *
+     * Prefers `amount.total_amount` (create API shape) then `amount.total`.
+     * Non-positive values are treated as "not exposed" (null): Bold test-mode
+     * SALE_APPROVED payloads redact totals to 0, which must not fail SH-05.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private function parseWebhookAmount(array $data): ?int
+    {
+        $candidates = [];
+
+        if (isset($data['amount']) && is_array($data['amount'])) {
+            /** @var array<string, mixed> $amountNode */
+            $amountNode = $data['amount'];
+            $candidates[] = $amountNode['total_amount'] ?? null;
+            $candidates[] = $amountNode['total'] ?? null;
+        } elseif (isset($data['amount']) && is_numeric($data['amount'])) {
+            $candidates[] = $data['amount'];
+        }
+
+        foreach ($candidates as $candidate) {
+            if (! is_numeric($candidate)) {
+                continue;
+            }
+
+            $value = (int) $candidate;
+
+            if ($value > 0) {
+                return $value;
+            }
+        }
+
+        return null;
     }
 
     /**

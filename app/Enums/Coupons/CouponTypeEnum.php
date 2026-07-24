@@ -4,10 +4,17 @@ declare(strict_types=1);
 
 namespace App\Enums\Coupons;
 
-enum CouponTypeEnum: string
+use Filament\Support\Contracts\HasLabel;
+
+enum CouponTypeEnum: string implements HasLabel
 {
     case Percentage = 'percentage';
     case Fixed = 'fixed';
+
+    public function getLabel(): string
+    {
+        return $this->label();
+    }
 
     public function label(): string
     {

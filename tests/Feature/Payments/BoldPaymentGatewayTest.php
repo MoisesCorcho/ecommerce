@@ -9,6 +9,7 @@ use App\Enums\Commerce\CurrencyEnum;
 use App\Enums\Orders\OrderStatusEnum;
 use App\Enums\Payments\PaymentProviderEnum;
 use App\Enums\Payments\PaymentStatusEnum;
+use App\Enums\Payments\PaymentWebhookOutcomeEnum;
 use App\Exceptions\Payments\InvalidPaymentWebhookSignatureException;
 use App\Exceptions\Payments\PaymentGatewayException;
 use App\Gateways\Payments\BoldPaymentGateway;
@@ -170,6 +171,66 @@ class BoldPaymentGatewayTest extends TestCase
         $this->expectException(InvalidPaymentWebhookSignatureException::class);
 
         app(BoldPaymentGateway::class)->verifyWebhookSignature($payload, $signature);
+    }
+
+    public function test_parse_webhook_sandbox_redacted_total_zero_yields_null_amount(): void
+    {
+        // Real Bold test-mode shape: card/ids redacted, amount.total forced to 0.
+        $payload = json_encode([
+            'id' => 'fdec35d1-9046-46f2-a6b4-63aae1400430',
+            'type' => 'SALE_APPROVED',
+            'data' => [
+                'amount' => [
+                    'tip' => 0,
+                    'taxes' => [],
+                    'total' => 0,
+                    'currency' => 'COP',
+                ],
+                'metadata' => [
+                    'reference' => 'pay-18',
+                ],
+                'payment_id' => 'XXXX',
+                'payment_method' => 'CARD_WEB',
+            ],
+        ], JSON_THROW_ON_ERROR);
+
+        $parsed = app(BoldPaymentGateway::class)->parseWebhook($payload);
+
+        $this->assertSame('fdec35d1-9046-46f2-a6b4-63aae1400430', $parsed->eventId);
+        $this->assertSame(PaymentWebhookOutcomeEnum::Approved, $parsed->outcome);
+        $this->assertSame(18, $parsed->paymentId);
+        $this->assertNull($parsed->amount, 'Redacted total 0 must not be treated as a real amount');
+        $this->assertSame('COP', $parsed->currency);
+        $this->assertSame('CARD_WEB', $parsed->paymentMethod);
+    }
+
+    public function test_parse_webhook_positive_total_and_total_amount_are_exposed(): void
+    {
+        $withTotal = json_encode([
+            'id' => 'evt_total',
+            'type' => 'SALE_APPROVED',
+            'data' => [
+                'amount' => ['total' => 796_500, 'currency' => 'COP'],
+                'metadata' => ['reference' => 'pay-7'],
+            ],
+        ], JSON_THROW_ON_ERROR);
+
+        $parsedTotal = app(BoldPaymentGateway::class)->parseWebhook($withTotal);
+        $this->assertSame(796_500, $parsedTotal->amount);
+        $this->assertSame(7, $parsedTotal->paymentId);
+
+        $withTotalAmount = json_encode([
+            'id' => 'evt_total_amount',
+            'type' => 'SALE_APPROVED',
+            'data' => [
+                'amount' => ['total_amount' => 230_000, 'currency' => 'COP'],
+                'metadata' => ['reference' => 'pay-9'],
+            ],
+        ], JSON_THROW_ON_ERROR);
+
+        $parsedTotalAmount = app(BoldPaymentGateway::class)->parseWebhook($withTotalAmount);
+        $this->assertSame(230_000, $parsedTotalAmount->amount);
+        $this->assertSame(9, $parsedTotalAmount->paymentId);
     }
 
     /**

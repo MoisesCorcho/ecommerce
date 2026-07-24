@@ -21,7 +21,7 @@ class ViewOrder extends ViewRecord
     {
         /** @var Order $record */
         $record = parent::resolveRecord($key);
-        $record->loadMissing(['items', 'payments']);
+        $record->loadMissing(['items', 'payments', 'coupon', 'couponRedemption']);
 
         return $record;
     }

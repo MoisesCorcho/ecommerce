@@ -39,6 +39,14 @@ class OrderInfolist
                         TextEntry::make('discount')
                             ->label(__('orders.fields.discount'))
                             ->numeric(),
+                        TextEntry::make('coupon_code')
+                            ->label(__('orders.fields.coupon_code'))
+                            ->state(fn ($record): ?string => $record->couponRedemption?->code
+                                ?? $record->coupon?->code)
+                            ->placeholder('—')
+                            ->visible(fn ($record): bool => $record->discount > 0
+                                || $record->coupon_id !== null
+                                || $record->couponRedemption !== null),
                         TextEntry::make('tax_amount')
                             ->label(__('orders.fields.tax_amount'))
                             ->numeric(),

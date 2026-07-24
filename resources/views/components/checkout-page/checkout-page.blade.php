@@ -204,6 +204,33 @@
                         </div>
                     </section>
 
+                    {{-- Coupon section --}}
+                    <section class="border border-intense-cocoa/30 bg-soft-sand p-5">
+                        <h2 class="mb-4 text-lg font-semibold text-intense-cocoa">{{ __('orders.fields.coupon_code') }}</h2>
+                        <div class="flex flex-col gap-3 sm:flex-row">
+                            <input
+                                id="couponCode"
+                                type="text"
+                                wire:model="couponCode"
+                                maxlength="32"
+                                class="w-full border border-intense-cocoa/40 bg-silk-cream px-3 py-2 text-sm uppercase text-intense-cocoa placeholder:text-intense-cocoa/50 transition-colors focus:border-intense-cocoa focus:outline-none"
+                                data-checkout-coupon
+                                autocomplete="off"
+                            />
+                            <button
+                                type="button"
+                                wire:click="applyCoupon"
+                                class="border border-intense-cocoa px-4 py-2 text-sm font-semibold text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream"
+                                data-checkout-apply-coupon
+                            >
+                                {{ __('orders.fields.coupon_code') }}
+                            </button>
+                        </div>
+                        @error('couponCode')
+                            <p class="mt-1 text-sm text-error">{{ $message }}</p>
+                        @enderror
+                    </section>
+
                     {{-- Notes section (R12) --}}
                     <section class="border border-intense-cocoa/30 bg-soft-sand p-5">
                         <h2 class="mb-4 text-lg font-semibold text-intense-cocoa">{{ __('orders.sections.notes') }}</h2>
@@ -248,6 +275,12 @@
                                 <dt>{{ __('orders.shipping.standard') }}</dt>
                                 <dd class="tabular-nums">{{ number_format($preview['shippingCost']) }} {{ $preview['currency'] }}</dd>
                             </div>
+                            @if (($preview['discount'] ?? 0) > 0)
+                                <div class="flex justify-between text-success" data-checkout-discount>
+                                    <dt>{{ __('orders.fields.discount') }}</dt>
+                                    <dd>−{{ number_format($preview['discount']) }} {{ $preview['currency'] }}</dd>
+                                </div>
+                            @endif
                             <div class="flex justify-between border-t border-intense-cocoa/10 pt-3 text-base font-semibold">
                                 <dt>{{ __('orders.fields.total') }}</dt>
                                 <dd class="text-xl tabular-nums" data-checkout-total>{{ number_format($preview['total']) }} {{ $preview['currency'] }}</dd>
