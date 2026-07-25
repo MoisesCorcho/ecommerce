@@ -4,13 +4,15 @@ Use before merge on security-sensitive work, and always before claiming **produc
 
 ## A. Identity & access
 
-- [ ] `User::canAccessPanel()` still gated by `admin_emails` (never unconditional `true`)
+- [ ] `User::canAccessPanel()` still gated by `hasRole(‘admin’)` (Spatie, since F08 — never unconditional `true`)
+- [ ] `admin` role only assignable via seeder/artisan — never from registration or other user input
 - [ ] New admin capabilities assume **god mode** — no accidental public exposure
 - [ ] Order view/pay: owner policy **or** valid temporary signature only
 - [ ] Foreign user denied (test present or added)
 - [ ] Guest without signature denied
 - [ ] Cart actions assert ownership (user vs session guest)
 - [ ] Checkout cannot attach another user’s `address_id`
+- [ ] Register/password-reset-request/verify-email-resend are rate-limited (`app/Support/Auth/*RateLimiter`)
 
 ## B. Payments & webhooks
 

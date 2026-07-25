@@ -12,9 +12,9 @@ description: >
   Complements laravel-security (generic Laravel) — this skill owns project
   domain risks; do not restate generic OWASP essays here.
 metadata:
-  short-description: "Marketplace domain security (payments, coupons, authz, webhooks)"
-  version: "1.1"
-  stack: "laravel v13 · filament v5 · livewire v4 · stripe · bold · php 8.5"
+  short-description: "Marketplace domain security (payments, coupons, authz, webhooks, auth)"
+  version: "1.2"
+  stack: "laravel v13 · filament v5 · livewire v4 · fortify · spatie/laravel-permission · stripe · bold · php 8.5"
 ---
 
 # Marketplace Security (Project)
@@ -41,7 +41,7 @@ Load **before** writing or approving code when any of these apply:
 
 - Payments, gateways, webhooks, `Payment*` Actions/Models, order pay/thank-you
 - **Coupons, redemptions, `CouponPricingService`, checkout `couponCode`, order discount/total**
-- Policies, `canAccessPanel`, `ADMIN_EMAILS`, Filament destructive ops (incl. CouponResource)
+- Policies, `canAccessPanel`, `hasRole('admin')`, role assignment, Filament destructive ops (incl. CouponResource)
 - Cart ownership, session guest identity, checkout address resolution
 - Signed URLs, temporary signed middleware, CSRF exceptions
 - Secrets/env for Stripe/Bold, logging of payloads, production go-live
@@ -76,7 +76,7 @@ Violate any of these → **block merge / block prod**, do not “fix later”.
 | H5 | **CSRF exceptions only for named webhook routes** | Today: `webhooks/stripe`, `webhooks/bold`. No wildcards, no `api/*`. |
 | H6 | **Order view/pay without login requires valid temporary signed URL** | Unsigned order id = IDOR. Policy owner OR signature — nothing else. |
 | H7 | **Treat signed URLs as bearer secrets** | Do not log full signed URLs; keep TTLs tight; never put signature in analytics. |
-| H8 | **Admin panel: never `canAccessPanel(): true`** | Access = email in `config('ecommerce.admin_emails')` / `ADMIN_EMAILS`. Empty list = lockout. |
+| H8 | **Admin panel: never `canAccessPanel(): true`** | Access = Spatie role `hasRole('admin')` (since F08; migrated from the old `ADMIN_EMAILS` whitelist). Role assignment is seeder/artisan only, never self-service. No role = lockout. |
 | H9 | **Cart mutations must assert ownership** | User cart → `user_id`; guest → `session_id` + null user. Use existing trait/pattern. |
 | H10 | **Depend on `PaymentGatewayInterface` / binds, never hardcode live keys** | Keys only via `config/ecommerce.php` ← env. Fake gateway in tests. |
 | H11 | **Coupon money: client may send only `couponCode` (string)** — never trust client `coupon_id`, `discount`, or `total` | Price forgery / IDOR on coupon PK |
@@ -100,7 +100,8 @@ Summary of **highest-value attacks**:
 | Shared/leaked signed thank-you link | Email/status/pay for TTL | Short TTL; no logging; no long-lived links in emails without product decision |
 | Double hosted checkout (multi-intent) | Double charge | Product residual D15 — document; prefer UX/ops mitigation; no silent second stock− |
 | Return URL “paid” UI trust | Fraud UX / support chaos | Return = `processing` only |
-| Admin email list takeover | Full catalog/orders/PII | Protect `ADMIN_EMAILS`; strong account passwords; no self-serve admin |
+| Admin account takeover | Full catalog/orders/PII | Protect the `admin` role assignment path (seeder/artisan only); strong account passwords; no self-serve admin |
+| Unthrottled register/password-reset abuse (F08) | Fake-account creation bypassing coupon per-user limits (D33); email-bombing via reset requests | Per-IP rate limits — `RegisterAttemptRateLimiter`, `PasswordResetRequestRateLimiter` (`app/Support/Auth`) |
 | Mass assignment on Order/Payment | Status/amount tampering | Fillable whitelist; never accept status from request |
 | Guest cart session fixation / leak | Cart theft | Session config; ownership asserts; regenerate on login (framework) |
 | Coupon double-spend / over `usage_limit` | Free or excess discount | H11–H13; lock + TX; re-validate on confirm |
@@ -117,7 +118,8 @@ Summary of **highest-value attacks**:
 | Start pay | `StartOrderPaymentController`, `StartOrderPaymentAction`, `OrderPolicy::pay` | AuthZ, pending-only, stock recheck, amount=`order.total` (post-discount) |
 | Coupons | `CouponPricingService`, `Create/UpdateCouponAction`, validate/create/cancel order hooks, Filament `CouponResource`, checkout `couponCode` | H11–H13, C1–C12 — [coupons.md](references/coupons.md) |
 | Guest access | signed `orders.thank-you`, `orders.pay`, thank-you blade | H6–H7, TTL |
-| Admin | `User::canAccessPanel`, Filament Resources, cancel order, coupons | H8, C12 immutables, no IDOR across users in admin forms |
+| Admin | `User::canAccessPanel` (`hasRole('admin')`), Filament Resources, cancel order, coupons | H8, C12 immutables, no IDOR across users in admin forms |
+| Auth (F08) | `login-page`/`register-page`/`forgot-password-page`/`reset-password-page`, `app/Actions/Auth/*`, `RoleAndAdminBackfillSeeder` | Registration never assigns `admin`; role backfill runs before any `canAccessPanel()` cutover; rate limits on register/reset-request/verify-resend (`app/Support/Auth`) |
 | Cart | `AssertsCartOwnership`, `CartController` `api/cart/*` | H9, CSRF stays on; **no** cart-level coupon persistence |
 | Gateways | `app/Gateways/Payments/*`, `config/ecommerce.php` | H3–H4, H10, timeouts, no secret logs |
 | Specs | `specs/features/05-payments/*`, `specs/features/06-coupons/*` | Align with R/D ids; call out residual risk |
@@ -133,12 +135,13 @@ Deep dive coupons: [references/coupons.md](references/coupons.md).
 |-------|-----|--------|
 | Guest (session) | Cart, checkout (+ optional `couponCode`), create pending order, access own order via **signed** URL, start pay via signed URL | Admin; other users’ carts/orders/addresses; per-user coupon limits (global only) |
 | Authenticated buyer | Same + `OrderPolicy` owner view/pay without signature when logged in as owner; per-user coupon limits apply | Admin panel (unless email allowlisted) |
-| Admin (`ADMIN_EMAILS`) | Full Filament: catalog, users, addresses, orders, **coupons**, cancel pending, see payments/redemptions | Fine-grained roles (none today — treat admin as **god mode**) |
+| Admin (Spatie role `admin`) | Full Filament: catalog, users, addresses, orders, **coupons**, cancel pending, see payments/redemptions | Fine-grained permissions (none today — single `admin` role, treat as **god mode**) |
 | Payment provider | POST webhooks only; trust only after signature | Anything else |
 
 **Rules for agents:**
 
-- Do **not** add Spatie/Shield/roles without explicit product approval.
+- Spatie roles are in use since F08 (`admin`/`customer`, single-tier, no fine-grained permissions). Do **not** add Filament Shield or granular permissions without explicit product approval — see `specs/features/08-auth/`.
+- Public self-registration (`RegisterUserAction`) must always assign `customer`; `admin` is only ever assigned via `RoleAndAdminBackfillSeeder` or artisan/tinker, never from user input.
 - New order/payment endpoints **must** reuse owner policy and/or signed URLs — do not invent “token in query” ad hoc.
 - Filament: panel gate is necessary but not always sufficient for future multi-tenant; prefer policies when operations diverge.
 - Guests: `addressId` only if owned by `Auth::id()`; guests use snapshot fields only (existing checkout pattern).

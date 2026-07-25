@@ -1,38 +1,23 @@
-<x-layouts::auth :title="'Leen Handbags | '.__('login.meta.page_title')">
-    <div class="w-full bg-soft-sand p-8 shadow-ambient md:p-10">
+<div class="py-12 lg:py-16">
+    <div class="mx-auto w-full max-w-md bg-soft-sand p-8 shadow-ambient md:p-10">
         <h1 class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
-            {{ __('login.title') }}
+            {{ __('auth.login.title') }}
         </h1>
         <p class="mt-2 text-sm text-intense-cocoa/70">
-            {{ __('login.subtitle') }}
+            {{ __('auth.login.subtitle') }}
         </p>
 
-        @if (session('status'))
-            <p role="status" data-login-status class="mt-6 border border-soft-gold/30 bg-soft-sand px-4 py-3 text-sm text-intense-cocoa">
-                {{ session('status') }}
+        @if ($errorMessage)
+            <p role="alert" class="mt-6 border border-error/20 bg-error/5 px-4 py-3 text-sm text-error">
+                {{ $errorMessage }}
             </p>
         @endif
 
-        @if ($errors->any())
-            <p role="alert" data-login-error class="mt-6 border border-error/20 bg-error/5 px-4 py-3 text-sm text-error">
-                {{ $errors->first() }}
-            </p>
-        @endif
-
-        <form
-            method="POST"
-            action="/login"
-            novalidate
-            x-data="{ submitting: false, emailTouched: false, emailValid: true, passwordTouched: false }"
-            x-on:submit="submitting = true"
-            class="mt-6 space-y-5"
-        >
-            @csrf
-
+        <form wire:submit="login" class="mt-6 space-y-5">
             {{-- Email --}}
             <div>
                 <label for="email" class="mb-1 block text-sm font-medium text-intense-cocoa">
-                    {{ __('login.fields.email') }}
+                    {{ __('auth.fields.email') }}
                 </label>
                 <div class="relative">
                     <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-intense-cocoa/60">
@@ -42,36 +27,22 @@
                     </span>
                     <input
                         id="email"
-                        name="email"
                         type="email"
-                        x-ref="email"
-                        value="{{ old('email') }}"
-                        required
+                        wire:model="email"
                         autocomplete="email"
-                        :readonly="submitting"
-                        :class="{ 'opacity-60': submitting }"
-                        x-on:blur="emailTouched = true; emailValid = $refs.email.value.trim() !== '' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($refs.email.value)"
-                        placeholder="{{ __('login.placeholders.email') }}"
+                        placeholder="{{ __('auth.login.placeholders.email') }}"
                         class="w-full border bg-silk-cream py-3 pl-11 pr-3 text-body-md text-intense-cocoa transition-colors hover:border-intense-cocoa focus:border-intense-cocoa focus:outline-none @error('email') border-error @else border-intense-cocoa/40 @enderror"
                     >
                 </div>
-                {{-- No per-field @error text here by design (D7): the generic banner
-                     above already renders $errors->first() once. Duplicating the same
-                     credential message under the field would print it twice and leak
-                     which field failed — the red border above is the only per-field
-                     signal for a server-side error. --}}
-                <p x-show="emailTouched && !emailValid && $refs.email.value.trim() === ''" x-cloak class="mt-1 text-sm text-error">
-                    {{ __('login.errors.email_required') }}
-                </p>
-                <p x-show="emailTouched && !emailValid && $refs.email.value.trim() !== ''" x-cloak class="mt-1 text-sm text-error">
-                    {{ __('login.errors.email_invalid') }}
-                </p>
+                @error('email')
+                    <p class="mt-1 text-sm text-error">{{ $message }}</p>
+                @enderror
             </div>
 
             {{-- Password --}}
             <div>
                 <label for="password" class="mb-1 block text-sm font-medium text-intense-cocoa">
-                    {{ __('login.fields.password') }}
+                    {{ __('auth.fields.password') }}
                 </label>
                 <div class="relative" x-data="{ show: false }">
                     <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-intense-cocoa/60">
@@ -81,21 +52,16 @@
                     </span>
                     <input
                         id="password"
-                        name="password"
+                        wire:model="password"
                         :type="show ? 'text' : 'password'"
-                        x-ref="password"
                         autocomplete="current-password"
-                        required
-                        :readonly="submitting"
-                        :class="{ 'opacity-60': submitting }"
-                        x-on:blur="passwordTouched = true"
                         class="w-full border bg-silk-cream py-3 pl-11 pr-11 text-body-md text-intense-cocoa transition-colors hover:border-intense-cocoa focus:border-intense-cocoa focus:outline-none @error('password') border-error @else border-intense-cocoa/40 @enderror"
                     >
                     <button
                         type="button"
                         x-on:click="show = !show"
                         :aria-pressed="show"
-                        :aria-label="show ? '{{ __('login.actions.hide_password') }}' : '{{ __('login.actions.show_password') }}'"
+                        :aria-label="show ? '{{ __('auth.login.hide_password') }}' : '{{ __('auth.login.show_password') }}'"
                         class="absolute inset-y-0 right-0 flex items-center pr-3 text-intense-cocoa/60 transition-colors hover:text-soft-gold"
                     >
                         <svg x-show="!show" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
@@ -107,43 +73,41 @@
                         </svg>
                     </button>
                 </div>
-                {{-- No per-field @error text here for SERVER credential errors (D7) — the
-                     border swap above is the only per-field signal for those. This is a
-                     distinct client-only required check, same category as email's above. --}}
-                <p x-show="passwordTouched && $refs.password.value.trim() === ''" x-cloak class="mt-1 text-sm text-error">
-                    {{ __('login.errors.password_required') }}
-                </p>
+                @error('password')
+                    <p class="mt-1 text-sm text-error">{{ $message }}</p>
+                @enderror
             </div>
+
+            <label class="flex items-center gap-2 text-sm text-intense-cocoa/80">
+                <input type="checkbox" wire:model="remember" class="border-intense-cocoa/40">
+                {{ __('auth.login.remember') }}
+            </label>
 
             <button
                 type="submit"
-                :disabled="submitting"
+                wire:loading.attr="disabled"
+                wire:target="login"
                 class="mt-2 flex h-12 w-full items-center justify-center gap-2 bg-intense-cocoa text-label-caps font-semibold uppercase tracking-widest text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa disabled:cursor-not-allowed disabled:opacity-70"
             >
-                <svg x-show="submitting" x-cloak class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <svg wire:loading wire:target="login" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4z"></path>
                 </svg>
-                <span x-show="!submitting">{{ __('login.actions.submit') }}</span>
-                <span x-show="submitting" x-cloak>{{ __('login.actions.submitting') }}</span>
+                <span wire:loading.remove wire:target="login">{{ __('auth.login.submit') }}</span>
+                <span wire:loading wire:target="login">{{ __('auth.login.submitting') }}</span>
             </button>
 
             <div class="flex flex-col items-center gap-2 text-sm">
-                @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">
-                        {{ __('login.links.forgot_password') }}
+                <a href="{{ route('password.request') }}" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">
+                    {{ __('auth.login.forgot_password') }}
+                </a>
+                <p class="text-intense-cocoa/70">
+                    {{ __('auth.login.no_account') }}
+                    <a href="{{ route('register') }}" class="font-medium text-intense-cocoa underline underline-offset-2 transition-colors hover:text-soft-gold">
+                        {{ __('auth.login.register_link') }}
                     </a>
-                @endif
-
-                @if (Route::has('register'))
-                    <p class="text-intense-cocoa/70">
-                        {{ __('login.links.no_account') }}
-                        <a href="{{ route('register') }}" class="font-medium text-intense-cocoa underline underline-offset-2 transition-colors hover:text-soft-gold">
-                            {{ __('login.links.register') }}
-                        </a>
-                    </p>
-                @endif
+                </p>
             </div>
         </form>
     </div>
-</x-layouts::auth>
+</div>

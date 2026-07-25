@@ -14,6 +14,7 @@ use Filament\Actions\Testing\TestAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Livewire\Livewire;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class ReviewResourceTest extends TestCase
@@ -33,6 +34,8 @@ class ReviewResourceTest extends TestCase
         $user = User::factory()->create([
             'email' => 'admin@example.com',
         ]);
+        Role::findOrCreate('admin', 'web');
+        $user->assignRole('admin');
 
         $this->actingAs($user);
 

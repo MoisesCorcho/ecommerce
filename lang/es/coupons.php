@@ -93,7 +93,7 @@ return [
 
     'empty' => [
         'heading' => 'Todavía no hay cupones',
-        'description' => 'Creá un cupón percentage o fixed para promociones en checkout.',
+        'description' => 'Crea un cupón percentage o fixed para promociones en checkout.',
         'redemptions_heading' => 'Sin redenciones todavía',
         'redemptions_description' => 'Las redenciones aparecen cuando se crean pedidos con este código.',
     ],
@@ -130,7 +130,7 @@ return [
         'usage_exhausted' => 'Este cupón alcanzó su límite de usos.',
         'per_user_exhausted' => 'Ya usaste este cupón el máximo de veces permitido.',
         'immutable_fields' => 'Tipo, valor y moneda no se pueden cambiar si ya hay redenciones.',
-        'rate_limited' => 'Demasiados intentos de cupón. Esperá un momento e intenta nuevamente.',
+        'rate_limited' => 'Demasiados intentos de cupón. Espera un momento e intenta nuevamente.',
     ],
 
     'relation' => [

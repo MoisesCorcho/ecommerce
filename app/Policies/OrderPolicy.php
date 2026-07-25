@@ -38,12 +38,6 @@ class OrderPolicy
 
     private function isAdmin(User $user): bool
     {
-        $emails = config('ecommerce.admin_emails', []);
-
-        if (! is_array($emails) || $emails === []) {
-            return false;
-        }
-
-        return in_array($user->email, $emails, true);
+        return $user->hasRole('admin');
     }
 }

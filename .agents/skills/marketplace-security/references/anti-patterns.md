@@ -4,7 +4,8 @@
 
 | Anti-pattern | Correct approach |
 |--------------|------------------|
-| `canAccessPanel(): return true` | Email allowlist via `config('ecommerce.admin_emails')` |
+| `canAccessPanel(): return true` | `$this->hasRole('admin')` (Spatie, since F08) |
+| Assigning `admin` role from request/registration input | Only via `RoleAndAdminBackfillSeeder` or artisan/tinker |
 | Mark paid in thank-you / success controller | Webhook-only paid transition |
 | Trust query `?paid=1` or provider redirect params | Ignore for money state; UX messaging only |
 | CSRF except `*` or `api/*` | Except only `webhooks/stripe` and `webhooks/bold` |

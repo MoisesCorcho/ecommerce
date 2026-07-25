@@ -131,6 +131,13 @@ new #[Layout('layouts.storefront'), Title('Leen Handbags | Checkout')] class ext
     ): mixed {
         $this->errorMessage = null;
 
+        // Guest checkout (Auth::check() === false) is intentionally not gated here.
+        if (Auth::check() && ! Auth::user()->hasVerifiedEmail()) {
+            $this->errorMessage = __('auth.verify_email_required');
+
+            return null;
+        }
+
         $this->validate($this->rules());
 
         if (! $this->consumeCouponRateLimitIfNeeded()) {
