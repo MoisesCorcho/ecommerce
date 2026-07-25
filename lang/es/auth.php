@@ -18,18 +18,44 @@ return [
 
     'login' => [
         'title' => 'Iniciar sesión',
+        'subtitle' => 'Hola. Ingresa tus datos para acceder a tu cuenta.',
         'submit' => 'Iniciar sesión',
+        'submitting' => 'Iniciando sesión...',
+        'show_password' => 'Mostrar contraseña',
+        'hide_password' => 'Ocultar contraseña',
         'no_account' => '¿No tienes cuenta?',
         'register_link' => 'Crea una',
         'forgot_password' => '¿Olvidaste tu contraseña?',
         'remember' => 'Recordarme',
+        'placeholders' => [
+            'email' => 'tucorreo@ejemplo.com',
+        ],
     ],
 
     'register' => [
         'title' => 'Crear cuenta',
+        'subtitle' => 'Bienvenido. Completa tus datos para comenzar.',
         'submit' => 'Crear cuenta',
+        'submitting' => 'Creando cuenta...',
+        'show_password' => 'Mostrar contraseña',
+        'hide_password' => 'Ocultar contraseña',
         'have_account' => '¿Ya tienes cuenta?',
         'login_link' => 'Iniciar sesión',
+        'placeholders' => [
+            'name' => 'Ana Pérez',
+            'email' => 'tucorreo@ejemplo.com',
+        ],
+        'strength' => [
+            'weak' => 'Débil',
+            'medium' => 'Media',
+            'strong' => 'Fuerte',
+        ],
+        'terms' => [
+            'prefix' => 'Acepto los',
+            'terms_link' => 'Términos y Condiciones',
+            'connector' => 'y la',
+            'privacy_link' => 'Política de Privacidad',
+        ],
     ],
 
     'forgot_password' => [

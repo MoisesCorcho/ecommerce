@@ -18,18 +18,44 @@ return [
 
     'login' => [
         'title' => 'Log in',
+        'subtitle' => 'Hello. Enter your details to access your account.',
         'submit' => 'Log in',
+        'submitting' => 'Signing in...',
+        'show_password' => 'Show password',
+        'hide_password' => 'Hide password',
         'no_account' => "Don't have an account?",
         'register_link' => 'Create one',
         'forgot_password' => 'Forgot your password?',
         'remember' => 'Remember me',
+        'placeholders' => [
+            'email' => 'you@example.com',
+        ],
     ],
 
     'register' => [
         'title' => 'Create account',
+        'subtitle' => 'Welcome. Fill in your details to get started.',
         'submit' => 'Create account',
+        'submitting' => 'Creating account...',
+        'show_password' => 'Show password',
+        'hide_password' => 'Hide password',
         'have_account' => 'Already have an account?',
         'login_link' => 'Log in',
+        'placeholders' => [
+            'name' => 'Jane Doe',
+            'email' => 'you@example.com',
+        ],
+        'strength' => [
+            'weak' => 'Weak',
+            'medium' => 'Medium',
+            'strong' => 'Strong',
+        ],
+        'terms' => [
+            'prefix' => 'I accept the',
+            'terms_link' => 'Terms and Conditions',
+            'connector' => 'and the',
+            'privacy_link' => 'Privacy Policy',
+        ],
     ],
 
     'forgot_password' => [
