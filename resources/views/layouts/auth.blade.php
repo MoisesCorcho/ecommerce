@@ -16,7 +16,7 @@
     @livewireStyles
 </head>
 <body class="min-h-screen bg-silk-cream text-intense-cocoa font-sans antialiased">
-    <div class="flex min-h-screen flex-col lg:flex-row">
+    <div class="flex min-h-screen flex-col lg:h-screen lg:flex-row">
         <div
             class="relative hidden bg-cover bg-center lg:block lg:w-1/2"
             style="background-image: url('{{ asset('images/banners/banner-7.jpg') }}')"
@@ -25,7 +25,7 @@
             <div class="absolute inset-0 bg-intense-cocoa/30"></div>
         </div>
 
-        <div class="flex flex-1 flex-col items-center justify-center px-margin-mobile py-12 lg:w-1/2 lg:px-margin-desktop">
+        <div class="flex flex-1 flex-col items-center justify-center px-margin-mobile py-12 lg:w-1/2 lg:overflow-y-auto lg:px-margin-desktop">
             <a href="{{ url('/') }}" class="mb-8">
                 <img src="/images/logos/leen-brown.png" alt="{{ config('app.name', 'Leen Handbags') }}" class="h-16 w-auto">
             </a>

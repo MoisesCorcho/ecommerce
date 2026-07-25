@@ -44,17 +44,23 @@ class LoginPageTest extends TestCase
             ->assertDontSee('login.fields.email', false);
     }
 
-    public function test_guarded_links_absent_by_default(): void
+    public function test_forgot_password_link_absent_by_default(): void
     {
         $this->get(route('login'))
             ->assertOk()
-            ->assertDontSee(__('login.links.register'), false)
             ->assertDontSee(__('login.links.forgot_password'), false);
+    }
+
+    public function test_register_link_renders_now_that_route_exists(): void
+    {
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertSee(__('login.links.register'), false)
+            ->assertSee(route('register'), false);
     }
 
     public function test_guarded_links_present_when_routes_registered(): void
     {
-        Route::get('/register', fn () => 'register')->name('register');
         Route::get('/forgot-password', fn () => 'forgot')->name('password.request');
         Route::getRoutes()->refreshNameLookups();
 
