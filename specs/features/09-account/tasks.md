@@ -7,7 +7,7 @@
 **Alcance DoD:** perfil (datos+password+email re-verify), libreta de direcciones, mis pedidos (listado paid+ y detalle), mis reseñas (listado+editar+eliminar), ownership en las 4 áreas, i18n, tests.
 **Fuera de DoD:** eliminación de cuenta, wishlist (F10), login social/2FA (ya excluidos en F08).
 
-**Estado de implementación:** En progreso — Fases 1-4 completas (Domain, Storefront, Rutas, i18n). Fases 5-6 pendientes.
+**Estado de implementación:** En progreso — Fases 1-5 completas (Domain, Storefront, Rutas, i18n, Tests). Fase 6 (cierre) pendiente.
 
 Sin fase de esquema: no hay migraciones nuevas (fundación de dominio ya completa).
 
@@ -43,14 +43,14 @@ Sin fase de esquema: no hay migraciones nuevas (fundación de dominio ya complet
 
 ## 5. Tests (PHPUnit)
 
-- [ ] 5.1 `tests/Feature/Account/ProfilePageTest.php`: edición válida de nombre/teléfono; cambio de email marca no-verificado y reenvía; email duplicado rechazado; datos inválidos rechazados. _(cubre R1, R13)_
-- [ ] 5.2 `tests/Feature/Account/PasswordUpdateTest.php`: cambio válido; contraseña actual incorrecta rechazada; nueva contraseña inválida o sin confirmar rechazada. _(cubre R2, R14)_
-- [ ] 5.3 `tests/Feature/Account/AddressBookTest.php`: alta/edición válidas; marcar default reemplaza a la anterior; eliminar la única default no reasigna otra; datos inválidos rechazados; usuario no accede/edita/elimina dirección ajena. _(cubre R3, R4, R5, R6, R15, R16, R18)_
-- [ ] 5.4 `tests/Feature/Account/MyOrdersTest.php`: listado incluye solo paid/processing/shipped/delivered; pendiente de pago excluido; usuario no ve pedidos ajenos en el listado. _(cubre R7, R16)_
-- [ ] 5.5 `tests/Feature/Account/OrderDetailHttpTest.php`: detalle de pedido propio visible; 403 al pedir el detalle de un pedido ajeno. _(cubre R8, R16)_
-- [ ] 5.6 `tests/Feature/Account/MyReviewsTest.php`: listado propio con estado de moderación; editar vuelve a pendiente; eliminar quita la reseña; usuario no edita/elimina reseña ajena. _(cubre R9, R10, R11, R16)_
-- [ ] 5.7 `tests/Feature/Account/AccountAuthGateTest.php`: visitante sin sesión redirigido a login desde cada ruta `/profile/*`; comprador con email no verificado puede editar su perfil. _(cubre R17, R19)_
-- [ ] 5.8 `tests/Unit/Models/AccountScopesTest.php`: `scopeVisibleInAccountHistory` y `scopeOwnedBy` con factories de estados mixtos (pending/paid/cancelled; otro usuario). _(cubre R7, R9 — prerequisito de 5.4, 5.6)_
+- [x] 5.1 `tests/Feature/Account/ProfilePageTest.php`: edición válida de nombre/teléfono; cambio de email marca no-verificado y reenvía; email duplicado rechazado; datos inválidos rechazados. _(cubre R1, R13)_
+- [x] 5.2 `tests/Feature/Account/PasswordUpdateTest.php`: cambio válido; contraseña actual incorrecta rechazada; nueva contraseña inválida o sin confirmar rechazada. _(cubre R2, R14)_
+- [x] 5.3 `tests/Feature/Account/AddressBookTest.php`: alta/edición válidas; marcar default reemplaza a la anterior; eliminar la única default no reasigna otra; datos inválidos rechazados; usuario no accede/edita/elimina dirección ajena. _(cubre R3, R4, R5, R6, R15, R16, R18)_
+- [x] 5.4 `tests/Feature/Account/MyOrdersTest.php`: listado incluye solo paid/processing/shipped/delivered; pendiente de pago excluido; usuario no ve pedidos ajenos en el listado. _(cubre R7, R16)_
+- [x] 5.5 `tests/Feature/Account/OrderDetailHttpTest.php`: detalle de pedido propio visible; 403 al pedir el detalle de un pedido ajeno. _(cubre R8, R16)_
+- [x] 5.6 `tests/Feature/Account/MyReviewsTest.php`: listado propio con estado de moderación; editar vuelve a pendiente; eliminar quita la reseña; usuario no edita/elimina reseña ajena. _(cubre R9, R10, R11, R16)_
+- [x] 5.7 `tests/Feature/Account/AccountAuthGateTest.php`: visitante sin sesión redirigido a login desde cada ruta `/profile/*`; comprador con email no verificado puede editar su perfil. _(cubre R17, R19)_
+- [x] 5.8 `tests/Unit/Models/AccountScopesTest.php`: `scopeVisibleInAccountHistory` y `scopeOwnedBy` con factories de estados mixtos (pending/paid/cancelled; otro usuario). _(cubre R7, R9 — prerequisito de 5.4, 5.6)_
 
 ## 6. Cierre de calidad
 
