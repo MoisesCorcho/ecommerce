@@ -161,7 +161,7 @@ Minimum when touching coupon money paths:
 | Abandoned pending holds redemption until admin cancel | D37 | Limit inventory “stuck”; no auto-release job |
 | D25 pay approved / order pending | D39 | Coupon already consumed; **cancel blocked** if payment approved/refunded (do not release coupon) |
 | Coupon code rate limit | — | Checkout Livewire: 30 attempts/min per user or IP (`coupons-preview`) |
-| Admin god mode can mint 100% coupons | F02/F06 | Protect `ADMIN_EMAILS`; no RBAC yet |
+| Admin god mode can mint 100% coupons | F02/F06 | Protect the `admin` Spatie role (since F08); no fine-grained RBAC yet |
 | total = 0 allowed in domain | D40 | Skip-pay out of scope — ensure pay path does not explode |
 
 ---

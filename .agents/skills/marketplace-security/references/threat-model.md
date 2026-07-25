@@ -11,7 +11,7 @@ Living map of **this** product. Update when new features add surfaces (auth stor
 | Stock integrity | High | Product stock decrement on paid |
 | Order + shipping PII | High | `orders` snapshot, thank-you page, Filament Orders |
 | User credentials | Critical | `users.password`, session cookies |
-| Admin power | Critical | `ADMIN_EMAILS` → full Filament (incl. mint 100% coupons) |
+| Admin power | Critical | Spatie `admin` role (since F08; was `ADMIN_EMAILS`) → full Filament (incl. mint 100% coupons) |
 | Cart contents | Medium | Session guest cart / user cart |
 | Provider secrets | Critical | `STRIPE_*`, `BOLD_*` env |
 | Webhook event log | Medium–High | Full JSON payloads in `payment_webhook_events` |
