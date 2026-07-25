@@ -34,7 +34,7 @@ return [
 
     'helpers' => [
         'phone_optional' => 'Opcional. Formato libre (recomendado E.164).',
-        'password_keep' => 'Dejá vacío para mantener la contraseña actual.',
+        'password_keep' => 'Deja vacío para mantener la contraseña actual.',
     ],
 
     'actions' => [
@@ -54,7 +54,7 @@ return [
 
     'empty' => [
         'heading' => 'No hay usuarios todavía',
-        'description' => 'Creá la primera cuenta de comprador o administrador.',
+        'description' => 'Crea la primera cuenta de comprador o administrador.',
     ],
 
     'notifications' => [
