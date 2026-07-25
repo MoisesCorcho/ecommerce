@@ -31,4 +31,14 @@ enum OrderStatusEnum: string
     {
         return in_array($this, [self::Delivered, self::Cancelled, self::Refunded], true);
     }
+
+    /**
+     * Statuses eligible for the buyer's "mis pedidos" account history (F09 D3).
+     *
+     * @return array<int, self>
+     */
+    public static function accountHistoryStatuses(): array
+    {
+        return [self::Paid, self::Processing, self::Shipped, self::Delivered];
+    }
 }
