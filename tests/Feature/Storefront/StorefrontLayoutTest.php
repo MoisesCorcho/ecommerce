@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Storefront;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
@@ -69,5 +70,25 @@ class StorefrontLayoutTest extends TestCase
             ->assertOk()
             ->assertSee('STOREFRONT_TEST_SLOT', false)
             ->assertSee('<main', false);
+    }
+
+    public function test_storefront_layout_shows_login_link_for_guest(): void
+    {
+        $this->get('/_test/storefront-layout')
+            ->assertOk()
+            ->assertSee(route('login'), false)
+            ->assertSee(__('storefront.nav.login'), false)
+            ->assertDontSee(__('storefront.nav.account'), false);
+    }
+
+    public function test_storefront_layout_shows_account_link_for_authenticated_user(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get('/_test/storefront-layout')
+            ->assertOk()
+            ->assertSee(__('storefront.nav.account'), false)
+            ->assertDontSee(__('storefront.nav.login'), false);
     }
 }

@@ -11,6 +11,8 @@ return [
         'search' => 'Buscar',
         'favorites' => 'Favoritos',
         'bag' => 'Bolsa',
+        'login' => 'Iniciar sesión',
+        'account' => 'Cuenta',
         'menu_toggle' => 'Menú',
     ],
 
