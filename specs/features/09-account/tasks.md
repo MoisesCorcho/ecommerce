@@ -7,7 +7,7 @@
 **Alcance DoD:** perfil (datos+password+email re-verify), libreta de direcciones, mis pedidos (listado paid+ y detalle), mis reseñas (listado+editar+eliminar), ownership en las 4 áreas, i18n, tests.
 **Fuera de DoD:** eliminación de cuenta, wishlist (F10), login social/2FA (ya excluidos en F08).
 
-**Estado de implementación:** En progreso — Fases 1-5 completas (Domain, Storefront, Rutas, i18n, Tests). Fase 6 (cierre) pendiente.
+**Estado de implementación:** Completa — código implementado y tests verificados en verde vía Sail (327/334, 7 skips preexistentes).
 
 Sin fase de esquema: no hay migraciones nuevas (fundación de dominio ya completa).
 
@@ -54,9 +54,9 @@ Sin fase de esquema: no hay migraciones nuevas (fundación de dominio ya complet
 
 ## 6. Cierre de calidad
 
-- [ ] 6.1 Tests del alcance F09 en verde vía Sail.
-- [ ] 6.2 Pint en PHP tocado (`vendor/bin/sail bin pint --dirty --format agent`).
-- [ ] 6.3 Estado F09 = **Completa** en `requirements.md` y roadmap al cerrar implementación.
+- [x] 6.1 Tests del alcance F09 en verde vía Sail.
+- [x] 6.2 Pint en PHP tocado (`vendor/bin/sail bin pint --dirty --format agent`).
+- [x] 6.3 Estado F09 = **Completa** en `requirements.md` y roadmap al cerrar implementación.
 
 ---
 
@@ -88,9 +88,13 @@ Sin fase de esquema: no hay migraciones nuevas (fundación de dominio ya complet
 
 ## Definition of Done (checklist tasks)
 
-- [ ] Criterios **R1–R19** implementados y testeados.
-- [ ] Ownership verificado en las 4 áreas (1.1, 2.3, 2.5, 2.7 + sus tests).
-- [ ] Actions/policies reusadas de F02 y F07 sin modificaciones (`app/Actions/Addresses/*`, `app/Actions/Reviews/{Update,Delete}ReviewAction.php`, `OrderPolicy`, `ReviewPolicy`).
-- [ ] `lang/{en,es}/account.php` completos, tono tuteo/neutro (sin voseo).
-- [ ] PHPUnit del alcance en verde vía Sail; Pint OK.
-- [ ] Specs + roadmap con estado **Completa** al cerrar implementación.
+- [x] Criterios **R1–R19** implementados y testeados.
+- [x] Ownership verificado en las 4 áreas (1.1, 2.3, 2.5, 2.7 + sus tests).
+- [x] Actions/policies reusadas de F02 y F07 sin modificaciones (`app/Actions/Addresses/*`, `app/Actions/Reviews/{Update,Delete}ReviewAction.php`, `OrderPolicy`, `ReviewPolicy`).
+- [x] `lang/{en,es}/account.php` completos, tono tuteo/neutro (sin voseo).
+- [x] PHPUnit del alcance en verde vía Sail (25/25 F09 + suite completa 327/334, 7 skips preexistentes); Pint OK.
+- [x] Specs + roadmap con estado **Completa** al cerrar implementación.
+
+### Nota de implementación (no estaba en el plan original)
+
+- `AddressPolicy` (1.1) no tenía bypass de admin al principio; Laravel la auto-descubre para el modelo `Address` y empezó a gatear el panel Filament de F02 (`AddressesRelationManager`), que antes no tenía policy. Se agregó `isAdmin()` igual que en `OrderPolicy`/`ReviewPolicy`. De paso se corrigió `tests/Feature/Accounts/AddressAdminTest.php`, que simulaba admin con el whitelist viejo `admin_emails` en vez del rol Spatie real (quedó desactualizado desde la migración de F08, sin que nada lo detectara hasta ahora).

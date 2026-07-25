@@ -58,7 +58,7 @@ Rutas de specs se crean al iniciar cada feature (`specs/features/<slug>/`).
 | F06 | Cupones y redenciones | 2 · Cobro | Completa | F03, F04 (punto de aplicación: checkout/confirm; specs en `06-coupons`) |
 | F07 | Reviews | 3 · Post-compra | Completa | F01; F04/F05 (compra paid+ para elegibilidad) |
 | F08 | Auth (login/registro storefront) | 3 · Post-compra | Completa | F01, F02 |
-| F09 | Cuenta/perfil del comprador (perfil, direcciones, mis pedidos, mis reseñas) | 3 · Post-compra | Lista para implementar | F08 |
+| F09 | Cuenta/perfil del comprador (perfil, direcciones, mis pedidos, mis reseñas) | 3 · Post-compra | Completa | F08 |
 | F10 | Wishlist | 3 · Post-compra | No iniciada | F01, F02, F08 (requiere usuario identificado, sin modo invitado) |
 
 Sincronizar la columna **Estado** con el bloque `> Estado:` de cada `requirements.md` cuando exista.

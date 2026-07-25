@@ -1,6 +1,6 @@
 # F09 — Cuenta/perfil del comprador
 
-> **Estado:** Lista para implementar
+> **Estado:** Completa
 > **ID:** F09 · **Slug:** `09-account`
 > **Prerequisitos:** F08 (auth storefront) — ver [`01-product-and-roadmap.md`](../../_global/01-product-and-roadmap.md)
 > **Desbloquea:** —
