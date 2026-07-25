@@ -7,7 +7,7 @@
 **Alcance DoD:** perfil (datos+password+email re-verify), libreta de direcciones, mis pedidos (listado paid+ y detalle), mis reseñas (listado+editar+eliminar), ownership en las 4 áreas, i18n, tests.
 **Fuera de DoD:** eliminación de cuenta, wishlist (F10), login social/2FA (ya excluidos en F08).
 
-**Estado de implementación:** En progreso — Fases 1 (Domain), 2 (Storefront) y 3 (Rutas) completas. Fases 4-6 pendientes.
+**Estado de implementación:** En progreso — Fases 1-4 completas (Domain, Storefront, Rutas, i18n). Fases 5-6 pendientes.
 
 Sin fase de esquema: no hay migraciones nuevas (fundación de dominio ya completa).
 
@@ -39,7 +39,7 @@ Sin fase de esquema: no hay migraciones nuevas (fundación de dominio ya complet
 
 ## 4. i18n
 
-- [ ] 4.1 `lang/en/account.php` + `lang/es/account.php` (tuteo, sin voseo): labels y mensajes de perfil, contraseña, direcciones, pedidos y reseñas. _(cubre R12)_
+- [x] 4.1 `lang/en/account.php` + `lang/es/account.php` (tuteo, sin voseo): labels y mensajes de perfil, contraseña, direcciones, pedidos y reseñas. _(cubre R12)_
 
 ## 5. Tests (PHPUnit)
 
