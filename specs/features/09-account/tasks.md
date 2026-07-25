@@ -7,7 +7,7 @@
 **Alcance DoD:** perfil (datos+password+email re-verify), libreta de direcciones, mis pedidos (listado paid+ y detalle), mis reseñas (listado+editar+eliminar), ownership en las 4 áreas, i18n, tests.
 **Fuera de DoD:** eliminación de cuenta, wishlist (F10), login social/2FA (ya excluidos en F08).
 
-**Estado de implementación:** En progreso — Fase 1 (Domain) completa. Fases 2-6 pendientes.
+**Estado de implementación:** En progreso — Fases 1 (Domain) y 2 (Storefront) completas. Fases 3-6 pendientes.
 
 Sin fase de esquema: no hay migraciones nuevas (fundación de dominio ya completa).
 
@@ -25,13 +25,13 @@ Sin fase de esquema: no hay migraciones nuevas (fundación de dominio ya complet
 
 ## 2. Storefront: componentes Livewire MFC + controller de solo lectura
 
-- [ ] 2.1 `profile-page` (MFC, `layouts.storefront`): form de datos básicos → `UpdateProfileAction`; permite edición aunque el email esté sin verificar. _(cubre R1, R12, R13, R19)_
-- [ ] 2.2 `profile-page`: sección de cambio de contraseña (contraseña actual + nueva + confirmación) → `UpdatePasswordAction`. _(cubre R2, R12, R14)_
-- [ ] 2.3 `profile-addresses-page` (MFC): lista direcciones del usuario autenticado; alta/edición invocan `CreateAddressAction`/`UpdateAddressAction` (reusadas de F02, sin cambios); eliminar invoca `DeleteAddressAction` (reusada); autoriza cada operación con `AddressPolicy` (1.1). _(cubre R3, R4, R5, R6, R12, R15, R16, R18)_
-- [ ] 2.4 `profile-orders-page` (MFC): listado paginado usando `scopeVisibleInAccountHistory` (1.6). _(cubre R7, R12)_
-- [ ] 2.5 `app/Http/Controllers/Account/ProfileOrderDetailController.php` (invocable): autoriza con `OrderPolicy::view` (reusada de F04/F07, sin cambios), devuelve vista de solo lectura. _(cubre R8, R16)_
-- [ ] 2.6 `resources/views/account/orders/show.blade.php`: ítems, montos, dirección de envío, estado — solo lectura, estilo `layouts.storefront`. _(cubre R8, R12)_
-- [ ] 2.7 `profile-reviews-page` (MFC): listado usando `scopeOwnedBy` (1.7) con estado de moderación visible; editar invoca `UpdateReviewAction` (reusada de F07); eliminar invoca `DeleteReviewAction` (reusada de F07). _(cubre R9, R10, R11, R12, R16)_
+- [x] 2.1 `profile-page` (MFC, `layouts.storefront`): form de datos básicos → `UpdateProfileAction`; permite edición aunque el email esté sin verificar. _(cubre R1, R12, R13, R19)_
+- [x] 2.2 `profile-page`: sección de cambio de contraseña (contraseña actual + nueva + confirmación) → `UpdatePasswordAction`. _(cubre R2, R12, R14)_
+- [x] 2.3 `profile-addresses-page` (MFC): lista direcciones del usuario autenticado; alta/edición invocan `CreateAddressAction`/`UpdateAddressAction` (reusadas de F02, sin cambios); eliminar invoca `DeleteAddressAction` (reusada); autoriza cada operación con `AddressPolicy` (1.1). _(cubre R3, R4, R5, R6, R12, R15, R16, R18)_
+- [x] 2.4 `profile-orders-page` (MFC): listado paginado usando `scopeVisibleInAccountHistory` (1.6). _(cubre R7, R12)_
+- [x] 2.5 `app/Http/Controllers/Account/ProfileOrderDetailController.php` (invocable): autoriza con `OrderPolicy::view` (reusada de F04/F07, sin cambios), devuelve vista de solo lectura. _(cubre R8, R16)_
+- [x] 2.6 `resources/views/account/orders/show.blade.php`: ítems, montos, dirección de envío, estado — solo lectura, estilo `layouts.storefront`. _(cubre R8, R12)_
+- [x] 2.7 `profile-reviews-page` (MFC): listado usando `scopeOwnedBy` (1.7) con estado de moderación visible; editar invoca `UpdateReviewAction` (reusada de F07); eliminar invoca `DeleteReviewAction` (reusada de F07). _(cubre R9, R10, R11, R12, R16)_
 
 ## 3. Integración: rutas
 
