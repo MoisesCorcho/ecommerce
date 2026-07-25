@@ -46,6 +46,17 @@ class Review extends Model
     }
 
     /**
+     * Reviews authored by a given user, for the buyer's "mis reseñas" account view (F09).
+     *
+     * @param  Builder<Review>  $query
+     * @return Builder<Review>
+     */
+    public function scopeOwnedBy(Builder $query, int $userId): Builder
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    /**
      * @return BelongsTo<Product, $this>
      */
     public function product(): BelongsTo

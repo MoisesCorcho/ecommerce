@@ -20,6 +20,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AddressAdminTest extends TestCase
@@ -33,6 +34,8 @@ class AddressAdminTest extends TestCase
         $user = User::factory()->create([
             'email' => 'admin@example.com',
         ]);
+        Role::findOrCreate('admin', 'web');
+        $user->assignRole('admin');
 
         $this->actingAs($user);
 

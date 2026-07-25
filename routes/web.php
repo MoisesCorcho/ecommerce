@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Account\ProfileOrderDetailController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Cart\CartController;
@@ -30,6 +31,12 @@ Route::middleware('auth')->group(function (): void {
         ->middleware('signed')
         ->name('verification.verify');
     Route::post('/logout', LogoutController::class)->name('logout');
+
+    Route::livewire('/profile', 'profile-page')->name('profile');
+    Route::livewire('/profile/addresses', 'profile-addresses-page')->name('profile.addresses');
+    Route::livewire('/profile/orders', 'profile-orders-page')->name('profile.orders');
+    Route::get('/profile/orders/{order}', ProfileOrderDetailController::class)->name('profile.orders.show');
+    Route::livewire('/profile/reviews', 'profile-reviews-page')->name('profile.reviews');
 });
 
 Route::get('/orders/{order}/thank-you', OrderThankYouController::class)->name('orders.thank-you');
