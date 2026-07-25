@@ -31,10 +31,9 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
-use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Layout('layouts.storefront'), Title('Leen Handbags | Product')] class extends Component
+new #[Layout('layouts.storefront')] class extends Component
 {
     use ResolvesCurrentCart;
 
@@ -310,6 +309,13 @@ new #[Layout('layouts.storefront'), Title('Leen Handbags | Product')] class exte
 
             throw $e;
         }
+    }
+
+    public function render()
+    {
+        $product = $this->findPublishedProduct(CurrencyEnum::from($this->currency));
+
+        return $this->view()->title('Leen Handbags | '.$product->name);
     }
 
     public function with(): array

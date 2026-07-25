@@ -90,10 +90,9 @@
                         'wireModel' => 'wire:model="postalCode"',
                     ])
 
-                    <label class="flex items-center gap-2 text-sm text-intense-cocoa/80 sm:col-span-2">
-                        <input type="checkbox" wire:model="isDefault" class="border-intense-cocoa/40">
+                    <x-checkbox id="is_default" wire:model="isDefault" wrapper-class="sm:col-span-2">
                         {{ __('account.addresses.fields.is_default') }}
-                    </label>
+                    </x-checkbox>
 
                     <div class="flex gap-3 sm:col-span-2">
                         <button

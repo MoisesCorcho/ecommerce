@@ -11,11 +11,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Layout('layouts.storefront'), Title('Leen Handbags | Mis direcciones')] class extends Component
+new #[Layout('layouts.storefront')] class extends Component
 {
+    public function render()
+    {
+        return $this->view()->title('Leen Handbags | '.__('account.addresses.title'));
+    }
+
     public ?int $editingId = null;
 
     public string $label = '';

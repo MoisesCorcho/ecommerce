@@ -16,12 +16,16 @@ use App\Support\Coupons\CouponAttemptRateLimiter;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Layout('layouts.storefront'), Title('Leen Handbags | Checkout')] class extends Component
+new #[Layout('layouts.storefront')] class extends Component
 {
     use ResolvesCurrentCart;
+
+    public function render()
+    {
+        return $this->view()->title('Leen Handbags | '.__('orders.checkout.title'));
+    }
 
     public string $firstName = '';
 

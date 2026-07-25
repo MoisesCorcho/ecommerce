@@ -12,21 +12,16 @@
     <ul class="flex flex-col gap-3 text-body-md text-intense-cocoa/80">
         @foreach ($categories as $cat)
             <li>
-                <label class="flex cursor-pointer items-center gap-3 transition-colors hover:text-soft-gold">
-                    <span class="relative flex items-center justify-center">
-                        <input
-                            type="checkbox"
-                            wire:model.live="category"
-                            value="{{ $cat['slug'] }}"
-                            class="peer h-4 w-4 appearance-none border border-intense-cocoa bg-white checked:bg-intense-cocoa checked:border-intense-cocoa focus:outline-none"
-                        >
-                        <svg class="pointer-events-none absolute h-3 w-3 text-silk-cream opacity-0 peer-checked:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                        </svg>
-                    </span>
+                <x-checkbox
+                    align="center"
+                    label-class=""
+                    wrapper-class="cursor-pointer transition-colors hover:text-soft-gold"
+                    wire:model.live="category"
+                    value="{{ $cat['slug'] }}"
+                >
                     {{ $cat['name'] }}
                     <span class="text-intense-cocoa/40">({{ $cat['count'] }})</span>
-                </label>
+                </x-checkbox>
             </li>
         @endforeach
     </ul>
@@ -93,19 +88,14 @@
     <h3 class="border-b border-intense-cocoa/10 pb-2 mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-intense-cocoa">
         {{ __('storefront.shop.filter_availability') }}
     </h3>
-    <label class="flex cursor-pointer items-center gap-3 text-body-md text-intense-cocoa/80 transition-colors hover:text-soft-gold">
-        <span class="relative flex items-center justify-center">
-            <input
-                type="checkbox"
-                wire:model.live="inStock"
-                class="peer h-4 w-4 appearance-none border border-intense-cocoa bg-white checked:bg-intense-cocoa checked:border-intense-cocoa focus:outline-none"
-            >
-            <svg class="pointer-events-none absolute h-3 w-3 text-silk-cream opacity-0 peer-checked:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-            </svg>
-        </span>
+    <x-checkbox
+        align="center"
+        label-class="text-body-md"
+        wrapper-class="cursor-pointer text-intense-cocoa/80 transition-colors hover:text-soft-gold"
+        wire:model.live="inStock"
+    >
         {{ __('storefront.shop.filter_in_stock') }}
-    </label>
+    </x-checkbox>
 </div>
 
 {{-- Clear filters --}}

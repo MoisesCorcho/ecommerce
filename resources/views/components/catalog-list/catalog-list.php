@@ -16,15 +16,19 @@ use App\Support\Cart\ResolvesCurrentCart;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-new #[Layout('layouts.storefront'), Title('Leen Handbags | Shop')] class extends Component
+new #[Layout('layouts.storefront')] class extends Component
 {
-    use WithPagination;
     use ResolvesCurrentCart;
+    use WithPagination;
+
+    public function render()
+    {
+        return $this->view()->title('Leen Handbags | '.__('storefront.shop.title'));
+    }
 
     public string $currency;
 
@@ -140,7 +144,7 @@ new #[Layout('layouts.storefront'), Title('Leen Handbags | Shop')] class extends
 
             $this->dispatch('cart-updated');
             $this->dispatch('toast', message: __('storefront.added_to_cart'));
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $message = match (true) {
                 $e instanceof CartAccessDeniedException,
                 $e instanceof CartItemNotEligibleException,

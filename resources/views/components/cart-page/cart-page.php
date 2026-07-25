@@ -17,12 +17,16 @@ use App\Exceptions\Cart\InsufficientCartStockException;
 use App\Models\ProductVariant;
 use App\Support\Cart\ResolvesCurrentCart;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Layout('layouts.storefront'), Title('Leen Handbags | Shopping Cart')] class extends Component
+new #[Layout('layouts.storefront')] class extends Component
 {
     use ResolvesCurrentCart;
+
+    public function render()
+    {
+        return $this->view()->title('Leen Handbags | '.__('cart.page.title'));
+    }
 
     public string $currency = 'COP';
 

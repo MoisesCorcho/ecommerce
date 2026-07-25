@@ -5,10 +5,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Layout('layouts.storefront'), Title('Leen Handbags | Crear cuenta')] class extends Component
+new #[Layout('layouts.auth')] class extends Component
 {
     public string $name = '';
 
@@ -21,6 +20,11 @@ new #[Layout('layouts.storefront'), Title('Leen Handbags | Crear cuenta')] class
     public bool $terms = false;
 
     public ?string $errorMessage = null;
+
+    public function render()
+    {
+        return $this->view()->title('Leen Handbags | '.__('auth.register.title'));
+    }
 
     public function register(CreatesNewUsers $creator, RegisterAttemptRateLimiter $limiter): mixed
     {

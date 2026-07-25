@@ -8,6 +8,8 @@ return [
 
     'verify_email_required' => 'Verifica tu email para continuar.',
 
+    'back_to_store' => 'Volver a la tienda',
+
     'fields' => [
         'name' => 'Nombre',
         'email' => 'Email',
