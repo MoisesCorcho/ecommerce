@@ -10,6 +10,8 @@ Route::get('/', fn () => view('home'))->name('home');
 
 Route::get('/login', fn () => view('auth.login'))->name('login');
 
+Route::get('/register', fn () => view('auth.register'))->name('register');
+
 Route::livewire('/products', 'catalog-list')->name('products.index');
 Route::livewire('/products/{slug}', 'product-detail')->name('products.show');
 Route::livewire('/cart', 'cart-page')->name('cart.page');

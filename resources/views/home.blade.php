@@ -5,7 +5,7 @@
         style="background-image: url('{{ asset('images/banners/banner-10.jpg') }}')"
         aria-label="{{ __('storefront.home.hero_title') }}"
     >
-        <div class="absolute inset-0 bg-silk-cream/40" aria-hidden="true"></div>
+        <div class="absolute inset-0 bg-silk-cream/30" aria-hidden="true"></div>
         <div class="relative z-10 flex max-w-3xl flex-col items-center gap-6">
             <p class="font-labelle-aurore text-accent-script text-intense-cocoa">
                 {{ __('storefront.home.hero_subtitle') }}
