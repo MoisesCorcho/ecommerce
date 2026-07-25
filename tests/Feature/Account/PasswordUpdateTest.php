@@ -27,9 +27,9 @@ class PasswordUpdateTest extends TestCase
         $this->actingAs($user);
 
         Livewire::test('profile-page')
-            ->set('currentPassword', 'CurrentPass123!')
-            ->set('newPassword', 'BrandNewPass123!')
-            ->set('newPassword_confirmation', 'BrandNewPass123!')
+            ->set('current_password', 'CurrentPass123!')
+            ->set('new_password', 'BrandNewPass123!')
+            ->set('new_password_confirmation', 'BrandNewPass123!')
             ->call('updatePassword')
             ->assertHasNoErrors();
 
@@ -43,13 +43,27 @@ class PasswordUpdateTest extends TestCase
         $this->actingAs($user);
 
         Livewire::test('profile-page')
-            ->set('currentPassword', 'WrongPassword!')
-            ->set('newPassword', 'BrandNewPass123!')
-            ->set('newPassword_confirmation', 'BrandNewPass123!')
+            ->set('current_password', 'WrongPassword!')
+            ->set('new_password', 'BrandNewPass123!')
+            ->set('new_password_confirmation', 'BrandNewPass123!')
             ->call('updatePassword')
             ->assertHasErrors(['current_password']);
 
         $this->assertTrue(Hash::check('CurrentPass123!', $user->fresh()->password));
+    }
+
+    public function test_incorrect_current_password_shows_visible_feedback_in_rendered_html(): void
+    {
+        $user = User::factory()->create(['password' => Hash::make('CurrentPass123!')]);
+
+        $this->actingAs($user);
+
+        Livewire::test('profile-page')
+            ->set('current_password', 'WrongPassword!')
+            ->set('new_password', 'BrandNewPass123!')
+            ->set('new_password_confirmation', 'BrandNewPass123!')
+            ->call('updatePassword')
+            ->assertSee(__('account.errors.current_password_incorrect'));
     }
 
     public function test_new_password_without_matching_confirmation_is_rejected(): void
@@ -59,9 +73,9 @@ class PasswordUpdateTest extends TestCase
         $this->actingAs($user);
 
         Livewire::test('profile-page')
-            ->set('currentPassword', 'CurrentPass123!')
-            ->set('newPassword', 'BrandNewPass123!')
-            ->set('newPassword_confirmation', 'DoesNotMatch!')
+            ->set('current_password', 'CurrentPass123!')
+            ->set('new_password', 'BrandNewPass123!')
+            ->set('new_password_confirmation', 'DoesNotMatch!')
             ->call('updatePassword')
             ->assertHasErrors(['new_password']);
 

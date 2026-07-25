@@ -1,5 +1,7 @@
 <div class="py-12 lg:py-16">
     <div class="mx-auto w-full max-w-2xl space-y-10 px-4">
+        @include('components.partials.account-nav', ['active' => 'profile'])
+
         <div>
             <h1 class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
                 {{ __('account.profile.title') }}
@@ -65,24 +67,24 @@
 
             <form wire:submit="updatePassword" class="mt-6 grid grid-cols-1 gap-5">
                 @include('components.checkout-page.partials.text-field', [
-                    'field' => 'currentPassword',
+                    'field' => 'current_password',
                     'label' => 'account.password.current',
                     'type' => 'password',
-                    'wireModel' => 'wire:model="currentPassword"',
+                    'wireModel' => 'wire:model="current_password"',
                 ])
 
                 @include('components.checkout-page.partials.text-field', [
-                    'field' => 'newPassword',
+                    'field' => 'new_password',
                     'label' => 'account.password.new',
                     'type' => 'password',
-                    'wireModel' => 'wire:model="newPassword"',
+                    'wireModel' => 'wire:model="new_password"',
                 ])
 
                 @include('components.checkout-page.partials.text-field', [
-                    'field' => 'newPassword_confirmation',
+                    'field' => 'new_password_confirmation',
                     'label' => 'account.password.confirmation',
                     'type' => 'password',
-                    'wireModel' => 'wire:model="newPassword_confirmation"',
+                    'wireModel' => 'wire:model="new_password_confirmation"',
                 ])
 
                 <div>

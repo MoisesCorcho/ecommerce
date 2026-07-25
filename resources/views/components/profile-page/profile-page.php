@@ -19,11 +19,11 @@ new #[Layout('layouts.storefront'), Title('Leen Handbags | Mi perfil')] class ex
 
     public string $phone = '';
 
-    public string $currentPassword = '';
+    public string $current_password = '';
 
-    public string $newPassword = '';
+    public string $new_password = '';
 
-    public string $newPassword_confirmation = '';
+    public string $new_password_confirmation = '';
 
     public ?string $profileMessage = null;
 
@@ -65,14 +65,14 @@ new #[Layout('layouts.storefront'), Title('Leen Handbags | Mi perfil')] class ex
         $this->passwordMessage = null;
 
         try {
-            $action(Auth::user(), $this->currentPassword, $this->newPassword, $this->newPassword_confirmation);
+            $action(Auth::user(), $this->current_password, $this->new_password, $this->new_password_confirmation);
         } catch (ValidationException $e) {
             $this->addFieldErrors($e);
 
             return;
         }
 
-        $this->reset(['currentPassword', 'newPassword', 'newPassword_confirmation']);
+        $this->reset(['current_password', 'new_password', 'new_password_confirmation']);
         $this->passwordMessage = __('account.password.updated');
     }
 
