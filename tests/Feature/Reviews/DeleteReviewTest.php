@@ -11,6 +11,7 @@ use App\Models\Review;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class DeleteReviewTest extends TestCase
@@ -49,6 +50,8 @@ class DeleteReviewTest extends TestCase
     {
         Config::set('ecommerce.admin_emails', ['admin@example.com']);
         $admin = User::factory()->create(['email' => 'admin@example.com']);
+        Role::findOrCreate('admin', 'web');
+        $admin->assignRole('admin');
         $owner = User::factory()->create();
         $review = Review::factory()->for($owner)->create();
 

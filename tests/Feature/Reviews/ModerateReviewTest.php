@@ -13,6 +13,7 @@ use App\Models\Review;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class ModerateReviewTest extends TestCase
@@ -24,11 +25,20 @@ class ModerateReviewTest extends TestCase
         parent::setUp();
         app()->setLocale('en');
         Config::set('ecommerce.admin_emails', ['admin@example.com']);
+        Role::findOrCreate('admin', 'web');
+    }
+
+    private function createAdmin(): User
+    {
+        $admin = User::factory()->create(['email' => 'admin@example.com']);
+        $admin->assignRole('admin');
+
+        return $admin;
     }
 
     public function test_admin_approve_makes_review_public_and_affects_summary(): void
     {
-        $admin = User::factory()->create(['email' => 'admin@example.com']);
+        $admin = $this->createAdmin();
         $product = Product::factory()->create();
         $review = Review::factory()->for($product)->create([
             'rating' => 4,
@@ -50,7 +60,7 @@ class ModerateReviewTest extends TestCase
 
     public function test_admin_unapprove_removes_from_public_summary(): void
     {
-        $admin = User::factory()->create(['email' => 'admin@example.com']);
+        $admin = $this->createAdmin();
         $product = Product::factory()->create();
         $review = Review::factory()->for($product)->approved()->create(['rating' => 5]);
 

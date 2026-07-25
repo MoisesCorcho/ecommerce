@@ -146,6 +146,7 @@ Do not use enums for admin-managed catalogs that change at runtime—those belon
 - Honor interface contracts (Liskov): implementors must not surprise callers with stronger preconditions or weaker guarantees.
 - PHPDoc is required when it adds meaning: non-obvious purpose, `@throws`, array shapes, generics, side effects.
 - Forbid PHPDoc that only restates native types (e.g. `@param int $id` on `int $id`).
+- Comments (inline and PHPDoc) are always in **English**, and exist only to document non-obvious behavior for future readers (invariants, gotchas, `@throws`, workarounds tied to a specific constraint). Never write a comment that narrates a change, fix, or decision ("removed X because Y", "this used to do Z") — that explanation belongs in the commit message or the chat with the user, not in the code.
 
 ## Cross-cutting rules
 
@@ -170,6 +171,7 @@ Operator-facing UI and domain validation messages use Laravel localization. No t
 | Filament chrome | Built-in package translations follow app locale — do not publish unless overriding one string |
 | Content / DB | Product names multi-language etc. are **out of scope** of this pattern (separate decision later) |
 | Tests | Prefer asserting validation keys or set a fixed locale (`App::setLocale('en')`) when asserting message text |
+| Tone (`es`) | Neutral/tuteo only ("tu", "verifica", "ingresa"). **Never voseo** ("vos", "tenés", "verificá", "ingresá", "hacé") — applies to all `lang/es/*.php` copy, not just new files |
 
 Scaffold framework files with `php artisan lang:publish`. Add only the domain files the feature needs.
 

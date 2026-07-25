@@ -1,6 +1,6 @@
 # F08 — Auth (autenticación de cliente storefront)
 
-> **Estado:** Specs en progreso
+> **Estado:** Completa
 > **ID:** F08 · **Slug:** `08-auth`
 > **Prerequisitos:** F01 (catálogo), F02 (cuentas — admin) — ver [`01-product-and-roadmap.md`](../../_global/01-product-and-roadmap.md)
 > **Desbloquea:** F09 (cuenta/perfil del comprador), F10 (wishlist — requiere usuario identificado)

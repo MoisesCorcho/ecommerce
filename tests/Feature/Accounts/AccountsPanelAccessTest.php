@@ -7,6 +7,7 @@ namespace Tests\Feature\Accounts;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AccountsPanelAccessTest extends TestCase
@@ -20,6 +21,8 @@ class AccountsPanelAccessTest extends TestCase
         $admin = User::factory()->create([
             'email' => 'admin@example.com',
         ]);
+        Role::findOrCreate('admin', 'web');
+        $admin->assignRole('admin');
 
         $this->actingAs($admin)
             ->get('/admin/users')

@@ -2,14 +2,12 @@
 
 namespace App\Providers;
 
-use App\Listeners\Cart\MergeGuestCartOnLoginListener;
-use Illuminate\Auth\Events\Login;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,7 +24,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Event::listen(Login::class, MergeGuestCartOnLoginListener::class);
+        Password::defaults(function () {
+            $rule = Password::min(10)->letters()->numbers();
+
+            return $this->app->isProduction() ? $rule->uncompromised() : $rule;
+        });
 
         Blade::anonymousComponentPath(resource_path('views/layouts'), 'layouts');
         // Start hosted checkout — abuse control; not a substitute for authz.
