@@ -1,5 +1,7 @@
 <div class="py-12 lg:py-16">
     <div class="mx-auto w-full max-w-3xl space-y-8 px-4">
+        @include('components.partials.account-nav', ['active' => 'orders'])
+
         <div>
             <h1 class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
                 {{ __('account.orders.title') }}

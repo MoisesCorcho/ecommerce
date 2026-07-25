@@ -21,6 +21,17 @@ class ProfilePageTest extends TestCase
         app()->setLocale('en');
     }
 
+    public function test_account_sub_nav_links_to_every_section(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Livewire::test('profile-page')
+            ->assertSeeHtml(route('profile.addresses'))
+            ->assertSeeHtml(route('profile.orders'))
+            ->assertSeeHtml(route('profile.reviews'));
+    }
+
     public function test_valid_edit_updates_name_and_phone(): void
     {
         $user = User::factory()->create(['name' => 'Old Name', 'phone' => '3000000000']);

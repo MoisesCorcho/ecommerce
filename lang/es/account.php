@@ -13,6 +13,14 @@ return [
         'current_password_incorrect' => 'Tu contraseña actual es incorrecta.',
     ],
 
+    'nav' => [
+        'label' => 'Secciones de la cuenta',
+        'profile' => 'Perfil',
+        'addresses' => 'Direcciones',
+        'orders' => 'Mis pedidos',
+        'reviews' => 'Mis reseñas',
+    ],
+
     'profile' => [
         'title' => 'Mi cuenta',
         'subtitle' => 'Administra tu información personal y tu contraseña.',

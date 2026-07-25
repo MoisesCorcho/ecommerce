@@ -1,5 +1,7 @@
 <div class="py-12 lg:py-16">
     <div class="mx-auto w-full max-w-2xl space-y-8 px-4">
+        @include('components.partials.account-nav', ['active' => 'addresses'])
+
         <div class="flex items-center justify-between">
             <div>
                 <h1 class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">

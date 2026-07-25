@@ -2,6 +2,8 @@
     <div class="py-8 lg:py-12">
         <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
             <div class="mx-auto max-w-2xl">
+                @include('components.partials.account-nav', ['active' => 'orders'])
+
                 <a
                     href="{{ route('profile.orders') }}"
                     class="text-sm font-medium text-intense-cocoa underline underline-offset-2 transition-colors hover:text-soft-gold"
