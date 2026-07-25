@@ -7,7 +7,7 @@
 **Alcance DoD:** perfil (datos+password+email re-verify), libreta de direcciones, mis pedidos (listado paid+ y detalle), mis reseñas (listado+editar+eliminar), ownership en las 4 áreas, i18n, tests.
 **Fuera de DoD:** eliminación de cuenta, wishlist (F10), login social/2FA (ya excluidos en F08).
 
-**Estado de implementación:** En progreso — Fases 1 (Domain) y 2 (Storefront) completas. Fases 3-6 pendientes.
+**Estado de implementación:** En progreso — Fases 1 (Domain), 2 (Storefront) y 3 (Rutas) completas. Fases 4-6 pendientes.
 
 Sin fase de esquema: no hay migraciones nuevas (fundación de dominio ya completa).
 
@@ -35,7 +35,7 @@ Sin fase de esquema: no hay migraciones nuevas (fundación de dominio ya complet
 
 ## 3. Integración: rutas
 
-- [ ] 3.1 `routes/web.php`: agregar `profile` (`/profile`), `profile.addresses` (`/profile/addresses`), `profile.orders` (`/profile/orders`), `profile.orders.show` (`/profile/orders/{order}`, `ProfileOrderDetailController`), `profile.reviews` (`/profile/reviews`) dentro del grupo `Route::middleware('auth')` ya existente en `routes/web.php`. _(cubre R1, R3, R7, R8, R9, R17)_
+- [x] 3.1 `routes/web.php`: agregar `profile` (`/profile`), `profile.addresses` (`/profile/addresses`), `profile.orders` (`/profile/orders`), `profile.orders.show` (`/profile/orders/{order}`, `ProfileOrderDetailController`), `profile.reviews` (`/profile/reviews`) dentro del grupo `Route::middleware('auth')` ya existente en `routes/web.php`. _(cubre R1, R3, R7, R8, R9, R17)_
 
 ## 4. i18n
 
