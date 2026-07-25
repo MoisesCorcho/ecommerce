@@ -11,7 +11,7 @@ class AddressPolicy
 {
     public function view(User $user, Address $address): bool
     {
-        return (int) $address->user_id === (int) $user->id;
+        return $this->isAdmin($user) || (int) $address->user_id === (int) $user->id;
     }
 
     public function create(User $user): bool
@@ -21,11 +21,16 @@ class AddressPolicy
 
     public function update(User $user, Address $address): bool
     {
-        return (int) $address->user_id === (int) $user->id;
+        return $this->isAdmin($user) || (int) $address->user_id === (int) $user->id;
     }
 
     public function delete(User $user, Address $address): bool
     {
-        return (int) $address->user_id === (int) $user->id;
+        return $this->isAdmin($user) || (int) $address->user_id === (int) $user->id;
+    }
+
+    private function isAdmin(User $user): bool
+    {
+        return $user->hasRole('admin');
     }
 }
