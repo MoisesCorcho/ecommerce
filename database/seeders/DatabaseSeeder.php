@@ -22,12 +22,15 @@ class DatabaseSeeder extends Seeder
     {
         User::factory()->create([
             'name' => 'Admin',
-            'email' => 'admin@example.com',
+            'email' => 'admin@admin.com',
         ]);
 
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        $this->call(RoleAndAdminBackfillSeeder::class);
+        $this->call(ProductSeeder::class);
     }
 }

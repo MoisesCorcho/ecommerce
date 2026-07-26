@@ -14,6 +14,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
@@ -86,6 +87,18 @@ class CategoryResource extends Resource
                             ->preload()
                             ->nullable()
                             ->helperText(__('categories.helpers.parent_optional')),
+                        FileUpload::make('image_path')
+                            ->label(__('categories.fields.image'))
+                            ->disk('public')
+                            ->directory('categories')
+                            ->visibility('public')
+                            ->image()
+                            ->imagePreviewHeight('120')
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->maxSize(5120)
+                            ->nullable()
+                            ->helperText(__('categories.helpers.image'))
+                            ->columnSpanFull(),
                     ])
                     ->columnSpanFull(),
             ]);

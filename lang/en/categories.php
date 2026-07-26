@@ -22,6 +22,7 @@ return [
         'slug' => 'Slug',
         'parent' => 'Parent',
         'parent_category' => 'Parent category',
+        'image' => 'Image',
         'products_count' => 'Products',
         'sort_order' => 'Order',
         'created_at' => 'Created',
@@ -36,6 +37,7 @@ return [
 
     'helpers' => [
         'parent_optional' => 'Optional. Leave empty for a root-level category.',
+        'image' => 'Optional. Shown in the categories section on the Home page. Falls back to an initial when empty.',
     ],
 
     'actions' => [

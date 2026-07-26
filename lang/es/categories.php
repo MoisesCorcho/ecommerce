@@ -22,6 +22,7 @@ return [
         'slug' => 'Slug',
         'parent' => 'Padre',
         'parent_category' => 'Categoría padre',
+        'image' => 'Imagen',
         'products_count' => 'Productos',
         'sort_order' => 'Orden',
         'created_at' => 'Creada',
@@ -36,6 +37,7 @@ return [
 
     'helpers' => [
         'parent_optional' => 'Opcional. Deja vacío para una categoría de nivel raíz.',
+        'image' => 'Opcional. Se muestra en la sección de categorías del Inicio. Si queda vacía, se muestra una inicial.',
     ],
 
     'actions' => [
