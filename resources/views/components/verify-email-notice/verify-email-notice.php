@@ -3,14 +3,18 @@
 use App\Support\Auth\VerifyEmailResendRateLimiter;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Layout('layouts.storefront'), Title('Leen Handbags | Verifica tu email')] class extends Component
+new #[Layout('layouts.storefront')] class extends Component
 {
     public bool $resent = false;
 
     public ?string $errorMessage = null;
+
+    public function render()
+    {
+        return $this->view()->title('Leen Handbags | '.__('auth.verify_email.title'));
+    }
 
     public function mount(): mixed
     {

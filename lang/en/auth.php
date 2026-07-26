@@ -8,6 +8,8 @@ return [
 
     'verify_email_required' => 'Please verify your email address before continuing.',
 
+    'back_to_store' => 'Back to store',
+
     'fields' => [
         'name' => 'Name',
         'email' => 'Email',

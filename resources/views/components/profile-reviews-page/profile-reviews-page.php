@@ -11,13 +11,17 @@ use App\Models\Review;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-new #[Layout('layouts.storefront'), Title('Leen Handbags | Mis reseñas')] class extends Component
+new #[Layout('layouts.storefront')] class extends Component
 {
     use WithPagination;
+
+    public function render()
+    {
+        return $this->view()->title('Leen Handbags | '.__('account.reviews.title'));
+    }
 
     public ?int $editingId = null;
 

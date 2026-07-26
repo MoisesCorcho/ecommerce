@@ -3,10 +3,9 @@
 use Illuminate\Support\Facades\Password;
 use Laravel\Fortify\Contracts\ResetsUserPasswords;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Layout('layouts.storefront'), Title('Leen Handbags | Nueva contraseña')] class extends Component
+new #[Layout('layouts.storefront')] class extends Component
 {
     public string $token = '';
 
@@ -17,6 +16,11 @@ new #[Layout('layouts.storefront'), Title('Leen Handbags | Nueva contraseña')] 
     public string $password_confirmation = '';
 
     public ?string $errorMessage = null;
+
+    public function render()
+    {
+        return $this->view()->title('Leen Handbags | '.__('auth.reset_password.title'));
+    }
 
     public function mount(string $token): void
     {

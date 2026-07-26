@@ -13,12 +13,19 @@ return [
         'current_password_incorrect' => 'Tu contraseña actual es incorrecta.',
     ],
 
+    'breadcrumb' => [
+        'home' => 'Inicio',
+        'account' => 'Mi cuenta',
+    ],
+
     'nav' => [
         'label' => 'Secciones de la cuenta',
         'profile' => 'Perfil',
         'addresses' => 'Direcciones',
         'orders' => 'Mis pedidos',
         'reviews' => 'Mis reseñas',
+        'logout' => 'Cerrar sesión',
+        'secondary_label' => 'Cuenta',
     ],
 
     'profile' => [
@@ -27,6 +34,7 @@ return [
         'section_title' => 'Información personal',
         'submit' => 'Guardar cambios',
         'updated' => 'Tu perfil se actualizó. Si cambiaste tu correo, revisa tu bandeja de entrada para verificarlo.',
+        'greeting' => 'Bienvenido/a de nuevo, :name',
     ],
 
     'password' => [
@@ -71,6 +79,8 @@ return [
         'title' => 'Mis pedidos',
         'subtitle' => 'Pedidos que ya fueron pagados o que están en un estado posterior.',
         'empty' => 'Todavía no tienes pedidos.',
+        'empty_title' => 'Aún no tienes pedidos',
+        'empty_cta' => 'Explorar productos',
         'back_to_list' => '← Volver a mis pedidos',
         'shipping_address' => 'Dirección de envío',
         'detail_title' => 'Leen Handbags | Detalle del pedido',
@@ -80,6 +90,9 @@ return [
         'title' => 'Mis reseñas',
         'subtitle' => 'Administra las reseñas que has escrito.',
         'empty' => 'Todavía no has escrito ninguna reseña.',
+        'empty_title' => 'Aún no tienes reseñas',
+        'empty_cta' => 'Explorar productos',
+        'rating_aria' => ':rating de 5 estrellas',
         'save' => 'Guardar reseña',
         'cancel' => 'Cancelar',
         'edit' => 'Editar',

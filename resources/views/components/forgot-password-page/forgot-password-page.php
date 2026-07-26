@@ -3,16 +3,20 @@
 use App\Support\Auth\PasswordResetRequestRateLimiter;
 use Illuminate\Support\Facades\Password;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Layout('layouts.storefront'), Title('Leen Handbags | Restablecer contraseña')] class extends Component
+new #[Layout('layouts.storefront')] class extends Component
 {
     public string $email = '';
 
     public ?string $statusMessage = null;
 
     public ?string $errorMessage = null;
+
+    public function render()
+    {
+        return $this->view()->title('Leen Handbags | '.__('auth.forgot_password.title'));
+    }
 
     public function sendResetLink(PasswordResetRequestRateLimiter $limiter): void
     {

@@ -1,4 +1,4 @@
-<x-layouts::storefront title="Leen Handbags | Order detail">
+<x-layouts::storefront :title="'Leen Handbags | '.$title">
     <div class="py-8 lg:py-12">
         <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
             <div class="mx-auto max-w-xl text-center" data-order-thank-you>

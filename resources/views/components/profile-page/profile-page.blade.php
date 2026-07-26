@@ -1,12 +1,13 @@
-<div class="py-12 lg:py-16">
-    <div class="mx-auto w-full max-w-2xl space-y-10 px-4">
-        @include('components.partials.account-nav', ['active' => 'profile'])
-
+<x-partials.account-shell active="profile">
+    <div class="w-full max-w-2xl space-y-10">
         <div>
             <h1 class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
                 {{ __('account.profile.title') }}
             </h1>
             <p class="mt-2 text-sm text-intense-cocoa/70">
+                {{ __('account.profile.greeting', ['name' => auth()->user()->name]) }}
+            </p>
+            <p class="mt-1 text-sm text-intense-cocoa/70">
                 {{ __('account.profile.subtitle') }}
             </p>
         </div>
@@ -56,7 +57,7 @@
             </form>
         </section>
 
-        <section class="bg-soft-sand p-8 shadow-ambient">
+        <section id="password" class="bg-soft-sand p-8 shadow-ambient">
             <h2 class="text-lg font-semibold text-intense-cocoa">{{ __('account.password.section_title') }}</h2>
 
             @if ($passwordMessage)
@@ -100,4 +101,4 @@
             </form>
         </section>
     </div>
-</div>
+</x-partials.account-shell>

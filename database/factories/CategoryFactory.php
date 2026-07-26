@@ -23,6 +23,7 @@ class CategoryFactory extends Factory
         return [
             'name' => Str::title($name),
             'slug' => Str::slug($name),
+            'image_path' => null,
             'parent_id' => null,
             'sort_order' => fake()->numberBetween(0, 100),
         ];

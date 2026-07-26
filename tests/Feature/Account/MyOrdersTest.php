@@ -44,7 +44,19 @@ class MyOrdersTest extends TestCase
                     && in_array($delivered->id, $ids, true)
                     && ! in_array($pending->id, $ids, true)
                     && ! in_array($cancelled->id, $ids, true);
-            });
+            })
+            ->assertDontSee(__('account.orders.empty_title'));
+    }
+
+    public function test_zero_orders_shows_empty_state(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Livewire::test('profile-orders-page')
+            ->assertSee(__('account.orders.empty_title'))
+            ->assertSeeHtml(route('products.index'))
+            ->assertDontSee('data-order-card');
     }
 
     public function test_listing_excludes_orders_from_other_users(): void

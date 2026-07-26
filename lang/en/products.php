@@ -58,6 +58,7 @@ return [
         'file' => 'File',
         'primary' => 'Primary',
         'primary_image' => 'Primary image',
+        'image_variant' => 'Variant',
     ],
 
     'placeholders' => [
@@ -84,6 +85,7 @@ return [
         'image_file' => 'JPG, PNG or WebP · max. 5 MB',
         'primary_image' => 'When enabled, other images are unmarked.',
         'primary_image_default' => 'Only one per product: enabling it unmarks the others.',
+        'image_variant' => 'Leave empty to use this image for every color. Only saved variants appear here — save new variants first if you don\'t see one.',
     ],
 
     'status' => [

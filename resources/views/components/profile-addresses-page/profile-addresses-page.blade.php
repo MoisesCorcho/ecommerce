@@ -1,26 +1,12 @@
-<div class="py-12 lg:py-16">
-    <div class="mx-auto w-full max-w-2xl space-y-8 px-4">
-        @include('components.partials.account-nav', ['active' => 'addresses'])
-
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
-                    {{ __('account.addresses.title') }}
-                </h1>
-                <p class="mt-2 text-sm text-intense-cocoa/70">
-                    {{ __('account.addresses.subtitle') }}
-                </p>
-            </div>
-
-            @unless ($showForm)
-                <button
-                    type="button"
-                    wire:click="createNew"
-                    class="h-11 bg-intense-cocoa px-6 text-label-caps font-semibold uppercase tracking-widest text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa"
-                >
-                    {{ __('account.addresses.add_new') }}
-                </button>
-            @endunless
+<x-partials.account-shell active="addresses">
+    <div class="w-full max-w-4xl space-y-8">
+        <div>
+            <h1 class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
+                {{ __('account.addresses.title') }}
+            </h1>
+            <p class="mt-2 text-sm text-intense-cocoa/70">
+                {{ __('account.addresses.subtitle') }}
+            </p>
         </div>
 
         @if ($statusMessage)
@@ -90,10 +76,9 @@
                         'wireModel' => 'wire:model="postalCode"',
                     ])
 
-                    <label class="flex items-center gap-2 text-sm text-intense-cocoa/80 sm:col-span-2">
-                        <input type="checkbox" wire:model="isDefault" class="border-intense-cocoa/40">
+                    <x-checkbox id="is_default" wire:model="isDefault" wrapper-class="sm:col-span-2">
                         {{ __('account.addresses.fields.is_default') }}
-                    </label>
+                    </x-checkbox>
 
                     <div class="flex gap-3 sm:col-span-2">
                         <button
@@ -116,13 +101,18 @@
             </section>
         @endif
 
-        <div class="space-y-4">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
             @forelse ($addresses as $address)
-                <div wire:key="address-{{ $address->id }}" class="bg-soft-sand p-6 shadow-ambient">
-                    <div class="flex items-start justify-between gap-4">
-                        <div>
+                <div wire:key="address-{{ $address->id }}" data-address-card="{{ $address->id }}" class="bg-soft-sand p-6 shadow-ambient">
+                    <div class="flex items-start gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mt-0.5 h-6 w-6 shrink-0 text-intense-cocoa/60" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                        </svg>
+
+                        <div class="min-w-0 flex-1">
                             @if ($address->is_default)
-                                <span class="mb-2 inline-block bg-intense-cocoa px-2 py-1 text-xs font-semibold uppercase tracking-widest text-silk-cream">
+                                <span class="mb-2 inline-flex items-center border border-intense-cocoa px-2 py-1 text-xs font-semibold uppercase tracking-widest text-intense-cocoa">
                                     {{ __('account.addresses.default_badge') }}
                                 </span>
                             @endif
@@ -135,30 +125,42 @@
                                 {{ $address->city }}, {{ $address->state }}, {{ $address->country }} {{ $address->postal_code }}
                             </p>
                         </div>
+                    </div>
 
-                        <div class="flex shrink-0 flex-col items-end gap-2 text-sm">
-                            <button type="button" wire:click="edit({{ $address->id }})" class="text-intense-cocoa underline underline-offset-2 hover:text-soft-gold">
-                                {{ __('account.addresses.edit') }}
+                    <div class="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+                        <button type="button" wire:click="edit({{ $address->id }})" class="text-intense-cocoa underline underline-offset-2 hover:text-soft-gold">
+                            {{ __('account.addresses.edit') }}
+                        </button>
+                        @unless ($address->is_default)
+                            <button type="button" wire:click="makeDefault({{ $address->id }})" class="text-intense-cocoa underline underline-offset-2 hover:text-soft-gold">
+                                {{ __('account.addresses.make_default') }}
                             </button>
-                            @unless ($address->is_default)
-                                <button type="button" wire:click="makeDefault({{ $address->id }})" class="text-intense-cocoa underline underline-offset-2 hover:text-soft-gold">
-                                    {{ __('account.addresses.make_default') }}
-                                </button>
-                            @endunless
-                            <button
-                                type="button"
-                                wire:click="delete({{ $address->id }})"
-                                wire:confirm="{{ __('account.addresses.confirm_delete') }}"
-                                class="text-error underline underline-offset-2 hover:text-error/70"
-                            >
-                                {{ __('account.addresses.delete') }}
-                            </button>
-                        </div>
+                        @endunless
+                        <button
+                            type="button"
+                            wire:click="delete({{ $address->id }})"
+                            wire:confirm="{{ __('account.addresses.confirm_delete') }}"
+                            class="text-error underline underline-offset-2 hover:text-error/70"
+                        >
+                            {{ __('account.addresses.delete') }}
+                        </button>
                     </div>
                 </div>
             @empty
-                <p class="text-sm text-intense-cocoa/70">{{ __('account.addresses.empty') }}</p>
             @endforelse
+
+            @unless ($showForm)
+                <button
+                    type="button"
+                    wire:click="createNew"
+                    class="flex min-h-[180px] flex-col items-center justify-center gap-2 border-2 border-dashed border-intense-cocoa/40 p-6 text-sm font-semibold text-intense-cocoa transition-colors duration-200 hover:border-intense-cocoa hover:bg-soft-sand/40"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-8 w-8" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    {{ __('account.addresses.add_new') }}
+                </button>
+            @endunless
         </div>
     </div>
-</div>
+</x-partials.account-shell>

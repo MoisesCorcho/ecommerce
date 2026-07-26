@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable([
     'name',
     'slug',
+    'image_path',
     'parent_id',
     'sort_order',
 ])]

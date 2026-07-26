@@ -78,6 +78,7 @@ class EditProduct extends EditRecord
                 return [
                     'id' => $image->id,
                     'path' => $image->path,
+                    'product_variant_id' => $image->product_variant_id,
                     'is_primary' => $image->is_primary,
                 ];
             })

@@ -9,13 +9,16 @@ use App\Actions\Products\UpdateProductAction;
 use App\DTOs\Products\UpsertProductDTO;
 use App\Enums\Commerce\CurrencyEnum;
 use App\Filament\Resources\Products\Pages\CreateProduct;
+use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Resources\Products\Pages\ListProducts;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 use Livewire\Livewire;
@@ -360,6 +363,86 @@ class ProductAdminTest extends TestCase
             ->assertFormSet([
                 'slug' => 'slug-personalizado',
             ]);
+    }
+
+    public function test_admin_can_tag_a_product_image_to_a_specific_variant(): void
+    {
+        Storage::fake('public');
+        $this->actingAsAdmin();
+        $category = Category::factory()->create();
+
+        $product = app(CreateProductAction::class)(UpsertProductDTO::fromArray([
+            'category_id' => $category->id,
+            'name' => 'Bicolor Bag',
+            'is_active' => true,
+            'is_preorder' => false,
+            'variants' => [
+                [
+                    'sku' => 'BICOLOR-NEGRO',
+                    'color' => 'Negro',
+                    'stock' => 5,
+                    'is_active' => true,
+                    'prices' => [
+                        ['currency' => 'COP', 'price' => 500_000],
+                    ],
+                ],
+            ],
+            'images' => [
+                ['path' => 'products/bicolor-negro.jpg', 'sort_order' => 0, 'is_primary' => true],
+            ],
+        ]));
+
+        $variant = $product->variants->first();
+        $this->assertNotNull($variant);
+        $image = $product->images->first();
+        $this->assertNotNull($image);
+
+        $component = Livewire::test(EditProduct::class, ['record' => $product->id]);
+
+        /** @var array<string, array<string, mixed>> $images */
+        $images = $component->get('data.images');
+        $this->assertIsArray($images);
+        $imageKey = null;
+        foreach ($images as $key => $row) {
+            if ((int) ($row['id'] ?? null) === $image->id) {
+                $imageKey = $key;
+            }
+        }
+        $this->assertNotNull($imageKey);
+
+        $component->assertFormFieldExists("images.{$imageKey}.product_variant_id");
+
+        $component
+            ->fillForm([
+                'images' => [
+                    $imageKey => array_merge($images[$imageKey], [
+                        'path' => UploadedFile::fake()->image('bicolor-negro-updated.jpg'),
+                        'product_variant_id' => $variant->id,
+                    ]),
+                ],
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('product_images', [
+            'id' => $image->id,
+            'product_id' => $product->id,
+            'product_variant_id' => $variant->id,
+        ]);
+
+        // Reloading the edit page must reflect the previously saved tag, not blank it out.
+        $reloaded = Livewire::test(EditProduct::class, ['record' => $product->id]);
+
+        /** @var array<string, array<string, mixed>> $reloadedImages */
+        $reloadedImages = $reloaded->get('data.images');
+        $reloadedKey = null;
+        foreach ($reloadedImages as $key => $row) {
+            if ((int) ($row['id'] ?? null) === $image->id) {
+                $reloadedKey = $key;
+            }
+        }
+        $this->assertNotNull($reloadedKey);
+        $this->assertSame($variant->id, (int) ($reloadedImages[$reloadedKey]['product_variant_id'] ?? null));
     }
 
     public function test_only_one_product_image_can_be_primary_in_form(): void

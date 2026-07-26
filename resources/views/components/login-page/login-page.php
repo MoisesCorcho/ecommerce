@@ -6,10 +6,9 @@ use Illuminate\Support\Facades\Session;
 use Laravel\Fortify\Fortify;
 use Laravel\Fortify\LoginRateLimiter;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Layout('layouts.storefront'), Title('Leen Handbags | Iniciar sesión')] class extends Component
+new #[Layout('layouts.auth')] class extends Component
 {
     public string $email = '';
 
@@ -18,6 +17,11 @@ new #[Layout('layouts.storefront'), Title('Leen Handbags | Iniciar sesión')] cl
     public bool $remember = false;
 
     public ?string $errorMessage = null;
+
+    public function render()
+    {
+        return $this->view()->title('Leen Handbags | '.__('auth.login.title'));
+    }
 
     public function login(LoginRateLimiter $limiter, Request $request): mixed
     {
