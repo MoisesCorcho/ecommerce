@@ -50,6 +50,19 @@ class ProductDetailReviewsTest extends TestCase
         $this->assertDatabaseHas('reviews', ['id' => $approved->id, 'is_approved' => true]);
     }
 
+    public function test_no_reviews_empty_state_renders_only_once(): void
+    {
+        $product = $this->createPublishedProduct('Quiet Bag', 'quiet-bag');
+
+        $html = Livewire::test('product-detail', ['slug' => 'quiet-bag'])->html();
+
+        $this->assertSame(
+            1,
+            substr_count($html, __('reviews.empty.no_reviews')),
+            'The "no reviews yet" copy should render exactly once, not once in the summary line and again in the list empty state.',
+        );
+    }
+
     public function test_eligible_buyer_can_create_review_from_pdp(): void
     {
         $user = User::factory()->create();

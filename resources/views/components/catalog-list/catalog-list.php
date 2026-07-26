@@ -27,7 +27,7 @@ new #[Layout('layouts.storefront')] class extends Component
 
     public function render()
     {
-        return $this->view()->title('Leen Handbags | '.__('storefront.shop.title'));
+        return $this->view();
     }
 
     public string $currency;

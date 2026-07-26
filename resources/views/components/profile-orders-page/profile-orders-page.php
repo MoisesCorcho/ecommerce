@@ -14,7 +14,7 @@ new #[Layout('layouts.storefront')] class extends Component
 
     public function render()
     {
-        return $this->view()->title('Leen Handbags | '.__('account.orders.title'));
+        return $this->view();
     }
 
     public function with(): array

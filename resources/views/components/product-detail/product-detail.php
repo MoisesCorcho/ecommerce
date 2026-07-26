@@ -7,6 +7,7 @@ use App\Actions\Reviews\CreateReviewAction;
 use App\Actions\Reviews\DeleteReviewAction;
 use App\Actions\Reviews\GetProductReviewsSummaryAction;
 use App\Actions\Reviews\UpdateReviewAction;
+use App\Actions\Wishlist\ToggleWishlistAction;
 use App\DTOs\Cart\AddCartItemDTO;
 use App\DTOs\Reviews\UpsertReviewDTO;
 use App\Enums\Commerce\CurrencyEnum;
@@ -22,7 +23,6 @@ use App\Models\CartItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Review;
-use App\Models\Wishlist;
 use App\Services\Reviews\ReviewEligibilityService;
 use App\Support\Cart\ResolvesCurrentCart;
 use Illuminate\Support\Collection;
@@ -115,7 +115,7 @@ new #[Layout('layouts.storefront')] class extends Component
         $this->quantity = 1;
     }
 
-    public function toggleFavorite(): void
+    public function toggleFavorite(ToggleWishlistAction $toggleWishlist): void
     {
         if (Auth::guest()) {
             $this->redirect(route('login'));
@@ -123,23 +123,12 @@ new #[Layout('layouts.storefront')] class extends Component
             return;
         }
 
-        $user = Auth::user();
-        $product = $this->findPublishedProduct(CurrencyEnum::from($this->currency));
+        $variant = ProductVariant::query()->active()->findOrFail($this->selectedVariantId);
+        $saved = $toggleWishlist(Auth::user(), $variant);
 
-        $existing = Wishlist::where('user_id', $user->id)
-            ->where('product_id', $product->id)
-            ->first();
-
-        if ($existing) {
-            $existing->delete();
-            $this->dispatch('toast', message: __('storefront.products.removed_from_favorites'));
-        } else {
-            Wishlist::create([
-                'user_id' => $user->id,
-                'product_id' => $product->id,
-            ]);
-            $this->dispatch('toast', message: __('storefront.products.added_to_favorites'));
-        }
+        $this->dispatch('toast', message: $saved
+            ? __('storefront.products.added_to_favorites')
+            : __('storefront.products.removed_from_favorites'));
     }
 
     public function buyNow(): void
@@ -320,7 +309,7 @@ new #[Layout('layouts.storefront')] class extends Component
     {
         $product = $this->findPublishedProduct(CurrencyEnum::from($this->currency));
 
-        return $this->view()->title('Leen Handbags | '.$product->name);
+        return $this->view();
     }
 
     public function with(): array
@@ -360,7 +349,7 @@ new #[Layout('layouts.storefront')] class extends Component
             'pricedVariants' => $product->variants,
             'selectedVariant' => $this->resolveSelectedVariant($product, $currency),
             'relatedProducts' => $this->fetchRelatedProducts($product, $currency),
-            'isFavorited' => $this->checkIsFavorited($product),
+            'isFavorited' => $this->checkIsFavorited(),
             'availableColors' => $this->collectAvailableColors($product, $currency),
             'availableSizes' => $this->collectAvailableSizes($product, $currency),
             'cartQuantity' => $this->getCartQuantityForVariant(),
@@ -539,15 +528,15 @@ new #[Layout('layouts.storefront')] class extends Component
             ->get();
     }
 
-    private function checkIsFavorited(Product $product): bool
+    private function checkIsFavorited(): bool
     {
-        if (Auth::guest()) {
+        if (Auth::guest() || $this->selectedVariantId === null) {
             return false;
         }
 
-        return Wishlist::where('user_id', Auth::id())
-            ->where('product_id', $product->id)
-            ->exists();
+        $variant = ProductVariant::query()->active()->find($this->selectedVariantId);
+
+        return $variant !== null && $variant->wishlists()->where('user_id', Auth::id())->exists();
     }
 
     private function findPublishedProduct(CurrencyEnum $currency): Product

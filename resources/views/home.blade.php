@@ -1,4 +1,4 @@
-<x-layouts::storefront :title="'Leen Handbags | '.__('storefront.nav.home')">
+<x-layouts::storefront>
     {{-- 1. Hero — static Blade (D1), ~70vh, CTA → products.index (PD-S4) --}}
     <section
         class="relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-soft-sand bg-cover bg-center px-margin-mobile py-24 text-center lg:px-margin-desktop"

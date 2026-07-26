@@ -12,6 +12,7 @@ use App\Models\Product;
 use App\Models\Review;
 use App\Models\User;
 use App\Services\Reviews\ReviewEligibilityService;
+use App\Services\Reviews\ReviewVariantService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Throwable;
@@ -20,6 +21,7 @@ class CreateReviewAction
 {
     public function __construct(
         private readonly ReviewEligibilityService $eligibilityService,
+        private readonly ReviewVariantService $variantService,
     ) {}
 
     /**
@@ -48,6 +50,8 @@ class CreateReviewAction
         }
 
         return DB::transaction(function () use ($user, $product, $dto): Review {
+            $purchasedVariants = $this->variantService->getRecentPurchasedVariants($user, $product);
+
             return Review::query()->create([
                 'product_id' => $product->id,
                 'user_id' => $user->id,
@@ -55,6 +59,7 @@ class CreateReviewAction
                 'comment' => $dto->comment,
                 'is_approved' => false,
                 'is_verified_purchase' => true,
+                'purchased_variants' => $purchasedVariants,
             ]);
         });
     }

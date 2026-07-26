@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Account;
 
+use App\Enums\Orders\OrderStatusEnum;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -107,5 +111,104 @@ class MyReviewsTest extends TestCase
             ->assertSet('errorMessage', __('reviews.errors.forbidden'));
 
         $this->assertDatabaseHas('reviews', ['id' => $review->id]);
+    }
+
+    public function test_delete_confirmation_does_not_render_native_browser_dialog(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::factory()->create();
+        Review::factory()->for($user)->for($product)->create();
+
+        $this->actingAs($user);
+
+        $html = Livewire::test('profile-reviews-page')->html();
+
+        $this->assertStringNotContainsString('wire:confirm', $html);
+    }
+
+    public function test_deleting_a_review_requires_confirming_first(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::factory()->create();
+        $review = Review::factory()->for($user)->for($product)->create();
+
+        $this->actingAs($user);
+
+        $component = Livewire::test('profile-reviews-page')
+            ->call('confirmDelete', $review->id)
+            ->assertSet('confirmingDeleteId', $review->id);
+
+        $this->assertDatabaseHas('reviews', ['id' => $review->id]);
+
+        $component->call('delete', $review->id);
+
+        $this->assertDatabaseMissing('reviews', ['id' => $review->id]);
+    }
+
+    public function test_cancelling_delete_confirmation_resets_state_without_deleting(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::factory()->create();
+        $review = Review::factory()->for($user)->for($product)->create();
+
+        $this->actingAs($user);
+
+        Livewire::test('profile-reviews-page')
+            ->call('confirmDelete', $review->id)
+            ->assertSet('confirmingDeleteId', $review->id)
+            ->call('cancelDeleteConfirmation')
+            ->assertSet('confirmingDeleteId', null);
+
+        $this->assertDatabaseHas('reviews', ['id' => $review->id]);
+    }
+
+    public function test_editing_a_review_clears_a_pending_delete_confirmation(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::factory()->create();
+        $review = Review::factory()->for($user)->for($product)->create();
+
+        $this->actingAs($user);
+
+        Livewire::test('profile-reviews-page')
+            ->call('confirmDelete', $review->id)
+            ->assertSet('confirmingDeleteId', $review->id)
+            ->call('edit', $review->id)
+            ->assertSet('confirmingDeleteId', null);
+    }
+
+    public function test_review_shows_sku_and_variant_label_of_the_purchased_variant(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::factory()->create();
+        $variant = ProductVariant::factory()->for($product)->create();
+        $review = Review::factory()->for($user)->for($product)->create();
+
+        $order = Order::factory()->for($user)->create(['status' => OrderStatusEnum::Delivered]);
+        OrderItem::factory()->for($order)->for($variant, 'productVariant')->create([
+            'sku' => 'LHB-999-TST',
+            'variant_label' => 'Rojo / M',
+        ]);
+
+        $this->actingAs($user);
+
+        Livewire::test('profile-reviews-page')
+            ->assertSee('LHB-999-TST')
+            ->assertSee('Rojo / M');
+
+        // Ensure the referenced review stays part of the fixture setup.
+        $this->assertNotNull($review->id);
+    }
+
+    public function test_review_renders_gracefully_without_a_matching_eligible_purchase(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::factory()->create();
+        Review::factory()->for($user)->for($product)->create();
+
+        $this->actingAs($user);
+
+        Livewire::test('profile-reviews-page')
+            ->assertDontSee(__('account.orders.sku_label'));
     }
 }

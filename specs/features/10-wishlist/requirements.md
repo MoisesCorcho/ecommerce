@@ -1,6 +1,6 @@
 # F10 — Wishlist
 
-> **Estado:** Specs en progreso
+> **Estado:** Completa
 > **ID:** F10 · **Slug:** `10-wishlist`
 > **Prerequisitos:** F01 (catálogo), F02 (cuentas), F08 (auth storefront) — ver [`01-product-and-roadmap.md`](../../_global/01-product-and-roadmap.md)
 > **Desbloquea:** —
@@ -12,7 +12,7 @@
 | Producto y alcance F10 | [`specs/_global/01-product-and-roadmap.md`](../../_global/01-product-and-roadmap.md) |
 | Calidad EARS / audit | [`specs/_global/02-feature-quality.md`](../../_global/02-feature-quality.md) |
 | Convenciones de código (Actions, DTOs) | `AGENTS.md` / project-conventions |
-| Esquema de dominio (ya existente, sin cambios) | `app/Models/{User,Product,Wishlist}.php`, migration `2026_07_19_184505_create_wishlists_table.php` |
+| Esquema de dominio | `app/Models/{User,Product,ProductVariant,Wishlist}.php`; base: migration `2026_07_19_184505_create_wishlists_table.php` — **migrado por D6**, ver `design.md` D-A7 |
 | UI brief de la página de listado | [`specs/ui-briefs/09-lista-de-deseados.md`](../../ui-briefs/09-lista-de-deseados.md) |
 | Requisito de cuenta identificada (ya cerrado) | `specs/features/08-auth/requirements.md` D9 |
 | Storefront existente | `resources/views/components/{product-detail,product-card,favorite-button}/`, `layouts/storefront.blade.php` |
@@ -46,7 +46,7 @@
 - Compartir wishlist — mejora futura.
 - Notificaciones de baja de precio o reingreso de stock — mejora futura.
 - Agregar todos los productos de la wishlist al carrito con una sola acción — mejora futura.
-- Cambios al esquema de datos — el modelo `Wishlist` y sus relaciones ya cubren lo necesario.
+- Selector de variante interactivo en la product card — la card sigue sin selector; favoritear desde ahí usa la variante por defecto (ver D6), igual que su botón de agregar al carrito ya existente.
 
 ---
 
@@ -59,6 +59,7 @@
 | D3 | Alcance sin cuenta | Hereda D9 de F08: la wishlist requiere usuario identificado, sin modo invitado. |
 | D4 | Producto ya no disponible | Un producto guardado que deja de ser publicable (despublicado, sin variantes con precio) se sigue listando en `/wishlist` marcado como "ya no disponible", no se oculta ni se borra automáticamente de la wishlist. |
 | D5 | Sincronización entre dispositivos | La wishlist es por cuenta (no por sesión/dispositivo); al iniciar sesión en cualquier dispositivo el comprador ve la misma lista — consecuencia directa del modelo de datos, no requiere trabajo adicional. |
+| D6 | Granularidad por variante (revierte la premisa original del UI brief) | La wishlist guarda la **variante específica** (`product_variant_id`: color/talla), no el producto genérico. Reemplaza la decisión inicial ("por producto, se ven las variantes al entrar al detalle") tras revisión visual post-implementación: el comprador espera guardar el color/talla exacto que vio, no un producto ambiguo. Requiere migración — ver `design.md` D-A7. Guardar desde la card (sin selector visible) usa la misma variante por defecto que ya usa su botón de agregar al carrito (`$product->variants->first()`), por consistencia con ese patrón ya existente. |
 
 ---
 
@@ -66,35 +67,35 @@
 
 ### Happy path
 
-### R1 — Guardar un producto en la wishlist desde la PDP
+### R1 — Guardar una variante en la wishlist desde la PDP _(revisado por D6)_
 
-CUANDO un comprador autenticado togglea el estado de favorito de un producto publicado desde su página de detalle,
-EL SISTEMA DEBE guardar ese producto en su wishlist
+CUANDO un comprador autenticado togglea el estado de favorito de la variante actualmente seleccionada de un producto publicado desde su página de detalle,
+EL SISTEMA DEBE guardar esa variante específica (color/talla) en su wishlist
 Y DEBE reflejar el nuevo estado ("guardado") de inmediato en la interfaz.
 
-### R2 — Quitar un producto de la wishlist desde la PDP
+### R2 — Quitar una variante de la wishlist desde la PDP _(revisado por D6)_
 
-CUANDO un comprador autenticado togglea el estado de favorito de un producto ya guardado desde su página de detalle,
-EL SISTEMA DEBE quitarlo de su wishlist
+CUANDO un comprador autenticado togglea el estado de favorito de la variante actualmente seleccionada, ya guardada, desde su página de detalle,
+EL SISTEMA DEBE quitar esa variante de su wishlist
 Y DEBE reflejar el nuevo estado ("no guardado") de inmediato en la interfaz.
 
-### R3 — Guardar o quitar un producto desde la card del listado
+### R3 — Guardar o quitar la variante por defecto desde la card del listado _(revisado por D6)_
 
-CUANDO un comprador autenticado togglea el `favorite-button` de una product card (fuera de la PDP),
-EL SISTEMA DEBE guardar o quitar ese producto de su wishlist según su estado actual,
+CUANDO un comprador autenticado togglea el `favorite-button` de una product card (fuera de la PDP, sin selector de variante visible),
+EL SISTEMA DEBE guardar o quitar la variante por defecto de ese producto (la misma que ya usa el botón de agregar al carrito de la card) de su wishlist según su estado actual,
 usando la misma lógica de dominio que R1/R2.
 
-### R4 — Listado de mi wishlist
+### R4 — Listado de mi wishlist _(revisado por D6)_
 
 CUANDO un comprador autenticado accede a la página `/wishlist`,
-EL SISTEMA DEBE mostrar únicamente los productos que él mismo guardó,
-con imagen, nombre, precio en la moneda de contexto, slug y estado de disponibilidad/stock de cada uno.
+EL SISTEMA DEBE mostrar únicamente las variantes que él mismo guardó (una entrada por variante, con su imagen específica cuando exista una imagen vinculada a esa variante, color/talla, nombre del producto, precio en la moneda de contexto, slug y estado de disponibilidad/stock de esa variante),
+SIN agrupar por producto — dos variantes distintas del mismo producto son dos entradas independientes.
 
-### R5 — Agregar al carrito desde la wishlist
+### R5 — Agregar al carrito desde la wishlist _(revisado por D6)_
 
-CUANDO un comprador autenticado agrega al carrito un producto disponible desde la página `/wishlist`,
-EL SISTEMA DEBE agregarlo a su carrito
-SIN quitarlo automáticamente de la wishlist.
+CUANDO un comprador autenticado agrega al carrito una variante disponible desde la página `/wishlist`,
+EL SISTEMA DEBE agregar exactamente esa variante guardada a su carrito (no una variante distinta del mismo producto)
+SIN quitarla automáticamente de la wishlist.
 
 ### R6 — Quitar de la wishlist desde el listado
 
@@ -121,30 +122,30 @@ CUANDO un visitante sin sesión iniciada intenta togglear un favorito (desde la 
 EL SISTEMA DEBE redirigirlo al inicio de sesión
 SIN guardar ni modificar ninguna wishlist.
 
-### R10 — Producto ya no disponible en el listado
+### R10 — Variante ya no disponible en el listado _(revisado por D6)_
 
-CUANDO un producto guardado en la wishlist ya no es publicable (despublicado o sin variantes con precio) al momento de listar `/wishlist`,
-EL SISTEMA DEBE mostrarlo marcado como "ya no disponible"
-Y DEBE deshabilitar el botón de agregar al carrito para ese producto
-SIN eliminarlo automáticamente de la wishlist.
+CUANDO la variante guardada en la wishlist ya no es publicable (variante inactiva, o producto despublicado, o sin precio en la moneda de contexto) al momento de listar `/wishlist`,
+EL SISTEMA DEBE mostrarla marcada como "ya no disponible"
+Y DEBE deshabilitar el botón de agregar al carrito para esa variante
+SIN eliminarla automáticamente de la wishlist.
 
-### R11 — Producto agotado en el listado
+### R11 — Variante agotada en el listado _(revisado por D6)_
 
-CUANDO un producto guardado en la wishlist está publicado pero sin stock disponible,
+CUANDO la variante guardada en la wishlist está activa/publicable pero sin stock disponible,
 EL SISTEMA DEBE mostrar el badge de "agotado"
-Y DEBE deshabilitar el botón de agregar al carrito para ese producto.
+Y DEBE deshabilitar el botón de agregar al carrito para esa variante.
 
 ### R12 — Acceso a la wishlist de otro comprador
 
 CUANDO un comprador autenticado intenta acceder, listar o modificar la wishlist de otra cuenta,
 EL SISTEMA DEBE denegar la operación
-SIN exponer los productos guardados de la cuenta ajena.
+SIN exponer las variantes guardadas de la cuenta ajena.
 
-### R13 — Toggle duplicado (misma acción dos veces)
+### R13 — Toggle duplicado (misma acción dos veces) _(revisado por D6)_
 
-CUANDO un comprador autenticado togglea el mismo producto dos veces seguidas (guardar y quitar, o viceversa),
+CUANDO un comprador autenticado togglea la misma variante dos veces seguidas (guardar y quitar, o viceversa),
 EL SISTEMA DEBE reflejar el resultado neto correcto (guardado o no guardado) sin crear registros duplicados,
-respetando la restricción única `[user_id, product_id]` ya existente en el esquema.
+respetando la restricción única `[user_id, product_variant_id]` del esquema (ver D-A7 en `design.md`).
 
 ---
 
@@ -152,7 +153,7 @@ respetando la restricción única `[user_id, product_id]` ya existente en el esq
 
 | Área | Escenarios mínimos |
 |------|-------------------|
-| `ToggleWishlistAction` | guarda cuando no existe; elimina cuando existe; respeta unicidad `[user_id, product_id]`; no permite togglear en nombre de otro usuario |
+| `ToggleWishlistAction` | guarda cuando no existe; elimina cuando existe; respeta unicidad `[user_id, product_variant_id]`; no permite togglear en nombre de otro usuario |
 | PDP (`product-detail.php`) | toggle guarda/quita vía Action (no Eloquent inline); estado reflejado en la vista; guest redirigido a login |
 | `favorite-button` (product card) | wire:click real habilitado; refleja estado guardado/no guardado; guest redirigido a login; reemplaza aserciones actuales de "deshabilitado" en `FavoriteButtonTest` |
 | Página `/wishlist` | listado propio; estado vacío; producto despublicado marcado "ya no disponible"; producto agotado con botón deshabilitado; agregar al carrito sin quitar de la wishlist; quitar actualiza el listado; ownership (no accede a wishlist ajena) |
@@ -162,11 +163,13 @@ respetando la restricción única `[user_id, product_id]` ya existente en el esq
 
 ## Definition of Done (producto)
 
-- [ ] R1–R13 cubiertos por tests o verificación manual documentada.
-- [ ] `ToggleWishlistAction` es el único punto de escritura de `Wishlist` en el storefront — cero `Wishlist::create()`/`delete()` inline fuera de la Action.
-- [ ] `favorite-button` activado en producción, con `FavoriteButtonTest` actualizado (ya no asume estado deshabilitado).
-- [ ] Página `/wishlist` funcional según `specs/ui-briefs/09-lista-de-deseados.md`, enlazada desde el nav real.
-- [ ] Ownership verificado — ningún comprador accede a la wishlist de otra cuenta.
-- [ ] `lang/{en,es}` completos para toda la copy nueva de esta feature (reutilizar claves ya existentes en `storefront.php` cuando aplique).
-- [ ] Roadmap F10 → **Completa** al cerrar implementación.
-- [ ] Pint + tests Sail del alcance en verde.
+- [x] R1–R5, R10, R11, R13 (revisados por D6) cubiertos por tests tras la migración a granularidad por variante.
+- [x] R6–R9, R12 sin cambio de comportamiento — se mantienen verdes.
+- [x] `ToggleWishlistAction` es el único punto de escritura de `Wishlist` en el storefront — cero `Wishlist::create()`/`delete()` inline fuera de la Action.
+- [x] `favorite-button` activado en producción, con `FavoriteButtonTest` actualizado (ya no asume estado deshabilitado).
+- [x] Página `/wishlist` funcional a nivel de variante según `specs/ui-briefs/09-lista-de-deseados.md` + D6, enlazada desde el nav real.
+- [x] Ownership verificado — ningún comprador accede a la wishlist de otra cuenta.
+- [x] `lang/{en,es}` completos para toda la copy nueva de esta feature (reutilizar claves ya existentes en `storefront.php` cuando aplique).
+- [x] Migración D-A7 aplicada (`wishlists.product_variant_id`, unique `[user_id, product_variant_id]`), sin `product_id` residual.
+- [x] Roadmap F10 → **Completa** al cerrar la implementación de D6.
+- [x] Pint + tests Sail del alcance en verde tras D6.

@@ -2,7 +2,6 @@
 
 use App\Enums\Commerce\CurrencyEnum;
 use App\Models\Product;
-use App\Support\ColorMap;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 

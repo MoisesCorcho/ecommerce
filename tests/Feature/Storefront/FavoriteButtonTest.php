@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Storefront;
 
-use App\Models\Category;
+use App\Enums\Commerce\CurrencyEnum;
 use App\Models\Product;
+use App\Models\ProductVariant;
+use App\Models\ProductVariantPrice;
+use App\Models\User;
+use App\Models\Wishlist;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -22,62 +26,126 @@ class FavoriteButtonTest extends TestCase
         app()->setLocale('en');
     }
 
-    public function test_favorite_button_renders_disabled_heart_button(): void
+    public function test_authenticated_buyer_toggle_saves_the_variant_when_not_previously_favorited(): void
     {
-        $product = $this->createStorefrontProduct();
+        $user = User::factory()->create();
+        $variant = $this->createStorefrontVariant();
 
-        Livewire::test('favorite-button', ['productId' => $product->id])
+        Livewire::actingAs($user)
+            ->test('favorite-button', ['productVariantId' => $variant->id])
             ->assertOk()
-            ->assertSeeHtml('disabled')
-            ->assertSeeHtml('aria-disabled="true"')
-            ->assertSeeHtml('<svg');
+            ->assertSee(__('storefront.products.add_to_favorites_label'))
+            ->call('toggle')
+            ->assertSee(__('storefront.products.remove_from_favorites_label'));
+
+        $this->assertDatabaseHas('wishlists', [
+            'user_id' => $user->id,
+            'product_variant_id' => $variant->id,
+        ]);
     }
 
-    public function test_favorite_button_displays_login_required_tooltip(): void
+    public function test_authenticated_buyer_toggle_removes_the_variant_when_already_favorited(): void
     {
-        $product = $this->createStorefrontProduct();
+        $user = User::factory()->create();
+        $variant = $this->createStorefrontVariant();
+        Wishlist::factory()->create([
+            'user_id' => $user->id,
+            'product_variant_id' => $variant->id,
+        ]);
 
-        Livewire::test('favorite-button', ['productId' => $product->id])
+        Livewire::actingAs($user)
+            ->test('favorite-button', ['productVariantId' => $variant->id])
             ->assertOk()
-            ->assertSee(__('storefront.favorite_login_required'), false);
+            ->assertSee(__('storefront.products.remove_from_favorites_label'))
+            ->call('toggle')
+            ->assertSee(__('storefront.products.add_to_favorites_label'));
+
+        $this->assertDatabaseMissing('wishlists', [
+            'user_id' => $user->id,
+            'product_variant_id' => $variant->id,
+        ]);
+    }
+
+    public function test_guest_toggle_is_redirected_to_login_without_saving_anything(): void
+    {
+        $variant = $this->createStorefrontVariant();
+
+        Livewire::test('favorite-button', ['productVariantId' => $variant->id])
+            ->assertOk()
+            ->call('toggle')
+            ->assertRedirect(route('login'));
+
+        $this->assertDatabaseCount('wishlists', 0);
+    }
+
+    public function test_favorite_button_keeps_data_product_variant_id_attribute(): void
+    {
+        $variant = $this->createStorefrontVariant(slug: 'another-bolso');
+
+        Livewire::test('favorite-button', ['productVariantId' => $variant->id])
+            ->assertOk()
+            ->assertSeeHtml('data-product-variant-id="'.$variant->id.'"');
     }
 
     public function test_favorite_button_has_accessible_label(): void
     {
-        $product = $this->createStorefrontProduct();
+        $variant = $this->createStorefrontVariant();
 
-        Livewire::test('favorite-button', ['productId' => $product->id])
+        Livewire::test('favorite-button', ['productVariantId' => $variant->id])
             ->assertOk()
             ->assertSeeHtml('aria-label=');
     }
 
-    public function test_favorite_button_does_not_wire_backend_action(): void
+    public function test_favorite_button_shows_imperative_label_distinct_from_past_tense_toast_text(): void
     {
-        $product = $this->createStorefrontProduct();
+        app()->setLocale('es');
 
-        Livewire::test('favorite-button', ['productId' => $product->id])
-            ->assertOk()
-            ->assertDontSeeHtml('wire:click');
+        $user = User::factory()->create();
+        $variant = $this->createStorefrontVariant();
+
+        Livewire::actingAs($user)
+            ->test('favorite-button', ['productVariantId' => $variant->id])
+            ->assertSee(__('storefront.products.add_to_favorites_label'))
+            ->assertDontSee(__('storefront.products.added_to_favorites'))
+            ->call('toggle')
+            ->assertSee(__('storefront.products.remove_from_favorites_label'))
+            ->assertDontSee(__('storefront.products.removed_from_favorites'));
     }
 
-    public function test_favorite_button_renders_for_a_different_product(): void
+    public function test_toggling_favorite_still_dispatches_the_past_tense_toast_confirmation(): void
     {
-        $product = $this->createStorefrontProduct(slug: 'another-bolso');
+        $user = User::factory()->create();
+        $variant = $this->createStorefrontVariant();
 
-        Livewire::test('favorite-button', ['productId' => $product->id])
-            ->assertOk()
-            ->assertSeeHtml('data-product-id="'.$product->id.'"');
+        Livewire::actingAs($user)
+            ->test('favorite-button', ['productVariantId' => $variant->id])
+            ->call('toggle')
+            ->assertDispatched('toast', message: __('storefront.products.added_to_favorites'))
+            ->call('toggle')
+            ->assertDispatched('toast', message: __('storefront.products.removed_from_favorites'));
     }
 
-    private function createStorefrontProduct(string $slug = 'bolso-leen-test'): Product
+    private function createStorefrontVariant(string $slug = 'bolso-leen-test'): ProductVariant
     {
-        $category = Category::factory()->create(['name' => 'Handbags']);
-
-        return Product::factory()->create([
-            'category_id' => $category->id,
+        $product = Product::factory()->create([
             'name' => 'Bolso Leen Test',
             'slug' => $slug,
             'is_active' => true,
         ]);
+
+        $variant = ProductVariant::factory()->for($product)->create([
+            'sku' => strtoupper(str_replace('-', '', $slug)).'-V',
+            'is_active' => true,
+            'stock' => 5,
+        ]);
+
+        ProductVariantPrice::factory()
+            ->for($variant, 'productVariant')
+            ->create([
+                'currency' => CurrencyEnum::Cop,
+                'price' => 150_000,
+            ]);
+
+        return $variant->fresh() ?? $variant;
     }
 }

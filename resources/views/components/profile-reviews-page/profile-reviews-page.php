@@ -5,9 +5,15 @@ declare(strict_types=1);
 use App\Actions\Reviews\DeleteReviewAction;
 use App\Actions\Reviews\UpdateReviewAction;
 use App\DTOs\Reviews\UpsertReviewDTO;
+use App\Enums\Orders\OrderStatusEnum;
 use App\Exceptions\Reviews\InvalidReviewRatingException;
 use App\Exceptions\Reviews\ReviewForbiddenException;
+use App\Models\OrderItem;
+use App\Models\Product;
 use App\Models\Review;
+use App\Services\Reviews\ReviewVariantService;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
@@ -20,10 +26,12 @@ new #[Layout('layouts.storefront')] class extends Component
 
     public function render()
     {
-        return $this->view()->title('Leen Handbags | '.__('account.reviews.title'));
+        return $this->view();
     }
 
     public ?int $editingId = null;
+
+    public ?int $confirmingDeleteId = null;
 
     public int $rating = 5;
 
@@ -35,13 +43,81 @@ new #[Layout('layouts.storefront')] class extends Component
 
     public function with(): array
     {
+        $reviews = Review::query()
+            ->ownedBy((int) Auth::id())
+            ->with('product')
+            ->latest()
+            ->paginate(10);
+
         return [
-            'reviews' => Review::query()
-                ->ownedBy((int) Auth::id())
-                ->with('product')
-                ->latest()
-                ->paginate(10),
+            'reviews' => $reviews,
+            'purchasedVariants' => $this->purchasedVariantsFor($reviews),
+            'reviewsWithNewVariants' => $this->detectReviewsWithNewVariants($reviews),
         ];
+    }
+
+    /**
+     * Detect reviews where the user has purchased new variants since the review was created/updated.
+     *
+     * @return Collection<int, int> review IDs with new variants
+     */
+    private function detectReviewsWithNewVariants(LengthAwarePaginator $reviews): Collection
+    {
+        if (Auth::guest()) {
+            return collect();
+        }
+
+        $user = Auth::user();
+        $variantService = app(ReviewVariantService::class);
+
+        return $reviews->getCollection()
+            ->filter(fn (Review $review) => $review->is_verified_purchase)
+            ->filter(function (Review $review) use ($user, $variantService): bool {
+                $product = $review->product ?? Product::find($review->product_id);
+                if (! $product) {
+                    return false;
+                }
+
+                $currentVariants = $variantService->getRecentPurchasedVariants($user, $product);
+                $reviewedSkus = collect($review->purchased_variants ?? [])->pluck('sku')->filter()->values()->all();
+                $currentSkus = collect($currentVariants)->pluck('sku')->filter()->values()->all();
+
+                if (empty($reviewedSkus) || empty($currentSkus)) {
+                    return false;
+                }
+
+                return $currentSkus !== $reviewedSkus;
+            })
+            ->pluck('id');
+    }
+
+    /**
+     * Most recent eligible order item per product id, for the reviews on the current page.
+     * Mirrors OrderStatusEnum::isEligibleForReview() (F07 D8), the single source of truth
+     * for what counts as a real purchase for review purposes.
+     *
+     * @return Collection<int, OrderItem>
+     */
+    private function purchasedVariantsFor(LengthAwarePaginator $reviews): Collection
+    {
+        $productIds = $reviews->pluck('product_id')->unique()->values();
+
+        if ($productIds->isEmpty()) {
+            return collect();
+        }
+
+        $eligibleStatuses = array_values(array_filter(
+            OrderStatusEnum::cases(),
+            fn (OrderStatusEnum $status): bool => $status->isEligibleForReview(),
+        ));
+
+        return OrderItem::query()
+            ->whereHas('order', fn ($query) => $query->where('user_id', Auth::id())->whereIn('status', $eligibleStatuses))
+            ->whereHas('productVariant', fn ($query) => $query->whereIn('product_id', $productIds))
+            ->with('productVariant')
+            ->get()
+            ->groupBy(fn (OrderItem $item) => $item->productVariant->product_id)
+            ->map(fn (Collection $items) => $items->sortByDesc('created_at')->first());
     }
 
     public function edit(int $reviewId): void
@@ -55,6 +131,17 @@ new #[Layout('layouts.storefront')] class extends Component
         $this->editingId = $review->id;
         $this->rating = $review->rating;
         $this->comment = (string) ($review->comment ?? '');
+        $this->confirmingDeleteId = null;
+    }
+
+    public function confirmDelete(int $reviewId): void
+    {
+        $this->confirmingDeleteId = $reviewId;
+    }
+
+    public function cancelDeleteConfirmation(): void
+    {
+        $this->confirmingDeleteId = null;
     }
 
     public function save(UpdateReviewAction $action): void
@@ -99,6 +186,7 @@ new #[Layout('layouts.storefront')] class extends Component
             $action(Auth::user(), $review);
         } catch (ReviewForbiddenException $e) {
             $this->errorMessage = $e->getMessage();
+            $this->confirmingDeleteId = null;
 
             return;
         }
@@ -107,6 +195,7 @@ new #[Layout('layouts.storefront')] class extends Component
             $this->cancelEdit();
         }
 
+        $this->confirmingDeleteId = null;
         $this->statusMessage = __('account.reviews.deleted');
     }
 

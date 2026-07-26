@@ -41,4 +41,12 @@ enum OrderStatusEnum: string
     {
         return [self::Paid, self::Processing, self::Shipped, self::Delivered];
     }
+
+    /**
+     * Whether items bought under this order status can be reviewed (F07 D8).
+     */
+    public function isEligibleForReview(): bool
+    {
+        return in_array($this, [self::Paid, self::Processing, self::Shipped, self::Delivered], true);
+    }
 }

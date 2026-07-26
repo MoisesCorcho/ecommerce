@@ -91,4 +91,12 @@ class StorefrontLayoutTest extends TestCase
             ->assertSee(__('storefront.nav.account'), false)
             ->assertDontSee(__('storefront.nav.login'), false);
     }
+
+    public function test_storefront_layout_favorites_link_points_to_wishlist_route(): void
+    {
+        $this->get('/_test/storefront-layout')
+            ->assertOk()
+            ->assertSeeHtml('href="'.route('wishlist').'"')
+            ->assertDontSeeHtml('href="#" class="transition-colors duration-300 hover:text-soft-gold" aria-label="'.__('storefront.nav.favorites').'"');
+    }
 }

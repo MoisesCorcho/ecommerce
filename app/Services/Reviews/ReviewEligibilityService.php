@@ -15,26 +15,27 @@ use App\Models\User;
  */
 class ReviewEligibilityService
 {
-    /**
-     * @var list<OrderStatusEnum>
-     */
-    private const ELIGIBLE_STATUSES = [
-        OrderStatusEnum::Paid,
-        OrderStatusEnum::Processing,
-        OrderStatusEnum::Shipped,
-        OrderStatusEnum::Delivered,
-    ];
-
     public function hasEligiblePurchase(User $user, Product $product): bool
     {
         return Order::query()
             ->where('user_id', $user->id)
-            ->whereIn('status', self::ELIGIBLE_STATUSES)
+            ->whereIn('status', $this->eligibleStatuses())
             ->whereHas(
                 'items.productVariant',
                 fn ($query) => $query->where('product_id', $product->id),
             )
             ->exists();
+    }
+
+    /**
+     * @return list<OrderStatusEnum>
+     */
+    private function eligibleStatuses(): array
+    {
+        return array_values(array_filter(
+            OrderStatusEnum::cases(),
+            fn (OrderStatusEnum $status): bool => $status->isEligibleForReview(),
+        ));
     }
 
     public function isVerifiedPurchase(User $user, Product $product): bool
