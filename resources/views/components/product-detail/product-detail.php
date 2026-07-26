@@ -91,10 +91,10 @@ new #[Layout('layouts.storefront')] class extends Component
     {
         $currency = CurrencyEnum::from($this->currency);
         $product = $this->findPublishedProduct($currency);
-        $availableSizes = $this->collectAvailableSizes($product, $currency);
+        $sizesForColor = $this->collectSizesForColor($product, $currency, $this->selectedColor);
 
-        if ($this->selectedSize && ! $availableSizes->contains($this->selectedSize)) {
-            $this->selectedSize = $availableSizes->count() === 1 ? $availableSizes->first() : null;
+        if ($this->selectedSize && ! $sizesForColor->contains($this->selectedSize)) {
+            $this->selectedSize = $sizesForColor->first();
         }
 
         $this->resolveAndApplyVariant($product, $currency);
@@ -105,6 +105,11 @@ new #[Layout('layouts.storefront')] class extends Component
     {
         $currency = CurrencyEnum::from($this->currency);
         $product = $this->findPublishedProduct($currency);
+        $colorsForSize = $this->collectColorsForSize($product, $currency, $this->selectedSize);
+
+        if ($this->selectedColor && ! $colorsForSize->contains($this->selectedColor)) {
+            $this->selectedColor = $colorsForSize->first();
+        }
 
         $this->resolveAndApplyVariant($product, $currency);
         $this->quantity = 1;
@@ -439,6 +444,34 @@ new #[Layout('layouts.storefront')] class extends Component
         return $product->variants
             ->filter(fn (ProductVariant $v): bool => $v->priceIn($currency) !== null && $v->size !== null)
             ->pluck('size')
+            ->unique()
+            ->values();
+    }
+
+    /**
+     * @return Collection<int, string>
+     */
+    private function collectSizesForColor(Product $product, CurrencyEnum $currency, ?string $color): Collection
+    {
+        return $product->variants
+            ->filter(fn (ProductVariant $v): bool => $v->priceIn($currency) !== null
+                && $v->size !== null
+                && $v->color === $color)
+            ->pluck('size')
+            ->unique()
+            ->values();
+    }
+
+    /**
+     * @return Collection<int, string>
+     */
+    private function collectColorsForSize(Product $product, CurrencyEnum $currency, ?string $size): Collection
+    {
+        return $product->variants
+            ->filter(fn (ProductVariant $v): bool => $v->priceIn($currency) !== null
+                && $v->color !== null
+                && $v->size === $size)
+            ->pluck('color')
             ->unique()
             ->values();
     }

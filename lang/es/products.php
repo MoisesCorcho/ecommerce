@@ -58,6 +58,7 @@ return [
         'file' => 'Archivo',
         'primary' => 'Primaria',
         'primary_image' => 'Imagen primaria',
+        'image_variant' => 'Variante',
     ],
 
     'placeholders' => [
@@ -84,6 +85,7 @@ return [
         'image_file' => 'JPG, PNG o WebP · máx. 5 MB',
         'primary_image' => 'Al activarla se desmarcan las demás.',
         'primary_image_default' => 'Solo una por producto: al activarla se desmarcan las demás.',
+        'image_variant' => 'Deja vacío para usar esta imagen en todos los colores. Solo aparecen las variantes ya guardadas: guarda las variantes nuevas antes de etiquetar sus fotos.',
     ],
 
     'status' => [

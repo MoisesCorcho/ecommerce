@@ -20,6 +20,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
 final class ProductForm
@@ -274,6 +275,23 @@ final class ProductForm
                                 ->helperText(__('products.helpers.image_file'))
                                 ->required()
                                 ->columnSpanFull(),
+                            Select::make('product_variant_id')
+                                ->label(__('products.fields.image_variant'))
+                                ->options(function (Get $get): array {
+                                    /** @var array<int|string, array<string, mixed>> $variants */
+                                    $variants = $get('../../variants') ?? [];
+
+                                    return collect($variants)
+                                        ->filter(fn (array $variant): bool => filled($variant['id'] ?? null))
+                                        ->mapWithKeys(fn (array $variant): array => [
+                                            (int) $variant['id'] => self::variantOptionLabel($variant),
+                                        ])
+                                        ->all();
+                                })
+                                ->nullable()
+                                ->native(false)
+                                ->helperText(__('products.helpers.image_variant'))
+                                ->columnSpanFull(),
                             ExclusiveToggleInRepeater::make(
                                 name: 'is_primary',
                                 label: __('products.fields.primary'),
@@ -307,5 +325,19 @@ final class ProductForm
                         ->columnSpanFull(),
                 ]),
         ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $variant
+     */
+    private static function variantOptionLabel(array $variant): string
+    {
+        $sku = (string) ($variant['sku'] ?? '');
+
+        $descriptor = collect([$variant['color'] ?? null, $variant['size'] ?? null])
+            ->filter(fn (mixed $value): bool => is_string($value) && $value !== '')
+            ->implode(' / ');
+
+        return $descriptor === '' ? $sku : "{$sku} — {$descriptor}";
     }
 }
