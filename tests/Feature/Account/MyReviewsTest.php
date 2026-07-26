@@ -36,7 +36,19 @@ class MyReviewsTest extends TestCase
                 $ids = $reviews->pluck('id')->all();
 
                 return in_array($approved->id, $ids, true) && in_array($pending->id, $ids, true);
-            });
+            })
+            ->assertDontSee(__('account.reviews.empty_title'));
+    }
+
+    public function test_zero_reviews_shows_empty_state(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Livewire::test('profile-reviews-page')
+            ->assertSee(__('account.reviews.empty_title'))
+            ->assertSeeHtml(route('products.index'))
+            ->assertDontSee('data-review-card');
     }
 
     public function test_editing_own_review_returns_it_to_pending(): void

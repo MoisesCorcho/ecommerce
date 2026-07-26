@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 class UpdateCategoryAction
 {
     /**
-     * @param  array{name?: string, slug?: string|null, parent_id?: int|null, sort_order?: int|null}  $data
+     * @param  array{name?: string, slug?: string|null, image_path?: string|null, parent_id?: int|null, sort_order?: int|null}  $data
      */
     public function __invoke(Category $category, array $data): Category
     {
@@ -47,6 +47,10 @@ class UpdateCategoryAction
             }
 
             $category->slug = $slug;
+        }
+
+        if (array_key_exists('image_path', $data)) {
+            $category->image_path = $data['image_path'];
         }
 
         if (array_key_exists('parent_id', $data)) {

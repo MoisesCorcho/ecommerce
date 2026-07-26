@@ -24,9 +24,7 @@
 
     {{-- 2. Categories grid (dynamic, R6/R16) --}}
     <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
-        <div class="py-section-gap">
-            <livewire:categories-grid />
-        </div>
+        <livewire:categories-grid />
     </div>
 
     {{-- Subtle separator --}}
@@ -40,7 +38,7 @@
     </div>
 
     {{-- 4. Brand story — static Blade (D1), CTA → /about-us (R8a) --}}
-    <section class="mx-auto max-w-storefront px-margin-mobile py-section-gap lg:px-margin-desktop" aria-labelledby="story-heading">
+    <section class="mx-auto max-w-storefront px-margin-mobile pt-16 pb-section-gap lg:px-margin-desktop lg:pt-24" aria-labelledby="story-heading">
         <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-24">
             <div>
                 <h2 id="story-heading" class="font-chillax text-headline-md text-intense-cocoa">

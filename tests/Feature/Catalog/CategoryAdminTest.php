@@ -204,4 +204,26 @@ class CategoryAdminTest extends TestCase
 
         $this->assertSame('cuero-premium', $category->slug);
     }
+
+    public function test_create_category_action_persists_image_path(): void
+    {
+        $category = app(CreateCategoryAction::class)([
+            'name' => 'Bolsos de cuero',
+            'slug' => null,
+            'image_path' => 'categories/example.jpg',
+        ]);
+
+        $this->assertSame('categories/example.jpg', $category->fresh()->image_path);
+    }
+
+    public function test_update_category_action_persists_image_path(): void
+    {
+        $category = Category::factory()->create(['image_path' => null]);
+
+        app(UpdateCategoryAction::class)($category, [
+            'image_path' => 'categories/updated.jpg',
+        ]);
+
+        $this->assertSame('categories/updated.jpg', $category->fresh()->image_path);
+    }
 }

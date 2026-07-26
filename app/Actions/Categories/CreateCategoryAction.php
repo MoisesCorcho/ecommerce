@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 class CreateCategoryAction
 {
     /**
-     * @param  array{name: string, slug?: string|null, parent_id?: int|null, sort_order?: int|null}  $data
+     * @param  array{name: string, slug?: string|null, image_path?: string|null, parent_id?: int|null, sort_order?: int|null}  $data
      */
     public function __invoke(array $data): Category
     {
@@ -31,6 +31,7 @@ class CreateCategoryAction
         return Category::query()->create([
             'name' => $name,
             'slug' => $slug,
+            'image_path' => $data['image_path'] ?? null,
             'parent_id' => $data['parent_id'] ?? null,
             'sort_order' => $sortOrder,
         ]);

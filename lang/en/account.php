@@ -13,12 +13,19 @@ return [
         'current_password_incorrect' => 'Your current password is incorrect.',
     ],
 
+    'breadcrumb' => [
+        'home' => 'Home',
+        'account' => 'My account',
+    ],
+
     'nav' => [
         'label' => 'Account sections',
         'profile' => 'Profile',
         'addresses' => 'Addresses',
         'orders' => 'My orders',
         'reviews' => 'My reviews',
+        'logout' => 'Log out',
+        'secondary_label' => 'Account',
     ],
 
     'profile' => [
@@ -27,6 +34,7 @@ return [
         'section_title' => 'Personal information',
         'submit' => 'Save changes',
         'updated' => 'Your profile has been updated. If you changed your email, check your inbox to verify it.',
+        'greeting' => 'Welcome back, :name',
     ],
 
     'password' => [
@@ -71,6 +79,8 @@ return [
         'title' => 'My orders',
         'subtitle' => 'Orders that have been paid or are further along.',
         'empty' => 'You do not have any orders yet.',
+        'empty_title' => 'No orders yet',
+        'empty_cta' => 'Explore products',
         'back_to_list' => '← Back to my orders',
         'shipping_address' => 'Shipping address',
         'detail_title' => 'Leen Handbags | Order detail',
@@ -80,6 +90,9 @@ return [
         'title' => 'My reviews',
         'subtitle' => 'Manage the reviews you have written.',
         'empty' => 'You have not written any reviews yet.',
+        'empty_title' => 'No reviews yet',
+        'empty_cta' => 'Explore products',
+        'rating_aria' => ':rating out of 5 stars',
         'save' => 'Save review',
         'cancel' => 'Cancel',
         'edit' => 'Edit',

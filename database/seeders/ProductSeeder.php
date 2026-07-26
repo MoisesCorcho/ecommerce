@@ -20,37 +20,53 @@ class ProductSeeder extends Seeder
         );
 
         foreach ($this->products() as $data) {
-            $product = Product::create([
-                'category_id' => $category->id,
-                'name' => $data['name'],
-                'slug' => Str::slug($data['name']),
-                'description' => $data['description'],
-                'material' => $data['material'],
-                'dimensions' => $data['dimensions'],
-                'is_preorder' => false,
-                'is_active' => true,
-            ]);
+            $product = Product::query()->updateOrCreate(
+                ['slug' => Str::slug($data['name'])],
+                [
+                    'category_id' => $category->id,
+                    'name' => $data['name'],
+                    'description' => $data['description'],
+                    'material' => $data['material'],
+                    'dimensions' => $data['dimensions'],
+                    'is_preorder' => false,
+                    'is_active' => true,
+                ],
+            );
 
-            $variant = $product->variants()->create([
-                'sku' => $data['sku'],
-                'color' => null,
-                'size' => null,
-                'stock' => $data['stock'],
-                'is_active' => true,
-            ]);
+            foreach ($data['colors'] as $color) {
+                $sku = count($data['colors']) > 1
+                    ? $data['sku'].'-'.Str::of($color)->slug('-')->upper()
+                    : $data['sku'];
 
-            $variant->prices()->create([
-                'currency' => CurrencyEnum::Cop,
-                'price' => $data['price'],
-                'compare_at_price' => null,
-            ]);
+                $variant = $product->variants()->updateOrCreate(
+                    ['sku' => $sku],
+                    [
+                        'color' => $color,
+                        // Same physical bag across colors; carries the value formerly
+                        // duplicated in products.dimensions until that column is dropped.
+                        'size' => $data['dimensions'],
+                        'stock' => $data['stock'],
+                        'is_active' => true,
+                    ],
+                );
+
+                $variant->prices()->updateOrCreate(
+                    ['currency' => CurrencyEnum::Cop],
+                    [
+                        'price' => $data['price'],
+                        'compare_at_price' => null,
+                    ],
+                );
+            }
 
             foreach ($data['images'] as $index => $filename) {
-                $product->images()->create([
-                    'path' => 'products/'.$filename,
-                    'sort_order' => $index,
-                    'is_primary' => $index === 0,
-                ]);
+                $product->images()->updateOrCreate(
+                    ['path' => 'products/'.$filename],
+                    [
+                        'sort_order' => $index,
+                        'is_primary' => $index === 0,
+                    ],
+                );
             }
         }
     }
@@ -75,6 +91,7 @@ class ProductSeeder extends Seeder
                 'sku' => 'D2300-3-2-4',
                 'price' => 850_000,
                 'stock' => 0,
+                'colors' => ['Dorado'],
                 'images' => ['clutch-queen-bee-1.png', 'clutch-queen-bee-2.png', 'clutch-queen-bee-3.png'],
             ],
             [
@@ -85,6 +102,7 @@ class ProductSeeder extends Seeder
                 'sku' => 'D2401',
                 'price' => 799_000,
                 'stock' => 10,
+                'colors' => ['Negro', 'Rojo', 'Beige'],
                 'images' => ['honey-bag-medium-1.png', 'honey-bag-medium-2.png', 'honey-bag-medium-3.png'],
             ],
             [
@@ -95,6 +113,7 @@ class ProductSeeder extends Seeder
                 'sku' => 'D2402',
                 'price' => 999_000,
                 'stock' => 10,
+                'colors' => ['Naranja', 'Verde', 'Gris'],
                 'images' => ['maxi-honey-bag-1.png', 'maxi-honey-bag-2.png', 'maxi-honey-bag-3.png', 'maxi-honey-bag-4.png'],
             ],
             [
@@ -105,6 +124,7 @@ class ProductSeeder extends Seeder
                 'sku' => 'd1000',
                 'price' => 699_000,
                 'stock' => 10,
+                'colors' => ['Beige', 'Verde', 'Naranja'],
                 'images' => ['mini-basket-bag-1.png', 'mini-basket-bag-2.png', 'mini-basket-bag-3.png'],
             ],
             [
@@ -115,6 +135,7 @@ class ProductSeeder extends Seeder
                 'sku' => 'D2409',
                 'price' => 689_000,
                 'stock' => 10,
+                'colors' => ['Púrpura', 'Rojo', 'Verde', 'Rojo oscuro'],
                 'images' => ['mini-honey-bag-1.png', 'mini-honey-bag-2.png', 'mini-honey-bag-3.png', 'mini-honey-bag-4.png'],
             ],
         ];
