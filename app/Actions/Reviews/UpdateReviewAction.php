@@ -10,6 +10,7 @@ use App\Exceptions\Reviews\ReviewForbiddenException;
 use App\Models\Review;
 use App\Models\User;
 use App\Services\Reviews\ReviewEligibilityService;
+use App\Services\Reviews\ReviewVariantService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Throwable;
@@ -18,6 +19,7 @@ class UpdateReviewAction
 {
     public function __construct(
         private readonly ReviewEligibilityService $eligibilityService,
+        private readonly ReviewVariantService $variantService,
     ) {}
 
     /**
@@ -37,11 +39,14 @@ class UpdateReviewAction
         $review->loadMissing('product');
 
         return DB::transaction(function () use ($user, $review, $dto): Review {
+            $purchasedVariants = $this->variantService->getRecentPurchasedVariants($user, $review->product);
+
             $review->update([
                 'rating' => $dto->rating,
                 'comment' => $dto->comment,
                 'is_approved' => false,
                 'is_verified_purchase' => $this->eligibilityService->isVerifiedPurchase($user, $review->product),
+                'purchased_variants' => $purchasedVariants,
             ]);
 
             return $review->fresh() ?? $review;

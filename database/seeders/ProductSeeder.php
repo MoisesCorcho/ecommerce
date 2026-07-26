@@ -8,6 +8,8 @@ use App\Enums\Commerce\CurrencyEnum;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ProductSeeder extends Seeder
@@ -60,6 +62,8 @@ class ProductSeeder extends Seeder
             }
 
             foreach ($data['images'] as $index => $filename) {
+                $this->seedImageFile($filename);
+
                 $product->images()->updateOrCreate(
                     ['path' => 'products/'.$filename],
                     [
@@ -68,6 +72,21 @@ class ProductSeeder extends Seeder
                     ],
                 );
             }
+        }
+    }
+
+    /**
+     * Copies a versioned fixture image (committed under database/seeders/images/products/)
+     * onto the public disk, so seeded ProductImage rows point at files that actually exist —
+     * storage/app/public is gitignored (runtime-generated), fixture images are not.
+     */
+    private function seedImageFile(string $filename): void
+    {
+        $disk = Storage::disk('public');
+        $storagePath = 'products/'.$filename;
+
+        if ($disk->missing($storagePath)) {
+            $disk->put($storagePath, File::get(database_path('seeders/images/products/'.$filename)));
         }
     }
 

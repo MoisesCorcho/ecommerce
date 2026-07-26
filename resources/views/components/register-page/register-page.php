@@ -23,7 +23,7 @@ new #[Layout('layouts.auth')] class extends Component
 
     public function render()
     {
-        return $this->view()->title('Leen Handbags | '.__('auth.register.title'));
+        return $this->view();
     }
 
     public function register(CreatesNewUsers $creator, RegisterAttemptRateLimiter $limiter): mixed

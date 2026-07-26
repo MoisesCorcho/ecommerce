@@ -15,11 +15,10 @@ class ProfileOrderDetailController extends Controller
     {
         abort_unless($request->user()->can('view', $order), 403, __('orders.errors.access_denied'));
 
-        $order->loadMissing('items');
+        $order->loadMissing('items.productVariant.product');
 
         return view('account.orders.show', [
             'order' => $order,
-            'title' => __('account.orders.detail_title'),
         ]);
     }
 }

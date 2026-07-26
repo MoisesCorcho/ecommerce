@@ -83,7 +83,8 @@ return [
         'empty_cta' => 'Explorar productos',
         'back_to_list' => '← Volver a mis pedidos',
         'shipping_address' => 'Dirección de envío',
-        'detail_title' => 'Leen Handbags | Detalle del pedido',
+        'sku_label' => 'REF',
+        'leave_review' => 'Dejar una reseña',
     ],
 
     'reviews' => [
@@ -98,6 +99,7 @@ return [
         'edit' => 'Editar',
         'delete' => 'Eliminar',
         'confirm_delete' => '¿Eliminar esta reseña?',
+        'confirm_delete_prompt' => '¿Eliminar esta reseña?',
         'updated' => 'Tu reseña se actualizó y vuelve a estar pendiente de moderación.',
         'deleted' => 'Reseña eliminada.',
         'fields' => [

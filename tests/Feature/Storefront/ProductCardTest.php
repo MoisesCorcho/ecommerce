@@ -117,6 +117,33 @@ class ProductCardTest extends TestCase
             ->assertSee(__('storefront.favorite_login_required'), false);
     }
 
+    public function test_product_card_favorite_button_is_a_wired_livewire_component(): void
+    {
+        $product = $this->createStorefrontProduct();
+        $variant = $product->variants->first();
+
+        Livewire::test('product-card', ['product' => $product, 'currency' => 'COP'])
+            ->assertOk()
+            ->assertSeeHtml('wire:click="toggle"')
+            ->assertSeeHtml('data-product-variant-id="'.$variant->id.'"');
+    }
+
+    public function test_product_card_favorite_button_matches_the_cart_buttons_circular_chrome(): void
+    {
+        $product = $this->createStorefrontProduct();
+
+        $html = Livewire::test('product-card', ['product' => $product, 'currency' => 'COP'])
+            ->assertOk()
+            ->html();
+
+        preg_match('/<button[^>]*data-favorite-button[^>]*>/', $html, $matches);
+
+        $this->assertNotEmpty($matches, 'Favorite button markup not found in the rendered product card.');
+        $this->assertStringContainsString('h-10 w-10', $matches[0]);
+        $this->assertStringContainsString('bg-soft-sand', $matches[0]);
+        $this->assertStringContainsString('shadow-sm', $matches[0]);
+    }
+
     public function test_product_card_renders_placeholder_when_no_image(): void
     {
         $product = $this->createStorefrontProduct(withImage: false);

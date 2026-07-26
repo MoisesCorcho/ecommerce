@@ -15,7 +15,7 @@ new #[Layout('layouts.storefront')] class extends Component
 
     public function render()
     {
-        return $this->view()->title('Leen Handbags | '.__('auth.forgot_password.title'));
+        return $this->view();
     }
 
     public function sendResetLink(PasswordResetRequestRateLimiter $limiter): void

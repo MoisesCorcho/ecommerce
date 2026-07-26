@@ -52,7 +52,7 @@ class UserCommerceGraphTest extends TestCase
 
         $wishlist = Wishlist::factory()
             ->for($user)
-            ->for($product)
+            ->for($variant, 'productVariant')
             ->create();
 
         $coupon = Coupon::factory()->percentage(10)->create();
@@ -73,7 +73,7 @@ class UserCommerceGraphTest extends TestCase
             'addresses',
             'cart.items.productVariant',
             'reviews.product',
-            'wishlists.product',
+            'wishlists.productVariant',
             'orders.coupon',
             'couponRedemptions.coupon',
         ]);
@@ -91,7 +91,7 @@ class UserCommerceGraphTest extends TestCase
         );
 
         $this->assertTrue($user->wishlists->contains($wishlist));
-        $this->assertTrue($user->wishlists->first()->product->is($product));
+        $this->assertTrue($user->wishlists->first()->productVariant->is($variant));
 
         $this->assertTrue($user->orders->contains($order));
         $this->assertTrue($order->fresh()->coupon->is($coupon));

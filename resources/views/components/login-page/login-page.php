@@ -20,7 +20,7 @@ new #[Layout('layouts.auth')] class extends Component
 
     public function render()
     {
-        return $this->view()->title('Leen Handbags | '.__('auth.login.title'));
+        return $this->view();
     }
 
     public function login(LoginRateLimiter $limiter, Request $request): mixed

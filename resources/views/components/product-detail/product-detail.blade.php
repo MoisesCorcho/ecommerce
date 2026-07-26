@@ -369,7 +369,7 @@
                     type="button"
                     wire:click="toggleFavorite"
                     class="flex h-12 w-full cursor-pointer items-center justify-center border border-soft-gold text-sm font-medium text-intense-cocoa transition-colors duration-200 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none"
-                    aria-label="{{ $isFavorited ? __('storefront.products.removed_from_favorites') : __('storefront.products.added_to_favorites') }}"
+                    aria-label="{{ $isFavorited ? __('storefront.products.remove_from_favorites_label') : __('storefront.products.add_to_favorites_label') }}"
                     data-favorite-button
                 >
                     <svg
@@ -381,7 +381,7 @@
                     >
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                     </svg>
-                    {{ $isFavorited ? __('storefront.products.removed_from_favorites') : __('storefront.products.added_to_favorites') }}
+                    {{ $isFavorited ? __('storefront.products.remove_from_favorites_label') : __('storefront.products.add_to_favorites_label') }}
                 </button>
             </div>
 
@@ -431,17 +431,15 @@
                 <h2 id="reviews-heading" class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
                     {{ __('reviews.ui.section_title') }}
                 </h2>
-                <p class="mt-2 text-sm text-intense-cocoa/60">
-                    @if ($reviewsSummary->reviewsCount > 0)
+                @if ($reviewsSummary->reviewsCount > 0)
+                    <p class="mt-2 text-sm text-intense-cocoa/60">
                         <span class="font-medium text-intense-cocoa">
                             {{ number_format((float) $reviewsSummary->averageRating, 1) }}★
                         </span>
                         ·
                         {{ trans_choice('reviews.ui.count_label', $reviewsSummary->reviewsCount, ['count' => $reviewsSummary->reviewsCount]) }}
-                    @else
-                        {{ __('reviews.empty.no_reviews') }}
-                    @endif
-                </p>
+                    </p>
+                @endif
             </div>
         </div>
 
@@ -449,18 +447,35 @@
             {{-- Public approved list --}}
             <div class="space-y-6" data-approved-reviews>
                 @forelse ($approvedReviews as $review)
-                    <article class="border-b border-intense-cocoa/10 pb-6 last:border-b-0" wire:key="review-{{ $review->id }}">
+                    <article class="border border-intense-cocoa/10 bg-surface-container p-5 shadow-sm" wire:key="review-{{ $review->id }}">
                         <div class="mb-2 flex flex-wrap items-center gap-2">
                             <span class="text-sm font-semibold text-soft-gold" aria-label="{{ __('reviews.ui.stars', ['rating' => $review->rating]) }}">
                                 {{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}
                             </span>
                             <span class="text-sm font-medium text-intense-cocoa">{{ $review->user?->name }}</span>
                             @if ($review->is_verified_purchase)
-                                <span class="rounded-full bg-soft-sand px-2 py-0.5 text-xs font-medium text-intense-cocoa/70">
+                                <span class="border border-intense-cocoa/15 bg-silk-cream px-2 py-0.5 text-xs font-medium text-intense-cocoa/70">
                                     {{ __('reviews.status.verified_purchase') }}
                                 </span>
                             @endif
                         </div>
+                        @if ($review->purchased_variants && count($review->purchased_variants) > 0)
+                            <div class="mb-2 flex flex-wrap gap-1.5">
+                                @foreach ($review->purchased_variants as $variant)
+                                    <span class="inline-flex items-center gap-1 border border-intense-cocoa/10 bg-soft-sand/60 px-2 py-0.5 text-xs text-intense-cocoa/70">
+                                        @if ($variant['color'])
+                                            <span class="font-medium">{{ $variant['color'] }}</span>
+                                        @endif
+                                        @if ($variant['size'])
+                                            <span class="font-medium">{{ $variant['size'] }}</span>
+                                        @endif
+                                        @if ($variant['sku'])
+                                            <span class="text-intense-cocoa/40">({{ $variant['sku'] }})</span>
+                                        @endif
+                                    </span>
+                                @endforeach
+                            </div>
+                        @endif
                         @if ($review->comment)
                             <p class="text-sm leading-relaxed text-intense-cocoa/80">{{ $review->comment }}</p>
                         @endif
@@ -476,7 +491,7 @@
             </div>
 
             {{-- Viewer form / notices --}}
-            <div class="rounded-sm border border-intense-cocoa/10 bg-silk-cream p-6 shadow-sm" data-review-form>
+            <div class="rounded-sm border border-intense-cocoa/15 bg-surface-container p-6 shadow-sm" data-review-form>
                 @auth
                     @if ($canCreateReview || $canEditReview)
                         <h3 class="mb-4 font-[family-name:var(--font-chillax)] text-lg font-semibold text-intense-cocoa">

@@ -37,6 +37,8 @@ Route::middleware('auth')->group(function (): void {
     Route::livewire('/profile/orders', 'profile-orders-page')->name('profile.orders');
     Route::get('/profile/orders/{order}', ProfileOrderDetailController::class)->name('profile.orders.show');
     Route::livewire('/profile/reviews', 'profile-reviews-page')->name('profile.reviews');
+
+    Route::livewire('/wishlist', 'wishlist-page')->name('wishlist');
 });
 
 Route::get('/orders/{order}/thank-you', OrderThankYouController::class)->name('orders.thank-you');

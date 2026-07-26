@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'comment',
     'is_approved',
     'is_verified_purchase',
+    'purchased_variants',
 ])]
 class Review extends Model
 {
@@ -33,6 +34,7 @@ class Review extends Model
             'rating' => 'integer',
             'is_approved' => 'boolean',
             'is_verified_purchase' => 'boolean',
+            'purchased_variants' => 'array',
         ];
     }
 

@@ -83,7 +83,8 @@ return [
         'empty_cta' => 'Explore products',
         'back_to_list' => '← Back to my orders',
         'shipping_address' => 'Shipping address',
-        'detail_title' => 'Leen Handbags | Order detail',
+        'sku_label' => 'REF',
+        'leave_review' => 'Leave a review',
     ],
 
     'reviews' => [
@@ -98,6 +99,7 @@ return [
         'edit' => 'Edit',
         'delete' => 'Delete',
         'confirm_delete' => 'Delete this review?',
+        'confirm_delete_prompt' => 'Delete this review?',
         'updated' => 'Your review has been updated and is pending moderation again.',
         'deleted' => 'Review deleted.',
         'fields' => [

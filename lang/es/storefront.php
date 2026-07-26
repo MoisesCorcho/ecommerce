@@ -31,6 +31,7 @@ return [
     'no_image' => 'Sin imagen',
     'favorite_login_required' => 'Inicia sesión para guardar favoritos',
     'out_of_stock' => 'Agotado',
+    'undo' => 'Deshacer',
 
     'home' => [
         'categories' => 'Compra por Categoría',
@@ -93,11 +94,27 @@ return [
         'stock_low' => 'Solo quedan :count',
         'added_to_favorites' => 'Agregado a favoritos',
         'removed_from_favorites' => 'Eliminado de favoritos',
+        'add_to_favorites_label' => 'Agregar a favoritos',
+        'remove_from_favorites_label' => 'Eliminar de favoritos',
         'sku_label' => 'REF',
         'material_label' => 'Material',
         'dimensions_label' => 'Dimensiones',
         'close_lightbox' => 'Cerrar',
         'stock_in_cart' => 'Todo el stock disponible ya está en tu carrito',
         'add_to_cart_error' => 'No se pudo agregar el producto al carrito',
+    ],
+
+    'wishlist' => [
+        'title' => 'Mis favoritos',
+        'breadcrumb_home' => 'Inicio',
+        'breadcrumb_wishlist' => 'Favoritos',
+        'empty_title' => 'Tu lista de favoritos está vacía',
+        'empty_message' => 'Guarda los productos que te gustan y encuéntralos aquí después.',
+        'empty_cta' => 'Explorar productos',
+        'unavailable_badge' => 'Ya no disponible',
+        'remove' => 'Quitar de favoritos',
+        'unavailable_message' => 'Este producto ya no está disponible.',
+        'out_of_stock_message' => 'Sin stock por el momento — vuelve a intentarlo más adelante.',
+        'explore_similar' => 'Explorar productos similares',
     ],
 ];

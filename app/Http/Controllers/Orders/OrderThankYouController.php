@@ -43,7 +43,6 @@ class OrderThankYouController extends Controller
 
         return view('orders.thank-you', [
             'order' => $order,
-            'title' => __('orders.thank_you.title'),
             'paymentReturn' => $paymentReturn,
             'payUrl' => $payUrl,
         ]);

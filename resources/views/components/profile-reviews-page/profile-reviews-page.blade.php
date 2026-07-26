@@ -74,6 +74,35 @@
                         <div class="flex items-start justify-between gap-4">
                             <div>
                                 <p class="font-semibold text-intense-cocoa">{{ $review->product->name }}</p>
+                                @if ($review->purchased_variants && count($review->purchased_variants) > 0)
+                                    <div class="mt-1 flex flex-wrap gap-1.5">
+                                        @foreach ($review->purchased_variants as $variant)
+                                            <span class="inline-flex items-center gap-1 text-xs text-intense-cocoa/50">
+                                                @if ($variant['color'])
+                                                    <span class="font-medium">{{ $variant['color'] }}</span>
+                                                @endif
+                                                @if ($variant['size'])
+                                                    <span class="font-medium">{{ $variant['size'] }}</span>
+                                                @endif
+                                                @if ($variant['sku'])
+                                                    <span>({{ $variant['sku'] }})</span>
+                                                @endif
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @elseif ($purchasedVariant = $purchasedVariants->get($review->product_id))
+                                    <p class="text-xs text-intense-cocoa/50">
+                                        {{ __('account.orders.sku_label') }}: {{ $purchasedVariant->sku }}
+                                        @if ($purchasedVariant->variant_label)
+                                            · {{ $purchasedVariant->variant_label }}
+                                        @endif
+                                    </p>
+                                @endif
+                                @if ($reviewsWithNewVariants->contains($review->id))
+                                    <p class="mt-2 rounded-sm border border-soft-gold/40 bg-soft-sand/60 px-3 py-2 text-xs text-intense-cocoa/70">
+                                        {{ __('reviews.ui.new_variants_available') }}
+                                    </p>
+                                @endif
                                 <div class="mt-1 flex items-center gap-1" role="img" aria-label="{{ __('account.reviews.rating_aria', ['rating' => $review->rating]) }}">
                                     @for ($i = 1; $i <= 5; $i++)
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 {{ $i <= $review->rating ? 'text-soft-gold' : 'text-intense-cocoa/20' }}" aria-hidden="true">
@@ -93,14 +122,33 @@
                                 <button type="button" wire:click="edit({{ $review->id }})" class="text-intense-cocoa underline underline-offset-2 hover:text-soft-gold">
                                     {{ __('account.reviews.edit') }}
                                 </button>
-                                <button
-                                    type="button"
-                                    wire:click="delete({{ $review->id }})"
-                                    wire:confirm="{{ __('account.reviews.confirm_delete') }}"
-                                    class="text-error underline underline-offset-2 hover:text-error/70"
-                                >
-                                    {{ __('account.reviews.delete') }}
-                                </button>
+                                @if ($confirmingDeleteId === $review->id)
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-intense-cocoa/70">{{ __('account.reviews.confirm_delete_prompt') }}</span>
+                                        <button
+                                            type="button"
+                                            wire:click="delete({{ $review->id }})"
+                                            class="text-error underline underline-offset-2 hover:text-error/70"
+                                        >
+                                            {{ __('account.reviews.delete') }}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            wire:click="cancelDeleteConfirmation"
+                                            class="text-intense-cocoa underline underline-offset-2 hover:text-soft-gold"
+                                        >
+                                            {{ __('account.reviews.cancel') }}
+                                        </button>
+                                    </div>
+                                @else
+                                    <button
+                                        type="button"
+                                        wire:click="confirmDelete({{ $review->id }})"
+                                        class="text-error underline underline-offset-2 hover:text-error/70"
+                                    >
+                                        {{ __('account.reviews.delete') }}
+                                    </button>
+                                @endif
                             </div>
                         </div>
                     @endif

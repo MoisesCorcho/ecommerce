@@ -89,6 +89,7 @@ return [
         'comment_placeholder' => 'Share your experience (optional)',
         'stars' => ':rating of 5 stars',
         'delete_confirm' => 'Delete this review permanently?',
+        'new_variants_available' => 'You have purchased new variants for this product. Consider updating your review.',
     ],
 
     'errors' => [

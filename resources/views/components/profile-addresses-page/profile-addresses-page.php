@@ -17,7 +17,7 @@ new #[Layout('layouts.storefront')] class extends Component
 {
     public function render()
     {
-        return $this->view()->title('Leen Handbags | '.__('account.addresses.title'));
+        return $this->view();
     }
 
     public ?int $editingId = null;

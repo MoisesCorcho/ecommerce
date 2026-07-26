@@ -69,6 +69,15 @@ class ProductVariant extends Model
     }
 
     /**
+     * Whether this specific variant is out of stock.
+     * Preorder products never mark their variants as out of stock.
+     */
+    public function isOutOfStock(): bool
+    {
+        return ! $this->product->is_preorder && $this->stock <= 0;
+    }
+
+    /**
      * @return BelongsTo<Product, $this>
      */
     public function product(): BelongsTo
@@ -106,5 +115,13 @@ class ProductVariant extends Model
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    /**
+     * @return HasMany<Wishlist, $this>
+     */
+    public function wishlists(): HasMany
+    {
+        return $this->hasMany(Wishlist::class);
     }
 }

@@ -89,6 +89,7 @@ return [
         'comment_placeholder' => 'Comparte tu experiencia (opcional)',
         'stars' => ':rating de 5 estrellas',
         'delete_confirm' => '¿Eliminar esta opinión de forma permanente?',
+        'new_variants_available' => 'Has comprado nuevas variantes de este producto. Considera actualizar tu opinión.',
     ],
 
     'errors' => [

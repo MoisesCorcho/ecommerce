@@ -1,4 +1,4 @@
-<x-layouts::storefront :title="$title">
+<x-layouts::storefront>
     <x-partials.account-shell active="orders" :order-number="$order->order_number">
         <div class="w-full max-w-2xl space-y-6">
             <div>
@@ -19,7 +19,20 @@
                             @if ($item->variant_label)
                                 <p class="text-sm text-intense-cocoa/60">{{ $item->variant_label }}</p>
                             @endif
+                            @if ($item->sku)
+                                <p class="text-xs uppercase tracking-wide text-intense-cocoa/40">{{ __('account.orders.sku_label') }}: {{ $item->sku }}</p>
+                            @endif
                             <p class="text-sm text-intense-cocoa/60">{{ __('orders.fields.quantity') }}: {{ $item->quantity }}</p>
+
+                            @if ($order->status->isEligibleForReview() && $item->productVariant?->product)
+                                <a
+                                    href="{{ route('products.show', $item->productVariant->product->slug).'#reviews-heading' }}"
+                                    class="mt-2 inline-block text-sm font-medium text-intense-cocoa underline decoration-soft-gold decoration-2 underline-offset-2 transition-colors hover:text-soft-gold"
+                                    data-leave-review="{{ $item->id }}"
+                                >
+                                    {{ __('account.orders.leave_review') }}
+                                </a>
+                            @endif
                         </div>
                         <p class="tabular-nums font-medium text-intense-cocoa">
                             {{ number_format($item->unit_price * $item->quantity) }} {{ $order->currency->value }}
