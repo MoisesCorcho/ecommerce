@@ -15,6 +15,7 @@ Route::livewire('/products', 'catalog-list')->name('products.index');
 Route::livewire('/products/{slug}', 'product-detail')->name('products.show');
 Route::livewire('/cart', 'cart-page')->name('cart.page');
 Route::livewire('/checkout', 'checkout-page')->name('checkout.show');
+Route::livewire('/contact', 'contact-page')->name('contact');
 
 // Fortify only provides action contracts (ignoreRoutes); these routes and
 // their Livewire components own the full request/response cycle.
