@@ -143,23 +143,6 @@ jobs:
           printf '%s\n' "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
-      # TEMPORAL: distingue "puerto 22 filtrado" de "servidor inalcanzable".
-      # Quitar una vez resuelto el problema de conectividad.
-      - name: Diagnose connectivity
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-        run: |
-          echo "IP publica del runner: $(curl -s --max-time 10 https://api.ipify.org || echo '?')"
-          for p in 22 80 443 8443; do
-            if timeout 10 bash -c "exec 3<>/dev/tcp/$SSH_HOST/$p" 2>/dev/null; then
-              echo "puerto $p: ALCANZABLE"
-            else
-              echo "puerto $p: inalcanzable"
-            fi
-          done
-          echo "--- traceroute a puerto 22 ---"
-          timeout 60 sudo traceroute -T -p 22 -n -m 15 "$SSH_HOST" 2>&1 | tail -8 || echo "traceroute no disponible"
-
       - name: Upload release
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
