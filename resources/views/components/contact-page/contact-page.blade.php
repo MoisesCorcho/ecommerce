@@ -271,7 +271,7 @@
         </div>
 
         {{-- FAQ CTA (R7) --}}
-        <section aria-labelledby="contact-faq-heading" class="mt-12 flex flex-col items-center gap-3 border border-intense-cocoa/15 bg-soft-sand px-8 py-10 text-center lg:mt-16">
+        <section aria-labelledby="contact-faq-heading" class="mt-12 flex flex-col items-center gap-3 bg-soft-sand px-8 py-10 text-center lg:mt-16">
             <h2 id="contact-faq-heading" class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
                 {{ __('contact.faq.heading') }}
             </h2>
