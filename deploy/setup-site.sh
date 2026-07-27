@@ -62,6 +62,44 @@ if grep -q 'SCRIPT_FILENAME \$document_root' "$VHOST"; then
     systemctl reload nginx
 fi
 
+echo "==> Parche del vhost: rutas de assets de Livewire"
+# Livewire sirve livewire.min.js por una RUTA de Laravel, no como archivo en
+# disco. El bloque de assets estaticos del panel es una location con regex, y
+# en nginx las regex tienen prioridad sobre el prefijo `location /`: atrapa
+# cualquier *.js, no encuentra el archivo y devuelve 404 sin llegar nunca a
+# PHP. Sin esto, ningun componente Livewire funciona en produccion.
+# `location ^~` tiene prioridad sobre las regex, asi que intercepta antes.
+# El vhost tiene DOS server: el publico (443), que proxya a 8080, y el backend
+# (8080), que corre PHP. Cada uno trae su propio bloque de assets, asi que el
+# parche difiere: en el publico hay que proxyar, en el backend hay que caer a
+# index.php. Poner try_files en el publico NO funciona: ese server no tiene
+# manejador de PHP.
+if ! grep -q 'location \^~ /livewire' "$VHOST"; then
+    cp "$VHOST" "$VHOST.bak-livewire-$(date +%s)"
+    awk '
+        index($0, "location ~*") > 0 && index($0, "(css|js|jpg") > 0 {
+            n++
+            print "  location ^~ /livewire {"
+            if (n == 1) {
+                print "    proxy_pass http://127.0.0.1:8080;"
+                print "    proxy_set_header Host $host;"
+                print "    proxy_set_header X-Forwarded-Host $host;"
+                print "    proxy_set_header X-Real-IP $remote_addr;"
+                print "    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;"
+                print "    proxy_redirect off;"
+            } else {
+                print "    try_files $uri $uri/ /index.php?$args;"
+            }
+            print "  }"
+            print ""
+        }
+        { print }
+    ' "$VHOST" > "$VHOST.tmp"
+    mv "$VHOST.tmp" "$VHOST"
+    nginx -t
+    systemctl reload nginx
+fi
+
 echo "==> Clave de deploy para $SITE_USER"
 install -d -o "$SITE_USER" -g "$SITE_USER" -m 700 "/home/$SITE_USER/.ssh"
 AK="/home/$SITE_USER/.ssh/authorized_keys"
