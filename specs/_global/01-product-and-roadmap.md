@@ -60,6 +60,7 @@ Rutas de specs se crean al iniciar cada feature (`specs/features/<slug>/`).
 | F08 | Auth (login/registro storefront) | 3 · Post-compra | Completa | F01, F02 |
 | F09 | Cuenta/perfil del comprador (perfil, direcciones, mis pedidos, mis reseñas) | 3 · Post-compra | Completa | F08 |
 | F10 | Wishlist | 3 · Post-compra | Completa | F01, F02, F08 (requiere usuario identificado, sin modo invitado) |
+| F11 | FAQ (página estática de preguntas frecuentes) | 4 · Páginas utilitarias | Completa | Ninguna (página estática) |
 
 Sincronizar la columna **Estado** con el bloque `> Estado:` de cada `requirements.md` cuando exista.
 
@@ -132,6 +133,13 @@ Sincronizar la columna **Estado** con el bloque `> Estado:` de cada `requirement
 - Requiere usuario autenticado (F08); a diferencia de carrito/checkout/cupones, **no** admite modo invitado — `wishlists.user_id` es obligatorio en el esquema ya existente.
 - No bloquea el path de compra; priorizar tras F04/F05 salvo necesidad de demo.
 
+#### F11 FAQ (página estática)
+
+- **Incluye:** ruta pública `/faq`, categorías como tabs horizontales, acordeón de preguntas (Alpine.js), CTA a contacto, i18n en `lang/{en,es}/faq.php`.
+- **No incluye:** buscador de preguntas, preguntas destacadas, administración desde panel, modelo de datos.
+- Página estática: contenido en archivos de traducción, sin migraciones ni modelos. Patrón similar a la página de contacto.
+- Specs: `specs/features/11-faq/`.
+
 ## Orden de corrección / implementación
 
 1. F01 (admin) → F02 (pueden solaparse en branches si no compiten por archivos críticos).
@@ -142,6 +150,7 @@ Sincronizar la columna **Estado** con el bloque `> Estado:` de cada `requirement
 6. F06 cuando el punto de aplicación (carrito vs orden) esté decidido.
 7. F07 (Reviews) y F08 (Auth) cuando el catálogo (y, si aplica, la compra) estén listos; F08 no depende de F07.
 8. F09 (Cuenta/perfil) y F10 (Wishlist) después de F08 — F10 depende estrictamente de F08, F09 no bloquea a F10.
+9. F11 (FAQ) es independiente — página estática sin dependencias de features previas. Puede implementarse en cualquier momento.
 
 ## Cuando una feature toca el esquema
 
