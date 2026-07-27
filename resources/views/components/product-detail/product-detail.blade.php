@@ -512,7 +512,7 @@
                                 <select
                                     id="review-rating"
                                     wire:model="reviewRating"
-                                    class="h-11 w-full border border-intense-cocoa/20 bg-white px-3 text-sm text-intense-cocoa focus:border-intense-cocoa focus:outline-none focus:ring-1 focus:ring-intense-cocoa"
+                                    class="h-11 w-full border border-intense-cocoa/20 bg-silk-cream px-3 text-sm text-intense-cocoa focus:border-intense-cocoa focus:outline-none focus:ring-1 focus:ring-intense-cocoa"
                                 >
                                     <option value="">{{ __('reviews.ui.rating_required') }}</option>
                                     @for ($star = 5; $star >= 1; $star--)
@@ -534,7 +534,7 @@
                                     rows="4"
                                     maxlength="2000"
                                     placeholder="{{ __('reviews.ui.comment_placeholder') }}"
-                                    class="w-full border border-intense-cocoa/20 bg-white px-3 py-2 text-sm text-intense-cocoa placeholder:text-intense-cocoa/40 focus:border-intense-cocoa focus:outline-none focus:ring-1 focus:ring-intense-cocoa"
+                                    class="w-full border border-intense-cocoa/20 bg-silk-cream px-3 py-2 text-sm text-intense-cocoa placeholder:text-intense-cocoa/40 focus:border-intense-cocoa focus:outline-none focus:ring-1 focus:ring-intense-cocoa"
                                 ></textarea>
                                 @error('reviewComment')
                                     <p class="mt-1 text-sm text-error">{{ $message }}</p>

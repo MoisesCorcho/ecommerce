@@ -72,4 +72,20 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Contact page (contacto)
+    |--------------------------------------------------------------------------
+    |
+    | `inbox` receives every contact-form submission (Mail::to). `public_email`
+    | is shown to visitors as the info-column mailto and as the error-banner
+    | fallback when the transactional send fails.
+    |
+    */
+
+    'contact' => [
+        'inbox' => env('CONTACT_MAIL_TO'),
+        'public_email' => env('CONTACT_PUBLIC_EMAIL'),
+    ],
+
 ];

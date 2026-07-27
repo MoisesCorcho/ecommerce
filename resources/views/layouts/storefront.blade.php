@@ -29,7 +29,7 @@
                 <a href="{{ url('/about-us') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
                     {{ __('storefront.nav.about') }}
                 </a>
-                <a href="{{ url('/contact') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
+                <a href="{{ route('contact') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
                     {{ __('storefront.nav.contact') }}
                 </a>
             </nav>
@@ -91,7 +91,7 @@
                 <a href="{{ url('/about-us') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
                     {{ __('storefront.nav.about') }}
                 </a>
-                <a href="{{ url('/contact') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
+                <a href="{{ route('contact') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
                     {{ __('storefront.nav.contact') }}
                 </a>
                 @guest
@@ -125,10 +125,10 @@
                 {{-- Links and social icons --}}
                 <div class="flex flex-col items-center justify-center gap-x-8 gap-y-4 md:flex-row">
                     <nav class="flex items-center gap-8" aria-label="Footer">
-                        <a href="{{ url('/faqs') }}" class="text-[11px] font-semibold uppercase tracking-widest text-intense-cocoa/80 transition-colors hover:text-soft-gold">
+                        <a href="{{ url('/faq') }}" class="text-[11px] font-semibold uppercase tracking-widest text-intense-cocoa/80 transition-colors hover:text-soft-gold">
                             {{ __('storefront.footer.faqs') }}
                         </a>
-                        <a href="{{ url('/contact') }}" class="text-[11px] font-semibold uppercase tracking-widest text-intense-cocoa/80 transition-colors hover:text-soft-gold">
+                        <a href="{{ route('contact') }}" class="text-[11px] font-semibold uppercase tracking-widest text-intense-cocoa/80 transition-colors hover:text-soft-gold">
                             {{ __('storefront.footer.contact') }}
                         </a>
                     </nav>
