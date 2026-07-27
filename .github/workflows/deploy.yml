@@ -68,6 +68,19 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      # Los tests de feature renderizan vistas con @vite: sin el manifest de
+      # Vite fallan 19 con "Vite manifest not found", sin relación con el
+      # código que se está probando. --ignore-scripts evita instalar Lefthook.
+      - name: Build assets
+        run: |
+          npm ci --ignore-scripts
+          npm run build
+
       - name: Check code style
         run: vendor/bin/pint --test
 
