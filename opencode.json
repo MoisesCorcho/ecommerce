@@ -1,11 +1,11 @@
 {
     "$schema": "https://opencode.ai/config.json",
+
     "mcp": {
         "laravel-boost": {
             "type": "local",
             "enabled": true,
             "command": [
-                "wsl",
                 "bash",
                 "-c",
                 "cd /home/noro/proyectos/ecommerce && exec vendor/bin/sail artisan boost:mcp"
@@ -15,7 +15,6 @@
             "type": "local",
             "enabled": true,
             "command": [
-                "wsl",
                 "/home/noro/.npm-global/bin/codegraph",
                 "serve",
                 "--mcp"
@@ -30,7 +29,6 @@
             "type": "local",
             "enabled": true,
             "command": [
-                "wsl",
                 "/home/noro/.local/bin/engram",
                 "mcp",
                 "--tools=agent"
