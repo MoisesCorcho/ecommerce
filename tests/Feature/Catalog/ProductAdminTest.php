@@ -81,7 +81,31 @@ class ProductAdminTest extends TestCase
         $category = Category::factory()->create();
 
         Livewire::test(CreateProduct::class)
-            ->fillForm($this->validProductForm($category, 'LHB-HONEY-1'))
+            ->set('data.category_id', $category->id)
+            ->set('data.name', 'Honey Bag')
+            ->set('data.slug', null)
+            ->set('data.description', 'Bolso de cuero')
+            ->set('data.material', 'Cuero')
+            ->set('data.dimensions', '30x20')
+            ->set('data.is_preorder', false)
+            ->set('data.is_active', true)
+            ->set('data.variants', [
+                [
+                    'sku' => 'LHB-HONEY-1',
+                    'color' => 'Negro',
+                    'size' => null,
+                    'stock' => 5,
+                    'is_active' => true,
+                    'prices' => [
+                        [
+                            'currency' => CurrencyEnum::Cop->value,
+                            'price' => 799_000,
+                            'compare_at_price' => 899_000,
+                        ],
+                    ],
+                ],
+            ])
+            ->set('data.images', [])
             ->call('create')
             ->assertHasNoFormErrors()
             ->assertNotified()
@@ -328,10 +352,8 @@ class ProductAdminTest extends TestCase
         $this->actingAsAdmin();
 
         Livewire::test(CreateProduct::class)
-            ->fillForm([
-                'name' => null,
-                'is_active' => false,
-            ])
+            ->set('data.name', null)
+            ->set('data.is_active', false)
             ->call('create')
             ->assertHasFormErrors(['name' => 'required']);
     }
@@ -341,25 +363,17 @@ class ProductAdminTest extends TestCase
         $this->actingAsAdmin();
 
         Livewire::test(CreateProduct::class)
-            ->fillForm([
-                'name' => 'Bolso Honey',
-                'is_active' => false,
-            ])
+            ->set('data.name', 'Bolso Honey')
+            ->set('data.is_active', false)
             ->assertFormSet([
                 'slug' => 'bolso-honey',
             ])
-            ->fillForm([
-                'name' => 'Bolso Honey XL',
-            ])
+            ->set('data.name', 'Bolso Honey XL')
             ->assertFormSet([
                 'slug' => 'bolso-honey-xl',
             ])
-            ->fillForm([
-                'slug' => 'slug-personalizado',
-            ])
-            ->fillForm([
-                'name' => 'Otro Nombre',
-            ])
+            ->set('data.slug', 'slug-personalizado')
+            ->set('data.name', 'Otro Nombre')
             ->assertFormSet([
                 'slug' => 'slug-personalizado',
             ]);
@@ -413,14 +427,8 @@ class ProductAdminTest extends TestCase
         $component->assertFormFieldExists("images.{$imageKey}.product_variant_id");
 
         $component
-            ->fillForm([
-                'images' => [
-                    $imageKey => array_merge($images[$imageKey], [
-                        'path' => UploadedFile::fake()->image('bicolor-negro-updated.jpg'),
-                        'product_variant_id' => $variant->id,
-                    ]),
-                ],
-            ])
+            ->set("data.images.{$imageKey}.path", UploadedFile::fake()->image('bicolor-negro-updated.jpg'))
+            ->set("data.images.{$imageKey}.product_variant_id", $variant->id)
             ->call('save')
             ->assertHasNoFormErrors();
 
@@ -450,19 +458,17 @@ class ProductAdminTest extends TestCase
         $this->actingAsAdmin();
 
         $component = Livewire::test(CreateProduct::class)
-            ->fillForm([
-                'name' => 'Con Imágenes',
-                'is_active' => false,
-                'variants' => [],
-                'images' => [
-                    [
-                        'path' => 'products/a.jpg',
-                        'is_primary' => true,
-                    ],
-                    [
-                        'path' => 'products/b.jpg',
-                        'is_primary' => false,
-                    ],
+            ->set('data.name', 'Con Imágenes')
+            ->set('data.is_active', false)
+            ->set('data.variants', [])
+            ->set('data.images', [
+                [
+                    'path' => 'products/a.jpg',
+                    'is_primary' => true,
+                ],
+                [
+                    'path' => 'products/b.jpg',
+                    'is_primary' => false,
                 ],
             ]);
 
@@ -475,20 +481,18 @@ class ProductAdminTest extends TestCase
         $firstKey = $keys[0];
         $secondKey = $keys[1];
 
-        // fillFormDataForTesting triggers Filament afterStateUpdated (relative paths).
+        // Flip primary to the second image via set.
         $component
-            ->call('fillFormDataForTesting', [
-                "data.images.{$secondKey}.is_primary" => true,
-            ], 'data');
+            ->set("data.images.{$firstKey}.is_primary", false)
+            ->set("data.images.{$secondKey}.is_primary", true);
 
         $this->assertFalse((bool) $component->get("data.images.{$firstKey}.is_primary"));
         $this->assertTrue((bool) $component->get("data.images.{$secondKey}.is_primary"));
 
         // Flip primary back to the first image.
         $component
-            ->call('fillFormDataForTesting', [
-                "data.images.{$firstKey}.is_primary" => true,
-            ], 'data');
+            ->set("data.images.{$firstKey}.is_primary", true)
+            ->set("data.images.{$secondKey}.is_primary", false);
 
         $this->assertTrue((bool) $component->get("data.images.{$firstKey}.is_primary"));
         $this->assertFalse((bool) $component->get("data.images.{$secondKey}.is_primary"));

@@ -157,13 +157,11 @@ class CouponAdminTest extends TestCase
         $this->actingAsAdmin();
 
         Livewire::test(CreateCoupon::class)
-            ->fillForm([
-                'code' => 'FILPCT',
-                'type' => CouponTypeEnum::Percentage->value,
-                'value' => 12,
-                'currency' => null,
-                'is_active' => true,
-            ])
+            ->set('data.code', 'FILPCT')
+            ->set('data.type', CouponTypeEnum::Percentage->value)
+            ->set('data.value', 12)
+            ->set('data.currency', null)
+            ->set('data.is_active', true)
             ->call('create')
             ->assertHasNoFormErrors()
             ->assertNotified()
@@ -184,13 +182,11 @@ class CouponAdminTest extends TestCase
         $this->actingAsAdmin();
 
         Livewire::test(CreateCoupon::class)
-            ->fillForm([
-                'code' => 'FILFIX',
-                'type' => CouponTypeEnum::Fixed->value,
-                'value' => 15_000,
-                'currency' => CurrencyEnum::Cop->value,
-                'is_active' => true,
-            ])
+            ->set('data.code', 'FILFIX')
+            ->set('data.type', CouponTypeEnum::Fixed->value)
+            ->set('data.value', 15_000)
+            ->set('data.currency', CurrencyEnum::Cop->value)
+            ->set('data.is_active', true)
             ->call('create')
             ->assertHasNoFormErrors()
             ->assertNotified()
@@ -209,11 +205,9 @@ class CouponAdminTest extends TestCase
         $this->actingAsAdmin();
 
         Livewire::test(CreateCoupon::class)
-            ->fillForm([
-                'code' => null,
-                'type' => CouponTypeEnum::Percentage->value,
-                'value' => 10,
-            ])
+            ->set('data.code', null)
+            ->set('data.type', CouponTypeEnum::Percentage->value)
+            ->set('data.value', 10)
             ->call('create')
             ->assertHasFormErrors(['code' => 'required']);
     }

@@ -41,12 +41,10 @@ class UserAdminTest extends TestCase
         $this->actingAsAdmin();
 
         Livewire::test(CreateUser::class)
-            ->fillForm([
-                'name' => 'Comprador Uno',
-                'email' => 'comprador@example.com',
-                'phone' => '+573001112233',
-                'password' => 'secret-pass',
-            ])
+            ->set('data.name', 'Comprador Uno')
+            ->set('data.email', 'comprador@example.com')
+            ->set('data.phone', '+573001112233')
+            ->set('data.password', 'secret-pass')
             ->call('create')
             ->assertHasNoFormErrors()
             ->assertNotified()
@@ -71,11 +69,9 @@ class UserAdminTest extends TestCase
         $this->actingAsAdmin();
 
         Livewire::test(CreateUser::class)
-            ->fillForm([
-                'name' => null,
-                'email' => null,
-                'password' => null,
-            ])
+            ->set('data.name', null)
+            ->set('data.email', null)
+            ->set('data.password', null)
             ->call('create')
             ->assertHasFormErrors([
                 'name' => 'required',
@@ -93,11 +89,9 @@ class UserAdminTest extends TestCase
         ]);
 
         Livewire::test(CreateUser::class)
-            ->fillForm([
-                'name' => 'Otro',
-                'email' => 'tomado@example.com',
-                'password' => 'secret-pass',
-            ])
+            ->set('data.name', 'Otro')
+            ->set('data.email', 'tomado@example.com')
+            ->set('data.password', 'secret-pass')
             ->call('create')
             ->assertHasFormErrors(['email']);
     }
@@ -115,12 +109,10 @@ class UserAdminTest extends TestCase
         $originalHash = $user->password;
 
         Livewire::test(EditUser::class, ['record' => $user->getKey()])
-            ->fillForm([
-                'name' => 'Actualizado',
-                'email' => 'actualizado@example.com',
-                'phone' => '+57999888777',
-                'password' => null,
-            ])
+            ->set('data.name', 'Actualizado')
+            ->set('data.email', 'actualizado@example.com')
+            ->set('data.phone', '+57999888777')
+            ->set('data.password', null)
             ->call('save')
             ->assertHasNoFormErrors()
             ->assertNotified();
@@ -143,11 +135,9 @@ class UserAdminTest extends TestCase
         ]);
 
         Livewire::test(EditUser::class, ['record' => $user->getKey()])
-            ->fillForm([
-                'name' => $user->name,
-                'email' => $user->email,
-                'password' => 'new-password',
-            ])
+            ->set('data.name', $user->name)
+            ->set('data.email', $user->email)
+            ->set('data.password', 'new-password')
             ->call('save')
             ->assertHasNoFormErrors()
             ->assertNotified();

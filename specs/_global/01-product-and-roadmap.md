@@ -61,6 +61,7 @@ Rutas de specs se crean al iniciar cada feature (`specs/features/<slug>/`).
 | F09 | Cuenta/perfil del comprador (perfil, direcciones, mis pedidos, mis reseñas) | 3 · Post-compra | Completa | F08 |
 | F10 | Wishlist | 3 · Post-compra | Completa | F01, F02, F08 (requiere usuario identificado, sin modo invitado) |
 | F11 | FAQ (página estática de preguntas frecuentes) | 4 · Páginas utilitarias | Completa | Ninguna (página estática) |
+| F12 | About Us (página estática institucional) | 4 · Páginas utilitarias | Completa | Ninguna (página estática) |
 
 Sincronizar la columna **Estado** con el bloque `> Estado:` de cada `requirements.md` cuando exista.
 

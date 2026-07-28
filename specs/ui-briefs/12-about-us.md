@@ -2,7 +2,7 @@
 
 > **Vista:** About Us · **Ruta sugerida:** `/about-us`
 > **Depende de:** Ninguna (página estática)
-> **Estado:** Lista para implementar
+> **Estado:** Completa
 
 ---
 

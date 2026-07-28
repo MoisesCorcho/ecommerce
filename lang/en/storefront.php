@@ -6,7 +6,7 @@ return [
     'nav' => [
         'home' => 'Home',
         'shop' => 'Shop',
-        'about' => 'About',
+        'about' => 'About Us',
         'contact' => 'Contact',
         'search' => 'Search',
         'favorites' => 'Favorites',

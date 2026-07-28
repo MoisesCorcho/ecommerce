@@ -130,17 +130,15 @@ class ProductPublishInvariantTest extends TestCase
         $this->actingAs($user);
 
         Livewire::test(CreateProduct::class)
-            ->fillForm([
-                'name' => 'No Price',
-                'is_active' => true,
-                'is_preorder' => false,
-                'variants' => [
-                    [
-                        'sku' => 'NP-1',
-                        'stock' => 1,
-                        'is_active' => true,
-                        'prices' => [],
-                    ],
+            ->set('data.name', 'No Price')
+            ->set('data.is_active', true)
+            ->set('data.is_preorder', false)
+            ->set('data.variants', [
+                [
+                    'sku' => 'NP-1',
+                    'stock' => 1,
+                    'is_active' => true,
+                    'prices' => [],
                 ],
             ])
             ->call('create')
