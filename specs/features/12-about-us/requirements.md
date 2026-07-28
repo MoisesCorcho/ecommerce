@@ -1,6 +1,6 @@
 # About Us — Nuestra Esencia
 
-> **Estado:** Specs en progreso
+> **Estado:** Completa
 > **ID:** F12 · **Slug:** `12-about-us` (página estática de storefront, fuera de la secuencia F0N del roadmap)
 > **Prerequisitos:** Ninguna (página estática) — ver [`ui-briefs/12-about-us.md`](../../ui-briefs/12-about-us.md)
 > **Desbloquea:** —
