@@ -17,6 +17,8 @@ use App\Models\Order;
 use App\Models\Payment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Psr\Log\LoggerInterface;
 use Tests\TestCase;
 
 class BoldPaymentGatewayTest extends TestCase
@@ -103,6 +105,16 @@ class BoldPaymentGatewayTest extends TestCase
 
     public function test_create_hosted_checkout_throws_on_bold_403(): void
     {
+        $paymentsLog = \Mockery::mock(LoggerInterface::class);
+        $paymentsLog->shouldReceive('warning')
+            ->once()
+            ->withArgs(function (string $message, array $context = []): bool {
+                return $message === 'payments.gateway.bold.create_rejected'
+                    && ($context['http_status'] ?? null) === 403
+                    && ! array_key_exists('body', $context);
+            });
+        Log::shouldReceive('channel')->with('payments')->andReturn($paymentsLog);
+
         config([
             'ecommerce.payments.bold.api_key' => 'test-identity-key',
             'ecommerce.payments.bold.api_base' => 'https://integrations.api.bold.co',
@@ -114,16 +126,19 @@ class BoldPaymentGatewayTest extends TestCase
 
         [$order, $payment] = $this->makeCopOrderAndPayment();
 
-        $this->expectException(PaymentGatewayException::class);
-
-        app(BoldPaymentGateway::class)->createHostedCheckout(
-            $order,
-            $payment,
-            new HostedCheckoutReturnDTO(
-                successUrl: 'https://shop.example.com/ok',
-                cancelUrl: 'https://shop.example.com/cancel',
-            ),
-        );
+        try {
+            app(BoldPaymentGateway::class)->createHostedCheckout(
+                $order,
+                $payment,
+                new HostedCheckoutReturnDTO(
+                    successUrl: 'https://shop.example.com/ok',
+                    cancelUrl: 'https://shop.example.com/cancel',
+                ),
+            );
+            $this->fail('Expected PaymentGatewayException');
+        } catch (PaymentGatewayException) {
+            // expected
+        }
     }
 
     public function test_webhook_signature_accepts_empty_secret_in_test_mode(): void

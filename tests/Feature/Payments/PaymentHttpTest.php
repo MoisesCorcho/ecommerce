@@ -16,7 +16,9 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
+use Psr\Log\LoggerInterface;
 use Tests\TestCase;
 
 class PaymentHttpTest extends TestCase
@@ -233,6 +235,15 @@ class PaymentHttpTest extends TestCase
 
     public function test_webhook_invalid_signature_returns_400(): void
     {
+        $paymentsLog = \Mockery::mock(LoggerInterface::class);
+        $paymentsLog->shouldReceive('warning')
+            ->once()
+            ->withArgs(function (string $message, array $context = []): bool {
+                return $message === 'payments.webhook.invalid_signature'
+                    && ($context['provider'] ?? null) === PaymentProviderEnum::Bold->value;
+            });
+        Log::shouldReceive('channel')->with('payments')->andReturn($paymentsLog);
+
         $this->call(
             'POST',
             route('webhooks.bold'),
