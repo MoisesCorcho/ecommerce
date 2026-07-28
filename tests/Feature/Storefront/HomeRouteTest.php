@@ -80,9 +80,18 @@ class HomeRouteTest extends TestCase
     public function test_home_renders_categories_and_featured_grids(): void
     {
         // Even with empty data, the Livewire grid components must be present on the page.
-        $this->get('/')
-            ->assertOk()
-            ->assertSeeLivewire('categories-grid')
-            ->assertSeeLivewire('featured-products-grid');
+        // Use the same detection logic as Livewire's assertSeeLivewire macro:
+        // the component name is embedded as JSON inside wire:snapshot attributes.
+        $response = $this->get('/')->assertOk();
+
+        foreach (['categories-grid', 'featured-products-grid'] as $component) {
+            $needle = trim(htmlspecialchars(json_encode(['name' => $component])), '{}');
+
+            $this->assertStringContainsString(
+                $needle,
+                $response->getContent(),
+                "Cannot find Livewire component [{$component}] rendered on page.",
+            );
+        }
     }
 }

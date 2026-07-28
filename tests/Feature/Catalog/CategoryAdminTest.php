@@ -41,10 +41,8 @@ class CategoryAdminTest extends TestCase
         $this->actingAsAdmin();
 
         Livewire::test(CreateCategory::class)
-            ->fillForm([
-                'name' => 'Bolsos',
-                'slug' => null,
-            ])
+            ->set('data.name', 'Bolsos')
+            ->set('data.slug', null)
             ->call('create')
             ->assertHasNoFormErrors()
             ->assertNotified()
@@ -110,9 +108,7 @@ class CategoryAdminTest extends TestCase
         $this->actingAsAdmin();
 
         Livewire::test(CreateCategory::class)
-            ->fillForm([
-                'name' => null,
-            ])
+            ->set('data.name', null)
             ->call('create')
             ->assertHasFormErrors(['name' => 'required']);
     }
@@ -122,24 +118,16 @@ class CategoryAdminTest extends TestCase
         $this->actingAsAdmin();
 
         Livewire::test(CreateCategory::class)
-            ->fillForm([
-                'name' => 'Bolsos de mano',
-            ])
+            ->set('data.name', 'Bolsos de mano')
             ->assertFormSet([
                 'slug' => 'bolsos-de-mano',
             ])
-            ->fillForm([
-                'name' => 'Bolsos de viaje',
-            ])
+            ->set('data.name', 'Bolsos de viaje')
             ->assertFormSet([
                 'slug' => 'bolsos-de-viaje',
             ])
-            ->fillForm([
-                'slug' => 'mi-slug',
-            ])
-            ->fillForm([
-                'name' => 'Otra categoría',
-            ])
+            ->set('data.slug', 'mi-slug')
+            ->set('data.name', 'Otra categoría')
             ->assertFormSet([
                 'slug' => 'mi-slug',
             ]);
@@ -155,10 +143,8 @@ class CategoryAdminTest extends TestCase
         ]);
 
         Livewire::test(EditCategory::class, ['record' => $category->getKey()])
-            ->fillForm([
-                'name' => 'Actualizada',
-                'slug' => 'actualizada',
-            ])
+            ->set('data.name', 'Actualizada')
+            ->set('data.slug', 'actualizada')
             ->call('save')
             ->assertHasNoFormErrors()
             ->assertNotified();

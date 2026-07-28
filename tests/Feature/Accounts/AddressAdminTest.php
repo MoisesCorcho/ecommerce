@@ -69,11 +69,20 @@ class AddressAdminTest extends TestCase
             'email' => 'owner@example.com',
         ]);
 
-        Livewire::test(AddressesRelationManager::class, [
+        // Create address: mount action, fill data, then execute
+        $component = Livewire::test(AddressesRelationManager::class, [
             'ownerRecord' => $owner,
             'pageClass' => EditUser::class,
-        ])
-            ->callAction(TestAction::make(CreateAction::class)->table(), $this->validAddressPayload())
+        ]);
+
+        $component->mountAction(TestAction::make(CreateAction::class)->table());
+
+        foreach ($this->validAddressPayload() as $key => $value) {
+            $component->set("mountedActions.0.data.{$key}", $value);
+        }
+
+        $component
+            ->callMountedAction()
             ->assertNotified()
             ->assertHasNoActionErrors();
 
@@ -82,14 +91,22 @@ class AddressAdminTest extends TestCase
         $this->assertSame('Ana Pérez', $address->full_name);
         $this->assertSame('Medellín', $address->city);
 
-        Livewire::test(AddressesRelationManager::class, [
+        $editComponent = Livewire::test(AddressesRelationManager::class, [
             'ownerRecord' => $owner,
             'pageClass' => EditUser::class,
-        ])
-            ->callAction(TestAction::make(EditAction::class)->table($address), $this->validAddressPayload([
-                'full_name' => 'Ana Actualizada',
-                'city' => 'Bogotá',
-            ]))
+        ]);
+
+        $editComponent->mountAction(TestAction::make(EditAction::class)->table($address));
+
+        foreach ($this->validAddressPayload([
+            'full_name' => 'Ana Actualizada',
+            'city' => 'Bogotá',
+        ]) as $key => $value) {
+            $editComponent->set("mountedActions.0.data.{$key}", $value);
+        }
+
+        $editComponent
+            ->callMountedAction()
             ->assertNotified()
             ->assertHasNoActionErrors();
 
@@ -188,13 +205,21 @@ class AddressAdminTest extends TestCase
 
         $owner = User::factory()->create();
 
-        Livewire::test(AddressesRelationManager::class, [
+        $component = Livewire::test(AddressesRelationManager::class, [
             'ownerRecord' => $owner,
             'pageClass' => EditUser::class,
-        ])
-            ->callAction(TestAction::make(CreateAction::class)->table(), $this->validAddressPayload([
-                'country' => 'COL',
-            ]))
+        ]);
+
+        $component->mountAction(TestAction::make(CreateAction::class)->table());
+
+        foreach ($this->validAddressPayload([
+            'country' => 'COL',
+        ]) as $key => $value) {
+            $component->set("mountedActions.0.data.{$key}", $value);
+        }
+
+        $component
+            ->callMountedAction()
             ->assertHasActionErrors(['country']);
     }
 }
