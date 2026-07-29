@@ -252,6 +252,9 @@
                         <h2 class="mb-4 font-[family-name:var(--font-chillax)] text-xl font-semibold text-intense-cocoa">
                             {{ __('orders.checkout.summary_title') }}
                         </h2>
+                        @php
+                            $currencyEnum = \App\Enums\Commerce\CurrencyEnum::tryFrom((string) ($preview['currency'] ?? ''));
+                        @endphp
                         <ul class="mb-4 space-y-3 text-sm text-intense-cocoa">
                             @foreach ($preview['lines'] as $line)
                                 <li class="flex justify-between gap-3 border-b border-intense-cocoa/10 pb-2">
@@ -262,28 +265,28 @@
                                         @endif
                                         × {{ $line['quantity'] }}
                                     </span>
-                                    <span class="font-medium tabular-nums">{{ number_format($line['lineSubtotal']) }} {{ $preview['currency'] }}</span>
+                                    <span class="font-medium tabular-nums">{{ $currencyEnum?->format($line['lineSubtotal']) ?? number_format($line['lineSubtotal']).' '.$preview['currency'] }}</span>
                                 </li>
                             @endforeach
                         </ul>
                         <dl class="space-y-2 text-sm text-intense-cocoa">
                             <div class="flex justify-between">
                                 <dt>{{ __('orders.fields.subtotal') }}</dt>
-                                <dd class="tabular-nums">{{ number_format($preview['subtotal']) }} {{ $preview['currency'] }}</dd>
+                                <dd class="tabular-nums">{{ $currencyEnum?->format($preview['subtotal']) ?? number_format($preview['subtotal']).' '.$preview['currency'] }}</dd>
                             </div>
                             <div class="flex justify-between">
                                 <dt>{{ __('orders.shipping.standard') }}</dt>
-                                <dd class="tabular-nums">{{ number_format($preview['shippingCost']) }} {{ $preview['currency'] }}</dd>
+                                <dd class="tabular-nums">{{ $currencyEnum?->format($preview['shippingCost']) ?? number_format($preview['shippingCost']).' '.$preview['currency'] }}</dd>
                             </div>
                             @if (($preview['discount'] ?? 0) > 0)
                                 <div class="flex justify-between text-success" data-checkout-discount>
                                     <dt>{{ __('orders.fields.discount') }}</dt>
-                                    <dd>−{{ number_format($preview['discount']) }} {{ $preview['currency'] }}</dd>
+                                    <dd>−{{ $currencyEnum?->format($preview['discount']) ?? number_format($preview['discount']).' '.$preview['currency'] }}</dd>
                                 </div>
                             @endif
                             <div class="flex justify-between border-t border-intense-cocoa/10 pt-3 text-base font-semibold">
                                 <dt>{{ __('orders.fields.total') }}</dt>
-                                <dd class="text-xl tabular-nums" data-checkout-total>{{ number_format($preview['total']) }} {{ $preview['currency'] }}</dd>
+                                <dd class="text-xl tabular-nums" data-checkout-total>{{ $currencyEnum?->format($preview['total']) ?? number_format($preview['total']).' '.$preview['currency'] }}</dd>
                             </div>
                         </dl>
 

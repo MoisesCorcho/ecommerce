@@ -80,7 +80,7 @@
                     </div>
                     <div class="flex justify-between border-b border-intense-cocoa/10 py-2">
                         <dt class="text-intense-cocoa/60">{{ __('orders.fields.total') }}</dt>
-                        <dd class="font-medium tabular-nums">{{ number_format($order->total) }} {{ $order->currency->value }}</dd>
+                        <dd class="font-medium tabular-nums">{{ $order->currency->format($order->total) }}</dd>
                     </div>
                     <div class="flex justify-between py-2">
                         <dt class="text-intense-cocoa/60">{{ __('orders.fields.email') }}</dt>
