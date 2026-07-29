@@ -35,7 +35,7 @@
                             @endif
                         </div>
                         <p class="tabular-nums font-medium text-intense-cocoa">
-                            {{ number_format($item->unit_price * $item->quantity) }} {{ $order->currency->value }}
+                            {{ $order->currency->format($item->unit_price * $item->quantity) }}
                         </p>
                     </div>
                 @endforeach
@@ -45,21 +45,21 @@
             <dl class="space-y-2 bg-soft-sand p-6 text-sm text-intense-cocoa shadow-ambient">
                 <div class="flex justify-between border-b border-intense-cocoa/10 py-2">
                     <dt class="text-intense-cocoa/60">{{ __('orders.fields.subtotal') }}</dt>
-                    <dd class="tabular-nums">{{ number_format($order->subtotal) }} {{ $order->currency->value }}</dd>
+                    <dd class="tabular-nums">{{ $order->currency->format($order->subtotal) }}</dd>
                 </div>
                 @if ($order->discount > 0)
                     <div class="flex justify-between border-b border-intense-cocoa/10 py-2">
                         <dt class="text-intense-cocoa/60">{{ __('orders.fields.discount') }}</dt>
-                        <dd class="tabular-nums">-{{ number_format($order->discount) }} {{ $order->currency->value }}</dd>
+                        <dd class="tabular-nums">-{{ $order->currency->format($order->discount) }}</dd>
                     </div>
                 @endif
                 <div class="flex justify-between border-b border-intense-cocoa/10 py-2">
                     <dt class="text-intense-cocoa/60">{{ __('orders.fields.shipping_cost') }}</dt>
-                    <dd class="tabular-nums">{{ number_format($order->shipping_cost) }} {{ $order->currency->value }}</dd>
+                    <dd class="tabular-nums">{{ $order->currency->format($order->shipping_cost) }}</dd>
                 </div>
                 <div class="flex justify-between py-2">
                     <dt class="font-medium">{{ __('orders.fields.total') }}</dt>
-                    <dd class="tabular-nums font-medium">{{ number_format($order->total) }} {{ $order->currency->value }}</dd>
+                    <dd class="tabular-nums font-medium">{{ $order->currency->format($order->total) }}</dd>
                 </div>
             </dl>
 

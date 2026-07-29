@@ -163,17 +163,15 @@
                         $price = $selectedVariant->priceIn($currencyEnum);
                     @endphp
                     <span class="font-[family-name:var(--font-sans)] text-2xl font-semibold tabular-nums text-intense-cocoa">
-                        {{ number_format($price->price, 0, ',', '.') }}
+                        {{ $currencyEnum->format($price->price) }}
                     </span>
-                    <span class="text-sm font-medium text-intense-cocoa/60">{{ $currencyEnum->value }}</span>
                 @elseif($pricedVariants->first()?->priceIn($currencyEnum))
                     @php
                         $price = $pricedVariants->first()->priceIn($currencyEnum);
                     @endphp
                     <span class="font-[family-name:var(--font-sans)] text-2xl font-semibold tabular-nums text-intense-cocoa">
-                        {{ number_format($price->price, 0, ',', '.') }}
+                        {{ $currencyEnum->format($price->price) }}
                     </span>
-                    <span class="text-sm font-medium text-intense-cocoa/60">{{ $currencyEnum->value }}</span>
                 @endif
 
                 {{-- Out of stock badge (R18) --}}
