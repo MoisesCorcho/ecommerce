@@ -52,7 +52,7 @@ class RedemptionsRelationManager extends RelationManager
                     ->searchable(),
                 TextColumn::make('discount_amount')
                     ->label(__('coupons.fields.discount_amount'))
-                    ->numeric()
+                    ->formatStateUsing(fn (int $state, CouponRedemption $record): string => $record->currency->format($state))
                     ->alignEnd(),
                 TextColumn::make('currency')
                     ->label(__('coupons.fields.currency'))

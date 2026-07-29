@@ -32,7 +32,14 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        $this->call(RoleAndAdminBackfillSeeder::class);
-        $this->call(ProductSeeder::class);
+        $this->call([
+            RoleAndAdminBackfillSeeder::class,
+            CustomerSeeder::class,
+            ProductSeeder::class,
+            CouponSeeder::class,
+            OrderAndPaymentSeeder::class,
+            ReviewSeeder::class,
+            WishlistAndCartSeeder::class,
+        ]);
     }
 }

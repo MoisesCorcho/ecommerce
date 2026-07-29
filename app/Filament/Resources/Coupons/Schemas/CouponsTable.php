@@ -41,9 +41,7 @@ final class CouponsTable
                             return $state.'%';
                         }
 
-                        $currency = $record->currency?->value ?? '';
-
-                        return number_format($state).($currency !== '' ? ' '.$currency : '');
+                        return $record->currency?->format($state) ?? number_format($state);
                     })
                     ->alignEnd()
                     ->sortable(),

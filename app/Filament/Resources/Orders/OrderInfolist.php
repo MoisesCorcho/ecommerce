@@ -7,6 +7,9 @@ namespace App\Filament\Resources\Orders;
 use App\Enums\Orders\OrderStatusEnum;
 use App\Enums\Payments\PaymentProviderEnum;
 use App\Enums\Payments\PaymentStatusEnum;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Payment;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
@@ -32,13 +35,13 @@ class OrderInfolist
                             ->label(__('orders.fields.currency')),
                         TextEntry::make('subtotal')
                             ->label(__('orders.fields.subtotal'))
-                            ->numeric(),
+                            ->formatStateUsing(fn (int $state, Order $record): string => $record->currency->format($state)),
                         TextEntry::make('shipping_cost')
                             ->label(__('orders.fields.shipping_cost'))
-                            ->numeric(),
+                            ->formatStateUsing(fn (int $state, Order $record): string => $record->currency->format($state)),
                         TextEntry::make('discount')
                             ->label(__('orders.fields.discount'))
-                            ->numeric(),
+                            ->formatStateUsing(fn (int $state, Order $record): string => $record->currency->format($state)),
                         TextEntry::make('coupon_code')
                             ->label(__('orders.fields.coupon_code'))
                             ->state(fn ($record): ?string => $record->couponRedemption?->code
@@ -49,10 +52,10 @@ class OrderInfolist
                                 || $record->couponRedemption !== null),
                         TextEntry::make('tax_amount')
                             ->label(__('orders.fields.tax_amount'))
-                            ->numeric(),
+                            ->formatStateUsing(fn (int $state, Order $record): string => $record->currency->format($state)),
                         TextEntry::make('total')
                             ->label(__('orders.fields.total'))
-                            ->numeric()
+                            ->formatStateUsing(fn (int $state, Order $record): string => $record->currency->format($state))
                             ->weight('bold'),
                         TextEntry::make('customer_notes')
                             ->label(__('orders.fields.customer_notes'))
@@ -97,7 +100,7 @@ class OrderInfolist
                                     ->placeholder('—'),
                                 TextEntry::make('unit_price')
                                     ->label(__('orders.fields.unit_price'))
-                                    ->numeric(),
+                                    ->formatStateUsing(fn (int $state, OrderItem $record): string => $record->order->currency->format($state)),
                                 TextEntry::make('quantity')
                                     ->label(__('orders.fields.quantity')),
                             ])
@@ -118,7 +121,7 @@ class OrderInfolist
                                     ->formatStateUsing(fn (PaymentStatusEnum $state): string => $state->label()),
                                 TextEntry::make('amount')
                                     ->label(__('payments.fields.amount'))
-                                    ->numeric(),
+                                    ->formatStateUsing(fn (int $state, Payment $record): string => $record->currency->format($state)),
                                 TextEntry::make('currency')
                                     ->label(__('payments.fields.currency')),
                                 TextEntry::make('external_id')

@@ -6,6 +6,7 @@ namespace App\Filament\Resources\Orders;
 
 use App\Enums\Orders\OrderStatusEnum;
 use App\Filament\Resources\Orders\Pages\ViewOrder;
+use App\Models\Order;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -35,7 +36,8 @@ class OrdersTable
                     ->sortable(),
                 TextColumn::make('total')
                     ->label(__('orders.fields.total'))
-                    ->numeric()
+                    ->formatStateUsing(fn (int $state, Order $record): string => $record->currency->format($state))
+                    ->alignEnd()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label(__('orders.fields.created_at'))

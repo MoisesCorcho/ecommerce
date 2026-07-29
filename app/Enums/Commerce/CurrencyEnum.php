@@ -39,4 +39,21 @@ enum CurrencyEnum: string implements HasLabel
             self::Eur => PaymentProviderEnum::Stripe,
         };
     }
+
+    /**
+     * Format integer amount according to currency rules.
+     * COP: integer pesos (no minor units). EUR: integer cents (minor units).
+     */
+    public function format(int $amount, bool $withSymbol = true): string
+    {
+        if ($this === self::Eur) {
+            $formatted = number_format($amount / 100, 2, ',', '.');
+
+            return $withSymbol ? '€ '.$formatted : $formatted;
+        }
+
+        $formatted = number_format($amount, 0, ',', '.');
+
+        return $withSymbol ? '$ '.$formatted : $formatted;
+    }
 }

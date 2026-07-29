@@ -62,8 +62,7 @@
 
         @if ($price)
             <p class="font-headline-sm text-2xl text-soft-gold">
-                {{ number_format($price->price, 0, ',', '.') }}
-                <span class="text-sm font-normal text-intense-cocoa/60">{{ $currencyEnum->value }}</span>
+                {{ $currencyEnum->format($price->price) }}
             </p>
         @endif
 

@@ -139,13 +139,12 @@
                                         </div>
 
                                         <p class="whitespace-nowrap text-sm font-semibold tabular-nums text-intense-cocoa" data-cart-line-subtotal="{{ $line->productVariantId }}">
-                                            {{ number_format($line->lineSubtotal, 0, ',', '.') }}
-                                            <span class="text-xs font-normal text-intense-cocoa/90">{{ $cartView->currency->value }}</span>
+                                            {{ $cartView->currency->format($line->lineSubtotal) }}
                                         </p>
                                     </div>
 
                                     <p class="mt-1 text-sm tabular-nums text-intense-cocoa/90">
-                                        {{ number_format($line->unitPrice, 0, ',', '.') }} {{ $cartView->currency->value }} {{ __('cart.line.unit_price_suffix') }}
+                                        {{ $cartView->currency->format($line->unitPrice) }} {{ __('cart.line.unit_price_suffix') }}
                                     </p>
 
                                     {{-- Stepper + remove --}}
@@ -223,7 +222,7 @@
                             <div class="flex items-center justify-between">
                                 <span>{{ __('cart.summary.subtotal') }}</span>
                                 <span class="tabular-nums" data-cart-subtotal>
-                                    {{ number_format($cartView->total, 0, ',', '.') }} {{ $cartView->currency->value }}
+                                    {{ $cartView->currency->format($cartView->total) }}
                                 </span>
                             </div>
                         </div>
@@ -231,8 +230,7 @@
                         <div class="mt-4 flex items-center justify-between border-t border-intense-cocoa/10 pt-4">
                             <span class="text-base font-semibold text-intense-cocoa">{{ __('cart.summary.total') }}</span>
                             <span class="text-xl font-semibold tabular-nums text-intense-cocoa" data-cart-total>
-                                {{ number_format($cartView->total, 0, ',', '.') }}
-                                <span class="text-sm font-normal text-intense-cocoa/90">{{ $cartView->currency->value }}</span>
+                                {{ $cartView->currency->format($cartView->total) }}
                             </span>
                         </div>
 
