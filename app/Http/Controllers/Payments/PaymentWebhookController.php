@@ -10,6 +10,8 @@ use App\Exceptions\Payments\InvalidPaymentWebhookSignatureException;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 use Throwable;
 
 class PaymentWebhookController extends Controller
@@ -51,6 +53,18 @@ class PaymentWebhookController extends Controller
 
             return response($result['status'], 200);
         } catch (InvalidPaymentWebhookSignatureException) {
+            // Rate-limit log noise under signature-forge storms; always return 400.
+            RateLimiter::attempt(
+                'payments.webhook.invalid_signature:'.$provider->value.':'.hash('xxh3', (string) $request->ip()),
+                maxAttempts: 10,
+                callback: static function () use ($provider): void {
+                    Log::channel('payments')->warning('payments.webhook.invalid_signature', [
+                        'provider' => $provider->value,
+                    ]);
+                },
+                decaySeconds: 60,
+            );
+
             return response('invalid_signature', 400);
         } catch (Throwable $e) {
             report($e);

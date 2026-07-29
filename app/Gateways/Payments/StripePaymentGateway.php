@@ -14,6 +14,7 @@ use App\Exceptions\Payments\PaymentGatewayException;
 use App\Models\Order;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class StripePaymentGateway implements PaymentGatewayInterface
@@ -47,10 +48,25 @@ class StripePaymentGateway implements PaymentGatewayInterface
                     'line_items[0][price_data][product_data][name]' => 'Order '.$order->order_number,
                 ]);
         } catch (Throwable $e) {
+            Log::channel('payments')->warning('payments.gateway.stripe.create_transport_error', [
+                'provider' => 'stripe',
+                'order_id' => $order->id,
+                'payment_id' => $payment->id,
+                'exception' => $e::class,
+            ]);
+
             throw PaymentGatewayException::make($e);
         }
 
         if (! $response->successful()) {
+            Log::channel('payments')->warning('payments.gateway.stripe.create_rejected', [
+                'provider' => 'stripe',
+                'order_id' => $order->id,
+                'payment_id' => $payment->id,
+                'http_status' => $response->status(),
+                'body_length' => strlen($response->body()),
+            ]);
+
             throw PaymentGatewayException::make();
         }
 
@@ -60,6 +76,14 @@ class StripePaymentGateway implements PaymentGatewayInterface
         $url = (string) ($body['url'] ?? '');
 
         if ($externalId === '' || $url === '') {
+            Log::channel('payments')->warning('payments.gateway.stripe.create_incomplete_payload', [
+                'provider' => 'stripe',
+                'order_id' => $order->id,
+                'payment_id' => $payment->id,
+                'has_session_id' => $externalId !== '',
+                'has_url' => $url !== '',
+            ]);
+
             throw PaymentGatewayException::make();
         }
 

@@ -57,21 +57,23 @@ class BoldPaymentGateway implements PaymentGatewayInterface
                 ])
                 ->post($base.'/online/link/v1', $payload);
         } catch (Throwable $e) {
-            Log::warning('Bold createHostedCheckout transport error', [
+            Log::channel('payments')->warning('payments.gateway.bold.create_transport_error', [
+                'provider' => 'bold',
                 'order_id' => $order->id,
                 'payment_id' => $payment->id,
-                'message' => $e->getMessage(),
+                'exception' => $e::class,
             ]);
 
             throw PaymentGatewayException::make($e);
         }
 
         if (! $response->successful()) {
-            Log::warning('Bold createHostedCheckout rejected', [
+            Log::channel('payments')->warning('payments.gateway.bold.create_rejected', [
+                'provider' => 'bold',
                 'order_id' => $order->id,
                 'payment_id' => $payment->id,
-                'status' => $response->status(),
-                'body' => $response->body(),
+                'http_status' => $response->status(),
+                'body_length' => strlen($response->body()),
             ]);
 
             throw PaymentGatewayException::make();
@@ -85,10 +87,12 @@ class BoldPaymentGateway implements PaymentGatewayInterface
         $url = (string) ($payloadBody['url'] ?? '');
 
         if ($externalId === '' || $url === '') {
-            Log::warning('Bold createHostedCheckout missing payload fields', [
+            Log::channel('payments')->warning('payments.gateway.bold.create_incomplete_payload', [
+                'provider' => 'bold',
                 'order_id' => $order->id,
                 'payment_id' => $payment->id,
-                'body' => $body,
+                'has_payment_link' => $externalId !== '',
+                'has_url' => $url !== '',
             ]);
 
             throw PaymentGatewayException::make();

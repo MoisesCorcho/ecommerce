@@ -141,7 +141,7 @@ class ProcessPaymentWebhookAction
         $payment = $this->resolvePayment($provider, $parsed);
 
         if ($payment === null) {
-            Log::warning('payments.webhook.payment_not_found', [
+            Log::channel('payments')->warning('payments.webhook.payment_not_found', [
                 'provider' => $provider->value,
                 'event_id' => $parsed->eventId,
                 'event_type' => $parsed->eventType,
@@ -175,7 +175,7 @@ class ProcessPaymentWebhookAction
     private function matchesPaymentMoney(Payment $payment, ParsedWebhookEventDTO $parsed): bool
     {
         if ($parsed->amount !== null && $parsed->amount <= 0) {
-            Log::warning('payments.webhook.amount_unusable', [
+            Log::channel('payments')->warning('payments.webhook.amount_unusable', [
                 'payment_id' => $payment->id,
                 'order_id' => $payment->order_id,
                 'event_id' => $parsed->eventId,
@@ -183,7 +183,7 @@ class ProcessPaymentWebhookAction
             ]);
             // Skip amount check — zero/negative is not a trustworthy provider total.
         } elseif ($parsed->amount !== null && $parsed->amount !== (int) $payment->amount) {
-            Log::error('payments.webhook.amount_mismatch', [
+            Log::channel('payments')->error('payments.webhook.amount_mismatch', [
                 'payment_id' => $payment->id,
                 'order_id' => $payment->order_id,
                 'event_id' => $parsed->eventId,
@@ -199,7 +199,7 @@ class ProcessPaymentWebhookAction
             $actual = strtoupper($parsed->currency);
 
             if ($actual !== $expected) {
-                Log::error('payments.webhook.currency_mismatch', [
+                Log::channel('payments')->error('payments.webhook.currency_mismatch', [
                     'payment_id' => $payment->id,
                     'order_id' => $payment->order_id,
                     'event_id' => $parsed->eventId,
@@ -291,7 +291,7 @@ class ProcessPaymentWebhookAction
 
                 if ($order->status === OrderStatusEnum::Paid) {
                     // Residual RES-01: another payment may still reach approved after the order is paid.
-                    Log::warning('payments.webhook.approved_on_already_paid_order', [
+                    Log::channel('payments')->warning('payments.webhook.approved_on_already_paid_order', [
                         'order_id' => $order->id,
                         'payment_id' => $lockedPayment->id,
                         'event_id' => $parsed->eventId,
@@ -301,7 +301,7 @@ class ProcessPaymentWebhookAction
                 }
 
                 if ($order->status === OrderStatusEnum::Cancelled) {
-                    Log::info('payments.webhook.approved_on_cancelled_order', [
+                    Log::channel('payments')->info('payments.webhook.approved_on_cancelled_order', [
                         'order_id' => $order->id,
                         'payment_id' => $lockedPayment->id,
                         'event_id' => $parsed->eventId,
@@ -326,7 +326,7 @@ class ProcessPaymentWebhookAction
                 ]);
             });
         } catch (OrderPaidStockConflictException $e) {
-            Log::error('payments.webhook.stock_conflict_d25', [
+            Log::channel('payments')->error('payments.webhook.stock_conflict_d25', [
                 'message' => $e->getMessage(),
                 'order_id' => $payment->order_id,
                 'payment_id' => $payment->id,

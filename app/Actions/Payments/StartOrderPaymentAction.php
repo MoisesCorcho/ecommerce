@@ -18,6 +18,7 @@ use App\Models\ProductVariant;
 use App\Services\Payments\PaymentGatewayResolver;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Throwable;
 
@@ -102,9 +103,21 @@ class StartOrderPaymentAction
             $gateway = $this->gatewayResolver->for($provider);
             $session = $gateway->createHostedCheckout($order, $payment, $returns);
         } catch (PaymentGatewayException $e) {
+            Log::channel('payments')->warning('payments.start.gateway_failed', [
+                'order_id' => $order->id,
+                'payment_id' => $payment->id,
+                'provider' => $provider->value,
+                'exception' => $e::class,
+            ]);
             $this->discardUnstartedPayment($payment);
             throw $e;
         } catch (Throwable $e) {
+            Log::channel('payments')->warning('payments.start.gateway_failed', [
+                'order_id' => $order->id,
+                'payment_id' => $payment->id,
+                'provider' => $provider->value,
+                'exception' => $e::class,
+            ]);
             $this->discardUnstartedPayment($payment);
             throw PaymentGatewayException::make($e);
         }
@@ -112,6 +125,14 @@ class StartOrderPaymentAction
         $payment->update([
             'external_id' => $session->externalId,
             'raw_response' => $session->raw,
+        ]);
+
+        Log::channel('payments')->info('payments.start.created', [
+            'order_id' => $order->id,
+            'payment_id' => $payment->id,
+            'provider' => $provider->value,
+            'amount' => (int) $payment->amount,
+            'currency' => $payment->currency->value,
         ]);
 
         return new StartOrderPaymentResultDTO(

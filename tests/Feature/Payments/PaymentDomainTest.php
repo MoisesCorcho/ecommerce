@@ -24,6 +24,8 @@ use App\Models\ProductVariant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
+use Mockery\MockInterface;
+use Psr\Log\LoggerInterface;
 use Tests\TestCase;
 
 class PaymentDomainTest extends TestCase
@@ -263,7 +265,10 @@ class PaymentDomainTest extends TestCase
 
     public function test_webhook_approved_with_amount_mismatch_does_not_mark_paid(): void
     {
-        Log::spy();
+        $paymentsLog = $this->mockPaymentsLogChannel();
+        $paymentsLog->shouldReceive('error')
+            ->once()
+            ->withArgs(fn (string $message): bool => $message === 'payments.webhook.amount_mismatch');
 
         $user = User::factory()->create();
         $variant = $this->createVariant(stock: 5);
@@ -294,9 +299,6 @@ class PaymentDomainTest extends TestCase
         $this->assertSame(PaymentStatusEnum::Pending, $payment->fresh()->status);
         $this->assertSame(OrderStatusEnum::Pending, $order->fresh()->status);
         $this->assertSame(5, (int) $variant->fresh()->stock);
-        Log::shouldHaveReceived('error')->withArgs(
-            fn (string $message): bool => $message === 'payments.webhook.amount_mismatch',
-        );
     }
 
     public function test_webhook_approved_with_zero_amount_skips_money_check_and_marks_paid(): void
@@ -335,7 +337,10 @@ class PaymentDomainTest extends TestCase
 
     public function test_webhook_approved_stock_fail_d25(): void
     {
-        Log::spy();
+        $paymentsLog = $this->mockPaymentsLogChannel();
+        $paymentsLog->shouldReceive('error')
+            ->once()
+            ->withArgs(fn (string $message): bool => $message === 'payments.webhook.stock_conflict_d25');
 
         $user = User::factory()->create();
         $variant = $this->createVariant(stock: 1);
@@ -364,7 +369,58 @@ class PaymentDomainTest extends TestCase
         $this->assertSame(OrderStatusEnum::Pending, $order->fresh()->status);
         $this->assertNull($order->fresh()->paid_at);
         $this->assertSame(1, (int) $variant->fresh()->stock);
-        Log::shouldHaveReceived('error')->withArgs(fn (string $message): bool => $message === 'payments.webhook.stock_conflict_d25');
+    }
+
+    public function test_start_pay_logs_created_on_payments_channel(): void
+    {
+        $user = User::factory()->create();
+        $variant = $this->createVariant(stock: 5);
+        $order = $this->createPendingOrder(
+            user: $user,
+            currency: CurrencyEnum::Eur,
+            total: 12_500,
+            variant: $variant,
+            quantity: 1,
+        );
+
+        $paymentsLog = $this->mockPaymentsLogChannel();
+        $paymentsLog->shouldReceive('info')
+            ->once()
+            ->withArgs(function (string $message, array $context = []) use ($order): bool {
+                return $message === 'payments.start.created'
+                    && ($context['order_id'] ?? null) === $order->id
+                    && isset($context['payment_id'])
+                    && ($context['provider'] ?? null) === PaymentProviderEnum::Stripe->value;
+            });
+
+        $result = app(StartOrderPaymentAction::class)($order->id);
+
+        $this->assertNotNull($result->payment->id);
+    }
+
+    public function test_start_pay_logs_gateway_failed_on_payments_channel(): void
+    {
+        $this->fakeGateway->shouldFailCreate = true;
+
+        $user = User::factory()->create();
+        $variant = $this->createVariant(stock: 5);
+        $order = $this->createPendingOrder($user, CurrencyEnum::Cop, 10_000, $variant, 1);
+
+        $paymentsLog = $this->mockPaymentsLogChannel();
+        $paymentsLog->shouldReceive('warning')
+            ->once()
+            ->withArgs(function (string $message, array $context = []) use ($order): bool {
+                return $message === 'payments.start.gateway_failed'
+                    && ($context['order_id'] ?? null) === $order->id
+                    && ($context['provider'] ?? null) === PaymentProviderEnum::Bold->value;
+            });
+
+        try {
+            app(StartOrderPaymentAction::class)($order->id);
+            $this->fail('Expected PaymentGatewayException');
+        } catch (PaymentGatewayException) {
+            // expected
+        }
     }
 
     public function test_webhook_approved_on_cancelled_order_does_not_pay(): void
@@ -479,6 +535,17 @@ class PaymentDomainTest extends TestCase
 
         $this->expectException(OrderNotPayableException::class);
         app(StartOrderPaymentAction::class)($order->id);
+    }
+
+    /**
+     * @return MockInterface&LoggerInterface
+     */
+    private function mockPaymentsLogChannel(): MockInterface
+    {
+        $logger = \Mockery::mock(LoggerInterface::class);
+        Log::shouldReceive('channel')->with('payments')->andReturn($logger);
+
+        return $logger;
     }
 
     private function createVariant(int $stock): ProductVariant
