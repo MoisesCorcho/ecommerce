@@ -6,16 +6,17 @@
             "type": "local",
             "enabled": true,
             "command": [
-                "bash",
-                "-c",
-                "cd /home/noro/proyectos/ecommerce && exec vendor/bin/sail artisan boost:mcp"
-            ]
+                "vendor/bin/sail",
+                "artisan",
+                "boost:mcp"
+            ],
+            "cwd": "."
         },
         "codegraph": {
             "type": "local",
             "enabled": true,
             "command": [
-                "/home/noro/.npm-global/bin/codegraph",
+                "codegraph",
                 "serve",
                 "--mcp"
             ]
@@ -29,7 +30,7 @@
             "type": "local",
             "enabled": true,
             "command": [
-                "/home/noro/.local/bin/engram",
+                "engram",
                 "mcp",
                 "--tools=agent"
             ]
