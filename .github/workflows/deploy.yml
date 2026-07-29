@@ -143,18 +143,29 @@ jobs:
           printf '%s\n' "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
+      # Cada comando remoto va envuelto en with-retry.sh: el 22 de este host se
+      # cae de forma intermitente desde los runners (ver el docblock del script).
+      # ConnectTimeout baja la detección de la falla de ~136s a 15s, que es lo
+      # que hace viable reintentar cinco veces.
       - name: Upload release
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
           APP_ROOT: ${{ secrets.APP_ROOT }}
         run: |
-          ssh -i ~/.ssh/id_ed25519 "$SSH_USER@$SSH_HOST" \
-            "mkdir -p '$APP_ROOT/releases/$RELEASE'"
-          scp -i ~/.ssh/id_ed25519 /tmp/release.tar.gz \
-            "$SSH_USER@$SSH_HOST:$APP_ROOT/releases/$RELEASE.tar.gz"
-          ssh -i ~/.ssh/id_ed25519 "$SSH_USER@$SSH_HOST" \
-            "tar -xzf '$APP_ROOT/releases/$RELEASE.tar.gz' -C '$APP_ROOT/releases/$RELEASE' && rm -f '$APP_ROOT/releases/$RELEASE.tar.gz'"
+          bash deploy/with-retry.sh \
+            ssh -o ConnectTimeout=15 -i ~/.ssh/id_ed25519 "$SSH_USER@$SSH_HOST" \
+              "mkdir -p '$APP_ROOT/releases/$RELEASE'"
+          bash deploy/with-retry.sh \
+            scp -o ConnectTimeout=15 -i ~/.ssh/id_ed25519 /tmp/release.tar.gz \
+              "$SSH_USER@$SSH_HOST:$APP_ROOT/releases/$RELEASE.tar.gz"
+          # El guard `if [ -f ... ]` hace idempotente la extracción: si un intento
+          # extrajo y borró el tarball pero la conexión se cortó antes de devolver
+          # el exit status, el reintento es un no-op exitoso en vez de un
+          # "tar: cannot open" que abortaría un deploy que ya estaba bien.
+          bash deploy/with-retry.sh \
+            ssh -o ConnectTimeout=15 -i ~/.ssh/id_ed25519 "$SSH_USER@$SSH_HOST" \
+              "if [ -f '$APP_ROOT/releases/$RELEASE.tar.gz' ]; then tar -xzf '$APP_ROOT/releases/$RELEASE.tar.gz' -C '$APP_ROOT/releases/$RELEASE' && rm -f '$APP_ROOT/releases/$RELEASE.tar.gz'; fi"
 
       - name: Activate release
         env:
@@ -162,5 +173,6 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
           APP_ROOT: ${{ secrets.APP_ROOT }}
         run: |
-          ssh -i ~/.ssh/id_ed25519 "$SSH_USER@$SSH_HOST" \
-            "APP_ROOT='$APP_ROOT' bash '$APP_ROOT/releases/$RELEASE/deploy/remote-activate.sh' '$RELEASE'"
+          bash deploy/with-retry.sh \
+            ssh -o ConnectTimeout=15 -i ~/.ssh/id_ed25519 "$SSH_USER@$SSH_HOST" \
+              "APP_ROOT='$APP_ROOT' bash '$APP_ROOT/releases/$RELEASE/deploy/remote-activate.sh' '$RELEASE'"
