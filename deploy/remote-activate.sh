@@ -45,8 +45,12 @@ ln -sfn "$SHARED_PATH/.env" "$RELEASE_PATH/.env"
 
 cd "$RELEASE_PATH"
 
+# --force porque este script se reintenta (with-retry.sh): si un intento anterior
+# ya creó el link, sin --force la orden imprime "link already exists". Hoy eso sale
+# con exit 0 y set -e lo deja pasar, pero depender de un ERROR que no aborta es
+# frágil entre versiones de Laravel.
 echo "==> storage:link"
-"$PHP_BIN" artisan storage:link --quiet
+"$PHP_BIN" artisan storage:link --force --quiet
 
 # Corre contra el código nuevo pero con la release vieja todavía servida:
 # durante estos segundos el código viejo ve el esquema nuevo. Aceptable en
