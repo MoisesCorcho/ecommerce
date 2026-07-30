@@ -8,6 +8,7 @@ readonly class UpsertUserDTO
 {
     public function __construct(
         public string $name,
+        public ?string $lastName,
         public string $email,
         public ?string $phone = null,
         public ?string $password = null,
@@ -16,6 +17,7 @@ readonly class UpsertUserDTO
     /**
      * @param  array{
      *     name: string,
+     *     last_name?: string|null,
      *     email: string,
      *     phone?: string|null,
      *     password?: string|null
@@ -23,6 +25,9 @@ readonly class UpsertUserDTO
      */
     public static function fromArray(array $data): self
     {
+        $lastName = $data['last_name'] ?? null;
+        $lastName = is_string($lastName) && trim($lastName) !== '' ? trim($lastName) : null;
+
         $phone = $data['phone'] ?? null;
         $phone = is_string($phone) && trim($phone) !== '' ? trim($phone) : null;
 
@@ -31,6 +36,7 @@ readonly class UpsertUserDTO
 
         return new self(
             name: trim((string) $data['name']),
+            lastName: $lastName,
             email: strtolower(trim((string) $data['email'])),
             phone: $phone,
             password: $password,

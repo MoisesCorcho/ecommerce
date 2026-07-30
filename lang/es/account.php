@@ -5,6 +5,7 @@ declare(strict_types=1);
 return [
     'fields' => [
         'name' => 'Nombre',
+        'last_name' => 'Apellido',
         'email' => 'Correo electrónico',
         'phone' => 'Teléfono',
     ],

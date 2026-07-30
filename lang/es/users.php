@@ -19,6 +19,7 @@ return [
 
     'fields' => [
         'name' => 'Nombre',
+        'last_name' => 'Apellido',
         'email' => 'Email',
         'phone' => 'Teléfono',
         'password' => 'Contraseña',

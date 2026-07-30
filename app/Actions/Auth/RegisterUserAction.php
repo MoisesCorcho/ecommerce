@@ -23,6 +23,7 @@ class RegisterUserAction implements CreatesNewUsers
     {
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
+            'last_name' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique(User::class)],
             'password' => $this->passwordRules(),
             'terms' => ['accepted'],
@@ -30,6 +31,7 @@ class RegisterUserAction implements CreatesNewUsers
 
         $user = User::create([
             'name' => $input['name'],
+            'last_name' => $input['last_name'] ?? null,
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
         ]);

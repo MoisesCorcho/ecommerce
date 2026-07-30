@@ -63,6 +63,10 @@ class UserResource extends Resource
                                     ->required()
                                     ->maxLength(255)
                                     ->columnSpan(1),
+                                TextInput::make('last_name')
+                                    ->label(__('users.fields.last_name'))
+                                    ->maxLength(255)
+                                    ->columnSpan(1),
                                 TextInput::make('email')
                                     ->label(__('users.fields.email'))
                                     ->email()
@@ -101,6 +105,10 @@ class UserResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->label(__('users.fields.name'))
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('last_name')
+                    ->label(__('users.fields.last_name'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('email')

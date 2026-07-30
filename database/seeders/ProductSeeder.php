@@ -73,9 +73,17 @@ class ProductSeeder extends Seeder
             foreach ($data['images'] as $index => $filename) {
                 $this->seedImageFile($filename);
 
+                // Map image to variant: first N images → first N colors; extras → last color
+                $variantIndex = min($index, count($data['colors']) - 1);
+                $targetSku = count($data['colors']) > 1
+                    ? $data['sku'].'-'.Str::of($data['colors'][$variantIndex])->slug('-')->upper()
+                    : $data['sku'];
+                $targetVariant = $product->variants()->where('sku', $targetSku)->first();
+
                 $product->images()->updateOrCreate(
                     ['path' => 'products/'.$filename],
                     [
+                        'product_variant_id' => $targetVariant?->id,
                         'sort_order' => $index,
                         'is_primary' => $index === 0,
                     ],

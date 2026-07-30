@@ -16,18 +16,21 @@ class CustomerSeeder extends Seeder
         $specificCustomers = [
             [
                 'name' => 'Comprador Ejemplo',
+                'last_name' => 'Ejemplo',
                 'email' => 'buyer@example.com',
                 'phone' => '+573001234567',
                 'country' => 'CO',
             ],
             [
                 'name' => 'Sofía Rodríguez',
+                'last_name' => 'Rodríguez',
                 'email' => 'cliente.cop@example.com',
                 'phone' => '+573109876543',
                 'country' => 'CO',
             ],
             [
                 'name' => 'Mateo Fernández',
+                'last_name' => 'Fernández',
                 'email' => 'cliente.eur@example.com',
                 'phone' => '+34612345678',
                 'country' => 'ES',
@@ -37,6 +40,7 @@ class CustomerSeeder extends Seeder
         foreach ($specificCustomers as $customerData) {
             $user = User::factory()->create([
                 'name' => $customerData['name'],
+                'last_name' => $customerData['last_name'],
                 'email' => $customerData['email'],
                 'phone' => $customerData['phone'],
                 'created_at' => now()->subDays(rand(60, 180)),

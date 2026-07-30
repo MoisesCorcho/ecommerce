@@ -54,6 +54,7 @@
                     wire:model="password"
                     :type="show ? 'text' : 'password'"
                     autocomplete="current-password"
+                    placeholder="{{ __('auth.login.placeholders.password') }}"
                     class="w-full border bg-silk-cream py-3 pl-11 pr-11 text-body-md text-intense-cocoa transition-colors hover:border-intense-cocoa focus:border-intense-cocoa focus:outline-none @error('password') border-error @else border-intense-cocoa/40 @enderror"
                 >
                 <button

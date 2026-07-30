@@ -19,6 +19,8 @@ new #[Layout('layouts.storefront')] class extends Component
 
     public string $name = '';
 
+    public string $lastName = '';
+
     public string $email = '';
 
     public string $phone = '';
@@ -38,6 +40,7 @@ new #[Layout('layouts.storefront')] class extends Component
         $user = Auth::user();
 
         $this->name = (string) $user->name;
+        $this->lastName = (string) ($user->last_name ?? '');
         $this->email = (string) $user->email;
         $this->phone = (string) ($user->phone ?? '');
     }
@@ -52,6 +55,7 @@ new #[Layout('layouts.storefront')] class extends Component
             $action($user, new UpdateProfileDTO(
                 userId: (int) $user->id,
                 name: $this->name,
+                lastName: $this->lastName !== '' ? $this->lastName : null,
                 email: $this->email,
                 phone: $this->phone !== '' ? $this->phone : null,
             ));
