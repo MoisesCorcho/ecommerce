@@ -23,7 +23,7 @@
 
         <div class="space-y-4">
             @forelse ($reviews as $review)
-                <div wire:key="review-{{ $review->id }}" data-review-card="{{ $review->id }}" class="bg-soft-sand p-6 shadow-ambient">
+                <x-section-card.section-card wire:key="review-{{ $review->id }}" data-review-card="{{ $review->id }}">
                     @if ($editingId === $review->id)
                         <form wire:submit="save" class="space-y-4">
                             <p class="font-semibold text-intense-cocoa">{{ $review->product->name }}</p>
@@ -53,21 +53,21 @@
                             </div>
 
                             <div class="flex gap-3">
-                                <button
+                                <x-primary-button
                                     type="submit"
                                     wire:loading.attr="disabled"
                                     wire:target="save"
-                                    class="h-11 flex-1 bg-intense-cocoa text-label-caps font-semibold uppercase tracking-widest text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa disabled:cursor-not-allowed disabled:opacity-70"
+                                    class="h-11 w-full flex-1 text-label-caps"
                                 >
                                     {{ __('account.reviews.save') }}
-                                </button>
-                                <button
+                                </x-primary-button>
+                                <x-secondary-button
                                     type="button"
                                     wire:click="cancelEdit"
-                                    class="h-11 flex-1 border border-intense-cocoa/40 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-200 hover:border-intense-cocoa"
+                                    class="h-11 flex-1 text-label-caps"
                                 >
                                     {{ __('account.reviews.cancel') }}
-                                </button>
+                                </x-secondary-button>
                             </div>
                         </form>
                     @else
@@ -152,7 +152,7 @@
                             </div>
                         </div>
                     @endif
-                </div>
+                </x-section-card.section-card>
             @empty
                 <x-partials.account-empty-state
                     :title="__('account.reviews.empty_title')"

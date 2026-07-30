@@ -16,7 +16,7 @@
         @endif
 
         @if ($showForm)
-            <section class="bg-soft-sand p-8 shadow-ambient">
+            <x-section-card.section-card tag="section">
                 <form wire:submit="save" class="grid grid-cols-1 gap-5 sm:grid-cols-2">
                     @include('components.checkout-page.partials.text-field', [
                         'field' => 'label',
@@ -81,29 +81,29 @@
                     </x-checkbox>
 
                     <div class="flex gap-3 sm:col-span-2">
-                        <button
+                        <x-primary-button
                             type="submit"
                             wire:loading.attr="disabled"
                             wire:target="save"
-                            class="h-12 flex-1 bg-intense-cocoa text-label-caps font-semibold uppercase tracking-widest text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa disabled:cursor-not-allowed disabled:opacity-70"
+                            class="flex-1 text-label-caps"
                         >
                             {{ __('account.addresses.save') }}
-                        </button>
-                        <button
+                        </x-primary-button>
+                        <x-secondary-button
                             type="button"
                             wire:click="cancelEdit"
-                            class="h-12 flex-1 border border-intense-cocoa/40 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-200 hover:border-intense-cocoa"
+                            class="flex-1 text-label-caps"
                         >
                             {{ __('account.addresses.cancel') }}
-                        </button>
+                        </x-secondary-button>
                     </div>
                 </form>
-            </section>
+            </x-section-card.section-card>
         @endif
 
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
             @forelse ($addresses as $address)
-                <div wire:key="address-{{ $address->id }}" data-address-card="{{ $address->id }}" class="bg-soft-sand p-6 shadow-ambient">
+                <x-section-card.section-card wire:key="address-{{ $address->id }}" data-address-card="{{ $address->id }}">
                     <div class="flex items-start gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mt-0.5 h-6 w-6 shrink-0 text-intense-cocoa/60" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
@@ -145,7 +145,7 @@
                             {{ __('account.addresses.delete') }}
                         </button>
                     </div>
-                </div>
+                </x-section-card.section-card>
             @empty
             @endforelse
 

@@ -92,13 +92,9 @@
                 @if (! empty($payUrl) && $order->status === \App\Enums\Orders\OrderStatusEnum::Pending)
                     <form method="POST" action="{{ $payUrl }}" class="mt-6" data-pay-form>
                         @csrf
-                        <button
-                            type="submit"
-                            class="flex h-12 w-full items-center justify-center bg-intense-cocoa text-sm font-semibold text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa"
-                            data-pay-button
-                        >
+                        <x-primary-button type="submit" class="w-full" data-pay-button>
                             {{ ($paymentReturn ?? null) === 'cancelled' ? __('payments.actions.retry') : __('payments.actions.pay') }}
-                        </button>
+                        </x-primary-button>
                     </form>
                 @endif
 

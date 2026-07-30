@@ -7,19 +7,10 @@
 @endphp
 <div class="py-8 lg:py-12">
     {{-- Breadcrumb --}}
-    <nav aria-label="Breadcrumb" class="mx-auto mb-6 max-w-storefront px-margin-mobile text-sm text-intense-cocoa/60 lg:px-margin-desktop">
-        <ol class="flex flex-wrap items-center gap-1.5">
-            <li>
-                <a href="{{ route('home') }}" class="transition-colors hover:text-intense-cocoa hover:underline">
-                    {{ __('contact.breadcrumb.home') }}
-                </a>
-            </li>
-            <li aria-hidden="true" class="text-intense-cocoa/30">/</li>
-            <li aria-current="page" class="font-medium text-intense-cocoa">
-                {{ __('contact.breadcrumb.contact') }}
-            </li>
-        </ol>
-    </nav>
+    <x-breadcrumb.breadcrumb :items="[
+        ['label' => __('contact.breadcrumb.home'), 'href' => route('home')],
+        ['label' => __('contact.breadcrumb.contact')],
+    ]"></x-breadcrumb.breadcrumb>
 
     <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
         <h1 class="font-[family-name:var(--font-chillax)] text-3xl font-semibold tracking-tight text-intense-cocoa lg:text-4xl">
@@ -31,7 +22,7 @@
 
         <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-5 lg:gap-12">
             {{-- Static contact info column (R1, R2) --}}
-            <section aria-labelledby="contact-info-heading" class="lg:col-span-2 bg-soft-sand p-8 shadow-ambient">
+            <x-section-card.section-card tag="section" class="lg:col-span-2" aria-labelledby="contact-info-heading">
                 <h2 id="contact-info-heading" class="font-[family-name:var(--font-chillax)] text-xl font-semibold text-intense-cocoa">
                     {{ __('contact.info.heading') }}
                 </h2>
@@ -112,10 +103,10 @@
                         </p>
                     </li>
                 </ul>
-            </section>
+            </x-section-card.section-card>
 
             {{-- Contact form (R3, R5, R6, R10-R15) --}}
-            <section aria-labelledby="contact-form-heading" class="lg:col-span-3 bg-soft-sand p-8 shadow-ambient">
+            <x-section-card.section-card tag="section" class="lg:col-span-3" aria-labelledby="contact-form-heading">
                 <h2 id="contact-form-heading" class="font-[family-name:var(--font-chillax)] text-xl font-semibold text-intense-cocoa">
                     {{ __('contact.form.heading') }}
                 </h2>
@@ -140,13 +131,13 @@
                         <p class="max-w-sm text-body-md text-intense-cocoa/70">
                             {{ __('contact.success.message') }}
                         </p>
-                        <button
+                        <x-secondary-button
                             type="button"
                             wire:click="sendAnother"
-                            class="mt-2 inline-flex h-11 items-center border border-intense-cocoa px-6 text-sm font-semibold text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream"
+                            class="h-11 px-6"
                         >
                             {{ __('contact.success.new_message') }}
-                        </button>
+                        </x-secondary-button>
                     </div>
                 @else
                     <form wire:submit="submit" class="mt-4 space-y-5">
@@ -252,11 +243,11 @@
                             @error('message') <p id="contact-message-error" data-error="message" class="mt-1 text-sm text-error">{{ $message }}</p> @enderror
                         </div>
 
-                        <button
+                        <x-primary-button
                             type="submit"
                             wire:loading.attr="disabled"
                             wire:target="submit"
-                            class="flex h-12 w-full items-center justify-center gap-2 bg-intense-cocoa text-label-caps font-semibold uppercase tracking-widest text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa disabled:cursor-not-allowed disabled:opacity-70 lg:w-auto lg:px-10"
+                            class="w-full gap-2 text-label-caps lg:w-auto lg:px-10"
                         >
                             <svg wire:loading wire:target="submit" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -264,10 +255,10 @@
                             </svg>
                             <span wire:loading.remove wire:target="submit">{{ __('contact.form.submit') }}</span>
                             <span wire:loading wire:target="submit">{{ __('contact.form.sending') }}</span>
-                        </button>
+                        </x-primary-button>
                     </form>
                 @endif
-            </section>
+            </x-section-card.section-card>
         </div>
 
         {{-- FAQ CTA (R7) --}}
@@ -278,12 +269,13 @@
             <p class="max-w-md text-body-md text-intense-cocoa/70">
                 {{ __('contact.faq.body') }}
             </p>
-            <a
+            <x-secondary-button
+                tag="a"
                 href="{{ url('/faq') }}"
-                class="mt-2 inline-flex h-11 items-center border border-intense-cocoa px-6 text-sm font-semibold text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream"
+                class="mt-2 h-11 px-6"
             >
                 {{ __('contact.faq.cta') }}
-            </a>
+            </x-secondary-button>
         </section>
     </div>
 </div>

@@ -7,19 +7,10 @@
 <x-partials.toast>
 <div class="py-8 lg:py-12">
     {{-- Breadcrumb --}}
-    <nav aria-label="Breadcrumb" class="mx-auto mb-6 max-w-storefront px-margin-mobile text-sm text-intense-cocoa/60 lg:px-margin-desktop">
-        <ol class="flex flex-wrap items-center gap-1.5">
-            <li>
-                <a href="{{ route('home') }}" class="transition-colors hover:text-intense-cocoa hover:underline">
-                    {{ __('storefront.wishlist.breadcrumb_home') }}
-                </a>
-            </li>
-            <li aria-hidden="true" class="text-intense-cocoa/30">/</li>
-            <li aria-current="page" class="font-medium text-intense-cocoa">
-                {{ __('storefront.wishlist.breadcrumb_wishlist') }}
-            </li>
-        </ol>
-    </nav>
+    <x-breadcrumb.breadcrumb :items="[
+        ['label' => __('storefront.wishlist.breadcrumb_home'), 'href' => route('home')],
+        ['label' => __('storefront.wishlist.breadcrumb_wishlist')],
+    ]"></x-breadcrumb.breadcrumb>
 
     <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
         <h1 class="mb-6 font-[family-name:var(--font-chillax)] text-3xl font-semibold tracking-tight text-intense-cocoa">
@@ -45,13 +36,14 @@
                 <p class="max-w-sm text-intense-cocoa/70">
                     {{ __('storefront.wishlist.empty_message') }}
                 </p>
-                <a
+                <x-secondary-button
+                    tag="a"
                     href="{{ route('products.index') }}"
-                    class="mt-2 inline-flex h-11 items-center border border-intense-cocoa px-6 text-sm font-semibold text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream"
+                    class="mt-2 h-11 px-6"
                     data-wishlist-empty-cta
                 >
                     {{ __('storefront.wishlist.empty_cta') }}
-                </a>
+                </x-secondary-button>
             </div>
         @else
             <div class="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4" data-wishlist-grid>
@@ -139,15 +131,26 @@
                             @endif
 
                             <div class="mt-3 flex items-center gap-2">
-                                <button
-                                    type="button"
-                                    wire:click="addToCart({{ $variant->id }})"
-                                    @disabled(! $canAddToCart)
-                                    class="h-10 flex-1 items-center justify-center bg-intense-cocoa px-3 text-sm font-semibold text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa disabled:cursor-not-allowed disabled:opacity-50"
-                                    data-wishlist-add-to-cart="{{ $variant->id }}"
-                                >
-                                    {{ __('storefront.add_to_cart') }}
-                                </button>
+                                @if($canAddToCart)
+                                    <x-primary-button
+                                        type="button"
+                                        wire:click="addToCart({{ $variant->id }})"
+                                        class="h-10 flex-1 px-3 disabled:opacity-50"
+                                        data-wishlist-add-to-cart="{{ $variant->id }}"
+                                    >
+                                        {{ __('storefront.add_to_cart') }}
+                                    </x-primary-button>
+                                @else
+                                    <x-primary-button
+                                        type="button"
+                                        disabled
+                                        wire:click="addToCart({{ $variant->id }})"
+                                        class="h-10 flex-1 px-3 disabled:opacity-50"
+                                        data-wishlist-add-to-cart="{{ $variant->id }}"
+                                    >
+                                        {{ __('storefront.add_to_cart') }}
+                                    </x-primary-button>
+                                @endif
 
                                 <button
                                     type="button"

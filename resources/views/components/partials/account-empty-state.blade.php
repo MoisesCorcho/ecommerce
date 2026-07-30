@@ -26,10 +26,11 @@
     <p class="max-w-sm text-intense-cocoa/70">
         {{ $message }}
     </p>
-    <a
+    <x-secondary-button
+        tag="a"
         href="{{ $ctaHref }}"
-        class="mt-2 inline-flex h-11 items-center border border-intense-cocoa px-6 text-sm font-semibold text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream"
+        class="mt-2 h-11 px-6"
     >
         {{ $ctaLabel }}
-    </a>
+    </x-secondary-button>
 </div>

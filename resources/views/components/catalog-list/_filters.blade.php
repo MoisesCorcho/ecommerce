@@ -167,11 +167,11 @@
 
 {{-- Clear filters --}}
 @if ($category !== [] || $color !== [] || $minPrice !== null || $maxPrice !== null || $inStock)
-    <button
+    <x-secondary-button
         type="button"
         wire:click="clearFilters"
-        class="mt-2 w-full border border-intense-cocoa py-3 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:bg-intense-cocoa hover:text-silk-cream"
+        class="mt-2 w-full h-10"
     >
         {{ __('storefront.shop.clear_filters') }}
-    </button>
+    </x-secondary-button>
 @endif

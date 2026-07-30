@@ -12,7 +12,7 @@
             </p>
         </div>
 
-        <section class="bg-soft-sand p-8 shadow-ambient">
+        <x-section-card.section-card tag="section">
             <h2 class="text-lg font-semibold text-intense-cocoa">{{ __('account.profile.section_title') }}</h2>
 
             @if ($profileMessage)
@@ -52,19 +52,19 @@
                 ])
 
                 <div class="sm:col-span-2">
-                    <button
+                    <x-primary-button
                         type="submit"
                         wire:loading.attr="disabled"
                         wire:target="updateProfile"
-                        class="flex h-12 w-full items-center justify-center bg-intense-cocoa text-label-caps font-semibold uppercase tracking-widest text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto sm:px-8"
+                        class="text-label-caps sm:w-auto sm:px-8"
                     >
                         {{ __('account.profile.submit') }}
-                    </button>
+                    </x-primary-button>
                 </div>
             </form>
-        </section>
+        </x-section-card.section-card>
 
-        <section id="password" class="bg-soft-sand p-8 shadow-ambient">
+        <x-section-card.section-card tag="section" id="password">
             <h2 class="text-lg font-semibold text-intense-cocoa">{{ __('account.password.section_title') }}</h2>
 
             @if ($passwordMessage)
@@ -96,16 +96,16 @@
                 ])
 
                 <div>
-                    <button
+                    <x-primary-button
                         type="submit"
                         wire:loading.attr="disabled"
                         wire:target="updatePassword"
-                        class="flex h-12 w-full items-center justify-center bg-intense-cocoa text-label-caps font-semibold uppercase tracking-widest text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto sm:px-8"
+                        class="text-label-caps sm:w-auto sm:px-8"
                     >
                         {{ __('account.password.submit') }}
-                    </button>
+                    </x-primary-button>
                 </div>
             </form>
-        </section>
+        </x-section-card.section-card>
     </div>
 </x-partials.account-shell>

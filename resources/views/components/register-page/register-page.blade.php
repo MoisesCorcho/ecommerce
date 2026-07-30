@@ -1,4 +1,4 @@
-<div class="w-full bg-soft-sand p-8 shadow-ambient md:p-10">
+<x-section-card.section-card class="w-full md:p-10">
     <h1 class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
         {{ __('auth.register.title') }}
     </h1>
@@ -212,11 +212,11 @@
             </x-checkbox>
         </div>
 
-        <button
+        <x-primary-button
             type="submit"
             wire:loading.attr="disabled"
             wire:target="register"
-            class="mt-2 flex h-12 w-full items-center justify-center gap-2 bg-intense-cocoa text-label-caps font-semibold uppercase tracking-widest text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa disabled:cursor-not-allowed disabled:opacity-70"
+            class="mt-2 w-full gap-2 text-label-caps"
         >
             <svg wire:loading wire:target="register" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -224,7 +224,7 @@
             </svg>
             <span wire:loading.remove wire:target="register">{{ __('auth.register.submit') }}</span>
             <span wire:loading wire:target="register">{{ __('auth.register.submitting') }}</span>
-        </button>
+        </x-primary-button>
 
         <p class="mt-4 text-center text-sm text-intense-cocoa/70">
             {{ __('auth.register.have_account') }}
@@ -233,4 +233,4 @@
             </a>
         </p>
     </form>
-</div>
+</x-section-card.section-card>

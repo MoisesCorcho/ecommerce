@@ -1,4 +1,4 @@
-<div class="w-full bg-soft-sand p-8 shadow-ambient md:p-10">
+<x-section-card.section-card class="w-full md:p-10">
     <h1 class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
         {{ __('auth.login.title') }}
     </h1>
@@ -71,7 +71,7 @@
                     <svg x-show="show" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
                     </svg>
-                </button>
+        </button>
             </div>
             @error('password')
                 <p class="mt-1 text-sm text-error">{{ $message }}</p>
@@ -82,11 +82,11 @@
             {{ __('auth.login.remember') }}
         </x-checkbox>
 
-        <button
+        <x-primary-button
             type="submit"
             wire:loading.attr="disabled"
             wire:target="login"
-            class="mt-2 flex h-12 w-full items-center justify-center gap-2 bg-intense-cocoa text-label-caps font-semibold uppercase tracking-widest text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa disabled:cursor-not-allowed disabled:opacity-70"
+            class="mt-2 w-full gap-2 text-label-caps"
         >
             <svg wire:loading wire:target="login" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -94,7 +94,7 @@
             </svg>
             <span wire:loading.remove wire:target="login">{{ __('auth.login.submit') }}</span>
             <span wire:loading wire:target="login">{{ __('auth.login.submitting') }}</span>
-        </button>
+        </x-primary-button>
 
         <div class="flex flex-col items-center gap-2 text-sm">
             <a href="{{ route('password.request') }}" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">
@@ -108,4 +108,4 @@
             </p>
         </div>
     </form>
-</div>
+</x-section-card.section-card>

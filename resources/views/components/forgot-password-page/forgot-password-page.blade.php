@@ -27,12 +27,12 @@
                 'type' => 'email',
             ])
 
-            <button
+            <x-primary-button
                 type="submit"
-                class="mt-2 flex h-12 w-full items-center justify-center bg-intense-cocoa text-sm font-semibold text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa disabled:cursor-not-allowed disabled:bg-intense-cocoa/40"
+                class="mt-2 w-full disabled:bg-intense-cocoa/40"
             >
                 {{ __('auth.forgot_password.submit') }}
-            </button>
+            </x-primary-button>
         </form>
 
         <p class="mt-6 text-sm text-intense-cocoa/80">

@@ -7,27 +7,27 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
     </head>
-    <body class="min-h-screen bg-stone-50 text-stone-900 antialiased">
-        <header class="border-b border-stone-200 bg-white">
-            <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+    <body class="min-h-screen bg-silk-cream text-intense-cocoa antialiased">
+        <header class="border-b border-intense-cocoa/10 bg-soft-sand">
+            <div class="mx-auto flex max-w-storefront items-center justify-between px-margin-mobile py-4">
                 <a href="{{ route('products.index') }}" class="text-lg font-semibold tracking-tight">
                     {{ config('app.name', 'Marketplace') }}
                 </a>
                 <nav class="flex gap-4 text-sm">
-                    <a href="{{ route('products.index') }}" class="text-stone-600 hover:text-stone-900">
-                        Productos
+                    <a href="{{ route('products.index') }}" class="text-intense-cocoa/70 hover:text-intense-cocoa">
+                        {{ __('navigation.products') }}
                     </a>
-                    <a href="{{ route('cart.page') }}" class="text-stone-600 hover:text-stone-900" data-nav-cart>
-                        Carrito
+                    <a href="{{ route('cart.page') }}" class="text-intense-cocoa/70 hover:text-intense-cocoa" data-nav-cart>
+                        {{ __('navigation.cart') }}
                     </a>
-                    <a href="{{ route('checkout.show') }}" class="text-stone-600 hover:text-stone-900" data-nav-checkout>
-                        Checkout
+                    <a href="{{ route('checkout.show') }}" class="text-intense-cocoa/70 hover:text-intense-cocoa" data-nav-checkout>
+                        {{ __('navigation.checkout') }}
                     </a>
                 </nav>
             </div>
         </header>
 
-        <main class="mx-auto max-w-6xl px-4 py-8">
+        <main class="mx-auto max-w-storefront px-margin-mobile py-section-gap">
             {{ $slot }}
         </main>
 
