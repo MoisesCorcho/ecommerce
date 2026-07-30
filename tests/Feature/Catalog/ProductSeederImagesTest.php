@@ -27,6 +27,8 @@ class ProductSeederImagesTest extends TestCase
         foreach ($paths as $path) {
             Storage::disk('public')->assertExists($path);
         }
+
+        Storage::disk('public')->assertExists('categories/15.jpeg');
     }
 
     public function test_seeding_twice_does_not_fail_and_keeps_files_present(): void

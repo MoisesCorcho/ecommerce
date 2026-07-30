@@ -13,12 +13,11 @@
     ]"></x-breadcrumb.breadcrumb>
 
     <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
-        <h1 class="font-[family-name:var(--font-chillax)] text-3xl font-semibold tracking-tight text-intense-cocoa lg:text-4xl">
-            {{ __('contact.title') }}
-        </h1>
-        <p class="mt-2 max-w-2xl text-body-md text-intense-cocoa/70">
-            {{ __('contact.subtitle') }}
-        </p>
+        <x-page-header
+            title="{{ __('contact.title') }}"
+            subtitle="{{ __('contact.subtitle') }}"
+            size="4xl"
+        />
 
         <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-5 lg:gap-12">
             {{-- Static contact info column (R1, R2) --}}

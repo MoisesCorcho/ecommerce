@@ -111,6 +111,16 @@ new #[Layout('layouts.storefront')] class extends Component
     }
 
     /**
+     * Set min and max price filter in a single atomic Livewire action.
+     */
+    public function setPriceFilter(?int $min, ?int $max): void
+    {
+        $this->minPrice = $min;
+        $this->maxPrice = $max;
+        $this->resetPage();
+    }
+
+    /**
      * Clear all filters and reset to defaults.
      */
     public function clearFilters(): void

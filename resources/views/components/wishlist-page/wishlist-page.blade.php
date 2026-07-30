@@ -13,10 +13,9 @@
     ]"></x-breadcrumb.breadcrumb>
 
     <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
-        <h1 class="mb-6 font-[family-name:var(--font-chillax)] text-3xl font-semibold tracking-tight text-intense-cocoa">
-            {{ __('storefront.wishlist.title') }}
+        <x-page-header title="{{ __('storefront.wishlist.title') }}">
             <span class="ml-2 text-lg font-normal text-intense-cocoa/60" data-wishlist-count>({{ $itemCount }})</span>
-        </h1>
+        </x-page-header>
 
         @if ($errorMessage)
             <x-alert type="error" data-wishlist-error class="mb-4">

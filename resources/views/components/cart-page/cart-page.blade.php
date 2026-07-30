@@ -11,9 +11,7 @@
     ]"></x-breadcrumb.breadcrumb>
 
     <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
-        <h1 class="mb-6 font-[family-name:var(--font-chillax)] text-3xl font-semibold tracking-tight text-intense-cocoa">
-            {{ __('cart.page.title') }}
-        </h1>
+        <x-page-header title="{{ __('cart.page.title') }}" />
 
         @if ($statusMessage)
             <x-alert type="success" data-cart-status class="mb-4">
@@ -246,49 +244,34 @@
             </div>
 
             {{-- Clear cart confirmation modal --}}
-            <div
-                x-show="confirmingClear"
-                x-cloak
-                x-transition.opacity
-                x-on:keydown.escape.window="confirmingClear = false"
-                class="fixed inset-0 z-[60] flex items-center justify-center bg-intense-cocoa/50 px-4"
+            <x-modal
+                name="confirmingClear"
+                title="{{ __('cart.page.clear_cart') }}"
+                title-id="clear-cart-modal-title"
+                data-cart-clear-modal
             >
-                <div
-                    x-show="confirmingClear"
-                    x-transition
-                    x-on:click.outside="confirmingClear = false"
-                    class="w-full max-w-sm bg-silk-cream p-6 shadow-xl"
-                    role="alertdialog"
-                    aria-modal="true"
-                    aria-labelledby="clear-cart-modal-title"
-                    data-cart-clear-modal
-                >
-                    <h2 id="clear-cart-modal-title" class="text-center font-[family-name:var(--font-chillax)] text-xl font-semibold text-intense-cocoa">
+                <p class="mt-2 text-center text-sm text-intense-cocoa/90">
+                    {{ __('cart.page.clear_cart_confirm') }}
+                </p>
+                <div class="mt-6 flex justify-center gap-3">
+                    <x-primary-button
+                        type="button"
+                        x-on:click="confirmingClear = false"
+                        class="h-10 px-4"
+                    >
+                        {{ __('cart.page.clear_cart_cancel') }}
+                    </x-primary-button>
+                    <x-primary-button
+                        type="button"
+                        wire:click="clearCart"
+                        x-on:click="confirmingClear = false"
+                        class="h-10 px-4"
+                        data-cart-clear-confirm
+                    >
                         {{ __('cart.page.clear_cart') }}
-                    </h2>
-                    <p class="mt-2 text-center text-sm text-intense-cocoa/90">
-                        {{ __('cart.page.clear_cart_confirm') }}
-                    </p>
-                    <div class="mt-6 flex justify-center gap-3">
-                        <x-primary-button
-                            type="button"
-                            x-on:click="confirmingClear = false"
-                            class="h-10 px-4"
-                        >
-                            {{ __('cart.page.clear_cart_cancel') }}
-                        </x-primary-button>
-                        <x-primary-button
-                            type="button"
-                            wire:click="clearCart"
-                            x-on:click="confirmingClear = false"
-                            class="h-10 px-4"
-                            data-cart-clear-confirm
-                        >
-                            {{ __('cart.page.clear_cart') }}
-                        </x-primary-button>
-                    </div>
+                    </x-primary-button>
                 </div>
-            </div>
+            </x-modal>
         @endif
     </div>
 </div>

@@ -54,100 +54,100 @@
 
 {{-- Price filter --}}
 @if ($globalMinPrice !== null && $globalMaxPrice !== null)
-    @php
-        $pMin = $minPrice ?? $globalMinPrice;
-        $pMax = $maxPrice ?? $globalMaxPrice;
-    @endphp
     <div class="flex flex-col gap-stack-sm">
         <x-filter-heading>
             {{ __('storefront.shop.filter_price') }}
         </x-filter-heading>
-        <div class="price-slider pt-1" data-min="{{ $globalMinPrice }}" data-max="{{ $globalMaxPrice }}" data-current-min="{{ $pMin }}" data-current-max="{{ $pMax }}">
+        <div
+            x-data="{
+                floor: {{ $globalMinPrice }},
+                ceil: {{ $globalMaxPrice }},
+                wireMin: $wire.entangle('minPrice').live,
+                wireMax: $wire.entangle('maxPrice').live,
+                localMin: {{ $globalMinPrice }},
+                localMax: {{ $globalMaxPrice }},
+                fmt(v) {
+                    return new Intl.NumberFormat('de-DE').format(v);
+                },
+                updateFill() {
+                    var lo = parseInt(this.localMin);
+                    var hi = parseInt(this.localMax);
+                    var range = this.ceil - this.floor || 1;
+                    var pctLo = Math.max(0, Math.min(100, ((lo - this.floor) / range) * 100));
+                    var pctHi = Math.max(0, Math.min(100, ((hi - this.floor) / range) * 100));
+                    if (this.$refs.fill) {
+                        this.$refs.fill.style.left = pctLo + '%';
+                        this.$refs.fill.style.width = Math.max(0, pctHi - pctLo) + '%';
+                    }
+                },
+                init() {
+                    this.resetLocalFromWire();
+                    this.$watch('wireMin', () => this.resetLocalFromWire());
+                    this.$watch('wireMax', () => this.resetLocalFromWire());
+                },
+                resetLocalFromWire() {
+                    this.localMin = (this.wireMin !== null && this.wireMin !== undefined) ? parseInt(this.wireMin) : this.floor;
+                    this.localMax = (this.wireMax !== null && this.wireMax !== undefined) ? parseInt(this.wireMax) : this.ceil;
+                    this.updateFill();
+                },
+                onMinInput(val) {
+                    var v = parseInt(val);
+                    if (v > parseInt(this.localMax)) {
+                        v = parseInt(this.localMax);
+                    }
+                    this.localMin = v;
+                    this.updateFill();
+                },
+                onMaxInput(val) {
+                    var v = parseInt(val);
+                    if (v < parseInt(this.localMin)) {
+                        v = parseInt(this.localMin);
+                    }
+                    this.localMax = v;
+                    this.updateFill();
+                },
+                sync() {
+                    var lo = parseInt(this.localMin);
+                    var hi = parseInt(this.localMax);
+                    var targetMin = (lo === this.floor) ? null : lo;
+                    var targetMax = (hi === this.ceil) ? null : hi;
+
+                    $wire.setPriceFilter(targetMin, targetMax);
+                }
+            }"
+            class="price-slider pt-1"
+        >
             <div class="price-slider__track">
-                <div class="price-slider__fill"></div>
-                <input type="range" class="price-slider__input price-slider__input--min" min="{{ $globalMinPrice }}" max="{{ $globalMaxPrice }}" value="{{ $pMin }}">
-                <input type="range" class="price-slider__input price-slider__input--max" min="{{ $globalMinPrice }}" max="{{ $globalMaxPrice }}" value="{{ $pMax }}">
+                <div class="price-slider__bg-track"></div>
+                <div x-ref="fill" class="price-slider__fill"></div>
+                <input
+                    type="range"
+                    class="price-slider__input price-slider__input--min"
+                    :min="floor"
+                    :max="ceil"
+                    :value="localMin"
+                    @input="onMinInput($event.target.value)"
+                    @change="sync()"
+                >
+                <input
+                    type="range"
+                    class="price-slider__input price-slider__input--max"
+                    :min="floor"
+                    :max="ceil"
+                    :value="localMax"
+                    @input="onMaxInput($event.target.value)"
+                    @change="sync()"
+                >
             </div>
             <div class="price-slider__labels">
-                <span class="price-slider__label price-slider__label--min">{{ $currencyEnum->format($pMin) }}</span>
-                <span class="price-slider__label price-slider__label--max">{{ $currencyEnum->format($pMax) }}</span>
+                <span class="price-slider__label price-slider__label--min" x-text="fmt(localMin)">{{ $currencyEnum->format($globalMinPrice) }}</span>
+                <span class="price-slider__label price-slider__label--max" x-text="fmt(localMax)">{{ $currencyEnum->format($globalMaxPrice) }}</span>
             </div>
             <p class="text-center text-[11px] font-semibold uppercase tracking-widest text-intense-cocoa/40">
                 {{ $currencyEnum->value }}
             </p>
         </div>
     </div>
-
-    @once
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            function initPriceSliders() {
-                document.querySelectorAll('.price-slider').forEach(function (el) {
-                    if (el._initialized) return;
-                    el._initialized = true;
-
-                    var floor = parseInt(el.dataset.min);
-                    var ceil = parseInt(el.dataset.max);
-                    var minInput = el.querySelector('.price-slider__input--min');
-                    var maxInput = el.querySelector('.price-slider__input--max');
-                    var fill = el.querySelector('.price-slider__fill');
-                    var labelMin = el.querySelector('.price-slider__label--min');
-                    var labelMax = el.querySelector('.price-slider__label--max');
-
-                    function fmt(v) {
-                        return new Intl.NumberFormat('de-DE').format(v);
-                    }
-
-                    function render() {
-                        var lo = parseInt(minInput.value);
-                        var hi = parseInt(maxInput.value);
-                        var range = ceil - floor || 1;
-                        var pctLo = ((lo - floor) / range) * 100;
-                        var pctHi = ((hi - floor) / range) * 100;
-                        fill.style.left = pctLo + '%';
-                        fill.style.width = (pctHi - pctLo) + '%';
-                        labelMin.textContent = fmt(lo);
-                        labelMax.textContent = fmt(hi);
-                    }
-
-                    function sync() {
-                        var lo = parseInt(minInput.value);
-                        var hi = parseInt(maxInput.value);
-                        try {
-                            var id = el.closest('[wire\\:id]').getAttribute('wire:id');
-                            var comp = Livewire.find(id);
-                            comp.set('minPrice', lo === floor ? null : lo);
-                            comp.set('maxPrice', hi === ceil ? null : hi);
-                        } catch (e) {}
-                    }
-
-                    minInput.addEventListener('input', function () {
-                        var lo = parseInt(minInput.value);
-                        var hi = parseInt(maxInput.value);
-                        if (lo > hi) minInput.value = hi;
-                        render();
-                    });
-
-                    maxInput.addEventListener('input', function () {
-                        var lo = parseInt(minInput.value);
-                        var hi = parseInt(maxInput.value);
-                        if (hi < lo) maxInput.value = lo;
-                        render();
-                    });
-
-                    minInput.addEventListener('change', sync);
-                    maxInput.addEventListener('change', sync);
-
-                    render();
-                });
-            }
-
-            initPriceSliders();
-            document.addEventListener('livewire:load', initPriceSliders);
-            document.addEventListener('livewire:navigated', initPriceSliders);
-        });
-    </script>
-    @endonce
 @endif
 
 {{-- Availability filter --}}

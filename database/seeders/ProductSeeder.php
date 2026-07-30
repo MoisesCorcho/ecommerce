@@ -16,9 +16,15 @@ class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        $category = Category::query()->firstOrCreate(
+        $this->seedCategoryImageFile('15.jpeg');
+
+        $category = Category::query()->updateOrCreate(
             ['slug' => 'honeycomb'],
-            ['name' => 'Honeycomb', 'sort_order' => 0],
+            [
+                'name' => 'Honeycomb',
+                'image_path' => 'categories/15.jpeg',
+                'sort_order' => 0,
+            ],
         );
 
         foreach ($this->products() as $data) {
@@ -104,6 +110,16 @@ class ProductSeeder extends Seeder
 
         if ($disk->missing($storagePath)) {
             $disk->put($storagePath, File::get(database_path('seeders/images/products/'.$filename)));
+        }
+    }
+
+    private function seedCategoryImageFile(string $filename): void
+    {
+        $disk = Storage::disk('public');
+        $storagePath = 'categories/'.$filename;
+
+        if ($disk->missing($storagePath)) {
+            $disk->put($storagePath, File::get(database_path('seeders/images/categories/'.$filename)));
         }
     }
 

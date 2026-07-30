@@ -1,16 +1,10 @@
 <x-partials.account-shell active="profile">
     <div class="w-full max-w-2xl space-y-10">
-        <div>
-            <h1 class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
-                {{ __('account.profile.title') }}
-            </h1>
-            <p class="mt-2 text-sm text-intense-cocoa/70">
-                {{ __('account.profile.greeting', ['name' => auth()->user()->name]) }}
-            </p>
-            <p class="mt-1 text-sm text-intense-cocoa/70">
-                {{ __('account.profile.subtitle') }}
-            </p>
-        </div>
+        <x-page-header
+            title="{{ __('account.profile.title') }}"
+            subtitle="{{ __('account.profile.greeting', ['name' => auth()->user()->name]) }} {{ __('account.profile.subtitle') }}"
+            size="2xl"
+        />
 
         <x-section-card.section-card tag="section">
             <h2 class="text-lg font-semibold text-intense-cocoa">{{ __('account.profile.section_title') }}</h2>

@@ -80,6 +80,16 @@
     align-items: center;
 }
 
+.price-slider__bg-track {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: color-mix(in srgb, var(--color-intense-cocoa) 15%, transparent);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 0;
+}
+
 .price-slider__fill {
     position: absolute;
     height: 2px;
@@ -87,6 +97,7 @@
     pointer-events: none;
     top: 50%;
     transform: translateY(-50%);
+    z-index: 1;
 }
 
 .price-slider__input {
@@ -100,17 +111,19 @@
     outline: none;
     margin: 0;
     padding: 0;
+    z-index: 2;
 }
 
-/* Inactive track */
+/* Inactive track — keep transparent so bg-track and gold fill are visible */
 .price-slider__input::-webkit-slider-runnable-track {
     height: 2px;
-    background: color-mix(in srgb, var(--color-intense-cocoa) 15%, transparent);
+    background: transparent;
+    border: none;
 }
 
 .price-slider__input::-moz-range-track {
     height: 2px;
-    background: color-mix(in srgb, var(--color-intense-cocoa) 15%, transparent);
+    background: transparent;
     border: none;
 }
 
@@ -128,7 +141,7 @@
     pointer-events: auto;
     margin-top: -6px;
     position: relative;
-    z-index: 2;
+    z-index: 3;
 }
 
 /* Thumb — moz */
@@ -142,16 +155,16 @@
     cursor: pointer;
     pointer-events: auto;
     position: relative;
-    z-index: 2;
+    z-index: 3;
 }
 
 /* Ensure the max input thumb stays above min */
 .price-slider__input--max::-webkit-slider-thumb {
-    z-index: 3;
+    z-index: 4;
 }
 
 .price-slider__input--max::-moz-range-thumb {
-    z-index: 3;
+    z-index: 4;
 }
 
 .price-slider__labels {

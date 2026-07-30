@@ -1,11 +1,9 @@
 <div class="py-12 lg:py-16">
     <div class="mx-auto max-w-md px-margin-mobile lg:px-margin-desktop">
-        <h1 class="mb-2 font-[family-name:var(--font-chillax)] text-3xl font-semibold tracking-tight text-intense-cocoa">
-            {{ __('auth.forgot_password.title') }}
-        </h1>
-        <p class="mb-6 text-sm text-intense-cocoa/70">
-            {{ __('auth.forgot_password.intro') }}
-        </p>
+        <x-page-header
+            title="{{ __('auth.forgot_password.title') }}"
+            subtitle="{{ __('auth.forgot_password.intro') }}"
+        />
 
         @if ($errorMessage)
             <x-alert type="error" class="mb-4">
