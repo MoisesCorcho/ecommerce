@@ -12,6 +12,7 @@ return [
 
     'fields' => [
         'name' => 'Name',
+        'last_name' => 'Last name',
         'email' => 'Email',
         'password' => 'Password',
         'password_confirmation' => 'Confirm password',
@@ -31,6 +32,7 @@ return [
         'remember' => 'Remember me',
         'placeholders' => [
             'email' => 'you@example.com',
+            'password' => 'Your password',
         ],
     ],
 
@@ -45,7 +47,10 @@ return [
         'login_link' => 'Log in',
         'placeholders' => [
             'name' => 'Jane Doe',
+            'last_name' => 'Doe',
             'email' => 'you@example.com',
+            'password' => 'Your password',
+            'password_confirmation' => 'Confirm your password',
         ],
         'strength' => [
             'weak' => 'Weak',

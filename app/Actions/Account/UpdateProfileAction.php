@@ -23,11 +23,13 @@ class UpdateProfileAction
         Validator::make(
             [
                 'name' => $dto->name,
+                'last_name' => $dto->lastName,
                 'email' => $dto->email,
                 'phone' => $dto->phone,
             ],
             [
                 'name' => ['required', 'string', 'max:255'],
+                'last_name' => ['nullable', 'string', 'max:255'],
                 'email' => ['required', 'string', 'email', 'max:255', Rule::unique(User::class)->ignore($dto->userId)],
                 'phone' => ['nullable', 'string', 'max:50'],
             ],
@@ -38,6 +40,7 @@ class UpdateProfileAction
         return DB::transaction(function () use ($user, $dto, $emailChanged): User {
             $user->fill([
                 'name' => $dto->name,
+                'last_name' => $dto->lastName,
                 'email' => $dto->email,
                 'phone' => $dto->phone,
             ]);

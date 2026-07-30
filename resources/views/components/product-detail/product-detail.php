@@ -68,6 +68,8 @@ new #[Layout('layouts.storefront')] class extends Component
 
     public bool $reviewFormHydrated = false;
 
+    public int $reviewsPage = 1;
+
     public function mount(string $slug): void
     {
         $this->slug = $slug;
@@ -250,6 +252,11 @@ new #[Layout('layouts.storefront')] class extends Component
         }
     }
 
+    public function goToReviewsPage(int $page): void
+    {
+        $this->reviewsPage = $page;
+    }
+
     public function selectVariant(int $variantId): void
     {
         $currency = CurrencyEnum::from($this->currency);
@@ -335,12 +342,20 @@ new #[Layout('layouts.storefront')] class extends Component
                 && $eligibility->hasEligiblePurchase($user, $product);
         }
 
+        $perPage = 10;
+        $totalReviews = Review::query()
+            ->where('product_id', $product->id)
+            ->approved()
+            ->count();
+        $totalPages = (int) ceil($totalReviews / $perPage);
+        $this->reviewsPage = max(1, min($this->reviewsPage, max(1, $totalPages)));
         $approvedReviews = Review::query()
             ->where('product_id', $product->id)
             ->approved()
             ->with(['user:id,name'])
             ->latest()
-            ->limit(10)
+            ->offset(($this->reviewsPage - 1) * $perPage)
+            ->limit($perPage)
             ->get();
 
         return [
@@ -354,6 +369,9 @@ new #[Layout('layouts.storefront')] class extends Component
             'availableSizes' => $this->collectAvailableSizes($product, $currency),
             'cartQuantity' => $this->getCartQuantityForVariant(),
             'approvedReviews' => $approvedReviews,
+            'reviewsPage' => $this->reviewsPage,
+            'totalPages' => $totalPages,
+            'totalReviews' => $totalReviews,
             'reviewsSummary' => $summary,
             'viewerReview' => $viewerReview,
             'canCreateReview' => $canCreateReview,

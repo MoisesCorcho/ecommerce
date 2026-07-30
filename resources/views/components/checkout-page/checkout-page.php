@@ -71,9 +71,8 @@ new #[Layout('layouts.storefront')] class extends Component
         $user = Auth::user();
 
         if ($user !== null) {
-            $parts = preg_split('/\s+/', trim((string) $user->name), 2) ?: [];
-            $this->firstName = $parts[0] ?? '';
-            $this->lastName = $parts[1] ?? '';
+            $this->firstName = $user->name;
+            $this->lastName = (string) ($user->last_name ?? '');
             $this->email = (string) $user->email;
             $this->phone = (string) ($user->phone ?? '');
             $this->addressMode = 'saved';

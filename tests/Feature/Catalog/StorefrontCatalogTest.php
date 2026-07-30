@@ -95,7 +95,7 @@ class StorefrontCatalogTest extends TestCase
         $this->get(route('products.index'))
             ->assertOk()
             ->assertSee('EUR Bag')
-            ->assertSee('12.500')
+            ->assertSee(CurrencyEnum::Eur->format(12_500))
             ->assertDontSee('COP Bag');
     }
 

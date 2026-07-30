@@ -26,7 +26,14 @@
                     'field' => 'name',
                     'label' => 'account.fields.name',
                     'wireModel' => 'wire:model="name"',
-                    'colSpan' => 'sm:col-span-2',
+                    'colSpan' => 'sm:col-span-1',
+                ])
+
+                @include('components.checkout-page.partials.text-field', [
+                    'field' => 'lastName',
+                    'label' => 'account.fields.last_name',
+                    'wireModel' => 'wire:model="lastName"',
+                    'colSpan' => 'sm:col-span-1',
                 ])
 
                 @include('components.checkout-page.partials.text-field', [

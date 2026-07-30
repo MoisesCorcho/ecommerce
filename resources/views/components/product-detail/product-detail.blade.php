@@ -420,7 +420,7 @@
 
     {{-- Reviews (F07) --}}
     <section
-        class="mx-auto mt-16 max-w-storefront px-margin-mobile sm:mt-20 lg:px-margin-desktop"
+        class="mx-auto mt-10 max-w-storefront px-margin-mobile sm:mt-12 lg:px-margin-desktop"
         aria-labelledby="reviews-heading"
         data-reviews-section
     >
@@ -441,21 +441,16 @@
             </div>
         </div>
 
-        <div class="grid gap-10 lg:grid-cols-[1.2fr_1fr]">
+        <div class="grid items-start gap-10 lg:grid-cols-[1.2fr_1fr]">
             {{-- Public approved list --}}
             <div class="space-y-6" data-approved-reviews>
                 @forelse ($approvedReviews as $review)
-                    <article class="border border-intense-cocoa/10 bg-surface-container p-5 shadow-sm" wire:key="review-{{ $review->id }}">
+                    <article class="bg-surface-container p-5 shadow-sm" wire:key="review-{{ $review->id }}">
                         <div class="mb-2 flex flex-wrap items-center gap-2">
                             <span class="text-sm font-semibold text-soft-gold" aria-label="{{ __('reviews.ui.stars', ['rating' => $review->rating]) }}">
                                 {{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}
                             </span>
                             <span class="text-sm font-medium text-intense-cocoa">{{ $review->user?->name }}</span>
-                            @if ($review->is_verified_purchase)
-                                <span class="border border-intense-cocoa/15 bg-silk-cream px-2 py-0.5 text-xs font-medium text-intense-cocoa/70">
-                                    {{ __('reviews.status.verified_purchase') }}
-                                </span>
-                            @endif
                         </div>
                         @if ($review->purchased_variants && count($review->purchased_variants) > 0)
                             <div class="mb-2 flex flex-wrap gap-1.5">
@@ -486,10 +481,50 @@
                         {{ __('reviews.empty.no_reviews') }}
                     </p>
                 @endforelse
+                @if ($totalPages > 1)
+                    <nav class="mt-6 flex items-center justify-center gap-1" aria-label="{{ __('reviews.ui.pagination') }}">
+                        @if ($reviewsPage > 1)
+                            <button
+                                type="button"
+                                wire:click="goToReviewsPage({{ $reviewsPage - 1 }})"
+                                class="h-9 border border-intense-cocoa/20 px-3 text-xs font-semibold uppercase tracking-widest text-intense-cocoa/70 transition-all duration-200 hover:border-intense-cocoa hover:text-intense-cocoa"
+                                aria-label="{{ __('reviews.ui.previous_page') }}"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        @endif
+
+                        @for ($i = 1; $i <= $totalPages; $i++)
+                            <button
+                                type="button"
+                                wire:click="goToReviewsPage({{ $i }})"
+                                class="flex h-9 w-9 items-center justify-center border text-xs font-semibold uppercase tracking-widest transition-all duration-200 focus:outline-none {{ $reviewsPage === $i ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-intense-cocoa/20 bg-transparent text-intense-cocoa/60 hover:border-intense-cocoa hover:text-intense-cocoa' }}"
+                                aria-current="{{ $reviewsPage === $i ? 'page' : false }}"
+                            >
+                                {{ $i }}
+                            </button>
+                        @endfor
+
+                        @if ($reviewsPage < $totalPages)
+                            <button
+                                type="button"
+                                wire:click="goToReviewsPage({{ $reviewsPage + 1 }})"
+                                class="h-9 border border-intense-cocoa/20 px-3 text-xs font-semibold uppercase tracking-widest text-intense-cocoa/70 transition-all duration-200 hover:border-intense-cocoa hover:text-intense-cocoa"
+                                aria-label="{{ __('reviews.ui.next_page') }}"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        @endif
+                    </nav>
+                @endif
             </div>
 
             {{-- Viewer form / notices --}}
-            <div class="rounded-sm border border-intense-cocoa/15 bg-surface-container p-6 shadow-sm" data-review-form>
+            <div class="bg-surface-container p-6 shadow-sm" data-review-form>
                 @auth
                     @if ($canCreateReview || $canEditReview)
                         <h3 class="mb-4 font-[family-name:var(--font-chillax)] text-lg font-semibold text-intense-cocoa">

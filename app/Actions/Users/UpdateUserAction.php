@@ -19,6 +19,7 @@ class UpdateUserAction
         $this->assertEmailUnique($dto->email, (int) $user->getKey());
 
         $user->name = $dto->name;
+        $user->last_name = $dto->lastName;
         $user->email = $dto->email;
         $user->phone = $dto->phone;
 

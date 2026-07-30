@@ -38,6 +38,31 @@
             @enderror
         </div>
 
+        {{-- Last name --}}
+        <div>
+            <label for="lastName" class="mb-1 block text-sm font-medium text-intense-cocoa">
+                {{ __('auth.fields.last_name') }}
+            </label>
+            <div class="relative">
+                <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-intense-cocoa/60">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                    </svg>
+                </span>
+                <input
+                    id="lastName"
+                    type="text"
+                    wire:model="lastName"
+                    autocomplete="family-name"
+                    placeholder="{{ __('auth.register.placeholders.last_name') }}"
+                    class="w-full border bg-silk-cream py-3 pl-11 pr-3 text-body-md text-intense-cocoa transition-colors hover:border-intense-cocoa focus:border-intense-cocoa focus:outline-none @error('lastName') border-error @else border-intense-cocoa/40 @enderror"
+                >
+            </div>
+            @error('lastName')
+                <p class="mt-1 text-sm text-error">{{ $message }}</p>
+            @enderror
+        </div>
+
         {{-- Email --}}
         <div>
             <label for="email" class="mb-1 block text-sm font-medium text-intense-cocoa">
@@ -79,6 +104,7 @@
                     wire:model="password"
                     :type="show ? 'text' : 'password'"
                     autocomplete="new-password"
+                    placeholder="{{ __('auth.register.placeholders.password') }}"
                     x-on:input="value = $event.target.value"
                     class="w-full border bg-silk-cream py-3 pl-11 pr-11 text-body-md text-intense-cocoa transition-colors hover:border-intense-cocoa focus:border-intense-cocoa focus:outline-none @error('password') border-error @else border-intense-cocoa/40 @enderror"
                 >
@@ -144,6 +170,7 @@
                     wire:model="password_confirmation"
                     :type="show ? 'text' : 'password'"
                     autocomplete="new-password"
+                    placeholder="{{ __('auth.register.placeholders.password_confirmation') }}"
                     class="w-full border bg-silk-cream py-3 pl-11 pr-11 text-body-md text-intense-cocoa transition-colors hover:border-intense-cocoa focus:border-intense-cocoa focus:outline-none @error('password_confirmation') border-error @else border-intense-cocoa/40 @enderror"
                 >
                 <button

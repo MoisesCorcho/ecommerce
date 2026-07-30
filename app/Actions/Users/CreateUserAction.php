@@ -20,6 +20,7 @@ class CreateUserAction
 
         return User::query()->create([
             'name' => $dto->name,
+            'last_name' => $dto->lastName,
             'email' => $dto->email,
             'phone' => $dto->phone,
             'password' => $dto->password,

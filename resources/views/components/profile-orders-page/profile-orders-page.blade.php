@@ -25,7 +25,7 @@
                         <span class="inline-flex items-center border border-intense-cocoa/40 px-3 py-1 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa">
                             {{ $order->status->label() }}
                         </span>
-                        <p class="text-sm text-intense-cocoa/70">{{ number_format($order->total, 0) }} {{ $order->currency->value }}</p>
+                        <p class="text-sm text-intense-cocoa/70">{{ $order->currency->format($order->total) }}</p>
                     </div>
                 </a>
             @empty

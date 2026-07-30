@@ -6,7 +6,9 @@ namespace Database\Seeders;
 
 use App\Enums\Orders\OrderStatusEnum;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\Review;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class ReviewSeeder extends Seeder
@@ -57,6 +59,20 @@ class ReviewSeeder extends Seeder
                 }
                 $processedPairs[$pairKey] = true;
 
+                // Collect purchased variants for this user+product across all orders
+                $purchasedVariants = $eligibleOrders
+                    ->flatMap(fn (Order $o) => $o->items)
+                    ->filter(fn ($oi) => $oi->productVariant?->product_id === $product->id && $oi->order->user_id === $user->id)
+                    ->map(fn ($oi) => [
+                        'sku' => $oi->sku ?? $oi->productVariant?->sku ?? '',
+                        'color' => $oi->productVariant?->color,
+                        'size' => $oi->productVariant?->size,
+                    ])
+                    ->unique(fn (array $v): string => $v['sku'])
+                    ->values()
+                    ->take(3)
+                    ->all();
+
                 // 80% positive (4-5 stars), 20% mixed (2-3 stars)
                 $isPositive = rand(1, 100) <= 80;
                 $rating = $isPositive ? rand(4, 5) : rand(2, 3);
@@ -77,7 +93,75 @@ class ReviewSeeder extends Seeder
                         'comment' => $comment,
                         'is_approved' => $isApproved,
                         'is_verified_purchase' => true,
+                        'purchased_variants' => $purchasedVariants,
                         'created_at' => (clone $order->created_at)->addDays(rand(5, 20)),
+                    ]
+                );
+            }
+        }
+
+        // ── Ensure Honey Bag Medium has enough reviews for pagination testing ──
+        $honeyBag = Product::query()->where('slug', 'honey-bag-medium')->first();
+        if ($honeyBag !== null) {
+            $existingCount = Review::query()
+                ->where('product_id', $honeyBag->id)
+                ->approved()
+                ->count();
+
+            $allVariants = [
+                ['sku' => 'D2401-NEGRO', 'color' => 'Negro', 'size' => '36cm x 29cm x 8cm'],
+                ['sku' => 'D2401-ROJO', 'color' => 'Rojo', 'size' => '36cm x 29cm x 8cm'],
+                ['sku' => 'D2401-BEIGE', 'color' => 'Beige', 'size' => '36cm x 29cm x 8cm'],
+            ];
+
+            $users = User::query()
+                ->whereDoesntHave('roles', fn ($q) => $q->where('name', 'admin'))
+                ->take(12)
+                ->get();
+
+            // Fill up to 11 approved reviews if needed
+            $toCreate = max(0, 11 - $existingCount);
+            for ($i = 0; $i < $toCreate; $i++) {
+                $user = $users[$i % $users->count()];
+                $reviewUser = User::query()->where('id', $user->id)->first();
+
+                Review::query()->updateOrCreate(
+                    [
+                        'user_id' => $reviewUser->id,
+                        'product_id' => $honeyBag->id,
+                    ],
+                    [
+                        'rating' => rand(4, 5),
+                        'comment' => $commentsPositive[array_rand($commentsPositive)],
+                        'is_approved' => true,
+                        'is_verified_purchase' => true,
+                        'purchased_variants' => [$allVariants[array_rand($allVariants)]],
+                        'created_at' => now()->subDays(rand(1, 30)),
+                    ]
+                );
+            }
+
+            // Ensure at least 1 review has all 3 purchased variants
+            $hasTriple = Review::query()
+                ->where('product_id', $honeyBag->id)
+                ->approved()
+                ->get()
+                ->contains(fn (Review $r) => is_array($r->purchased_variants) && count($r->purchased_variants) >= 3);
+
+            if (! $hasTriple && $users->isNotEmpty()) {
+                $tripleUser = $users->first();
+                Review::query()->updateOrCreate(
+                    [
+                        'user_id' => $tripleUser->id,
+                        'product_id' => $honeyBag->id,
+                    ],
+                    [
+                        'rating' => 5,
+                        'comment' => 'Compré todos los colores y cada uno es una maravilla. ¡La calidad es consistente!',
+                        'is_approved' => true,
+                        'is_verified_purchase' => true,
+                        'purchased_variants' => $allVariants,
+                        'created_at' => now()->subDays(1),
                     ]
                 );
             }
