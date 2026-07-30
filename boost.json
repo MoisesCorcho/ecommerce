@@ -2,7 +2,8 @@
     "agents": [
         "grok_build",
         "opencode",
-        "claude_code"
+        "claude_code",
+        "antigravity"
     ],
     "cloud": false,
     "guidelines": true,

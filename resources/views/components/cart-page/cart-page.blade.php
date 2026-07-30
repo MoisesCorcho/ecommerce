@@ -5,35 +5,24 @@
 
 <div class="py-8 lg:py-12" x-data="{ confirmingClear: false }">
     {{-- Breadcrumb --}}
-    <nav aria-label="Breadcrumb" class="mx-auto mb-6 max-w-storefront px-margin-mobile text-sm text-intense-cocoa/60 lg:px-margin-desktop">
-        <ol class="flex flex-wrap items-center gap-1.5">
-            <li>
-                <a href="{{ route('home') }}" class="transition-colors hover:text-intense-cocoa hover:underline">
-                    {{ __('cart.page.breadcrumb_home') }}
-                </a>
-            </li>
-            <li aria-hidden="true" class="text-intense-cocoa/30">/</li>
-            <li aria-current="page" class="font-medium text-intense-cocoa">
-                {{ __('cart.page.breadcrumb_cart') }}
-            </li>
-        </ol>
-    </nav>
+    <x-breadcrumb.breadcrumb :items="[
+        ['label' => __('cart.page.breadcrumb_home'), 'href' => route('home')],
+        ['label' => __('cart.page.breadcrumb_cart')],
+    ]"></x-breadcrumb.breadcrumb>
 
     <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
-        <h1 class="mb-6 font-[family-name:var(--font-chillax)] text-3xl font-semibold tracking-tight text-intense-cocoa">
-            {{ __('cart.page.title') }}
-        </h1>
+        <x-page-header title="{{ __('cart.page.title') }}" />
 
         @if ($statusMessage)
-            <p class="mb-4 border border-success/20 bg-success/5 px-4 py-3 text-sm text-success" data-cart-status role="status">
+            <x-alert type="success" data-cart-status class="mb-4">
                 {{ $statusMessage }}
-            </p>
+            </x-alert>
         @endif
 
         @if ($errorMessage)
-            <p class="mb-4 border border-error/20 bg-error/5 px-4 py-3 text-sm text-error" data-cart-error role="alert">
+            <x-alert type="error" data-cart-error class="mb-4">
                 {{ $errorMessage }}
-            </p>
+            </x-alert>
         @endif
 
         @if (count($cartView->lines) === 0)
@@ -48,12 +37,13 @@
                 <p class="max-w-sm text-intense-cocoa/70">
                     {{ __('cart.empty.message') }}
                 </p>
-                <a
+                <x-secondary-button
+                    tag="a"
                     href="{{ route('products.index') }}"
-                    class="mt-2 inline-flex h-11 items-center border border-intense-cocoa px-6 text-sm font-semibold text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream"
+                    class="mt-2 h-11 px-6"
                 >
                     {{ __('cart.empty.cta') }}
-                </a>
+                </x-secondary-button>
             </div>
         @else
             <div class="grid gap-8 lg:grid-cols-[1.6fr_1fr] lg:gap-12">
@@ -197,14 +187,14 @@
                     </ul>
 
                     <div class="mt-6">
-                        <button
+                        <x-danger-button
                             type="button"
                             x-on:click="confirmingClear = true"
-                            class="inline-flex h-10 items-center border border-error px-4 text-sm font-semibold text-error transition-colors duration-200 hover:bg-error hover:text-silk-cream"
+                            class="h-10 px-4"
                             data-cart-clear
                         >
                             {{ __('cart.page.clear_cart') }}
-                        </button>
+                        </x-danger-button>
                     </div>
                 </div>
 
@@ -234,13 +224,14 @@
                             </span>
                         </div>
 
-                        <a
+                        <x-primary-button
+                            tag="a"
                             href="{{ route('checkout.show') }}"
-                            class="mt-6 flex h-12 w-full items-center justify-center bg-intense-cocoa text-sm font-semibold text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa"
+                            class="mt-6 w-full"
                             data-cart-checkout
                         >
                             {{ __('cart.summary.checkout') }}
-                        </a>
+                        </x-primary-button>
 
                         <a
                             href="{{ route('products.index') }}"
@@ -253,49 +244,34 @@
             </div>
 
             {{-- Clear cart confirmation modal --}}
-            <div
-                x-show="confirmingClear"
-                x-cloak
-                x-transition.opacity
-                x-on:keydown.escape.window="confirmingClear = false"
-                class="fixed inset-0 z-[60] flex items-center justify-center bg-intense-cocoa/50 px-4"
+            <x-modal
+                name="confirmingClear"
+                title="{{ __('cart.page.clear_cart') }}"
+                title-id="clear-cart-modal-title"
+                data-cart-clear-modal
             >
-                <div
-                    x-show="confirmingClear"
-                    x-transition
-                    x-on:click.outside="confirmingClear = false"
-                    class="w-full max-w-sm bg-silk-cream p-6 shadow-xl"
-                    role="alertdialog"
-                    aria-modal="true"
-                    aria-labelledby="clear-cart-modal-title"
-                    data-cart-clear-modal
-                >
-                    <h2 id="clear-cart-modal-title" class="font-[family-name:var(--font-chillax)] text-xl font-semibold text-intense-cocoa">
+                <p class="mt-2 text-center text-sm text-intense-cocoa/90">
+                    {{ __('cart.page.clear_cart_confirm') }}
+                </p>
+                <div class="mt-6 flex justify-center gap-3">
+                    <x-primary-button
+                        type="button"
+                        x-on:click="confirmingClear = false"
+                        class="h-10 px-4"
+                    >
+                        {{ __('cart.page.clear_cart_cancel') }}
+                    </x-primary-button>
+                    <x-primary-button
+                        type="button"
+                        wire:click="clearCart"
+                        x-on:click="confirmingClear = false"
+                        class="h-10 px-4"
+                        data-cart-clear-confirm
+                    >
                         {{ __('cart.page.clear_cart') }}
-                    </h2>
-                    <p class="mt-2 text-sm text-intense-cocoa/90">
-                        {{ __('cart.page.clear_cart_confirm') }}
-                    </p>
-                    <div class="mt-6 flex justify-end gap-3">
-                        <button
-                            type="button"
-                            x-on:click="confirmingClear = false"
-                            class="flex h-10 cursor-pointer items-center justify-center bg-intense-cocoa px-4 text-sm font-semibold text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa"
-                        >
-                            {{ __('cart.page.clear_cart_cancel') }}
-                        </button>
-                        <button
-                            type="button"
-                            wire:click="clearCart"
-                            x-on:click="confirmingClear = false"
-                            class="h-10 cursor-pointer border border-intense-cocoa bg-intense-cocoa px-4 text-sm font-semibold text-silk-cream transition-colors duration-200 hover:border-error hover:bg-error"
-                            data-cart-clear-confirm
-                        >
-                            {{ __('cart.page.clear_cart') }}
-                        </button>
-                    </div>
+                    </x-primary-button>
                 </div>
-            </div>
+            </x-modal>
         @endif
     </div>
 </div>

@@ -19,12 +19,12 @@
             </p>
         @endif
 
-        <button
+        <x-primary-button
             type="button"
             wire:click="resend"
-            class="flex h-12 w-full items-center justify-center bg-intense-cocoa text-sm font-semibold text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa disabled:cursor-not-allowed disabled:bg-intense-cocoa/40"
+            class="w-full disabled:bg-intense-cocoa/40"
         >
             {{ __('auth.verify_email.resend') }}
-        </button>
+        </x-primary-button>
     </div>
 </div>

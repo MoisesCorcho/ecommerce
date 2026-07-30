@@ -146,7 +146,6 @@ Do not use enums for admin-managed catalogs that change at runtime—those belon
 - Honor interface contracts (Liskov): implementors must not surprise callers with stronger preconditions or weaker guarantees.
 - PHPDoc is required when it adds meaning: non-obvious purpose, `@throws`, array shapes, generics, side effects.
 - Forbid PHPDoc that only restates native types (e.g. `@param int $id` on `int $id`).
-- Comments (inline and PHPDoc) are always in **English**, and exist only to document non-obvious behavior for future readers (invariants, gotchas, `@throws`, workarounds tied to a specific constraint). Never write a comment that narrates a change, fix, or decision ("removed X because Y", "this used to do Z") — that explanation belongs in the commit message or the chat with the user, not in the code.
 
 ## Cross-cutting rules
 
@@ -216,6 +215,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 
 - php - 8.5
 - filament/filament (FILAMENT) - v5
+- laravel/fortify (FORTIFY) - v1
 - laravel/framework (LARAVEL) - v13
 - laravel/prompts (PROMPTS) - v0
 - livewire/livewire (LIVEWIRE) - v4

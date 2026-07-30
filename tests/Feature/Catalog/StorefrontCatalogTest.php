@@ -154,4 +154,15 @@ class StorefrontCatalogTest extends TestCase
             ->assertSee('LW Product')
             ->assertSee('50.000');
     }
+
+    public function test_price_filter_and_clear_filters_work(): void
+    {
+        Livewire::test('catalog-list')
+            ->call('setPriceFilter', 900_000, 1_000_000)
+            ->assertSet('minPrice', 900_000)
+            ->assertSet('maxPrice', 1_000_000)
+            ->call('clearFilters')
+            ->assertSet('minPrice', null)
+            ->assertSet('maxPrice', null);
+    }
 }

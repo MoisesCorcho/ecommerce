@@ -1,24 +1,10 @@
 <div class="py-8 lg:py-12">
     {{-- Breadcrumb (R1) --}}
-    <nav aria-label="Breadcrumb" class="mx-auto mb-6 max-w-storefront px-margin-mobile text-sm text-intense-cocoa/60 lg:px-margin-desktop">
-        <ol class="flex flex-wrap items-center gap-1.5">
-            <li>
-                <a href="{{ route('home') }}" class="transition-colors hover:text-intense-cocoa hover:underline">
-                    {{ __('orders.checkout.breadcrumb_home') }}
-                </a>
-            </li>
-            <li aria-hidden="true" class="text-intense-cocoa/30">/</li>
-            <li>
-                <a href="{{ route('cart.page') }}" class="transition-colors hover:text-intense-cocoa hover:underline">
-                    {{ __('orders.checkout.breadcrumb_cart') }}
-                </a>
-            </li>
-            <li aria-hidden="true" class="text-intense-cocoa/30">/</li>
-            <li aria-current="page" class="font-medium text-intense-cocoa">
-                {{ __('orders.checkout.breadcrumb_checkout') }}
-            </li>
-        </ol>
-    </nav>
+    <x-breadcrumb.breadcrumb :items="[
+        ['label' => __('orders.checkout.breadcrumb_home'), 'href' => route('home')],
+        ['label' => __('orders.checkout.breadcrumb_cart'), 'href' => route('cart.page')],
+        ['label' => __('orders.checkout.breadcrumb_checkout')],
+    ]"></x-breadcrumb.breadcrumb>
 
     <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
         {{-- Page title + back-to-cart (R1, R9) --}}
@@ -70,7 +56,7 @@
             <div class="grid gap-8 lg:grid-cols-[1.6fr_1fr] lg:gap-12">
                 <form id="checkout-form" wire:submit="confirm" class="space-y-6" data-checkout-form>
                     {{-- Contact section (R2) --}}
-                    <section class="border border-intense-cocoa/30 bg-soft-sand p-5">
+                    <x-section-card.section-card tag="section">
                         <h2 class="mb-4 text-lg font-semibold text-intense-cocoa">{{ __('orders.checkout.contact') }}</h2>
                         <div class="grid gap-4 sm:grid-cols-2">
                             @include('components.checkout-page.partials.text-field', [
@@ -99,10 +85,10 @@
                                 'placeholder' => 'orders.checkout.placeholders.phone',
                             ])
                         </div>
-                    </section>
+                    </x-section-card.section-card>
 
                     {{-- Address section (R3, R4, R5, R12) --}}
-                    <section class="border border-intense-cocoa/30 bg-soft-sand p-5">
+                    <x-section-card.section-card tag="section">
                         <h2 class="mb-4 text-lg font-semibold text-intense-cocoa">{{ __('orders.checkout.address_title') }}</h2>
 
                         @auth
@@ -191,10 +177,10 @@
                                 ])
                             </div>
                         @endif
-                    </section>
+                    </x-section-card.section-card>
 
                     {{-- Shipping method (R5, R12) — single pre-selected, non-interactive standard shipping card --}}
-                    <section class="border border-intense-cocoa/30 bg-soft-sand p-5">
+                    <x-section-card.section-card tag="section">
                         <h2 class="mb-4 text-lg font-semibold text-intense-cocoa">{{ __('orders.checkout.shipping_method') }}</h2>
                         <div class="flex items-center justify-between border border-intense-cocoa/40 bg-intense-cocoa/5 px-4 py-3 text-sm text-intense-cocoa">
                             <span class="flex items-center gap-2 font-medium">
@@ -205,10 +191,10 @@
                             </span>
                             <span class="tabular-nums">{{ \App\Enums\Commerce\CurrencyEnum::tryFrom((string) ($preview['currency'] ?? ''))?->format($preview['shippingCost']) ?? number_format($preview['shippingCost']).' '.$preview['currency'] }}</span>
                         </div>
-                    </section>
+                    </x-section-card.section-card>
 
                     {{-- Coupon section --}}
-                    <section class="border border-intense-cocoa/30 bg-soft-sand p-5">
+                    <x-section-card.section-card tag="section">
                         <h2 class="mb-4 text-lg font-semibold text-intense-cocoa">{{ __('orders.fields.coupon_code') }}</h2>
                         <div class="flex flex-col gap-3 sm:flex-row">
                             <input
@@ -220,22 +206,22 @@
                                 data-checkout-coupon
                                 autocomplete="off"
                             />
-                            <button
+                            <x-secondary-button
                                 type="button"
                                 wire:click="applyCoupon"
-                                class="border border-intense-cocoa px-4 py-2 text-sm font-semibold text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream"
+                                class="h-10 px-4 shrink-0"
                                 data-checkout-apply-coupon
                             >
                                 {{ __('orders.fields.coupon_code') }}
-                            </button>
+                            </x-secondary-button>
                         </div>
                         @error('couponCode')
                             <p class="mt-1 text-sm text-error">{{ $message }}</p>
                         @enderror
-                    </section>
+                    </x-section-card.section-card>
 
                     {{-- Notes section (R12) --}}
-                    <section class="border border-intense-cocoa/30 bg-soft-sand p-5">
+                    <x-section-card.section-card tag="section">
                         <h2 class="mb-4 text-lg font-semibold text-intense-cocoa">{{ __('orders.sections.notes') }}</h2>
                         <textarea
                             wire:model="customerNotes"
@@ -246,12 +232,12 @@
                         @error('customerNotes')
                             <p class="mt-1 text-sm text-error">{{ $message }}</p>
                         @enderror
-                    </section>
+                    </x-section-card.section-card>
                 </form>
 
                 {{-- Sticky order summary (R6, R9, R12) --}}
                 <aside class="lg:sticky lg:top-24 lg:h-fit">
-                    <div class="bg-soft-sand p-6" data-checkout-summary>
+                    <x-section-card.section-card data-checkout-summary>
                         <h2 class="mb-4 font-[family-name:var(--font-chillax)] text-xl font-semibold text-intense-cocoa">
                             {{ __('orders.checkout.summary_title') }}
                         </h2>
@@ -302,15 +288,15 @@
                             </div>
                         </dl>
 
-                        <button
+                        <x-primary-button
                             type="submit"
                             form="checkout-form"
-                            class="mt-6 flex h-12 w-full items-center justify-center bg-intense-cocoa text-sm font-semibold text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa disabled:cursor-not-allowed disabled:bg-intense-cocoa/40"
+                            class="mt-6 w-full disabled:bg-intense-cocoa/40"
                             data-checkout-submit
                             wire:loading.attr="disabled"
                         >
                             {{ __('orders.actions.confirm') }}
-                        </button>
+                        </x-primary-button>
 
                         <p class="mt-3 flex items-center justify-center gap-1.5 text-xs text-intense-cocoa/90">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true">
@@ -318,7 +304,7 @@
                             </svg>
                             <span><span class="font-medium text-intense-cocoa">{{ __('orders.checkout.secure_badge') }}:</span> {{ __('orders.checkout.secure_note') }}</span>
                         </p>
-                    </div>
+                    </x-section-card.section-card>
                 </aside>
             </div>
         @endif

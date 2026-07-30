@@ -11,7 +11,7 @@
             </div>
 
             {{-- Items --}}
-            <div class="divide-y divide-intense-cocoa/10 bg-soft-sand p-6 shadow-ambient">
+            <x-section-card.section-card class="divide-y divide-intense-cocoa/10">
                 @foreach ($order->items as $item)
                     <div class="flex items-center justify-between gap-4 py-5 first:pt-0 last:pb-0">
                         <div>
@@ -39,10 +39,10 @@
                         </p>
                     </div>
                 @endforeach
-            </div>
+            </x-section-card.section-card>
 
             {{-- Totals --}}
-            <dl class="space-y-2 bg-soft-sand p-6 text-sm text-intense-cocoa shadow-ambient">
+            <x-section-card.section-card tag="dl" class="space-y-2 text-sm text-intense-cocoa">
                 <div class="flex justify-between border-b border-intense-cocoa/10 py-2">
                     <dt class="text-intense-cocoa/60">{{ __('orders.fields.subtotal') }}</dt>
                     <dd class="tabular-nums">{{ $order->currency->format($order->subtotal) }}</dd>
@@ -61,17 +61,17 @@
                     <dt class="font-medium">{{ __('orders.fields.total') }}</dt>
                     <dd class="tabular-nums font-medium">{{ $order->currency->format($order->total) }}</dd>
                 </div>
-            </dl>
+            </x-section-card.section-card>
 
             {{-- Shipping address (snapshot columns, not the live relation) --}}
-            <div class="bg-soft-sand p-6 text-sm text-intense-cocoa shadow-ambient">
+            <x-section-card.section-card class="text-sm text-intense-cocoa">
                 <p class="mb-2 font-medium">{{ __('account.orders.shipping_address') }}</p>
                 <p>{{ $order->shipping_full_name }} · {{ $order->shipping_phone }}</p>
                 <p>
                     {{ $order->shipping_address_line_1 }}@if ($order->shipping_address_line_2), {{ $order->shipping_address_line_2 }}@endif
                 </p>
                 <p>{{ $order->shipping_city }}, {{ $order->shipping_state }}, {{ $order->shipping_country }} {{ $order->shipping_postal_code }}</p>
-            </div>
+            </x-section-card.section-card>
         </div>
     </x-partials.account-shell>
 </x-layouts::storefront>

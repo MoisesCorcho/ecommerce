@@ -4,19 +4,22 @@
 --}}
 @php
     use App\Support\ColorMap;
+
+    $breadcrumbItems = [
+        ['label' => __('storefront.products.breadcrumb_home'), 'href' => route('home')],
+        ['label' => __('storefront.products.breadcrumb_shop'), 'href' => route('products.index')],
+    ];
+    if ($product->category) {
+        $breadcrumbItems[] = ['label' => $product->category->name, 'href' => route('products.index', ['category' => $product->category->slug])];
+    }
+    $breadcrumbItems[] = ['label' => $product->name];
 @endphp
 
+<x-partials.toast>
 <div
     x-data="{
-        toastMessage: '',
-        toastVisible: false,
         lightbox: false,
         lightboxIndex: @js($mainImageIndex),
-        showToast(message) {
-            this.toastMessage = message;
-            this.toastVisible = true;
-            setTimeout(() => { this.toastVisible = false; }, 3000);
-        },
         openLightbox(index) {
             this.lightboxIndex = index;
             this.lightbox = true;
@@ -35,55 +38,11 @@
             }
         }
     }"
-    x-on:toast.window="showToast($event.detail.message)"
-    x-on:cart-updated.window="showToast('{{ __('storefront.added_to_cart') }}')"
+    x-on:cart-updated.window="$dispatch('toast', { message: '{{ __('storefront.added_to_cart') }}' })"
     class="relative py-8 lg:py-12"
 >
-    {{-- Toast Notification (R18) --}}
-    <div
-        x-show="toastVisible"
-        x-cloak
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 -translate-y-4"
-        x-transition:enter-end="opacity-100 translate-y-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 translate-y-0"
-        x-transition:leave-end="opacity-0 -translate-y-4"
-        class="fixed top-20 right-4 z-50 bg-intense-cocoa px-6 py-4 text-base font-medium text-silk-cream shadow-ambient"
-        role="status"
-        aria-live="polite"
-    >
-        <span x-text="toastMessage"></span>
-    </div>
-
     {{-- Breadcrumb (R12) --}}
-    <nav aria-label="Breadcrumb" class="mx-auto mb-6 max-w-storefront px-margin-mobile text-sm text-intense-cocoa/60 lg:px-margin-desktop">
-        <ol class="flex flex-wrap items-center gap-1.5">
-            <li>
-                <a href="{{ route('home') }}" class="transition-colors hover:text-intense-cocoa hover:underline">
-                    {{ __('storefront.products.breadcrumb_home') }}
-                </a>
-            </li>
-            <li aria-hidden="true" class="text-intense-cocoa/30">/</li>
-            <li>
-                <a href="{{ route('products.index') }}" class="transition-colors hover:text-intense-cocoa hover:underline">
-                    {{ __('storefront.products.breadcrumb_shop') }}
-                </a>
-            </li>
-            @if ($product->category)
-                <li aria-hidden="true" class="text-intense-cocoa/30">/</li>
-                <li>
-                    <a href="{{ route('products.index', ['category' => $product->category->slug]) }}" class="transition-colors hover:text-intense-cocoa hover:underline">
-                        {{ $product->category->name }}
-                    </a>
-                </li>
-            @endif
-            <li aria-hidden="true" class="text-intense-cocoa/30">/</li>
-            <li aria-current="page" class="font-medium text-intense-cocoa">
-                {{ $product->name }}
-            </li>
-        </ol>
-    </nav>
+    <x-breadcrumb.breadcrumb :items="$breadcrumbItems"></x-breadcrumb.breadcrumb>
 
     {{-- Two-column grid (R1: lg+ two columns, sm/md single column) --}}
     <div class="mx-auto grid max-w-storefront gap-8 px-margin-mobile lg:grid-cols-[1.2fr_1fr] lg:gap-12 lg:px-margin-desktop">
@@ -339,28 +298,52 @@
                 @endphp
 
                 {{-- Add to cart (R9) --}}
-                <button
-                    type="button"
-                    @if ($canAddToCart) wire:click="addToCart" @else disabled @endif
-                    class="flex h-12 w-full items-center justify-center bg-intense-cocoa text-sm font-semibold text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa focus:outline-none disabled:cursor-not-allowed disabled:bg-intense-cocoa/40 disabled:hover:bg-intense-cocoa/40 disabled:hover:text-silk-cream"
-                    data-add-to-cart
-                    aria-label="{{ __('storefront.products.add_to_cart') }}"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mr-2 h-5 w-5" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.46 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM11.25 10.5h.008v.008h-.008V10.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-                    </svg>
-                    {{ __('storefront.products.add_to_cart') }}
-                </button>
-
-                {{-- Buy now (R10) --}}
-                <button
-                    type="button"
-                    @if ($canAddToCart) wire:click="buyNow" @else disabled @endif
-                    class="flex h-12 w-full items-center justify-center border border-intense-cocoa bg-transparent text-sm font-semibold text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none disabled:cursor-not-allowed disabled:border-intense-cocoa/30 disabled:text-intense-cocoa/30 disabled:hover:bg-transparent disabled:hover:text-intense-cocoa/30"
-                    aria-label="{{ __('storefront.products.buy_now') }}"
-                >
-                    {{ __('storefront.products.buy_now') }}
-                </button>
+                @if ($canAddToCart)
+                    <x-primary-button
+                        type="button"
+                        wire:click="addToCart"
+                        class="w-full focus:outline-none disabled:bg-intense-cocoa/40 disabled:hover:bg-intense-cocoa/40 disabled:hover:text-silk-cream"
+                        data-add-to-cart
+                        aria-label="{{ __('storefront.products.add_to_cart') }}"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mr-2 h-5 w-5" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.46 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM11.25 10.5h.008v.008h-.008V10.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                        </svg>
+                        {{ __('storefront.products.add_to_cart') }}
+                    </x-primary-button>
+                @else
+                    <x-primary-button
+                        type="button"
+                        disabled
+                        class="w-full focus:outline-none disabled:bg-intense-cocoa/40 disabled:hover:bg-intense-cocoa/40 disabled:hover:text-silk-cream"
+                        data-add-to-cart
+                        aria-label="{{ __('storefront.products.add_to_cart') }}"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mr-2 h-5 w-5" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.46 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM11.25 10.5h.008v.008h-.008V10.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                        </svg>
+                        {{ __('storefront.products.add_to_cart') }}
+                    </x-primary-button>
+                @endif
+                @if ($canAddToCart)
+                    <x-secondary-button
+                        type="button"
+                        wire:click="buyNow"
+                        class="w-full"
+                        aria-label="{{ __('storefront.products.buy_now') }}"
+                    >
+                        {{ __('storefront.products.buy_now') }}
+                    </x-secondary-button>
+                @else
+                    <x-secondary-button
+                        type="button"
+                        disabled
+                        class="w-full"
+                        aria-label="{{ __('storefront.products.buy_now') }}"
+                    >
+                        {{ __('storefront.products.buy_now') }}
+                    </x-secondary-button>
+                @endif
 
                 {{-- Favorites heart (R11) --}}
                 <button
@@ -728,3 +711,4 @@
         </div>
     @endif
 </div>
+</x-partials.toast>

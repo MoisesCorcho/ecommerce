@@ -18,6 +18,7 @@
 @endphp
 
 <div
+    class="py-8 lg:py-12"
     x-data="{
         lightboxOpen: false,
         lightboxIndex: 0,
@@ -43,22 +44,13 @@
     x-on:keydown.arrow-left.window="lightboxOpen && prevImage()"
 >
     {{-- Breadcrumb --}}
-    <nav aria-label="Breadcrumb" class="mx-auto mb-6 mt-6 max-w-storefront px-margin-mobile text-sm text-intense-cocoa/60 lg:mt-8 lg:px-margin-desktop">
-        <ol class="flex flex-wrap items-center gap-1.5">
-            <li>
-                <a href="{{ route('home') }}" class="transition-colors hover:text-intense-cocoa hover:underline">
-                    {{ __('about.breadcrumb.home') }}
-                </a>
-            </li>
-            <li aria-hidden="true" class="text-intense-cocoa/30">/</li>
-            <li aria-current="page" class="font-medium text-intense-cocoa">
-                {{ __('about.breadcrumb.about') }}
-            </li>
-        </ol>
-    </nav>
+    <x-breadcrumb.breadcrumb :items="[
+        ['label' => __('about.breadcrumb.home'), 'href' => route('home')],
+        ['label' => __('about.breadcrumb.about')],
+    ]"></x-breadcrumb.breadcrumb>
 
     {{-- 1. Hero Section --}}
-    <section class="relative flex h-[50vh] min-h-[400px] w-full flex-col items-center justify-center overflow-hidden" aria-label="{{ __('about.hero.title') }}">
+    <section class="relative isolate flex h-[50vh] min-h-[400px] w-full flex-col items-center justify-center overflow-hidden" aria-label="{{ __('about.hero.title') }}">
         <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('/images/about/17.jpg')">
             <div class="absolute inset-0 bg-intense-cocoa/40" style="mix-blend-mode: multiply"></div>
         </div>
@@ -192,7 +184,7 @@
         </h2>
         <a
             href="{{ route('products.index') }}"
-            class="mt-8 inline-block bg-silk-cream px-10 py-4 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:bg-soft-gold"
+            class="mt-8 inline-block bg-silk-cream px-10 py-4 text-label-caps font-semibold text-intense-cocoa transition-colors duration-300 hover:bg-soft-gold"
         >
             {{ __('about.cta.button') }}
         </a>
@@ -258,54 +250,4 @@
             </svg>
         </button>
     </div>
-
-    {{-- Scroll reveal script --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-            if (prefersReducedMotion) {
-                document.querySelectorAll('.reveal').forEach(function(el) {
-                    el.classList.add('active');
-                });
-                return;
-            }
-
-            const reveals = document.querySelectorAll('.reveal');
-
-            const observer = new IntersectionObserver(function(entries) {
-                entries.forEach(function(entry) {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                    }
-                });
-            }, { threshold: 0.1 });
-
-            reveals.forEach(function(el) {
-                observer.observe(el);
-            });
-        });
-    </script>
-
-    <style>
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
-        }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .reveal.delay-100 {
-            transition-delay: 0.1s;
-        }
-        @media (prefers-reduced-motion: reduce) {
-            .reveal {
-                opacity: 1;
-                transform: none;
-                transition: none;
-            }
-        }
-    </style>
 </div>

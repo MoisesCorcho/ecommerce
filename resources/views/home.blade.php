@@ -13,12 +13,9 @@
             <h1 class="font-chillax text-display-lg-mobile text-intense-cocoa md:text-display-lg">
                 {{ __('storefront.home.hero_title') }}
             </h1>
-            <a
-                href="{{ route('products.index') }}"
-                class="mt-4 inline-block bg-intense-cocoa px-8 py-4 text-label-caps font-semibold uppercase tracking-widest text-silk-cream transition-colors duration-300 hover:bg-soft-gold hover:text-intense-cocoa"
-            >
+            <x-primary-button tag="a" href="{{ route('products.index') }}" class="mt-4 inline-block px-8 py-4 text-label-caps">
                 {{ __('storefront.home.hero_cta') }}
-            </a>
+            </x-primary-button>
         </div>
     </section>
 
@@ -49,7 +46,7 @@
                 </p>
                 <a
                     href="/about-us"
-                    class="mt-10 inline-block border border-soft-gold px-8 py-3 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream"
+                    class="mt-10 inline-block border border-soft-gold px-8 py-3 text-label-caps font-semibold text-intense-cocoa transition-colors duration-300 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream"
                 >
                     {{ __('storefront.home.story_cta') }}
                 </a>

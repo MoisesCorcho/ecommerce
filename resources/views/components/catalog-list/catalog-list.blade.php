@@ -1,20 +1,5 @@
-<div x-data="{ mobileFiltersOpen: false, toastMessage: '', toastVisible: false }" class="min-h-screen" x-on:toast.window="toastMessage = $event.detail.message; toastVisible = true; setTimeout(() => { toastVisible = false }, 3000)">
-    {{-- Toast Notification --}}
-    <div
-        x-show="toastVisible"
-        x-cloak
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 -translate-y-4"
-        x-transition:enter-end="opacity-100 translate-y-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 translate-y-0"
-        x-transition:leave-end="opacity-0 -translate-y-4"
-        class="fixed top-20 right-4 z-50 bg-intense-cocoa px-6 py-4 text-base font-medium text-silk-cream shadow-ambient"
-        role="status"
-        aria-live="polite"
-    >
-        <span x-text="toastMessage"></span>
-    </div>
+<div x-data="{ mobileFiltersOpen: false }" class="min-h-screen">
+<x-partials.toast>
     {{-- Mobile filter drawer overlay --}}
     <div
         x-show="mobileFiltersOpen"
@@ -30,18 +15,16 @@
     ></div>
 
     {{-- Main content --}}
-    <div class="mx-auto max-w-storefront px-margin-mobile pt-8 pb-section-gap lg:px-margin-desktop">
+    <div class="pt-8 pb-section-gap lg:pt-12">
         {{-- Breadcrumb --}}
-        <nav aria-label="Breadcrumb" class="mb-stack-md">
-            <ol class="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-intense-cocoa/60">
-                <li><a href="{{ url('/') }}" class="hover:text-soft-gold transition-colors">{{ __('storefront.shop.breadcrumb_home') }}</a></li>
-                <li><span class="text-intense-cocoa/30">/</span></li>
-                <li aria-current="page" class="text-intense-cocoa">{{ __('storefront.shop.breadcrumb_shop') }}</li>
-            </ol>
-        </nav>
+        <x-breadcrumb.breadcrumb :items="[
+            ['label' => __('storefront.shop.breadcrumb_home'), 'href' => url('/')],
+            ['label' => __('storefront.shop.breadcrumb_shop')],
+        ]" />
 
-        {{-- Page header --}}
-        <header class="mb-stack-lg flex flex-col items-center text-center md:items-start md:text-left">
+        <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
+            {{-- Page header --}}
+            <header class="mb-stack-lg flex flex-col items-center text-center md:items-start md:text-left">
             <h1 class="font-chillax text-display-lg-mobile text-intense-cocoa md:text-display-lg">
                 {{ __('storefront.shop.title') }}
             </h1>
@@ -165,7 +148,7 @@
                         <button
                             type="button"
                             wire:click="clearFilters"
-                            class="border border-intense-cocoa px-6 py-3 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:bg-intense-cocoa hover:text-silk-cream"
+                            class="border border-intense-cocoa px-6 py-3 text-label-caps font-semibold text-intense-cocoa transition-colors hover:bg-intense-cocoa hover:text-silk-cream"
                         >
                             {{ __('storefront.shop.clear_filters') }}
                         </button>
@@ -188,5 +171,7 @@
                 @endif
             </div>
         </div>
+        </div>
     </div>
+</x-partials.toast>
 </div>

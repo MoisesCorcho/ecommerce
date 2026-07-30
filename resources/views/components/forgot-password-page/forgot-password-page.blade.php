@@ -1,38 +1,37 @@
 <div class="py-12 lg:py-16">
     <div class="mx-auto max-w-md px-margin-mobile lg:px-margin-desktop">
-        <h1 class="mb-2 font-[family-name:var(--font-chillax)] text-3xl font-semibold tracking-tight text-intense-cocoa">
-            {{ __('auth.forgot_password.title') }}
-        </h1>
-        <p class="mb-6 text-sm text-intense-cocoa/70">
-            {{ __('auth.forgot_password.intro') }}
-        </p>
+        <x-page-header
+            title="{{ __('auth.forgot_password.title') }}"
+            subtitle="{{ __('auth.forgot_password.intro') }}"
+        />
 
         @if ($errorMessage)
-            <p class="mb-4 border border-error/20 bg-error/5 px-4 py-3 text-sm text-error" role="alert">
+            <x-alert type="error" class="mb-4">
                 {{ $errorMessage }}
-            </p>
+            </x-alert>
         @endif
 
         @if ($statusMessage)
-            <p class="mb-4 border border-intense-cocoa/20 bg-soft-sand px-4 py-3 text-sm text-intense-cocoa" role="status">
+            <x-alert type="status" class="mb-4 bg-soft-sand">
                 {{ $statusMessage }}
-            </p>
+            </x-alert>
         @endif
 
         <form wire:submit="sendResetLink" class="space-y-4">
-            @include('components.checkout-page.partials.text-field', [
-                'field' => 'email',
-                'label' => 'auth.fields.email',
-                'wireModel' => 'wire:model="email"',
-                'type' => 'email',
-            ])
+            <x-form-input
+                id="email"
+                type="email"
+                wire:model="email"
+                autocomplete="email"
+                label="{{ __('auth.fields.email') }}"
+            />
 
-            <button
+            <x-primary-button
                 type="submit"
-                class="mt-2 flex h-12 w-full items-center justify-center bg-intense-cocoa text-sm font-semibold text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa disabled:cursor-not-allowed disabled:bg-intense-cocoa/40"
+                class="mt-2 w-full disabled:bg-intense-cocoa/40"
             >
                 {{ __('auth.forgot_password.submit') }}
-            </button>
+            </x-primary-button>
         </form>
 
         <p class="mt-6 text-sm text-intense-cocoa/80">

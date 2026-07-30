@@ -11,11 +11,12 @@
 
         <div class="space-y-4">
             @forelse ($orders as $order)
-                <a
+                <x-section-card.section-card
                     wire:key="order-{{ $order->id }}"
+                    tag="a"
                     href="{{ route('profile.orders.show', $order) }}"
                     data-order-card="{{ $order->id }}"
-                    class="flex items-center justify-between gap-4 bg-soft-sand p-6 shadow-ambient transition-colors hover:bg-soft-sand/70"
+                    class="flex items-center justify-between gap-4 transition-colors hover:bg-soft-sand/70"
                 >
                     <div>
                         <p class="font-semibold text-intense-cocoa">{{ $order->order_number }}</p>
@@ -27,7 +28,7 @@
                         </span>
                         <p class="text-sm text-intense-cocoa/70">{{ $order->currency->format($order->total) }}</p>
                     </div>
-                </a>
+                </x-section-card.section-card>
             @empty
                 <x-partials.account-empty-state
                     :title="__('account.orders.empty_title')"

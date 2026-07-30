@@ -6,19 +6,10 @@
 
 <div class="py-8 lg:py-12">
     {{-- Breadcrumb (R9) --}}
-    <nav aria-label="Breadcrumb" class="mx-auto mb-6 max-w-storefront px-margin-mobile text-sm text-intense-cocoa/60 lg:px-margin-desktop">
-        <ol class="flex flex-wrap items-center gap-1.5">
-            <li>
-                <a href="{{ route('home') }}" class="transition-colors hover:text-intense-cocoa hover:underline">
-                    {{ __('faq.breadcrumb.home') }}
-                </a>
-            </li>
-            <li aria-hidden="true" class="text-intense-cocoa/30">/</li>
-            <li aria-current="page" class="font-medium text-intense-cocoa">
-                {{ __('faq.breadcrumb.faq') }}
-            </li>
-        </ol>
-    </nav>
+    <x-breadcrumb.breadcrumb :items="[
+        ['label' => __('faq.breadcrumb.home'), 'href' => route('home')],
+        ['label' => __('faq.breadcrumb.faq')],
+    ]"></x-breadcrumb.breadcrumb>
 
     <div
         class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop"
@@ -50,7 +41,7 @@
                         :class="activeCategory === '{{ $key }}'
                             ? 'bg-intense-cocoa text-silk-cream border-b-2 border-soft-gold -mb-px'
                             : 'text-intense-cocoa/70 hover:text-intense-cocoa hover:bg-soft-sand'"
-                        class="px-5 py-2.5 text-label-caps font-semibold uppercase tracking-widest transition-colors duration-200"
+                        class="px-5 py-2.5 text-label-caps font-semibold transition-colors duration-200"
                     >
                         {{ $category['label'] }}
                     </button>
@@ -116,12 +107,13 @@
             <p class="text-body-md text-intense-cocoa/70">
                 {{ __('faq.cta.body') }}
             </p>
-            <a
+            <x-primary-button
+                tag="a"
                 href="{{ route('contact') }}"
-                class="mt-2 inline-flex items-center bg-intense-cocoa px-6 py-3 text-center text-label-caps font-semibold uppercase tracking-widest text-silk-cream transition-colors hover:bg-soft-gold"
+                class="mt-2 inline-flex px-6 py-3 text-center text-label-caps"
             >
                 {{ __('faq.cta.button') }}
-            </a>
+            </x-primary-button>
         </section>
     </div>
 </div>
