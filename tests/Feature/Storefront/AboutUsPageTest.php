@@ -172,9 +172,14 @@ class AboutUsPageTest extends TestCase
     public function test_about_page_contains_scroll_reveal_script(): void
     {
         $this->get('/about-us')
-            ->assertSee('IntersectionObserver', false)
-            ->assertSee('reveal', false)
-            ->assertSee('prefers-reduced-motion', false);
+            ->assertSee('reveal', false);
+
+        $js = file_get_contents(resource_path('js/app.js'));
+        $this->assertStringContainsString('IntersectionObserver', $js);
+        $this->assertStringContainsString('prefers-reduced-motion', $js);
+
+        $css = file_get_contents(resource_path('css/app.css'));
+        $this->assertStringContainsString('.reveal', $css);
     }
 
     // --- R14: navbar link ---

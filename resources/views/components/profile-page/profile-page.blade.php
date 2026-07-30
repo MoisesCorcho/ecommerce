@@ -22,34 +22,38 @@
             @endif
 
             <form wire:submit="updateProfile" class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
-                @include('components.checkout-page.partials.text-field', [
-                    'field' => 'name',
-                    'label' => 'account.fields.name',
-                    'wireModel' => 'wire:model="name"',
-                    'colSpan' => 'sm:col-span-1',
-                ])
+                <div class="sm:col-span-1">
+                    <x-form-input
+                        id="name"
+                        wire:model="name"
+                        label="{{ __('account.fields.name') }}"
+                    />
+                </div>
 
-                @include('components.checkout-page.partials.text-field', [
-                    'field' => 'lastName',
-                    'label' => 'account.fields.last_name',
-                    'wireModel' => 'wire:model="lastName"',
-                    'colSpan' => 'sm:col-span-1',
-                ])
+                <div class="sm:col-span-1">
+                    <x-form-input
+                        id="lastName"
+                        wire:model="lastName"
+                        label="{{ __('account.fields.last_name') }}"
+                    />
+                </div>
 
-                @include('components.checkout-page.partials.text-field', [
-                    'field' => 'email',
-                    'label' => 'account.fields.email',
-                    'type' => 'email',
-                    'wireModel' => 'wire:model="email"',
-                    'colSpan' => 'sm:col-span-2',
-                ])
+                <div class="sm:col-span-2">
+                    <x-form-input
+                        id="email"
+                        type="email"
+                        wire:model="email"
+                        label="{{ __('account.fields.email') }}"
+                    />
+                </div>
 
-                @include('components.checkout-page.partials.text-field', [
-                    'field' => 'phone',
-                    'label' => 'account.fields.phone',
-                    'wireModel' => 'wire:model="phone"',
-                    'colSpan' => 'sm:col-span-2',
-                ])
+                <div class="sm:col-span-2">
+                    <x-form-input
+                        id="phone"
+                        wire:model="phone"
+                        label="{{ __('account.fields.phone') }}"
+                    />
+                </div>
 
                 <div class="sm:col-span-2">
                     <x-primary-button
@@ -74,26 +78,29 @@
             @endif
 
             <form wire:submit="updatePassword" class="mt-6 grid grid-cols-1 gap-5">
-                @include('components.checkout-page.partials.text-field', [
-                    'field' => 'current_password',
-                    'label' => 'account.password.current',
-                    'type' => 'password',
-                    'wireModel' => 'wire:model="current_password"',
-                ])
+                <x-password-input
+                    id="current_password"
+                    wire:model="current_password"
+                    label="{{ __('account.password.current') }}"
+                    autocomplete="current-password"
+                    :show-lock-icon="false"
+                />
 
-                @include('components.checkout-page.partials.text-field', [
-                    'field' => 'new_password',
-                    'label' => 'account.password.new',
-                    'type' => 'password',
-                    'wireModel' => 'wire:model="new_password"',
-                ])
+                <x-password-input
+                    id="new_password"
+                    wire:model="new_password"
+                    label="{{ __('account.password.new') }}"
+                    autocomplete="new-password"
+                    :show-lock-icon="false"
+                />
 
-                @include('components.checkout-page.partials.text-field', [
-                    'field' => 'new_password_confirmation',
-                    'label' => 'account.password.confirmation',
-                    'type' => 'password',
-                    'wireModel' => 'wire:model="new_password_confirmation"',
-                ])
+                <x-password-input
+                    id="new_password_confirmation"
+                    wire:model="new_password_confirmation"
+                    label="{{ __('account.password.confirmation') }}"
+                    autocomplete="new-password"
+                    :show-lock-icon="false"
+                />
 
                 <div>
                     <x-primary-button

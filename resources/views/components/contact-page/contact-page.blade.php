@@ -37,8 +37,7 @@
                         </span>
                         <p>
                             <span class="block text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa/60">{{ __('contact.info.email_label') }}</span>
-                            {{-- PLACEHOLDER --}}
-                            <a href="mailto:hola@leenhandbags.com" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">hola@leenhandbags.com</a>
+                            <a href="mailto:{{ config('ecommerce.contact.public_email', 'hola@leenhandbags.com') }}" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">{{ config('ecommerce.contact.public_email', 'hola@leenhandbags.com') }}</a>
                         </p>
                     </li>
 
@@ -51,8 +50,7 @@
                         </span>
                         <p>
                             <span class="block text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa/60">{{ __('contact.info.phone_label') }}</span>
-                            {{-- PLACEHOLDER --}}
-                            <a href="tel:+573001234567" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">+57 300 123 4567</a>
+                            <a href="tel:{{ config('ecommerce.contact.phone_raw', '+573001234567') }}" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">{{ config('ecommerce.contact.phone', '+57 300 123 4567') }}</a>
                         </p>
                     </li>
 
@@ -66,8 +64,7 @@
                         </span>
                         <p>
                             <span class="block text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa/60">{{ __('contact.info.whatsapp_label') }}</span>
-                            {{-- PLACEHOLDER --}}
-                            <a href="https://wa.me/573001234567" target="_blank" rel="noopener noreferrer" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">+57 300 123 4567</a>
+                            <a href="{{ config('ecommerce.contact.whatsapp_url', 'https://wa.me/573001234567') }}" target="_blank" rel="noopener noreferrer" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">{{ config('ecommerce.contact.whatsapp', '+57 300 123 4567') }}</a>
                         </p>
                     </li>
 
@@ -94,11 +91,9 @@
                         <p>
                             <span class="block text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa/60">{{ __('contact.info.social_label') }}</span>
                             <span class="mt-1 flex items-center gap-3">
-                                {{-- PLACEHOLDER --}}
-                                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">{{ __('contact.info.instagram') }}</a>
+                                <a href="{{ config('ecommerce.contact.social.instagram', 'https://instagram.com') }}" target="_blank" rel="noopener noreferrer" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">{{ __('contact.info.instagram') }}</a>
                                 <span aria-hidden="true" class="text-intense-cocoa/30">/</span>
-                                {{-- PLACEHOLDER --}}
-                                <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">{{ __('contact.info.tiktok') }}</a>
+                                <a href="{{ config('ecommerce.contact.social.tiktok', 'https://tiktok.com') }}" target="_blank" rel="noopener noreferrer" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">{{ __('contact.info.tiktok') }}</a>
                             </span>
                         </p>
                     </li>
@@ -112,12 +107,12 @@
                 </h2>
 
                 @if ($errorMessage)
-                    <p role="alert" data-contact-error class="mt-4 border border-error/20 bg-error/5 px-4 py-3 text-sm text-error">
+                    <x-alert type="error" data-contact-error class="mt-4">
                         {{ $errorMessage }}
                         <a href="mailto:{{ config('ecommerce.contact.public_email') }}" class="font-medium underline underline-offset-2">
                             {{ config('ecommerce.contact.public_email') }}
                         </a>
-                    </p>
+                    </x-alert>
                 @endif
 
                 @if ($sent)
@@ -141,70 +136,49 @@
                     </div>
                 @else
                     <form wire:submit="submit" class="mt-4 space-y-5">
-                        <div>
-                            <label for="contact-name" class="mb-1 block text-sm font-medium text-intense-cocoa">
-                                {{ __('contact.form.name') }}
-                            </label>
-                            <input
-                                type="text"
-                                id="contact-name"
-                                wire:model.blur="name"
-                                placeholder="{{ __('contact.form.placeholders.name') }}"
-                                autocomplete="name"
-                                required
-                                maxlength="255"
-                                aria-required="true"
-                                aria-describedby="contact-name-error"
-                                aria-invalid="@error('name') true @else false @enderror"
-                                wire:loading.attr="disabled"
-                                wire:target="submit"
-                                class="w-full border bg-silk-cream px-3 py-3 text-body-md text-intense-cocoa transition-colors hover:border-intense-cocoa focus:border-intense-cocoa focus:outline-none focus-visible:ring-2 focus-visible:ring-soft-gold disabled:cursor-not-allowed disabled:opacity-60 @error('name') border-error @else border-intense-cocoa/40 @enderror"
-                            >
-                            @error('name') <p id="contact-name-error" data-error="name" class="mt-1 text-sm text-error">{{ $message }}</p> @enderror
-                        </div>
+                        <x-form-input
+                            id="contact-name"
+                            name="name"
+                            type="text"
+                            wire:model.blur="name"
+                            label="{{ __('contact.form.name') }}"
+                            placeholder="{{ __('contact.form.placeholders.name') }}"
+                            autocomplete="name"
+                            required
+                            maxlength="255"
+                            aria-required="true"
+                            wire:loading.attr="disabled"
+                            wire:target="submit"
+                        />
 
-                        <div>
-                            <label for="contact-email" class="mb-1 block text-sm font-medium text-intense-cocoa">
-                                {{ __('contact.form.email') }}
-                            </label>
-                            <input
-                                type="email"
-                                id="contact-email"
-                                wire:model.blur="email"
-                                placeholder="{{ __('contact.form.placeholders.email') }}"
-                                autocomplete="email"
-                                required
-                                maxlength="255"
-                                aria-required="true"
-                                aria-describedby="contact-email-error"
-                                aria-invalid="@error('email') true @else false @enderror"
-                                wire:loading.attr="disabled"
-                                wire:target="submit"
-                                class="w-full border bg-silk-cream px-3 py-3 text-body-md text-intense-cocoa transition-colors hover:border-intense-cocoa focus:border-intense-cocoa focus:outline-none focus-visible:ring-2 focus-visible:ring-soft-gold disabled:cursor-not-allowed disabled:opacity-60 @error('email') border-error @else border-intense-cocoa/40 @enderror"
-                            >
-                            @error('email') <p id="contact-email-error" data-error="email" class="mt-1 text-sm text-error">{{ $message }}</p> @enderror
-                        </div>
+                        <x-form-input
+                            id="contact-email"
+                            name="email"
+                            type="email"
+                            wire:model.blur="email"
+                            label="{{ __('contact.form.email') }}"
+                            placeholder="{{ __('contact.form.placeholders.email') }}"
+                            autocomplete="email"
+                            required
+                            maxlength="255"
+                            aria-required="true"
+                            wire:loading.attr="disabled"
+                            wire:target="submit"
+                        />
 
-                        <div>
-                            <label for="contact-subject" class="mb-1 block text-sm font-medium text-intense-cocoa">
-                                {{ __('contact.form.subject') }}
-                            </label>
-                            <input
-                                type="text"
-                                id="contact-subject"
-                                wire:model.blur="subject"
-                                placeholder="{{ __('contact.form.placeholders.subject') }}"
-                                required
-                                maxlength="150"
-                                aria-required="true"
-                                aria-describedby="contact-subject-error"
-                                aria-invalid="@error('subject') true @else false @enderror"
-                                wire:loading.attr="disabled"
-                                wire:target="submit"
-                                class="w-full border bg-silk-cream px-3 py-3 text-body-md text-intense-cocoa transition-colors hover:border-intense-cocoa focus:border-intense-cocoa focus:outline-none focus-visible:ring-2 focus-visible:ring-soft-gold disabled:cursor-not-allowed disabled:opacity-60 @error('subject') border-error @else border-intense-cocoa/40 @enderror"
-                            >
-                            @error('subject') <p id="contact-subject-error" data-error="subject" class="mt-1 text-sm text-error">{{ $message }}</p> @enderror
-                        </div>
+                        <x-form-input
+                            id="contact-subject"
+                            name="subject"
+                            type="text"
+                            wire:model.blur="subject"
+                            label="{{ __('contact.form.subject') }}"
+                            placeholder="{{ __('contact.form.placeholders.subject') }}"
+                            required
+                            maxlength="150"
+                            aria-required="true"
+                            wire:loading.attr="disabled"
+                            wire:target="submit"
+                        />
 
                         {{-- Message + Alpine-local live character counter (R5, R12, A5) --}}
                         <div

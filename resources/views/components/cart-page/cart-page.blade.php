@@ -16,15 +16,15 @@
         </h1>
 
         @if ($statusMessage)
-            <p class="mb-4 border border-success/20 bg-success/5 px-4 py-3 text-sm text-success" data-cart-status role="status">
+            <x-alert type="success" data-cart-status class="mb-4">
                 {{ $statusMessage }}
-            </p>
+            </x-alert>
         @endif
 
         @if ($errorMessage)
-            <p class="mb-4 border border-error/20 bg-error/5 px-4 py-3 text-sm text-error" data-cart-error role="alert">
+            <x-alert type="error" data-cart-error class="mb-4">
                 {{ $errorMessage }}
-            </p>
+            </x-alert>
         @endif
 
         @if (count($cartView->lines) === 0)

@@ -18,63 +18,78 @@
         @if ($showForm)
             <x-section-card.section-card tag="section">
                 <form wire:submit="save" class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                    @include('components.checkout-page.partials.text-field', [
-                        'field' => 'label',
-                        'label' => 'account.addresses.fields.label',
-                        'wireModel' => 'wire:model="label"',
-                        'colSpan' => 'sm:col-span-2',
-                    ])
+                    <div class="sm:col-span-2">
+                        <x-form-input
+                            id="label"
+                            wire:model="label"
+                            label="{{ __('account.addresses.fields.label') }}"
+                        />
+                    </div>
 
-                    @include('components.checkout-page.partials.text-field', [
-                        'field' => 'fullName',
-                        'label' => 'account.addresses.fields.full_name',
-                        'wireModel' => 'wire:model="fullName"',
-                    ])
+                    <div>
+                        <x-form-input
+                            id="fullName"
+                            wire:model="fullName"
+                            label="{{ __('account.addresses.fields.full_name') }}"
+                        />
+                    </div>
 
-                    @include('components.checkout-page.partials.text-field', [
-                        'field' => 'phone',
-                        'label' => 'account.addresses.fields.phone',
-                        'wireModel' => 'wire:model="phone"',
-                    ])
+                    <div>
+                        <x-form-input
+                            id="phone"
+                            wire:model="phone"
+                            label="{{ __('account.addresses.fields.phone') }}"
+                        />
+                    </div>
 
-                    @include('components.checkout-page.partials.text-field', [
-                        'field' => 'addressLine1',
-                        'label' => 'account.addresses.fields.address_line_1',
-                        'wireModel' => 'wire:model="addressLine1"',
-                        'colSpan' => 'sm:col-span-2',
-                    ])
+                    <div class="sm:col-span-2">
+                        <x-form-input
+                            id="addressLine1"
+                            wire:model="addressLine1"
+                            label="{{ __('account.addresses.fields.address_line_1') }}"
+                        />
+                    </div>
 
-                    @include('components.checkout-page.partials.text-field', [
-                        'field' => 'addressLine2',
-                        'label' => 'account.addresses.fields.address_line_2',
-                        'wireModel' => 'wire:model="addressLine2"',
-                        'colSpan' => 'sm:col-span-2',
-                    ])
+                    <div class="sm:col-span-2">
+                        <x-form-input
+                            id="addressLine2"
+                            wire:model="addressLine2"
+                            label="{{ __('account.addresses.fields.address_line_2') }}"
+                        />
+                    </div>
 
-                    @include('components.checkout-page.partials.text-field', [
-                        'field' => 'city',
-                        'label' => 'account.addresses.fields.city',
-                        'wireModel' => 'wire:model="city"',
-                    ])
+                    <div>
+                        <x-form-input
+                            id="city"
+                            wire:model="city"
+                            label="{{ __('account.addresses.fields.city') }}"
+                        />
+                    </div>
 
-                    @include('components.checkout-page.partials.text-field', [
-                        'field' => 'state',
-                        'label' => 'account.addresses.fields.state',
-                        'wireModel' => 'wire:model="state"',
-                    ])
+                    <div>
+                        <x-form-input
+                            id="state"
+                            wire:model="state"
+                            label="{{ __('account.addresses.fields.state') }}"
+                        />
+                    </div>
 
-                    @include('components.checkout-page.partials.text-field', [
-                        'field' => 'country',
-                        'label' => 'account.addresses.fields.country',
-                        'wireModel' => 'wire:model="country"',
-                        'inputAttributes' => 'maxlength="2"',
-                    ])
+                    <div>
+                        <x-form-input
+                            id="country"
+                            wire:model="country"
+                            label="{{ __('account.addresses.fields.country') }}"
+                            maxlength="2"
+                        />
+                    </div>
 
-                    @include('components.checkout-page.partials.text-field', [
-                        'field' => 'postalCode',
-                        'label' => 'account.addresses.fields.postal_code',
-                        'wireModel' => 'wire:model="postalCode"',
-                    ])
+                    <div>
+                        <x-form-input
+                            id="postalCode"
+                            wire:model="postalCode"
+                            label="{{ __('account.addresses.fields.postal_code') }}"
+                        />
+                    </div>
 
                     <x-checkbox id="is_default" wire:model="isDefault" wrapper-class="sm:col-span-2">
                         {{ __('account.addresses.fields.is_default') }}

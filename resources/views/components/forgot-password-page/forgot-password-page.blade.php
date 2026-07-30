@@ -8,24 +8,25 @@
         </p>
 
         @if ($errorMessage)
-            <p class="mb-4 border border-error/20 bg-error/5 px-4 py-3 text-sm text-error" role="alert">
+            <x-alert type="error" class="mb-4">
                 {{ $errorMessage }}
-            </p>
+            </x-alert>
         @endif
 
         @if ($statusMessage)
-            <p class="mb-4 border border-intense-cocoa/20 bg-soft-sand px-4 py-3 text-sm text-intense-cocoa" role="status">
+            <x-alert type="status" class="mb-4 bg-soft-sand">
                 {{ $statusMessage }}
-            </p>
+            </x-alert>
         @endif
 
         <form wire:submit="sendResetLink" class="space-y-4">
-            @include('components.checkout-page.partials.text-field', [
-                'field' => 'email',
-                'label' => 'auth.fields.email',
-                'wireModel' => 'wire:model="email"',
-                'type' => 'email',
-            ])
+            <x-form-input
+                id="email"
+                type="email"
+                wire:model="email"
+                autocomplete="email"
+                label="{{ __('auth.fields.email') }}"
+            />
 
             <x-primary-button
                 type="submit"

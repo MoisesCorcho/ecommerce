@@ -5,30 +5,34 @@
         </h1>
 
         @if ($errorMessage)
-            <p class="mb-4 border border-error/20 bg-error/5 px-4 py-3 text-sm text-error" role="alert">
+            <x-alert type="error" class="mb-4">
                 {{ $errorMessage }}
-            </p>
+            </x-alert>
         @endif
 
         <form wire:submit="resetPassword" class="space-y-4">
-            @include('components.checkout-page.partials.text-field', [
-                'field' => 'email',
-                'label' => 'auth.fields.email',
-                'wireModel' => 'wire:model="email"',
-                'type' => 'email',
-            ])
-            @include('components.checkout-page.partials.text-field', [
-                'field' => 'password',
-                'label' => 'auth.fields.password',
-                'wireModel' => 'wire:model="password"',
-                'type' => 'password',
-            ])
-            @include('components.checkout-page.partials.text-field', [
-                'field' => 'password_confirmation',
-                'label' => 'auth.fields.password_confirmation',
-                'wireModel' => 'wire:model="password_confirmation"',
-                'type' => 'password',
-            ])
+            <x-form-input
+                id="email"
+                type="email"
+                wire:model="email"
+                autocomplete="email"
+                label="{{ __('auth.fields.email') }}"
+            />
+            <x-password-input
+                id="password"
+                wire:model="password"
+                label="{{ __('auth.fields.password') }}"
+                autocomplete="new-password"
+                :show-lock-icon="false"
+            />
+
+            <x-password-input
+                id="password_confirmation"
+                wire:model="password_confirmation"
+                label="{{ __('auth.fields.password_confirmation') }}"
+                autocomplete="new-password"
+                :show-lock-icon="false"
+            />
 
             <x-primary-button
                 type="submit"

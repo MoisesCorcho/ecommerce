@@ -6,9 +6,9 @@
 
 {{-- Category filter --}}
 <div class="flex flex-col gap-stack-sm">
-    <h3 class="border-b border-intense-cocoa/10 pb-2 mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-intense-cocoa">
+    <x-filter-heading>
         {{ __('storefront.shop.filter_category') }}
-    </h3>
+    </x-filter-heading>
     <ul class="flex flex-col gap-3 text-body-md text-intense-cocoa/80">
         @foreach ($categories as $cat)
             <li>
@@ -30,9 +30,9 @@
 {{-- Color filter --}}
 @if ($colors !== [])
     <div class="flex flex-col gap-stack-sm">
-        <h3 class="border-b border-intense-cocoa/10 pb-2 mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-intense-cocoa">
+        <x-filter-heading>
             {{ __('storefront.shop.filter_color') }}
-        </h3>
+        </x-filter-heading>
         <div class="flex flex-wrap gap-3">
             @foreach ($colors as $colorName)
                 @php
@@ -59,9 +59,9 @@
         $pMax = $maxPrice ?? $globalMaxPrice;
     @endphp
     <div class="flex flex-col gap-stack-sm">
-        <h3 class="border-b border-intense-cocoa/10 pb-2 mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-intense-cocoa">
+        <x-filter-heading>
             {{ __('storefront.shop.filter_price') }}
-        </h3>
+        </x-filter-heading>
         <div class="price-slider pt-1" data-min="{{ $globalMinPrice }}" data-max="{{ $globalMaxPrice }}" data-current-min="{{ $pMin }}" data-current-max="{{ $pMax }}">
             <div class="price-slider__track">
                 <div class="price-slider__fill"></div>
@@ -152,9 +152,9 @@
 
 {{-- Availability filter --}}
 <div class="flex flex-col gap-stack-sm">
-    <h3 class="border-b border-intense-cocoa/10 pb-2 mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-intense-cocoa">
+    <x-filter-heading>
         {{ __('storefront.shop.filter_availability') }}
-    </h3>
+    </x-filter-heading>
     <x-checkbox
         align="center"
         label-class="text-body-md"
