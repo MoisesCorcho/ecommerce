@@ -1,58 +1,203 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Ecommerce
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplicación Laravel (v13) con Filament, Livewire y Laravel Sail.
 
-## About Laravel
+## Requisitos
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (o Docker Engine + Compose)
+- Git
+- Composer 2 (en el host) **o** Docker para instalar dependencias la primera vez
+- Node.js 20+ (opcional en el host; los comandos de front se pueden correr con Sail)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Setup (primera vez)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### 1. Clonar el repositorio
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone <url-del-repo> ecommerce
+cd ecommerce
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Instalar dependencias PHP
 
-## Contributing
+Con Composer en el host:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+composer install
+```
 
-## Code of Conduct
+Si no tenés Composer local, usá Docker (no hay imagen oficial `php85-composer`; usá `php84` + `--ignore-platform-reqs`):
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+docker run --rm \
+  -u "$(id -u):$(id -g)" \
+  -v "$(pwd):/var/www/html" \
+  -w /var/www/html \
+  laravelsail/php84-composer:latest \
+  composer install --ignore-platform-reqs
+```
 
-## Security Vulnerabilities
+Alternativa con la imagen oficial de Composer:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+docker run --rm \
+  -u "$(id -u):$(id -g)" \
+  -v "$(pwd):/app" \
+  -w /app \
+  composer:2 \
+  composer install --ignore-platform-reqs
+```
 
-## License
+### 3. Configurar entorno
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+cp .env.example .env
+```
+
+Ajustá `.env` para Sail (MySQL del `compose.yaml`). Ejemplo:
+
+```env
+APP_URL=http://localhost
+
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=laravel
+DB_USERNAME=sail
+DB_PASSWORD=password
+
+REDIS_HOST=redis
+REDIS_PORT=6379
+
+MAIL_MAILER=smtp
+MAIL_HOST=mailpit
+MAIL_PORT=1025
+```
+
+> Los valores de `DB_*` deben coincidir con los del servicio `mysql` en `compose.yaml` / variables `FORWARD_*` si las personalizás.
+
+### 4. Levantar contenedores
+
+```bash
+./vendor/bin/sail up -d
+```
+
+La primera vez construye la imagen (`sail-8.5/app`). Puede tardar varios minutos.
+
+### 5. Clave de aplicación, migraciones y storage
+
+```bash
+./vendor/bin/sail artisan key:generate
+./vendor/bin/sail artisan migrate
+./vendor/bin/sail artisan storage:link
+```
+
+### 6. Dependencias front + Git hooks (Lefthook)
+
+```bash
+./vendor/bin/sail npm install
+```
+
+El script `prepare` de npm instala los hooks de [Lefthook](https://github.com/evilmartians/lefthook) automáticamente.
+
+Si los hooks no quedaron activos:
+
+```bash
+./vendor/bin/sail npx lefthook install
+# o, con Node en el host:
+npx lefthook install
+```
+
+### 7. Assets (desarrollo)
+
+```bash
+./vendor/bin/sail npm run dev
+```
+
+Para un build de producción local:
+
+```bash
+./vendor/bin/sail npm run build
+```
+
+### 8. Verificar
+
+```bash
+./vendor/bin/sail artisan test --compact
+./vendor/bin/sail open
+```
+
+La app queda en [http://localhost](http://localhost) (puerto `APP_PORT`, por defecto `80`).
+
+Mailpit (correos de desarrollo): [http://localhost:8025](http://localhost:8025) (puerto por defecto de Sail).
+
+---
+
+## Comandos del día a día
+
+Usá **siempre** Sail para PHP, Artisan, Composer, tests y Node del proyecto:
+
+| Acción | Comando |
+|--------|---------|
+| Subir servicios | `./vendor/bin/sail up -d` |
+| Bajar servicios | `./vendor/bin/sail stop` |
+| Artisan | `./vendor/bin/sail artisan …` |
+| Tests | `./vendor/bin/sail artisan test --compact` |
+| Pint (formato) | `./vendor/bin/sail bin pint --dirty` |
+| Composer | `./vendor/bin/sail composer …` |
+| npm | `./vendor/bin/sail npm …` |
+| Shell del contenedor | `./vendor/bin/sail shell` |
+
+Alias opcional (añadir al shell):
+
+```bash
+alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'
+```
+
+Luego podés usar `sail up -d`, `sail artisan migrate`, etc.
+
+---
+
+## Git hooks (Lefthook)
+
+Definidos en `lefthook.yml`. Requieren **Sail levantado**.
+
+| Hook | Qué hace |
+|------|----------|
+| **pre-commit** | Formatea PHP sucios con Pint y re-stagea los cambios |
+| **pre-push** | Verifica estilo (`pint --dirty --test`) y corre la suite de tests |
+
+Saltar un hook (solo si es necesario):
+
+```bash
+LEFTHOOK=0 git commit -m "…"
+git push --no-verify
+```
+
+---
+
+## Stack relevante
+
+- PHP 8.5 / Laravel 13
+- Filament 5 / Livewire 4
+- Laravel Sail (Docker)
+- MySQL 8.4, Redis, Meilisearch, Mailpit, Selenium
+- Vite + Tailwind CSS 4
+- Laravel Pint + PHPUnit 12
+- Lefthook (hooks locales)
+
+---
+
+## Troubleshooting
+
+**Los hooks fallan con error de Docker / sail**  
+Levantá los servicios: `./vendor/bin/sail up -d`.
+
+**Puerto 80 ocupado**  
+Definí otro en `.env`: `APP_PORT=8080` y usá `http://localhost:8080`.
+
+**Vite no refleja cambios**  
+Asegurate de tener `./vendor/bin/sail npm run dev` corriendo, o regenerá assets con `npm run build`.
+
+**Permisos en Linux**  
+Sail usa `WWWUSER` / `WWWGROUP`. Si hay problemas de escritura en `storage/` o `bootstrap/cache`, revisá ownership de esos directorios o recreá contenedores con tu UID.

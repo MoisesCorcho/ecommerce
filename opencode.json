@@ -1,5 +1,6 @@
 {
     "$schema": "https://opencode.ai/config.json",
+
     "mcp": {
         "laravel-boost": {
             "type": "local",
@@ -8,6 +9,30 @@
                 "vendor/bin/sail",
                 "artisan",
                 "boost:mcp"
+            ],
+            "cwd": "."
+        },
+        "codegraph": {
+            "type": "local",
+            "enabled": true,
+            "command": [
+                "codegraph",
+                "serve",
+                "--mcp"
+            ]
+        },
+        "context7": {
+            "type": "remote",
+            "enabled": true,
+            "url": "https://mcp.context7.com/mcp"
+        },
+        "engram": {
+            "type": "local",
+            "enabled": true,
+            "command": [
+                "engram",
+                "mcp",
+                "--tools=agent"
             ]
         }
     }

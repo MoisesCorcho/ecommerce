@@ -73,6 +73,18 @@ return [
             'replace_placeholders' => true,
         ],
 
+        /*
+        | Domain channel for payment lifecycle (start pay, gateways, webhooks).
+        | Longer retention than the default daily app log for ops forensics.
+        */
+        'payments' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/payments.log'),
+            'level' => env('LOG_PAYMENTS_LEVEL', env('LOG_LEVEL', 'debug')),
+            'days' => env('LOG_PAYMENTS_DAYS', 30),
+            'replace_placeholders' => true,
+        ],
+
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),

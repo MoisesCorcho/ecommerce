@@ -1,0 +1,178 @@
+name: CI & Deploy (staging)
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+# Un solo despliegue a la vez. No se cancela el que está en curso:
+# abortar a mitad de un swap de release deja el servidor en estado incierto.
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+env:
+  PHP_VERSION: '8.5'
+  NODE_VERSION: '22'
+  PHP_EXTENSIONS: bcmath, curl, dom, exif, fileinfo, gd, intl, mbstring, pdo_mysql, zip
+
+jobs:
+  test:
+    name: Pint + PHPUnit
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+          MYSQL_DATABASE: testing
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: testing
+      DB_USERNAME: root
+      DB_PASSWORD: ''
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          coverage: none
+
+      - name: Cache Composer
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/composer/files
+          key: composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-
+
+      - name: Install PHP dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      # Los tests de feature renderizan vistas con @vite: sin el manifest de
+      # Vite fallan 19 con "Vite manifest not found", sin relación con el
+      # código que se está probando. --ignore-scripts evita instalar Lefthook.
+      - name: Build assets
+        run: |
+          npm ci --ignore-scripts
+          npm run build
+
+      - name: Check code style
+        run: vendor/bin/pint --test
+
+      # Corre las migraciones aparte del test suite: detecta una migración rota
+      # aunque los tests usen RefreshDatabase y la reconstruyan por su cuenta.
+      - name: Run migrations
+        run: php artisan migrate --force
+
+      - name: Run test suite
+        run: php artisan test --compact
+
+  deploy:
+    name: Deploy to staging VPS
+    needs: test
+    runs-on: ubuntu-latest
+    # Sin `environment:`: crear environments requiere admin sobre el repo y
+    # sólo tenemos write. Los secrets viven a nivel repositorio.
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          coverage: none
+
+      - name: Install PHP dependencies (production)
+        run: composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      # --ignore-scripts evita que `prepare` instale los hooks de Lefthook en el runner.
+      - name: Build assets
+        run: |
+          npm ci --ignore-scripts
+          npm run build
+
+      - name: Create release archive
+        run: |
+          echo "RELEASE=$(date -u +%Y%m%d%H%M%S)-${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+          tar -czf /tmp/release.tar.gz \
+            --exclude='./.git' \
+            --exclude='./.github' \
+            --exclude='./node_modules' \
+            --exclude='./tests' \
+            --exclude='./storage' \
+            --exclude='./.env' \
+            .
+
+      - name: Configure SSH
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      # Cada comando remoto va envuelto en with-retry.sh: el 22 de este host se
+      # cae de forma intermitente desde los runners (ver el docblock del script).
+      # ConnectTimeout baja la detección de la falla de ~136s a 15s, que es lo
+      # que hace viable reintentar cinco veces.
+      - name: Upload release
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          APP_ROOT: ${{ secrets.APP_ROOT }}
+        run: |
+          bash deploy/with-retry.sh \
+            ssh -o ConnectTimeout=15 -i ~/.ssh/id_ed25519 "$SSH_USER@$SSH_HOST" \
+              "mkdir -p '$APP_ROOT/releases/$RELEASE'"
+          bash deploy/with-retry.sh \
+            scp -o ConnectTimeout=15 -i ~/.ssh/id_ed25519 /tmp/release.tar.gz \
+              "$SSH_USER@$SSH_HOST:$APP_ROOT/releases/$RELEASE.tar.gz"
+          # El guard `if [ -f ... ]` hace idempotente la extracción: si un intento
+          # extrajo y borró el tarball pero la conexión se cortó antes de devolver
+          # el exit status, el reintento es un no-op exitoso en vez de un
+          # "tar: cannot open" que abortaría un deploy que ya estaba bien.
+          bash deploy/with-retry.sh \
+            ssh -o ConnectTimeout=15 -i ~/.ssh/id_ed25519 "$SSH_USER@$SSH_HOST" \
+              "if [ -f '$APP_ROOT/releases/$RELEASE.tar.gz' ]; then tar -xzf '$APP_ROOT/releases/$RELEASE.tar.gz' -C '$APP_ROOT/releases/$RELEASE' && rm -f '$APP_ROOT/releases/$RELEASE.tar.gz'; fi"
+
+      - name: Activate release
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          APP_ROOT: ${{ secrets.APP_ROOT }}
+        run: |
+          bash deploy/with-retry.sh \
+            ssh -o ConnectTimeout=15 -i ~/.ssh/id_ed25519 "$SSH_USER@$SSH_HOST" \
+              "APP_ROOT='$APP_ROOT' bash '$APP_ROOT/releases/$RELEASE/deploy/remote-activate.sh' '$RELEASE'"
