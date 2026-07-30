@@ -54,33 +54,100 @@
 
 {{-- Price filter --}}
 @if ($globalMinPrice !== null && $globalMaxPrice !== null)
+    @php
+        $pMin = $minPrice ?? $globalMinPrice;
+        $pMax = $maxPrice ?? $globalMaxPrice;
+    @endphp
     <div class="flex flex-col gap-stack-sm">
         <h3 class="border-b border-intense-cocoa/10 pb-2 mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-intense-cocoa">
             {{ __('storefront.shop.filter_price') }}
         </h3>
-        <div class="flex items-center gap-3 pt-2">
-            <input
-                type="number"
-                wire:model.live.debounce.500ms="minPrice"
-                placeholder="{{ number_format($globalMinPrice, 0, ',', '.') }}"
-                min="{{ $globalMinPrice }}"
-                max="{{ $globalMaxPrice }}"
-                class="w-full border-b border-intense-cocoa/30 bg-transparent py-2 text-body-md text-intense-cocoa placeholder:text-intense-cocoa/60 focus:border-intense-cocoa focus:outline-none"
-            >
-            <span class="text-intense-cocoa/40">—</span>
-            <input
-                type="number"
-                wire:model.live.debounce.500ms="maxPrice"
-                placeholder="{{ number_format($globalMaxPrice, 0, ',', '.') }}"
-                min="{{ $globalMinPrice }}"
-                max="{{ $globalMaxPrice }}"
-                class="w-full border-b border-intense-cocoa/30 bg-transparent py-2 text-body-md text-intense-cocoa placeholder:text-intense-cocoa/60 focus:border-intense-cocoa focus:outline-none"
-            >
+        <div class="price-slider pt-1" data-min="{{ $globalMinPrice }}" data-max="{{ $globalMaxPrice }}" data-current-min="{{ $pMin }}" data-current-max="{{ $pMax }}">
+            <div class="price-slider__track">
+                <div class="price-slider__fill"></div>
+                <input type="range" class="price-slider__input price-slider__input--min" min="{{ $globalMinPrice }}" max="{{ $globalMaxPrice }}" value="{{ $pMin }}">
+                <input type="range" class="price-slider__input price-slider__input--max" min="{{ $globalMinPrice }}" max="{{ $globalMaxPrice }}" value="{{ $pMax }}">
+            </div>
+            <div class="price-slider__labels">
+                <span class="price-slider__label price-slider__label--min">{{ $currencyEnum->format($pMin) }}</span>
+                <span class="price-slider__label price-slider__label--max">{{ $currencyEnum->format($pMax) }}</span>
+            </div>
+            <p class="text-center text-[11px] font-semibold uppercase tracking-widest text-intense-cocoa/40">
+                {{ $currencyEnum->value }}
+            </p>
         </div>
-        <p class="text-label-caps text-intense-cocoa/70">
-            {{ $currencyEnum->value }}
-        </p>
     </div>
+
+    @once
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function initPriceSliders() {
+                document.querySelectorAll('.price-slider').forEach(function (el) {
+                    if (el._initialized) return;
+                    el._initialized = true;
+
+                    var floor = parseInt(el.dataset.min);
+                    var ceil = parseInt(el.dataset.max);
+                    var minInput = el.querySelector('.price-slider__input--min');
+                    var maxInput = el.querySelector('.price-slider__input--max');
+                    var fill = el.querySelector('.price-slider__fill');
+                    var labelMin = el.querySelector('.price-slider__label--min');
+                    var labelMax = el.querySelector('.price-slider__label--max');
+
+                    function fmt(v) {
+                        return new Intl.NumberFormat('de-DE').format(v);
+                    }
+
+                    function render() {
+                        var lo = parseInt(minInput.value);
+                        var hi = parseInt(maxInput.value);
+                        var range = ceil - floor || 1;
+                        var pctLo = ((lo - floor) / range) * 100;
+                        var pctHi = ((hi - floor) / range) * 100;
+                        fill.style.left = pctLo + '%';
+                        fill.style.width = (pctHi - pctLo) + '%';
+                        labelMin.textContent = fmt(lo);
+                        labelMax.textContent = fmt(hi);
+                    }
+
+                    function sync() {
+                        var lo = parseInt(minInput.value);
+                        var hi = parseInt(maxInput.value);
+                        try {
+                            var id = el.closest('[wire\\:id]').getAttribute('wire:id');
+                            var comp = Livewire.find(id);
+                            comp.set('minPrice', lo === floor ? null : lo);
+                            comp.set('maxPrice', hi === ceil ? null : hi);
+                        } catch (e) {}
+                    }
+
+                    minInput.addEventListener('input', function () {
+                        var lo = parseInt(minInput.value);
+                        var hi = parseInt(maxInput.value);
+                        if (lo > hi) minInput.value = hi;
+                        render();
+                    });
+
+                    maxInput.addEventListener('input', function () {
+                        var lo = parseInt(minInput.value);
+                        var hi = parseInt(maxInput.value);
+                        if (hi < lo) maxInput.value = lo;
+                        render();
+                    });
+
+                    minInput.addEventListener('change', sync);
+                    maxInput.addEventListener('change', sync);
+
+                    render();
+                });
+            }
+
+            initPriceSliders();
+            document.addEventListener('livewire:load', initPriceSliders);
+            document.addEventListener('livewire:navigated', initPriceSliders);
+        });
+    </script>
+    @endonce
 @endif
 
 {{-- Availability filter --}}

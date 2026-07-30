@@ -26,8 +26,11 @@
             <h1 class="font-[family-name:var(--font-chillax)] text-3xl font-semibold tracking-tight text-intense-cocoa">
                 {{ __('orders.checkout.title') }}
             </h1>
-            <a href="{{ route('cart.page') }}" class="text-sm font-medium text-intense-cocoa/70 transition-colors hover:text-intense-cocoa hover:underline">
-                &larr; {{ __('orders.checkout.back_to_cart') }}
+            <a href="{{ route('cart.page') }}" class="inline-flex items-center gap-1.5 text-sm font-medium text-intense-cocoa/70 transition-colors hover:text-intense-cocoa hover:underline">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+                </svg>
+                {{ __('orders.checkout.back_to_cart') }}
             </a>
         </div>
 
@@ -200,7 +203,7 @@
                                 </svg>
                                 {{ __('orders.shipping.standard') }}
                             </span>
-                            <span class="tabular-nums">{{ number_format($preview['shippingCost']) }} {{ $preview['currency'] }}</span>
+                            <span class="tabular-nums">{{ \App\Enums\Commerce\CurrencyEnum::tryFrom((string) ($preview['currency'] ?? ''))?->format($preview['shippingCost']) ?? number_format($preview['shippingCost']).' '.$preview['currency'] }}</span>
                         </div>
                     </section>
 
@@ -258,14 +261,23 @@
                         <ul class="mb-4 space-y-3 text-sm text-intense-cocoa">
                             @foreach ($preview['lines'] as $line)
                                 <li class="flex justify-between gap-3 border-b border-intense-cocoa/10 pb-2">
-                                    <span>
-                                        {{ $line['productName'] }}
-                                        @if ($line['variantLabel'])
-                                            <span class="text-intense-cocoa/90">({{ $line['variantLabel'] }})</span>
+                                    <span class="flex flex-col gap-0.5">
+                                        <span class="font-medium">{{ $line['productName'] }}</span>
+                                        @if ($line['variantLabel'] || $line['quantity'])
+                                            <span class="text-xs text-intense-cocoa/60">
+                                                @if ($line['variantLabel'])
+                                                    {{ $line['variantLabel'] }}
+                                                @endif
+                                                @if ($line['variantLabel'] && $line['quantity'])
+                                                    <span class="mx-1.5 text-intense-cocoa">—</span>
+                                                @endif
+                                                @if ($line['quantity'])
+                                                    <span class="font-medium text-intense-cocoa">× {{ $line['quantity'] }}</span>
+                                                @endif
+                                            </span>
                                         @endif
-                                        × {{ $line['quantity'] }}
                                     </span>
-                                    <span class="font-medium tabular-nums">{{ $currencyEnum?->format($line['lineSubtotal']) ?? number_format($line['lineSubtotal']).' '.$preview['currency'] }}</span>
+                                    <span class="shrink-0 font-medium tabular-nums">{{ $currencyEnum?->format($line['lineSubtotal']) ?? number_format($line['lineSubtotal']).' '.$preview['currency'] }}</span>
                                 </li>
                             @endforeach
                         </ul>
