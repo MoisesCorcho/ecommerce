@@ -50,7 +50,7 @@ Rutas de specs se crean al iniciar cada feature (`specs/features/<slug>/`).
 | ID | Feature | Fase | Estado | Prerequisitos |
 |----|---------|------|--------|---------------|
 | F01 | Catálogo **admin** (Filament: categorías, productos, variantes, precios, imágenes) | 0 · Fundación comercio | Completa | Fundación de dominio |
-| F01-S | Storefront catálogo (UI pública; manual de marca) | 0 · Fundación comercio | No iniciada (diferido) | F01; manual de marca |
+| F01-S | Storefront catálogo (UI pública; manual de marca) | 0 · Fundación comercio | Completa | F01; manual de marca |
 | F02 | Cuentas y direcciones (**admin** Filament: users + addresses; sin Livewire storefront) | 0 · Fundación comercio | Completa | Fundación de dominio |
 | F03 | Carrito | 1 · Compra | Completa | F01 |
 | F04 | Checkout y órdenes | 1 · Compra | Completa | F01, F02, F03 |

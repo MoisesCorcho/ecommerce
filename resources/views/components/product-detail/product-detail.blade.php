@@ -56,7 +56,7 @@
                         $currentImage = $product->images->get($mainImageIndex) ?? $product->images->first();
                     @endphp
                     <img
-                        src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($currentImage->path) }}"
+                        src="/storage/{{ $currentImage->path }}"
                         alt="{{ $product->name }}"
                         class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                         wire:key="main-image-{{ $mainImageIndex }}"
@@ -87,7 +87,7 @@
                             class="group/thumbnail relative flex-shrink-0 overflow-hidden border-2 transition-all duration-200 {{ $mainImageIndex === $index ? 'border-intense-cocoa' : 'border-transparent hover:border-intense-cocoa/30' }}"
                         >
                             <img
-                                src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($image->path) }}"
+                                src="/storage/{{ $image->path }}"
                                 alt="{{ $product->name }} — {{ $loop->iteration }}"
                                 class="h-16 w-16 object-cover sm:h-20 sm:w-20"
                             >
@@ -116,7 +116,7 @@
             </div>
 
             {{-- Price + Stock (R5, R18) --}}
-            <div class="flex flex-wrap items-baseline gap-3">
+            <div class="flex flex-wrap items-center gap-3">
                 @if ($selectedVariant && $selectedVariant->priceIn($currencyEnum))
                     @php
                         $price = $selectedVariant->priceIn($currencyEnum);
@@ -135,7 +135,7 @@
 
                 {{-- Out of stock badge (R18) --}}
                 @if ($selectedVariant && $selectedVariant->stock <= 0 && ! $product->is_preorder)
-                    <span class="bg-soft-gold px-2.5 py-1 text-label-caps font-semibold uppercase tracking-wider text-intense-cocoa">
+                    <span class="inline-flex items-center justify-center bg-soft-gold px-2.5 py-1 text-label-caps font-semibold uppercase tracking-wider text-intense-cocoa">
                         {{ __('storefront.out_of_stock') }}
                     </span>
                 @endif
@@ -243,15 +243,18 @@
 
             {{-- Quantity selector (R8) --}}
             @if ($selectedVariant && $selectedVariant->stock > 0)
-                <div>
+                <div class="flex flex-col items-start">
                     <label for="product-qty" class="mb-2 block text-sm font-medium text-intense-cocoa">
                         {{ __('storefront.products.quantity_label') }}
                     </label>
 
                     @if ($cartQuantity > 0)
-                        <p class="mb-2 text-sm text-intense-cocoa/60">
-                            {{ __('storefront.products.already_in_cart', ['count' => $cartQuantity]) }}
-                        </p>
+                        <div class="mb-2.5 inline-flex items-center gap-1.5 rounded-none bg-soft-sand px-2.5 py-1 text-xs font-medium text-intense-cocoa">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5 text-intense-cocoa/70" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M6 5v1H4.667a1.75 1.75 0 0 0-1.741 1.575l-.834 8.5A1.75 1.75 0 0 0 3.834 18h12.332a1.75 1.75 0 0 0 1.742-1.925l-.834-8.5A1.75 1.75 0 0 0 15.333 6H14V5a4 4 0 0 0-8 0Zm4-2.5A2.5 2.5 0 0 0 7.5 5v1h5V5A2.5 2.5 0 0 0 10 2.5ZM4.333 7.5h11.334l.833 8.5a.25.25 0 0 1-.249.275H3.834a.25.25 0 0 1-.249-.275l.833-8.5Z" clip-rule="evenodd" />
+                            </svg>
+                            <span>{{ __('storefront.products.already_in_cart', ['count' => $cartQuantity]) }}</span>
+                        </div>
                     @endif
 
                     <div class="inline-flex items-center overflow-hidden border border-intense-cocoa">

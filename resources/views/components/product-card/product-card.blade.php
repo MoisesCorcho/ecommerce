@@ -30,7 +30,7 @@
         <a href="{{ $detailUrl }}" class="block h-full">
             @if ($primaryImage)
                 <img
-                    src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($primaryImage->path) }}"
+                    src="/storage/{{ $primaryImage->path }}"
                     alt="{{ $product->name }}"
                     class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 {{ (! $isAvailable || $isOutOfStock) ? 'opacity-60' : '' }}"
                 >

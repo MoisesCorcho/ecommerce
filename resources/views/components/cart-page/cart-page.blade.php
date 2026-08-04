@@ -94,7 +94,7 @@
                                 <div class="h-20 w-20 flex-shrink-0 bg-silk-cream">
                                     @if ($line->imagePath)
                                         <img
-                                            src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($line->imagePath) }}"
+                                            src="/storage/{{ $line->imagePath }}"
                                             alt="{{ $line->productName }}"
                                             class="h-full w-full object-cover"
                                         >
