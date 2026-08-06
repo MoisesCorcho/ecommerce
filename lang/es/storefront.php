@@ -84,7 +84,7 @@ return [
         'color_label' => 'Color',
         'size_label' => 'Talla',
         'quantity_label' => 'Cantidad',
-        'already_in_cart' => ':count ya en tu carrito',
+        'already_in_cart' => 'Ya en tu carrito: :count',
         'select_variant' => 'Selecciona una variante',
         'add_to_cart' => 'Agregar al carrito',
         'buy_now' => 'Comprar ahora',
