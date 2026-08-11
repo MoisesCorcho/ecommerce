@@ -80,7 +80,7 @@ class SmokeTest extends TestCase
 
         $response = $this->get($signedUrl);
         $response->assertStatus(200);
-        $response->assertSee('Gracias por su compra');
+        $response->assertSee(__('orders.thank_you.title'));
     }
 
     public function test_checkout_redirects_when_cart_is_empty(): void
