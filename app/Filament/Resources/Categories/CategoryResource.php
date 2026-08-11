@@ -12,6 +12,7 @@ use App\Models\Category;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
@@ -155,6 +156,12 @@ class CategoryResource extends Resource
             ->recordActions([
                 EditAction::make()
                     ->label(__('categories.actions.edit')),
+                DeleteAction::make()
+                    ->label(__('categories.actions.delete'))
+                    ->requiresConfirmation()
+                    ->modalHeading(__('categories.modals.delete_heading'))
+                    ->modalDescription(__('categories.modals.delete_description'))
+                    ->modalSubmitActionLabel(__('categories.actions.confirm_delete')),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

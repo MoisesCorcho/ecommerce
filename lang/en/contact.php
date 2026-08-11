@@ -48,8 +48,8 @@ return [
     ],
 
     'error' => [
-        'throttled' => 'You have reached the message limit. Please try again in a few minutes or email us directly at :email.',
-        'send_failed' => 'We could not send your message. Please try again or email us directly at :email.',
+        'throttled' => 'You have reached the message limit. Please try again in a few minutes or email us directly at',
+        'send_failed' => 'We could not send your message. Please try again or email us directly at',
     ],
 
     'faq' => [

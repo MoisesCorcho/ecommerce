@@ -83,17 +83,10 @@ final class ProductForm
             Section::make(__('products.section.attributes'))
                 ->description(__('products.section.attributes_description'))
                 ->schema([
-                    Grid::make(2)
-                        ->schema([
-                            TextInput::make('material')
-                                ->label(__('products.fields.material'))
-                                ->maxLength(255)
-                                ->placeholder(__('products.placeholders.material')),
-                            TextInput::make('dimensions')
-                                ->label(__('products.fields.dimensions'))
-                                ->maxLength(255)
-                                ->placeholder(__('products.placeholders.dimensions')),
-                        ]),
+                    TextInput::make('material')
+                        ->label(__('products.fields.material'))
+                        ->maxLength(255)
+                        ->placeholder(__('products.placeholders.material')),
                     Grid::make(2)
                         ->schema([
                             Toggle::make('is_preorder')

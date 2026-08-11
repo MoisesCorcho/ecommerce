@@ -35,7 +35,7 @@ class ProductSeeder extends Seeder
                     'name' => $data['name'],
                     'description' => $data['description'],
                     'material' => $data['material'],
-                    'dimensions' => $data['dimensions'],
+                    'dimensions' => null,
                     'is_preorder' => false,
                     'is_active' => true,
                 ],

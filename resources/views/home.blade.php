@@ -13,7 +13,7 @@
             <h1 class="font-chillax text-display-lg-mobile text-intense-cocoa md:text-display-lg">
                 {{ __('storefront.home.hero_title') }}
             </h1>
-            <x-primary-button tag="a" href="{{ route('products.index') }}" class="mt-4 inline-block px-8 py-4 text-label-caps">
+            <x-primary-button tag="a" href="{{ route('products.index') }}" class="mt-4 inline-block px-8 py-4 text-xs font-semibold tracking-widest">
                 {{ __('storefront.home.hero_cta') }}
             </x-primary-button>
         </div>

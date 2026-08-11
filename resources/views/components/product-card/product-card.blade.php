@@ -40,9 +40,15 @@
                 </div>
             @endif
 
-            {{-- Custom badge slot or default unavailable / out of stock overlays --}}
+            {{-- Custom badge slot or default unavailable / out of stock / preorder overlays --}}
             @if (isset($badge))
                 {{ $badge }}
+            @elseif ($product->is_preorder)
+                <div class="absolute top-3 left-3 z-10">
+                    <span class="bg-intense-cocoa text-silk-cream px-3 py-1 text-xs font-semibold uppercase tracking-widest">
+                        {{ __('storefront.products.preorder_badge') ?? 'Preventa' }}
+                    </span>
+                </div>
             @elseif (! $isAvailable)
                 <div class="absolute inset-0 bg-silk-cream/40 backdrop-blur-[1px] flex items-center justify-center z-10" data-wishlist-badge-unavailable>
                     <span class="bg-soft-sand px-5 py-2.5 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa">

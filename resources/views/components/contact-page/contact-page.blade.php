@@ -239,7 +239,7 @@
             <h2 id="contact-faq-heading" class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
                 {{ __('contact.faq.heading') }}
             </h2>
-            <p class="max-w-md text-body-md text-intense-cocoa/70">
+            <p class="max-w-md text-body-md text-intense-cocoa/80 leading-relaxed lg:text-body-lg">
                 {{ __('contact.faq.body') }}
             </p>
             <x-secondary-button

@@ -19,7 +19,7 @@
     </{{ $tag }}>
 
     @if ($subtitle)
-        <p class="mt-2 text-sm text-intense-cocoa/70">
+        <p class="mt-2 text-body-md text-intense-cocoa/80 leading-relaxed lg:text-body-lg">
             {{ $subtitle }}
         </p>
     @endif

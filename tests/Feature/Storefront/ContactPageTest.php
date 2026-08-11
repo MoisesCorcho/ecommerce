@@ -184,7 +184,7 @@ class ContactPageTest extends TestCase
             ->set('subject', 'Hello there')
             ->set('message', 'A perfectly valid message.')
             ->call('submit')
-            ->assertSet('errorMessage', __('contact.error.throttled', ['email' => config('ecommerce.contact.public_email')]));
+            ->assertSet('errorMessage', __('contact.error.throttled'));
 
         Mail::assertSentCount(ContactFormRateLimiter::MAX_ATTEMPTS);
     }
@@ -207,7 +207,7 @@ class ContactPageTest extends TestCase
             ->set('message', 'A perfectly valid message.')
             ->call('submit')
             ->assertSet('sent', false)
-            ->assertSet('errorMessage', __('contact.error.send_failed', ['email' => 'support@example.com']))
+            ->assertSet('errorMessage', __('contact.error.send_failed'))
             ->assertSet('name', 'Jane Doe')
             ->assertSet('email', 'jane@example.com')
             ->assertSet('subject', 'Hello there')

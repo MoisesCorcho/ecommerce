@@ -58,7 +58,7 @@
             <h1 class="font-chillax text-display-lg-mobile md:text-display-lg text-silk-cream">
                 {{ __('about.hero.title') }}
             </h1>
-            <p class="mt-4 font-labelle-aurore text-accent-script text-soft-gold">
+            <p class="mt-4 font-labelle-aurore text-2xl text-soft-gold md:text-3xl lg:text-[2.25rem]">
                 {{ __('about.hero.subtitle') }}
             </p>
         </div>
@@ -73,7 +73,7 @@
                     {{ __('about.story.title') }}
                 </h2>
                 @foreach (__('about.story.paragraphs') as $paragraph)
-                    <p class="mt-6 text-body-md leading-relaxed text-intense-cocoa/70">
+                    <p class="mt-6 text-body-md leading-relaxed text-intense-cocoa/80 lg:text-body-lg">
                         {{ $paragraph }}
                     </p>
                 @endforeach
@@ -94,9 +94,9 @@
                 {{ __('about.pillars.title') }}
             </h2>
             @if (!empty(__('about.pillars.paragraphs')))
-                <div class="mx-auto mt-6 max-w-3xl text-center space-y-4">
+                <div class="mx-auto mt-6 max-w-2xl text-center space-y-4 md:max-w-3xl lg:max-w-5xl">
                     @foreach (__('about.pillars.paragraphs') as $p)
-                        <p class="text-body-md leading-relaxed text-intense-cocoa/75">
+                        <p class="text-body-md text-intense-cocoa/80 leading-relaxed lg:text-body-lg">
                             {{ $p }}
                         </p>
                     @endforeach
@@ -113,7 +113,7 @@
                         <h3 class="mt-6 text-label-caps font-semibold uppercase tracking-wider text-intense-cocoa">
                             {{ $pillar['title'] }}
                         </h3>
-                        <p class="mt-3 text-sm text-intense-cocoa/60">
+                        <p class="mt-3 text-sm leading-relaxed text-intense-cocoa/75 lg:text-body-md">
                             {{ $pillar['description'] }}
                         </p>
                     </div>
@@ -135,7 +135,7 @@
                 <h2 class="font-chillax text-headline-md text-intense-cocoa">
                     {{ __('about.differential.title') }}
                 </h2>
-                <p class="mt-6 text-body-md leading-relaxed text-intense-cocoa/70">
+                <p class="mt-6 text-body-md leading-relaxed text-intense-cocoa/80 lg:text-body-lg">
                     {!! str_replace(':honeys', '<span class="font-labelle-aurore text-accent-script text-soft-gold text-2xl font-semibold tracking-wide inline-block px-1">honeys</span>', e(__('about.differential.description'))) !!}
                 </p>
                 <ul class="mt-6 space-y-3">
@@ -144,7 +144,7 @@
                             <svg class="mt-0.5 h-5 w-5 flex-shrink-0 text-soft-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            <span class="text-body-md text-intense-cocoa/70">{{ $bullet }}</span>
+                            <span class="text-body-md text-intense-cocoa/80 lg:text-body-lg">{{ $bullet }}</span>
                         </li>
                     @endforeach
                 </ul>
