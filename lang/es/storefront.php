@@ -39,7 +39,7 @@ return [
         'view_all' => 'Ver todo',
         'hero_title' => 'Hecho para cargar tu historia',
         'hero_subtitle' => 'Hecho a mano con intención',
-        'hero_cta' => 'Comprar la Colección',
+        'hero_cta' => 'Comprar la colección',
         'story_title' => 'Nuestra Historia',
         'story_body' => 'Leen nace de la pasión por la moda, de raíces vinculadas al arte y del sueño de una estudiante universitaria que, tras años creando piezas para sí misma, decidió convertir su visión en una marca para vestir a personas de todo el mundo con miel, mucha miel.',
         'story_cta' => 'Lee nuestra historia',

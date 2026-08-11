@@ -39,7 +39,7 @@ return [
         'view_all' => 'View all',
         'hero_title' => 'Crafted to carry your story',
         'hero_subtitle' => 'Handcrafted with intention',
-        'hero_cta' => 'Shop the Collection',
+        'hero_cta' => 'Shop the collection',
         'story_title' => 'Our Story',
         'story_body' => 'Leen is born from a passion for fashion, deep artistic roots, and the dream of a college student who, after years of designing pieces for herself, decided to turn her vision into a brand to dress people around the world —with honey, lots of honey.',
         'story_cta' => 'Read our story',

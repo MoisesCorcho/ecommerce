@@ -58,6 +58,15 @@ new #[Layout('layouts.storefront')] class extends Component
     {
         $code = (string) config('ecommerce.default_currency', CurrencyEnum::Cop->value);
         $this->currency = CurrencyEnum::tryFrom($code)?->value ?? CurrencyEnum::Cop->value;
+
+        if (is_string($this->category)) {
+            $this->category = array_filter([$this->category]);
+        }
+
+        $requestCategory = request('category');
+        if (empty($this->category) && is_string($requestCategory) && $requestCategory !== '') {
+            $this->category = [$requestCategory];
+        }
     }
 
     /**

@@ -44,7 +44,7 @@ new #[Layout('layouts.storefront')] class extends Component
         $this->errorMessage = null;
 
         if (! $limiter->attempt(request()->ip())) {
-            $this->errorMessage = __('contact.error.throttled', ['email' => config('ecommerce.contact.public_email')]);
+            $this->errorMessage = __('contact.error.throttled');
 
             return;
         }
@@ -64,7 +64,7 @@ new #[Layout('layouts.storefront')] class extends Component
                 'sender_email' => $this->email,
             ]);
 
-            $this->errorMessage = __('contact.error.send_failed', ['email' => config('ecommerce.contact.public_email')]);
+            $this->errorMessage = __('contact.error.send_failed');
 
             return;
         }

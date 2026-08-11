@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Categories\Pages;
 
-use App\Actions\Categories\DeleteCategoryAction;
 use App\Actions\Categories\UpdateCategoryAction;
 use App\Filament\Resources\Categories\CategoryResource;
 use App\Models\Category;
@@ -29,10 +28,7 @@ class EditCategory extends EditRecord
                 ->requiresConfirmation()
                 ->modalHeading(__('categories.modals.delete_heading'))
                 ->modalDescription(__('categories.modals.delete_description'))
-                ->modalSubmitActionLabel(__('categories.actions.confirm_delete'))
-                ->using(function (Category $record): void {
-                    app(DeleteCategoryAction::class)($record);
-                }),
+                ->modalSubmitActionLabel(__('categories.actions.confirm_delete')),
         ];
     }
 
