@@ -22,17 +22,23 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'Admin',
-            'last_name' => 'Admin',
-            'email' => 'admin@admin.com',
-        ]);
+        User::query()->firstOrCreate(
+            ['email' => 'admin@admin.com'],
+            [
+                'name' => 'Admin',
+                'last_name' => 'Admin',
+                'password' => bcrypt('password'),
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'last_name' => 'User',
-            'email' => 'test@example.com',
-        ]);
+        User::query()->firstOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+                'last_name' => 'User',
+                'password' => bcrypt('password'),
+            ]
+        );
 
         $this->call([
             RoleAndAdminBackfillSeeder::class,

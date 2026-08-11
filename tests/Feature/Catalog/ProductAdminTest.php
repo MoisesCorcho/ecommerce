@@ -52,7 +52,6 @@ class ProductAdminTest extends TestCase
             'slug' => null,
             'description' => 'Bolso de cuero',
             'material' => 'Cuero',
-            'dimensions' => '30x20',
             'is_preorder' => false,
             'is_active' => true,
             'variants' => [
@@ -86,7 +85,6 @@ class ProductAdminTest extends TestCase
             ->set('data.slug', null)
             ->set('data.description', 'Bolso de cuero')
             ->set('data.material', 'Cuero')
-            ->set('data.dimensions', '30x20')
             ->set('data.is_preorder', false)
             ->set('data.is_active', true)
             ->set('data.variants', [

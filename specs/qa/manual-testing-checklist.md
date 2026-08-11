@@ -36,20 +36,20 @@ Este documento guía la verificación manual paso a paso de todos los flujos de 
   - [x] **2. Envío de Formulario**: Completar campos (Nombre, Email, Mensaje), enviar y verificar notificación de éxito.
   - [x] **3. Edge Case (Throttling / Límite de tasa)**: Intentar enviar más de 3 mensajes seguidos para confirmar bloqueo temporal de seguridad.
 
-- [ ] **1.4. Catálogo (`/products`)**:
-  - [ ] **1. Filtro por Categoría**: Seleccionar una categoría en el panel lateral y verificar filtrado de productos.
-  - [ ] **2. Filtro por Precio**: Ajustar rango mínimo y máximo de precio y comprobar actualización instantánea.
-  - [ ] **3. Cambio de Moneda**: Cambiar selector de moneda en el header (COP ↔ EUR) y verificar actualización instantánea de precios.
-  - [ ] **4. Ordenamiento**: Probar ordenamiento por *Precio: menor a mayor*, *Precio: mayor a menor* y *Más recientes*.
+- [x] **1.4. Catálogo (`/products`)**:
+  - [x] **1. Filtro por Categoría**: Seleccionar una categoría en el panel lateral y verificar filtrado de productos.
+  - [x] **2. Filtro por Precio**: Ajustar rango mínimo y máximo de precio y comprobar actualización instantánea.
+  - [ ] **3. Cambio de Moneda**: Cambiar selector de moneda en el header (COP ↔ EUR) y verificar actualización instantánea de precios *(Diferido: pendiente implementación de localizacion del precio segun ubicacion del usuario o selector manual)*.
+  - [x] **4. Ordenamiento**: Probar ordenamiento por *Precio: menor a mayor*, *Precio: mayor a menor* y *Más recientes*.
 
-- [ ] **1.5. Ficha de Producto - PDP (`/products/{slug}`)**:
-  - [ ] **1. Selección de Variantes**: Cambiar entre opciones de color y talla, comprobando actualización de precio, SKU e imagen.
-  - [ ] **2. Botón de Favoritos**: Marcar y desmarcar el producto como favorito (Wishlist).
-  - [ ] **3. Edge Case (Agotado)**: Verificar que productos con stock 0 muestren la insignia "Agotado" y deshabiliten el botón de agregar al carrito.
-  - [ ] **4. Edge Case (Preventa)**: Verificar que productos en condición de preventa muestren su insignia y permitan agregar al carrito adecuadamente.
+- [x] **1.5. Ficha de Producto - PDP (`/products/{slug}`)**:
+  - [x] **1. Selección de Variantes**: Cambiar entre opciones de color y talla, comprobando actualización de precio, SKU e imagen.
+  - [x] **2. Botón de Favoritos**: Marcar y desmarcar el producto como favorito (Wishlist).
+  - [x] **3. Edge Case (Agotado)**: Verificar que productos con stock 0 muestren la insignia "Agotado" y deshabiliten el botón de agregar al carrito.
+  - [x] **4. Edge Case (Preventa)**: Verificar que productos en condición de preventa muestren su insignia y permitan agregar al carrito adecuadamente.
 
-- [ ] **1.6. Fallback de Rutas Inexistentes**:
-  - [ ] **1. Redirección 404**: Navegar a una URL no registrada (ej. `/home` o `/pagina-rara`) y comprobar redirección automática a la portada `/`.
+- [x] **1.6. Fallback de Rutas Inexistentes**:
+  - [x] **1. Redirección 404**: Navegar a una URL no registrada (ej. `/home` o `/pagina-rara`) y comprobar redirección automática a la portada `/`.
 
 ---
 

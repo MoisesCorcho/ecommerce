@@ -26,9 +26,9 @@ class OrderAndPaymentSeeder extends Seeder
 {
     public function run(): void
     {
-        $users = User::query()->whereDoesntHave('roles', function ($query): void {
-            $query->where('name', 'super_admin');
-        })->get();
+        $users = User::query()->get();
+        $adminUser = User::query()->whereIn('email', config('ecommerce.admin_emails', []))->first()
+            ?? User::query()->whereHas('roles', fn ($query) => $query->where('name', 'admin'))->first();
 
         $variants = ProductVariant::query()->with(['product', 'prices'])->get();
         $coupons = Coupon::query()->where('is_active', true)->get();
@@ -49,9 +49,14 @@ class OrderAndPaymentSeeder extends Seeder
             $currency = $isCop ? CurrencyEnum::Cop : CurrencyEnum::Eur;
             $provider = $isCop ? PaymentProviderEnum::Bold : PaymentProviderEnum::Stripe;
 
-            // Determine buyer
-            $isGuest = rand(1, 100) <= 25;
-            $user = ($isGuest || $users->isEmpty()) ? null : $users->random();
+            // Guarantee at least 2 delivered purchases for the admin user to test the reviews feature
+            if ($i <= 2 && $adminUser !== null) {
+                $user = $adminUser;
+                $isGuest = false;
+            } else {
+                $isGuest = rand(1, 100) <= 25;
+                $user = ($isGuest || $users->isEmpty()) ? null : $users->random();
+            }
 
             if ($user !== null) {
                 $address = Address::query()->where('user_id', $user->id)->first();
@@ -76,8 +81,10 @@ class OrderAndPaymentSeeder extends Seeder
                 $addressId = null;
             }
 
-            // Determine status according to order age
-            $status = $this->determineOrderStatus($daysAgo);
+            // Determine status according to order age (always Delivered for admin's initial orders)
+            $status = ($i <= 2 && $adminUser !== null)
+                ? OrderStatusEnum::Delivered
+                : $this->determineOrderStatus($daysAgo);
 
             // Select 1 to 3 variant items
             $orderVariants = $variants->random(rand(1, min(3, $variants->count())));

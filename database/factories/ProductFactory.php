@@ -27,7 +27,7 @@ class ProductFactory extends Factory
             'slug' => Str::slug($name),
             'description' => fake()->optional()->paragraph(),
             'material' => fake()->optional()->randomElement(['Cuero', 'Gamuza', 'Sintético', 'Lona']),
-            'dimensions' => fake()->optional()->randomElement(['36cm x 29cm x 8cm', '28cm x 22cm x 10cm', '42cm x 30cm x 12cm']),
+            'dimensions' => null,
             'is_preorder' => false,
             'is_active' => true,
         ];

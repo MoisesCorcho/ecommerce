@@ -110,9 +110,16 @@
                         {{ $product->category->name }}
                     </p>
                 @endif
-                <h1 class="font-[family-name:var(--font-chillax)] text-3xl font-semibold tracking-tight text-intense-cocoa sm:text-4xl">
-                    {{ $product->name }}
-                </h1>
+                <div class="flex flex-wrap items-center gap-3">
+                    <h1 class="font-[family-name:var(--font-chillax)] text-3xl font-semibold tracking-tight text-intense-cocoa sm:text-4xl">
+                        {{ $product->name }}
+                    </h1>
+                    @if ($product->is_preorder)
+                        <span class="inline-flex items-center bg-intense-cocoa px-3 py-1 text-xs font-semibold uppercase tracking-widest text-silk-cream">
+                            {{ __('storefront.products.preorder_badge') }}
+                        </span>
+                    @endif
+                </div>
             </div>
 
             {{-- Price + Stock (R5, R18) --}}
@@ -145,7 +152,7 @@
             @if ($selectedVariant)
                 @if ($selectedVariant->stock > 0 && $selectedVariant->stock <= 5)
                     <p class="text-sm text-intense-cocoa/70">
-                        {{ __('storefront.products.stock_low', ['count' => $selectedVariant->stock]) }}
+                        {{ $selectedVariant->stock === 1 ? __('storefront.products.stock_low_one') : __('storefront.products.stock_low', ['count' => $selectedVariant->stock]) }}
                     </p>
                 @elseif ($selectedVariant->stock > 5)
                     <p class="text-sm text-intense-cocoa/70">
@@ -163,7 +170,7 @@
 
             {{-- Brief description (R5) --}}
             @if ($product->description)
-                <p class="leading-relaxed text-intense-cocoa/80 line-clamp-3">
+                <p class="text-body-md leading-relaxed text-intense-cocoa/80 lg:text-body-lg line-clamp-3">
                     {{ Str::limit($product->description, 200) }}
                 </p>
             @endif
@@ -208,8 +215,7 @@
             @if ($availableSizes->count() > 0)
                 <div>
                     <p class="mb-2.5 text-sm font-medium text-intense-cocoa">
-                        {{ __('storefront.products.size_label') }}:
-                        <span class="font-normal text-intense-cocoa/60">{{ $selectedSize ?? '—' }}</span>
+                        {{ __('storefront.products.size_label') }}
                     </p>
                     <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="{{ __('storefront.products.size_label') }}">
                         @foreach ($availableSizes as $sizeName)
@@ -221,7 +227,7 @@
                                 wire:click="$set('selectedSize', '{{ $sizeName }}')"
                                 role="radio"
                                 aria-checked="{{ $isSelected ? 'true' : 'false' }}"
-                                class="min-h-[44px] min-w-[44px] border px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none {{ $isSelected ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-intense-cocoa/20 bg-soft-sand text-intense-cocoa hover:border-intense-cocoa' }}"
+                                class="min-h-[44px] min-w-[44px] border px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none {{ $isSelected ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-transparent bg-soft-sand text-intense-cocoa hover:border-intense-cocoa' }}"
                             >
                                 {{ $sizeName }}
                             </button>
@@ -232,11 +238,11 @@
 
                 {{-- Select variant hint (R18) --}}
                 @if (! $selectedVariant)
-                    <p class="bg-soft-sand px-4 py-2.5 text-sm text-intense-cocoa/70" data-select-variant-hint>
+                    <p class="bg-soft-sand px-4 py-2.5 text-body-md text-intense-cocoa/80 leading-relaxed lg:text-body-lg" data-select-variant-hint>
                         {{ __('storefront.products.select_variant') }}
                     </p>
                 @elseif ($selectedVariant->stock > 0 && $availableStock <= 0)
-                    <p class="bg-soft-gold/20 px-4 py-2.5 text-sm text-intense-cocoa/70">
+                    <p class="bg-soft-gold/20 px-4 py-2.5 text-body-md text-intense-cocoa/80 leading-relaxed lg:text-body-lg">
                         {{ __('storefront.products.stock_in_cart') }}
                     </p>
                 @endif
@@ -307,12 +313,12 @@
                         wire:click="addToCart"
                         class="w-full focus:outline-none disabled:bg-intense-cocoa/40 disabled:hover:bg-intense-cocoa/40 disabled:hover:text-silk-cream"
                         data-add-to-cart
-                        aria-label="{{ __('storefront.products.add_to_cart') }}"
+                        aria-label="{{ $product->is_preorder ? __('storefront.products.add_to_cart_preorder') : __('storefront.products.add_to_cart') }}"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mr-2 h-5 w-5" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.46 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM11.25 10.5h.008v.008h-.008V10.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
                         </svg>
-                        {{ __('storefront.products.add_to_cart') }}
+                        {{ $product->is_preorder ? __('storefront.products.add_to_cart_preorder') : __('storefront.products.add_to_cart') }}
                     </x-primary-button>
                 @else
                     <x-primary-button
@@ -382,20 +388,20 @@
     @if ($product->description)
         <section class="mt-16 bg-soft-sand" aria-labelledby="description-heading">
             <div class="mx-auto max-w-4xl px-margin-mobile py-12 sm:py-16 lg:px-margin-desktop">
-                    <h2 id="description-heading" class="mb-6 font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
+                    <h2 id="description-heading" class="mb-6 font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa lg:text-3xl">
                         {{ __('storefront.products.description_title') }}
                     </h2>
-                    <div class="space-y-4 leading-relaxed text-intense-cocoa/80">
+                    <div class="space-y-4 text-body-md leading-relaxed text-intense-cocoa/80 lg:text-body-lg">
                         @if ($product->material)
                             <div>
-                                <span class="text-sm font-medium text-intense-cocoa">{{ __('storefront.products.material_label') }}:</span>
+                                <span class="font-medium text-intense-cocoa">{{ __('storefront.products.material_label') }}:</span>
                                 <span class="text-intense-cocoa/70">{{ $product->material }}</span>
                             </div>
                         @endif
-                        @if ($product->dimensions)
+                        @if ($selectedVariant?->size || $product->dimensions)
                             <div>
-                                <span class="text-sm font-medium text-intense-cocoa">{{ __('storefront.products.dimensions_label') }}:</span>
-                                <span class="text-intense-cocoa/70">{{ $product->dimensions }}</span>
+                                <span class="font-medium text-intense-cocoa">{{ __('storefront.products.dimensions_label') }}:</span>
+                                <span class="text-intense-cocoa/70">{{ $selectedVariant?->size ?: $product->dimensions }}</span>
                             </div>
                         @endif
                         <p class="whitespace-pre-line">{{ $product->description }}</p>
@@ -456,7 +462,7 @@
                             </div>
                         @endif
                         @if ($review->comment)
-                            <p class="text-sm leading-relaxed text-intense-cocoa/80">{{ $review->comment }}</p>
+                            <p class="text-body-md leading-relaxed text-intense-cocoa/80 lg:text-body-lg">{{ $review->comment }}</p>
                         @endif
                         <time class="mt-2 block text-xs text-intense-cocoa/40" datetime="{{ $review->created_at?->toIso8601String() }}">
                             {{ $review->created_at?->format('d/m/Y') }}
@@ -610,7 +616,7 @@
     @if ($relatedProducts->count() > 0)
         <section class="mx-auto mt-16 max-w-storefront px-margin-mobile sm:mt-20 lg:px-margin-desktop" aria-labelledby="related-heading">
             <div class="mb-8 flex items-end justify-between">
-                <h2 id="related-heading" class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
+                <h2 id="related-heading" class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa lg:text-3xl">
                     {{ __('storefront.products.related_title') }}
                 </h2>
                 <a href="{{ route('products.index', ['category' => $product->category?->slug]) }}" class="text-sm font-medium text-intense-cocoa/60 transition-colors hover:text-intense-cocoa hover:underline">
