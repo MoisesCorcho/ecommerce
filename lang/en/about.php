@@ -11,51 +11,57 @@ return [
 
     'hero' => [
         'title' => 'Our Essence',
-        'subtitle' => 'Craftsmanship that transcends time',
+        'subtitle' => 'Sweeter than honey',
     ],
 
     'story' => [
         'title' => 'Our Story',
         'paragraphs' => [
-            'Founded with the vision of returning to the origins of true luxury, LEEN was born from an unwavering passion for noble materials and artisanal mastery. Each piece is the result of an intimate dialogue between the artisan and leather, a process where time is not measured, but invested.',
-            'In a world of immediacy, we choose pause. We carefully select the most exceptional hides, allowing their natural textures to speak for themselves, creating minimalist silhouettes that resist fleeting trends to become family legacies.',
+            'Leen is born from a passion for fashion, deep artistic roots, and the dream of a college student who, after years of designing pieces for herself, decided to turn her vision into a brand to dress people around the world —with honey, lots of honey.',
+            'In a world where what you wear seems to define you, we choose to celebrate self-expression and have fun with fashion, always remembering that our true identity lies in who we are, not just in how we dress.',
+            'We believe in the enduring beauty of timeless design. We step away from fleeting trends that only overshadow the dedication and craftsmanship poured into every single one of our honeycombs.',
+            'Always with love and lots of honey, leen.',
         ],
     ],
 
     'pillars' => [
-        'title' => 'Our Pillars',
+        'title' => 'Our honeycomb world',
+        'paragraphs' => [
+            'At Leen, we build a sweet universe where every "leen lover" can enjoy fashion freely without being boxed in, embracing bold style choices with complete confidence. Where each piece sweetens that blank canvas we paint every day when choosing to express ourselves through the art of dressing.',
+            'We design for everyone who loves adding a little—or a lot of—honey to their lives and works tirelessly for their hive, just as our bees do for their honeycombs, because there is truly nothing better than being "sweeter than honey."',
+        ],
         'items' => [
             [
-                'icon' => 'workspace_premium',
-                'title' => 'Exceptional Quality',
-                'description' => 'Materials selected under the strictest standards of excellence.',
-            ],
-            [
-                'icon' => 'hourglass_empty',
-                'title' => 'Timeless Design',
-                'description' => 'Pure silhouettes that transcend seasons and fleeting trends.',
+                'icon' => 'front_hand',
+                'title' => 'Unfiltered Expression',
+                'description' => 'We see our creations as tools for personal celebration—designed for those who embrace style without rigid rules, grounded in the confidence of being true to themselves.',
             ],
             [
                 'icon' => 'diamond',
-                'title' => 'Exclusivity',
-                'description' => 'Limited production that guarantees the uniqueness of each creation.',
+                'title' => 'Honeycomb Architecture',
+                'description' => 'We transform raw materials through a distinct geometric lens, fusing modern structural design with the warmth of traditional leather craftsmanship.',
             ],
             [
-                'icon' => 'front_hand',
-                'title' => 'Artisanal Commitment',
-                'description' => 'Every stitch reflects the dedication of expert hands.',
+                'icon' => 'hourglass_empty',
+                'title' => 'Conscious Timelessness',
+                'description' => 'We create icons built to outlast seasons and years, honoring the patient pace of fair, intentional production.',
+            ],
+            [
+                'icon' => 'workspace_premium',
+                'title' => 'Hive Spirit',
+                'description' => 'Inspired by the steady dedication of bees, we pay tribute to everyday ambition and to a global community connected by optimism and passion.',
             ],
         ],
     ],
 
     'differential' => [
-        'title' => 'What Makes Us Different',
-        'description' => 'Each LEEN piece is the result of a process where nothing is left to chance. From material selection to the final stitch, every step reflects our commitment to excellence.',
+        'title' => 'Our Promise',
+        'description' => 'We create honeycombs, not just handbags, because our mission is to sweeten your life, :honeys. We leave nothing to chance: every detail, every color, and every shape connects deeply with our essence, and we stay true to it.',
         'bullets' => [
-            'Premium materials sourced from artisanal tanneries',
-            'Handcrafted manufacturing with traditional techniques',
-            'Meticulous attention to detail at every stage',
-            'Timeless designs that transcend seasonal trends',
+            'Honeycombs geometrically designed as distinct pieces of self-expression',
+            'Conscious selection of leathers and hardware crafted by Colombian artisans',
+            'Meticulous care in every stitch and detail that embraces our identity',
+            'Timeless production that rejects the fast-paced rhythm of fast fashion',
         ],
     ],
 

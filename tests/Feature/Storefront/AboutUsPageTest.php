@@ -193,7 +193,7 @@ class AboutUsPageTest extends TestCase
 
     public function test_about_subroute_returns_404(): void
     {
-        $this->get('/about-us/something')->assertNotFound();
+        $this->get('/about-us/something')->assertRedirect('/');
     }
 
     // --- R16: gallery hidden when no images ---

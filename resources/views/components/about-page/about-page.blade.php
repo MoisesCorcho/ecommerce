@@ -10,10 +10,10 @@
     ];
 
     $pillarIcons = [
-        'workspace_premium' => '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />',
-        'hourglass_empty' => '<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />',
-        'diamond' => '<path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />',
-        'front_hand' => '<path stroke-linecap="round" stroke-linejoin="round" d="M10.05 4.575a1.575 1.575 0 10-3.15 0v3m3.15-3v-1.5a1.575 1.575 0 013.15 0v1.5m-3.15 0l-.075 5.925m3.075-5.925v4.5m0-4.5l-.075 5.925m0 0a1.575 1.575 0 003.15 0m-3.15 0l.075 5.925m3.075-5.925v4.5m0-4.5l-.075 5.925m0 0a1.575 1.575 0 003.15 0m-6.3-3.15v4.5m0-4.5l-.075 5.925m0 0a1.575 1.575 0 003.15 0m-3.15 0l.075 5.925M6.75 7.5h.75v.75h-.75V7.5zm0 3h.75v.75h-.75v-.75zm0 3h.75v.75h-.75v-.75z" />',
+        'front_hand' => '<path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />', // Heroicons: paint-brush (Arte / Libertad de expresión)
+        'diamond' => '<path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75 2.25 12l4.179 2.25m0-4.5 5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0 4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0-5.571 3-5.571-3" />', // Heroicons: square-3-stack-3d (Estructura / Arquitectura)
+        'hourglass_empty' => '<path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />', // Heroicons: arrow-path (Permanencia / Ciclo atemporal)
+        'workspace_premium' => '<path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a5.97 5.97 0 0 0-.942 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />', // Heroicons: User Group
     ];
 @endphp
 
@@ -93,7 +93,16 @@
             <h2 class="font-chillax text-headline-md text-intense-cocoa text-center">
                 {{ __('about.pillars.title') }}
             </h2>
-            <div class="mt-16 grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
+            @if (!empty(__('about.pillars.paragraphs')))
+                <div class="mx-auto mt-6 max-w-3xl text-center space-y-4">
+                    @foreach (__('about.pillars.paragraphs') as $p)
+                        <p class="text-body-md leading-relaxed text-intense-cocoa/75">
+                            {{ $p }}
+                        </p>
+                    @endforeach
+                </div>
+            @endif
+            <div class="mt-12 grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($pillars as $pillar)
                     <div class="flex flex-col items-center text-center">
                         <div class="flex h-16 w-16 items-center justify-center bg-silk-cream text-intense-cocoa transition-colors duration-300 hover:bg-soft-gold/20">
@@ -127,7 +136,7 @@
                     {{ __('about.differential.title') }}
                 </h2>
                 <p class="mt-6 text-body-md leading-relaxed text-intense-cocoa/70">
-                    {{ __('about.differential.description') }}
+                    {!! str_replace(':honeys', '<span class="font-labelle-aurore text-accent-script text-soft-gold text-2xl font-semibold tracking-wide inline-block px-1">honeys</span>', e(__('about.differential.description'))) !!}
                 </p>
                 <ul class="mt-6 space-y-3">
                     @foreach (__('about.differential.bullets') as $bullet)
