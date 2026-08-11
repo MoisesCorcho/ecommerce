@@ -85,14 +85,14 @@ return [
 
     'contact' => [
         'inbox' => env('CONTACT_MAIL_TO'),
-        'public_email' => env('CONTACT_PUBLIC_EMAIL', 'hola@leenhandbags.com'),
+        'public_email' => env('CONTACT_PUBLIC_EMAIL', 'leenhandbags@gmail.com'),
         'phone' => env('CONTACT_PHONE', '+57 300 123 4567'),
         'phone_raw' => env('CONTACT_PHONE_RAW', '+573001234567'),
         'whatsapp' => env('CONTACT_WHATSAPP', '+57 300 123 4567'),
         'whatsapp_url' => env('CONTACT_WHATSAPP_URL', 'https://wa.me/573001234567'),
         'social' => [
-            'instagram' => env('SOCIAL_INSTAGRAM_URL', 'https://instagram.com'),
-            'tiktok' => env('SOCIAL_TIKTOK_URL', 'https://tiktok.com'),
+            'instagram' => env('SOCIAL_INSTAGRAM_URL', 'https://www.instagram.com/leen_____________________/'),
+            'tiktok' => env('SOCIAL_TIKTOK_URL', 'https://www.tiktok.com/@leenhandbags'),
         ],
     ],
 

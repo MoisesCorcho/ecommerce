@@ -28,7 +28,7 @@ class StorefrontLayoutTest extends TestCase
     {
         $this->get('/_test/storefront-layout')
             ->assertOk()
-            ->assertSee('Leen Handbags', false)
+            ->assertSee('Sweeter than honey', false)
             ->assertSee(__('storefront.nav.shop'), false)
             ->assertSee(__('storefront.nav.about'), false)
             ->assertSee(__('storefront.nav.contact'), false);

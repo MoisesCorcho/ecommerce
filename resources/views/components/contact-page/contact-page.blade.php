@@ -36,7 +36,7 @@
                         </span>
                         <p>
                             <span class="block text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa/60">{{ __('contact.info.email_label') }}</span>
-                            <a href="mailto:{{ config('ecommerce.contact.public_email', 'hola@leenhandbags.com') }}" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">{{ config('ecommerce.contact.public_email', 'hola@leenhandbags.com') }}</a>
+                            <a href="mailto:{{ config('ecommerce.contact.public_email', 'leenhandbags@gmail.com') }}" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">{{ config('ecommerce.contact.public_email', 'leenhandbags@gmail.com') }}</a>
                         </p>
                     </li>
 

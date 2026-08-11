@@ -60,3 +60,5 @@ Route::prefix('api/cart')->name('cart.')->group(function (): void {
     Route::delete('/', [CartController::class, 'clear'])->name('clear');
     Route::post('/currency', [CartController::class, 'updateCurrency'])->name('currency');
 });
+
+Route::fallback(fn () => redirect('/'));

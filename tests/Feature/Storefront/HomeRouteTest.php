@@ -74,7 +74,7 @@ class HomeRouteTest extends TestCase
         $this->get('/')
             ->assertOk()
             ->assertSee(__('storefront.home.instagram_title'), false)
-            ->assertSee('https://instagram.com/leenhandbags', false);
+            ->assertSee('https://www.instagram.com/leen_____________________/', false);
     }
 
     public function test_home_renders_categories_and_featured_grids(): void

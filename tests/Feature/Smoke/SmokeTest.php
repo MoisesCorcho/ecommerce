@@ -150,4 +150,13 @@ class SmokeTest extends TestCase
         $this->actingAs($adminUser)->get('/admin/coupons')->assertStatus(200);
         $this->actingAs($adminUser)->get('/admin/reviews')->assertStatus(200);
     }
+
+    public function test_undefined_routes_redirect_to_home(): void
+    {
+        $response = $this->get('/home');
+        $response->assertRedirect('/');
+
+        $responseTwo = $this->get('/algunaruta-inexistente-123');
+        $responseTwo->assertRedirect('/');
+    }
 }
