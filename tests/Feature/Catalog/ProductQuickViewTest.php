@@ -110,4 +110,15 @@ class ProductQuickViewTest extends TestCase
             ->assertDispatched('cart-updated')
             ->assertDispatched('toast', message: __('storefront.added_to_cart'));
     }
+
+    public function test_buy_now_adds_to_cart_and_redirects_to_cart_page(): void
+    {
+        $product = $this->createPublishedProduct('Bolso Express', 'bolso-express', CurrencyEnum::Cop, 250_000, stock: 3);
+
+        Livewire::test('product-quick-view')
+            ->dispatch('open-quick-view', productId: $product->id)
+            ->call('buyNow')
+            ->assertDispatched('cart-updated')
+            ->assertRedirect(route('cart.page'));
+    }
 }

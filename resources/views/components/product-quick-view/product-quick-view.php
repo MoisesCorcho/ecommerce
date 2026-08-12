@@ -57,6 +57,9 @@ new class extends Component
         $this->errorMessage = null;
         $this->quantity = 1;
         $this->mainImageIndex = 0;
+        $this->selectedColor = null;
+        $this->selectedSize = null;
+        $this->selectedVariantId = null;
 
         $currency = CurrencyEnum::from($this->currency);
         $product = Product::query()
@@ -157,6 +160,7 @@ new class extends Component
             $this->selectedSize = $variant->size;
             $this->selectedVariantId = $variant->id;
             $this->mainImageIndex = $this->resolveMainImageIndex($product, $variant);
+            $this->quantity = 1;
         }
     }
 
@@ -182,6 +186,15 @@ new class extends Component
         $this->dispatch('toast', message: $saved
             ? __('storefront.products.added_to_favorites')
             : __('storefront.products.removed_from_favorites'));
+    }
+
+    public function buyNow(): void
+    {
+        $this->addToCart();
+
+        if ($this->errorMessage === null) {
+            $this->redirect(route('cart.page'));
+        }
     }
 
     public function addToCart(): void
@@ -235,6 +248,7 @@ new class extends Component
                 'availableColors' => collect(),
                 'availableSizes' => collect(),
                 'cartQuantity' => 0,
+                'availableStock' => 0,
                 'isFavorited' => false,
             ];
         }
@@ -250,11 +264,14 @@ new class extends Component
                 'availableColors' => collect(),
                 'availableSizes' => collect(),
                 'cartQuantity' => 0,
+                'availableStock' => 0,
                 'isFavorited' => false,
             ];
         }
 
         $selectedVariant = $this->resolveSelectedVariant($product, $currency);
+        $cartQuantity = $this->getCartQuantityForVariant();
+        $availableStock = $selectedVariant ? max(0, $selectedVariant->stock - $cartQuantity) : 0;
 
         return [
             'product' => $product,
@@ -262,7 +279,8 @@ new class extends Component
             'selectedVariant' => $selectedVariant,
             'availableColors' => $this->collectAvailableColors($product, $currency),
             'availableSizes' => $this->collectAvailableSizes($product, $currency),
-            'cartQuantity' => $this->getCartQuantityForVariant(),
+            'cartQuantity' => $cartQuantity,
+            'availableStock' => $availableStock,
             'isFavorited' => $this->checkIsFavorited(),
         ];
     }
