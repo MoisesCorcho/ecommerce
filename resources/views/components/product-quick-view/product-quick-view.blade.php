@@ -6,6 +6,17 @@
     @if ($showModal && $product)
         <div
             x-data="{ show: @js($showModal) }"
+            x-init="
+                document.body.classList.add('overflow-hidden');
+                $watch('show', value => {
+                    if (value) {
+                        document.body.classList.add('overflow-hidden');
+                    } else {
+                        document.body.classList.remove('overflow-hidden');
+                    }
+                });
+            "
+            x-destroy="document.body.classList.remove('overflow-hidden')"
             x-show="show"
             x-cloak
             x-transition:enter="ease-out duration-300"
