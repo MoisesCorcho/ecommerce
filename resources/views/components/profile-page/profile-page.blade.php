@@ -1,5 +1,5 @@
 <x-partials.account-shell active="profile">
-    <div class="w-full max-w-2xl space-y-10">
+    <div class="w-full max-w-4xl space-y-10">
         <x-page-header
             title="{{ __('account.profile.title') }}"
             subtitle="{{ __('account.profile.greeting', ['name' => auth()->user()->name]) }} {{ __('account.profile.subtitle') }}"

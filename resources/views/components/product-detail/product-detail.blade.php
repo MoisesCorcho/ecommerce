@@ -377,7 +377,7 @@
 
             {{-- Error message --}}
             @if ($errorMessage)
-                <div class="rounded-lg border border-error/20 bg-error/5 px-4 py-3 text-sm text-error" role="alert" data-add-error>
+                <div class="rounded-none border border-error/20 bg-error/5 px-4 py-3 text-sm text-error" role="alert" data-add-error>
                     {{ $errorMessage }}
                 </div>
             @endif
@@ -431,11 +431,9 @@
                     </p>
                 @endif
             </div>
-        </div>
-
-        <div class="grid items-start gap-10 lg:grid-cols-[1.2fr_1fr]">
-            {{-- Public approved list --}}
-            <div class="space-y-6" data-approved-reviews>
+             <div class="grid items-start gap-10 lg:grid-cols-[1.2fr_1fr]">
+            {{-- Public approved list (order-2 on mobile/tablet, order-1 on desktop) --}}
+            <div class="order-2 space-y-6 lg:order-1" data-approved-reviews>
                 @forelse ($approvedReviews as $review)
                     <article class="bg-surface-container p-5 shadow-sm" wire:key="review-{{ $review->id }}">
                         <div class="mb-2 flex flex-wrap items-center gap-2">
@@ -474,16 +472,16 @@
                     </p>
                 @endforelse
                 @if ($totalPages > 1)
-                    <nav class="mt-6 flex items-center justify-center gap-1" aria-label="{{ __('reviews.ui.pagination') }}">
+                    <nav class="mt-6 flex items-center justify-center gap-1.5" aria-label="{{ __('reviews.ui.pagination') }}">
                         @if ($reviewsPage > 1)
                             <button
                                 type="button"
                                 wire:click="goToReviewsPage({{ $reviewsPage - 1 }})"
-                                class="h-9 border border-intense-cocoa/20 px-3 text-xs font-semibold uppercase tracking-widest text-intense-cocoa/70 transition-all duration-200 hover:border-intense-cocoa hover:text-intense-cocoa"
+                                class="flex h-9 w-9 items-center justify-center border border-intense-cocoa bg-transparent text-xs font-semibold uppercase tracking-widest text-intense-cocoa transition-all duration-200 hover:border-soft-gold hover:text-soft-gold focus:outline-none"
                                 aria-label="{{ __('reviews.ui.previous_page') }}"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+                                    <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 0 1-.02 1.06L8.832 10l3.938 3.71a.75.75 0 1 1-1.04 1.08l-4.5-4.25a.75.75 0 0 1 0-1.08l4.5-4.25a.75.75 0 0 1 1.06.02Z" clip-rule="evenodd" />
                                 </svg>
                             </button>
                         @endif
@@ -492,7 +490,7 @@
                             <button
                                 type="button"
                                 wire:click="goToReviewsPage({{ $i }})"
-                                class="flex h-9 w-9 items-center justify-center border text-xs font-semibold uppercase tracking-widest transition-all duration-200 focus:outline-none {{ $reviewsPage === $i ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-intense-cocoa/20 bg-transparent text-intense-cocoa/60 hover:border-intense-cocoa hover:text-intense-cocoa' }}"
+                                class="flex h-9 w-9 items-center justify-center border text-xs font-semibold uppercase tracking-widest transition-all duration-200 focus:outline-none {{ $reviewsPage === $i ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-intense-cocoa bg-transparent text-intense-cocoa hover:border-soft-gold hover:text-soft-gold' }}"
                                 aria-current="{{ $reviewsPage === $i ? 'page' : false }}"
                             >
                                 {{ $i }}
@@ -503,11 +501,11 @@
                             <button
                                 type="button"
                                 wire:click="goToReviewsPage({{ $reviewsPage + 1 }})"
-                                class="h-9 border border-intense-cocoa/20 px-3 text-xs font-semibold uppercase tracking-widest text-intense-cocoa/70 transition-all duration-200 hover:border-intense-cocoa hover:text-intense-cocoa"
+                                class="flex h-9 w-9 items-center justify-center border border-intense-cocoa bg-transparent text-xs font-semibold uppercase tracking-widest text-intense-cocoa transition-all duration-200 hover:border-soft-gold hover:text-soft-gold focus:outline-none"
                                 aria-label="{{ __('reviews.ui.next_page') }}"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                    <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 0 1 .02-1.06L11.168 10 7.23 6.29a.75.75 0 1 1 1.04-1.08l4.5 4.25a.75.75 0 0 1 0 1.08l-4.5 4.25a.75.75 0 0 1-1.06-.02Z" clip-rule="evenodd" />
                                 </svg>
                             </button>
                         @endif
@@ -515,8 +513,8 @@
                 @endif
             </div>
 
-            {{-- Viewer form / notices --}}
-            <div class="bg-surface-container p-6 shadow-sm" data-review-form>
+            {{-- Viewer form / notices (order-1 on mobile/tablet, order-2 on desktop) --}}
+            <div class="order-1 bg-surface-container p-6 shadow-sm lg:order-2" data-review-form>
                 @auth
                     @if ($canCreateReview || $canEditReview)
                         <h3 class="mb-4 font-[family-name:var(--font-chillax)] text-lg font-semibold text-intense-cocoa">
@@ -524,7 +522,7 @@
                         </h3>
 
                         @if ($viewerReview && ! $viewerReview->is_approved)
-                            <p class="mb-4 rounded-sm border border-soft-gold/40 bg-soft-sand/60 px-3 py-2 text-sm text-intense-cocoa/80" data-review-pending>
+                            <p class="mb-4 rounded-none border border-soft-gold/40 bg-soft-sand/60 px-3 py-2 text-sm text-intense-cocoa/80" data-review-pending>
                                 {{ __('reviews.ui.pending_notice') }}
                             </p>
                         @endif
@@ -566,10 +564,10 @@
                                 @enderror
                             </div>
 
-                            <div class="flex flex-wrap gap-3">
+                            <div class="flex flex-col items-center justify-center gap-3 pt-2 sm:flex-row">
                                 <button
                                     type="submit"
-                                    class="h-11 bg-intense-cocoa px-5 text-sm font-semibold text-silk-cream transition-colors hover:bg-intense-cocoa/90 focus:outline-none"
+                                    class="h-11 w-full min-w-[180px] bg-intense-cocoa px-5 text-xs font-semibold uppercase tracking-wider text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa focus:outline-none sm:w-auto"
                                     wire:loading.attr="disabled"
                                 >
                                     {{ $canEditReview ? __('reviews.actions.update') : __('reviews.actions.submit') }}
@@ -580,7 +578,7 @@
                                         type="button"
                                         wire:click="deleteReview"
                                         wire:confirm="{{ __('reviews.ui.delete_confirm') }}"
-                                        class="h-11 border border-intense-cocoa/30 px-5 text-sm font-medium text-intense-cocoa transition-colors hover:border-error hover:text-error focus:outline-none"
+                                        class="h-11 w-full min-w-[180px] border border-error/50 px-5 text-xs font-semibold uppercase tracking-wider text-error transition-colors duration-200 hover:border-error hover:bg-error hover:text-silk-cream focus:outline-none sm:w-auto"
                                     >
                                         {{ __('reviews.actions.delete_own') }}
                                     </button>
@@ -604,7 +602,7 @@
                     </p>
                 @endif
                 @if ($reviewErrorMessage)
-                    <p class="mt-4 rounded-sm border border-error/20 bg-error/5 px-3 py-2 text-sm text-error" role="alert" data-review-error>
+                    <p class="mt-4 rounded-none border border-error/20 bg-error/5 px-3 py-2 text-sm text-error" role="alert" data-review-error>
                         {{ $reviewErrorMessage }}
                     </p>
                 @endif

@@ -55,12 +55,13 @@ Este documento guía la verificación manual paso a paso de todos los flujos de 
 
 ### Módulo 2: Carrito y Promociones (Cupones)
 
-- [ ] **2.1. Carrito (`/cart`)**:
-  - [ ] **1. Agregar al Carrito**: Añadir un producto desde la PDP y navegar a `/cart` para verificar su presencia.
-  - [ ] **2. Modificar Cantidad**: Incrementar y decrementar unidades comprobando la actualización del subtotal.
-  - [ ] **3. Eliminar Producto**: Hacer clic en el botón de eliminar ítem y comprobar que la lista y totales se recalculen.
-  - [ ] **4. Edge Case (Límite máximo)**: Intentar subir la cantidad por encima de 99 unidades (debe limitar a 99).
-  - [ ] **5. Edge Case (Límite de Stock)**: Intentar solicitar más unidades del stock disponible en la base de datos (debe mostrar mensaje de advertencia).
+- [x] **2.1. Carrito (`/cart`)**:
+  - [x] **1. Agregar al Carrito**: Añadir un producto desde la PDP y navegar a `/cart` para verificar su presencia.
+  - [x] **2. Modificar Cantidad**: Incrementar y decrementar unidades comprobando la actualización del subtotal.
+  - [x] **3. Eliminar Producto**: Hacer clic en el botón de eliminar ítem y comprobar que la lista y totales se recalculen.
+  - [x] **4. Edge Case (Límite máximo)**: Intentar subir la cantidad por encima de 99 unidades (debe limitar a 99).
+  - [x] **5. Edge Case (Límite de Stock)**: Intentar solicitar más unidades del stock disponible en la base de datos (debe mostrar mensaje de advertencia).
+  - [x] **6. Edge Case (Cantidad mínima)**: Intentar disminuir la cantidad de productos a menos de 1 unidad (no debe ser posible).
 
 - [ ] **2.2. Aplicación de Cupones**:
   - [ ] **1. Cupón Válido**: Ingresar un código promocional activo y comprobar que el descuento se reste correctamente en el resumen.

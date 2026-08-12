@@ -43,7 +43,7 @@
 
             {{-- Brand logo (centered) --}}
             <a href="{{ url('/') }}" class="absolute left-1/2 -translate-x-1/2">
-                <img src="/images/logos/leen-brown.png" alt="{{ config('app.name', 'Leen') }}" class="h-8 w-auto lg:h-10">
+                <img src="/images/logos/leen-brown.png" alt="{{ config('app.name', 'Leen') }}" class="h-10 w-auto">
             </a>
 
             {{-- Trailing icons — right side --}}
@@ -74,27 +74,38 @@
             </div>
         </div>
 
-        {{-- Mobile nav drawer --}}
-        <nav class="border-t border-intense-cocoa/10 lg:hidden" x-show="open" x-cloak aria-label="Mobile">
-            <div class="mx-auto flex max-w-storefront flex-col gap-3 px-margin-mobile py-4">
-                <a href="{{ url('/') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
+        {{-- Floating mobile navigation dropdown --}}
+        <nav
+            x-show="open"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 -translate-y-2"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 -translate-y-2"
+            class="absolute top-full left-0 right-0 z-50 border-b border-intense-cocoa/10 bg-soft-sand shadow-lg lg:hidden"
+            x-cloak
+            aria-label="Mobile"
+        >
+            <div class="mx-auto flex max-w-storefront flex-col gap-4 px-margin-mobile py-5">
+                <a href="{{ url('/') }}" x-on:click="open = false" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
                     {{ __('storefront.nav.home') }}
                 </a>
-                <a href="{{ route('products.index') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
+                <a href="{{ route('products.index') }}" x-on:click="open = false" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
                     {{ __('storefront.nav.shop') }}
                 </a>
-                <a href="{{ url('/about-us') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
+                <a href="{{ url('/about-us') }}" x-on:click="open = false" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
                     {{ __('storefront.nav.about') }}
                 </a>
-                <a href="{{ route('contact') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
+                <a href="{{ route('contact') }}" x-on:click="open = false" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
                     {{ __('storefront.nav.contact') }}
                 </a>
                 @guest
-                    <a href="{{ route('login') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
+                    <a href="{{ route('login') }}" x-on:click="open = false" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
                         {{ __('storefront.nav.login') }}
                     </a>
                 @else
-                    <a href="{{ Route::has('profile') ? route('profile') : url('/') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
+                    <a href="{{ Route::has('profile') ? route('profile') : url('/') }}" x-on:click="open = false" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
                         {{ __('storefront.nav.account') }}
                     </a>
                 @endguest
