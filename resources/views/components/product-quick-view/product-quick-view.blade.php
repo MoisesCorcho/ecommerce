@@ -33,7 +33,7 @@
                     type="button"
                     wire:click="closeModal"
                     aria-label="{{ __('storefront.products.close_lightbox') }}"
-                    class="absolute top-4 right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-soft-sand/80 text-intense-cocoa transition-colors hover:bg-soft-gold hover:text-intense-cocoa focus:outline-none"
+                    class="absolute top-4 right-4 z-20 flex h-9 w-9 items-center justify-center bg-soft-sand text-intense-cocoa transition-colors hover:bg-soft-gold hover:text-intense-cocoa focus:outline-none"
                 >
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
