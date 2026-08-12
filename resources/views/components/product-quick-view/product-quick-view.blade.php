@@ -28,12 +28,12 @@
                 class="relative z-10 my-auto flex max-h-[90vh] w-full max-w-4xl flex-col overflow-y-auto border border-soft-sand bg-silk-cream p-6 shadow-2xl sm:p-8"
                 x-on:click.outside="$wire.closeModal()"
             >
-                {{-- Close Button --}}
+                {{-- Close Button (44px WCAG Touch Target) --}}
                 <button
                     type="button"
                     wire:click="closeModal"
-                    aria-label="{{ __('storefront.products.close_lightbox') }}"
-                    class="absolute top-4 right-4 z-20 flex h-9 w-9 items-center justify-center bg-soft-sand text-intense-cocoa transition-colors hover:bg-soft-gold hover:text-intense-cocoa focus:outline-none"
+                    aria-label="{{ __('storefront.shop.close_filters') }}"
+                    class="absolute top-4 right-4 z-20 flex h-11 w-11 items-center justify-center bg-intense-cocoa text-silk-cream transition-colors hover:bg-error hover:text-white focus:outline-none"
                 >
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -145,64 +145,71 @@
                             </p>
                         @endif
 
-                        {{-- Color Selector (With Checkmark SVG matching Product Detail) --}}
-                        @if ($availableColors->count() > 0)
-                            <div>
-                                <p class="mb-2.5 text-sm font-medium text-intense-cocoa">
-                                    {{ __('storefront.products.color_label') }}:
-                                    <span class="font-normal text-intense-cocoa/60">{{ $selectedColor }}</span>
-                                </p>
-                                <div class="flex flex-wrap gap-2.5" role="radiogroup" aria-label="{{ __('storefront.products.color_label') }}">
-                                    @foreach ($availableColors as $colorName)
-                                        @php
-                                            $hex = ColorMap::HEX[strtolower($colorName)] ?? '#8B8B8B';
-                                            $isSelected = $selectedColor === $colorName;
-                                        @endphp
-                                        <button
-                                            type="button"
-                                            wire:click="$set('selectedColor', '{{ $colorName }}')"
-                                            role="radio"
-                                            aria-checked="{{ $isSelected ? 'true' : 'false' }}"
-                                            aria-label="{{ $colorName }}"
-                                            title="{{ $colorName }}"
-                                            class="relative h-9 w-9 border border-intense-cocoa/20 transition-all hover:ring-2 hover:ring-soft-gold hover:ring-offset-2 focus:outline-none {{ $isSelected ? 'border-intense-cocoa ring-2 ring-intense-cocoa ring-offset-2' : '' }}"
-                                            style="background-color: {{ $hex }}"
-                                        >
-                                            @if ($isSelected)
-                                                <span class="absolute inset-0 flex items-center justify-center">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4 text-soft-gold">
-                                                        <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd" />
-                                                    </svg>
-                                                </span>
-                                            @endif
-                                        </button>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
+                        {{-- Grouped Variant Specifications Card (Chunked UI Layout) --}}
+                        @if ($availableColors->count() > 0 || $availableSizes->count() > 0)
+                            <div class="flex flex-col gap-4 border border-soft-sand/60 bg-soft-sand/20 p-4">
+                                {{-- Color Selector (With Checkmark SVG & 44px Touch Target) --}}
+                                @if ($availableColors->count() > 0)
+                                    <div>
+                                        <p class="mb-2 text-sm font-medium text-intense-cocoa">
+                                            {{ __('storefront.products.color_label') }}:
+                                            <span class="font-normal text-intense-cocoa/60">{{ $selectedColor }}</span>
+                                        </p>
+                                        <div class="flex flex-wrap gap-2.5" role="radiogroup" aria-label="{{ __('storefront.products.color_label') }}">
+                                            @foreach ($availableColors as $colorName)
+                                                @php
+                                                    $hex = ColorMap::HEX[strtolower($colorName)] ?? '#8B8B8B';
+                                                    $isSelected = $selectedColor === $colorName;
+                                                @endphp
+                                                <button
+                                                    type="button"
+                                                    wire:click="$set('selectedColor', '{{ $colorName }}')"
+                                                    wire:loading.attr="disabled"
+                                                    role="radio"
+                                                    aria-checked="{{ $isSelected ? 'true' : 'false' }}"
+                                                    aria-label="{{ $colorName }}"
+                                                    title="{{ $colorName }}"
+                                                    class="relative h-11 w-11 border border-intense-cocoa/20 transition-all hover:ring-2 hover:ring-soft-gold hover:ring-offset-2 focus:outline-none disabled:opacity-50 {{ $isSelected ? 'border-intense-cocoa ring-2 ring-intense-cocoa ring-offset-2' : '' }}"
+                                                    style="background-color: {{ $hex }}"
+                                                >
+                                                    @if ($isSelected)
+                                                        <span class="absolute inset-0 flex items-center justify-center">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4 text-soft-gold">
+                                                                <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd" />
+                                                            </svg>
+                                                        </span>
+                                                    @endif
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
 
-                        {{-- Size Selector (Matching Product Detail) --}}
-                        @if ($availableSizes->count() > 0)
-                            <div>
-                                <p class="mb-2.5 text-sm font-medium text-intense-cocoa">
-                                    {{ __('storefront.products.size_label') }}
-                                </p>
-                                <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="{{ __('storefront.products.size_label') }}">
-                                    @foreach ($availableSizes as $sizeName)
-                                        @php
-                                            $isSelected = $selectedSize === $sizeName;
-                                        @endphp
-                                        <button
-                                            type="button"
-                                            wire:click="$set('selectedSize', '{{ $sizeName }}')"
-                                            role="radio"
-                                            aria-checked="{{ $isSelected ? 'true' : 'false' }}"
-                                            class="min-h-[44px] min-w-[44px] border px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none {{ $isSelected ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-transparent bg-soft-sand text-intense-cocoa hover:border-intense-cocoa' }}"
-                                        >
-                                            {{ $sizeName }}
-                                        </button>
-                                    @endforeach
-                                </div>
+                                {{-- Size Selector (Matching Product Detail) --}}
+                                @if ($availableSizes->count() > 0)
+                                    <div>
+                                        <p class="mb-2 text-sm font-medium text-intense-cocoa">
+                                            {{ __('storefront.products.size_label') }}
+                                        </p>
+                                        <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="{{ __('storefront.products.size_label') }}">
+                                            @foreach ($availableSizes as $sizeName)
+                                                @php
+                                                    $isSelected = $selectedSize === $sizeName;
+                                                @endphp
+                                                <button
+                                                    type="button"
+                                                    wire:click="$set('selectedSize', '{{ $sizeName }}')"
+                                                    wire:loading.attr="disabled"
+                                                    role="radio"
+                                                    aria-checked="{{ $isSelected ? 'true' : 'false' }}"
+                                                    class="min-h-[44px] min-w-[44px] border px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none disabled:opacity-50 {{ $isSelected ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-transparent bg-soft-sand text-intense-cocoa hover:border-intense-cocoa' }}"
+                                                >
+                                                    {{ $sizeName }}
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         @endif
 
@@ -217,9 +224,9 @@
                             </p>
                         @endif
 
-                        {{-- Errors / Status Messages --}}
+                        {{-- Errors / Status Messages (Brand Error Token) --}}
                         @if ($errorMessage)
-                            <div class="border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+                            <div class="border border-error/30 bg-error/10 p-3 text-xs font-medium text-error" role="alert">
                                 {{ $errorMessage }}
                             </div>
                         @endif
@@ -277,7 +284,7 @@
                             </div>
                         @endif
 
-                        {{-- Action buttons (Matching Product Detail) --}}
+                        {{-- Action buttons (With Loading Feedback) --}}
                         <div class="flex flex-col gap-3 pt-2">
                             @php
                                 $canAddToCart = $selectedVariant && $selectedVariant->stock > 0 && $availableStock > 0;
@@ -288,21 +295,41 @@
                                 <x-primary-button
                                     type="button"
                                     wire:click="addToCart"
+                                    wire:loading.attr="disabled"
                                     class="w-full focus:outline-none disabled:bg-intense-cocoa/40 disabled:hover:bg-intense-cocoa/40 disabled:hover:text-silk-cream"
                                     aria-label="{{ $product->is_preorder ? __('storefront.products.add_to_cart_preorder') : __('storefront.products.add_to_cart') }}"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mr-2 h-5 w-5" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.46 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM11.25 10.5h.008v.008h-.008V10.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-                                    </svg>
-                                    {{ $product->is_preorder ? __('storefront.products.add_to_cart_preorder') : __('storefront.products.add_to_cart') }}
+                                    <span wire:loading.remove wire:target="addToCart" class="inline-flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mr-2 h-5 w-5" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.46 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM11.25 10.5h.008v.008h-.008V10.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                                        </svg>
+                                        {{ $product->is_preorder ? __('storefront.products.add_to_cart_preorder') : __('storefront.products.add_to_cart') }}
+                                    </span>
+                                    <span wire:loading wire:target="addToCart" class="inline-flex items-center gap-2">
+                                        <svg class="h-4 w-4 animate-spin text-silk-cream" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        {{ __('storefront.adding_to_cart') }}
+                                    </span>
                                 </x-primary-button>
                                 <x-secondary-button
                                     type="button"
                                     wire:click="buyNow"
+                                    wire:loading.attr="disabled"
                                     class="w-full"
                                     aria-label="{{ __('storefront.products.buy_now') }}"
                                 >
-                                    {{ __('storefront.products.buy_now') }}
+                                    <span wire:loading.remove wire:target="buyNow">
+                                        {{ __('storefront.products.buy_now') }}
+                                    </span>
+                                    <span wire:loading wire:target="buyNow" class="inline-flex items-center gap-2">
+                                        <svg class="h-4 w-4 animate-spin text-intense-cocoa" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        {{ __('storefront.adding_to_cart') }}
+                                    </span>
                                 </x-secondary-button>
                             @else
                                 <x-primary-button
@@ -322,7 +349,8 @@
                             <button
                                 type="button"
                                 wire:click="toggleFavorite"
-                                class="flex h-12 w-full cursor-pointer items-center justify-center border border-soft-gold text-sm font-medium text-intense-cocoa transition-colors duration-200 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none"
+                                wire:loading.attr="disabled"
+                                class="flex h-12 w-full cursor-pointer items-center justify-center border border-soft-gold text-sm font-medium text-intense-cocoa transition-colors duration-200 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none disabled:opacity-50"
                                 aria-label="{{ $isFavorited ? __('storefront.products.remove_from_favorites_label') : __('storefront.products.add_to_favorites_label') }}"
                             >
                                 <svg
@@ -337,13 +365,16 @@
                                 {{ $isFavorited ? __('storefront.products.remove_from_favorites_label') : __('storefront.products.add_to_favorites_label') }}
                             </button>
 
-                            {{-- View full details link --}}
+                            {{-- View full details link with SVG Arrow --}}
                             <div class="mt-1 text-center">
                                 <a
                                     href="{{ route('products.show', $product->slug) }}"
-                                    class="text-xs font-semibold uppercase tracking-wider text-intense-cocoa/70 underline underline-offset-4 transition-colors hover:text-soft-gold"
+                                    class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-intense-cocoa/70 underline underline-offset-4 transition-colors hover:text-soft-gold"
                                 >
-                                    {{ __('storefront.products.view_full_details') }} &rarr;
+                                    <span>{{ __('storefront.products.view_full_details') }}</span>
+                                    <svg class="h-3.5 w-3.5 text-intense-cocoa/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                    </svg>
                                 </a>
                             </div>
                         </div>
