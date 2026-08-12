@@ -26,7 +26,7 @@ return [
         'breadcrumb_cart' => 'Carrito',
         'currency_label' => 'Moneda',
         'clear_cart' => 'Vaciar carrito',
-        'clear_cart_confirm' => '¿Vaciar todo el carrito?',
+        'clear_cart_confirm' => 'Todos los productos agregados se eliminarán del carrito, ¿estás seguro?',
         'clear_cart_cancel' => 'Cancelar',
     ],
 

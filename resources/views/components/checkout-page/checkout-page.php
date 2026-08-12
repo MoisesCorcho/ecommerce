@@ -137,6 +137,7 @@ new #[Layout('layouts.storefront')] class extends Component
         // Guest checkout (Auth::check() === false) is intentionally not gated here.
         if (Auth::check() && ! Auth::user()->hasVerifiedEmail()) {
             $this->errorMessage = __('auth.verify_email_required');
+            $this->addError('email', __('auth.verify_email_required'));
 
             return null;
         }

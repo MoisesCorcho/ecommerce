@@ -45,7 +45,7 @@
                 </x-secondary-button>
             </div>
         @else
-            <div class="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4" data-wishlist-grid>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4" data-wishlist-grid>
                 @foreach ($items as $item)
                     @php
                         $variant = $item['variant'];
@@ -84,16 +84,10 @@
                                         {{ __('storefront.products.size_label') }}: {{ $variant->size }}
                                     @endif
                                 </p>
-                            @endif
-
-                            @if (! $isAvailable)
+                            @elseif (! $isAvailable)
                                 <p class="text-xs text-intense-cocoa/50">
                                     {{ __('storefront.wishlist.unavailable_message') }}
                                     <a href="{{ route('products.index') }}" class="underline underline-offset-2 hover:text-intense-cocoa">{{ __('storefront.wishlist.explore_similar') }}</a>
-                                </p>
-                            @elseif ($isOutOfStock)
-                                <p class="text-xs text-intense-cocoa/50">
-                                    {{ __('storefront.wishlist.out_of_stock_message') }}
                                 </p>
                             @endif
                         </x-slot:variantInfo>
@@ -128,11 +122,7 @@
                 @endforeach
             </div>
 
-            @if ($items->hasPages())
-                <div class="mt-12">
-                    {{ $items->links('vendor.pagination.custom') }}
-                </div>
-            @endif
+            <x-pagination :paginator="$items" class="mt-12" />
         @endif
     </div>
 </div>

@@ -1,5 +1,5 @@
 <x-partials.account-shell active="orders">
-    <div class="w-full max-w-3xl space-y-8">
+    <div class="w-full max-w-4xl space-y-8">
         <div>
             <h1 class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
                 {{ __('account.orders.title') }}
@@ -43,6 +43,6 @@
             @endforelse
         </div>
 
-        {{ $orders->links() }}
+        <x-pagination :paginator="$orders" class="mt-8" />
     </div>
 </x-partials.account-shell>

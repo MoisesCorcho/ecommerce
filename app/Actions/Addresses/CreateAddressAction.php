@@ -48,6 +48,11 @@ class CreateAddressAction
     {
         $errors = [];
 
+        $existingCount = Address::query()->where('user_id', $dto->userId)->count();
+        if ($existingCount >= 4) {
+            $errors['max_limit'] = __('addresses.validation.max_limit_reached');
+        }
+
         if ($dto->fullName === '') {
             $errors['full_name'] = __('addresses.validation.full_name_required');
         }

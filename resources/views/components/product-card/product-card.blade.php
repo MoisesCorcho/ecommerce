@@ -24,7 +24,7 @@
     $availableColors = $availableColors ?? $product->availableColors();
 @endphp
 
-<article {{ $attributes->merge(['class' => 'group relative flex flex-col bg-surface-container transition-shadow duration-300 ease-out hover:shadow-ambient']) }}>
+<article {{ $attributes->merge(['class' => 'group relative flex flex-col h-full bg-surface-container transition-shadow duration-300 ease-out hover:shadow-ambient']) }}>
     {{-- Image --}}
     <div class="relative w-full aspect-[4/5] bg-surface-container overflow-hidden mb-2">
         <a href="{{ $detailUrl }}" class="block h-full">
@@ -99,16 +99,18 @@
     </div>
 
     {{-- Text content --}}
-    <div class="flex flex-col gap-1.5 px-6 pb-6 pt-4 {{ (! $isAvailable || $isOutOfStock) ? 'opacity-60' : '' }}">
+    <div class="flex flex-col flex-1 gap-1.5 px-6 pb-6 pt-4 {{ (! $isAvailable || $isOutOfStock) ? 'opacity-60' : '' }}">
         @if ($product->category)
             <span class="text-xs font-semibold uppercase tracking-wider text-intense-cocoa/50">
                 {{ $product->category->name }}
             </span>
         @endif
 
-        <h3 class="font-headline-sm text-xl text-intense-cocoa line-clamp-2">
-            <a href="{{ $detailUrl }}">{{ $product->name }}</a>
-        </h3>
+        <div class="h-14 flex items-start overflow-hidden">
+            <h3 class="font-headline-sm text-xl text-intense-cocoa leading-snug">
+                <a href="{{ $detailUrl }}" class="line-clamp-2">{{ $product->name }}</a>
+            </h3>
+        </div>
 
         {{-- Variant info slot --}}
         @if (isset($variantInfo))
@@ -138,7 +140,7 @@
 
         {{-- Custom actions slot --}}
         @if (isset($actions))
-            <div class="mt-3">
+            <div class="mt-auto pt-3">
                 {{ $actions }}
             </div>
         @endif

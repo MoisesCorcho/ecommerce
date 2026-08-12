@@ -20,81 +20,92 @@
         <div class="relative mx-auto flex max-w-storefront items-center justify-between px-margin-mobile py-5 lg:px-margin-desktop">
             {{-- Navigation links (desktop) — left side --}}
             <nav class="hidden flex-1 lg:flex items-center gap-8" aria-label="Primary">
-                <a href="{{ url('/') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
+                <a href="{{ url('/') }}" class="text-xs font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
                     {{ __('storefront.nav.home') }}
                 </a>
-                <a href="{{ route('products.index') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
+                <a href="{{ route('products.index') }}" class="text-xs font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
                     {{ __('storefront.nav.shop') }}
                 </a>
-                <a href="{{ url('/about-us') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
+                <a href="{{ url('/about-us') }}" class="text-xs font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
                     {{ __('storefront.nav.about') }}
                 </a>
-                <a href="{{ route('contact') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
+                <a href="{{ route('contact') }}" class="text-xs font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
                     {{ __('storefront.nav.contact') }}
                 </a>
             </nav>
 
             {{-- Mobile hamburger --}}
             <button type="button" class="text-intense-cocoa lg:hidden" x-on:click="open = !open" :aria-expanded="open" aria-label="{{ __('storefront.nav.menu_toggle') }}">
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <svg class="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                 </svg>
             </button>
 
             {{-- Brand logo (centered) --}}
-            <a href="{{ url('/') }}" class="absolute left-1/2 -translate-x-1/2">
-                <img src="/images/logos/leen-brown.png" alt="{{ config('app.name', 'Leen') }}" class="h-8 w-auto lg:h-10">
+            <a href="{{ url('/') }}" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                <img src="/images/logos/leen-brown.png" alt="{{ config('app.name', 'Leen') }}" class="h-[2.625rem] w-auto sm:h-11 lg:h-12">
             </a>
 
             {{-- Trailing icons — right side --}}
-            <div class="flex flex-1 justify-end items-center gap-4 text-intense-cocoa">
+            <div class="flex flex-1 justify-end items-center gap-3 sm:gap-5 text-intense-cocoa">
                 <a href="{{ route('wishlist') }}" class="transition-colors duration-300 hover:text-soft-gold" aria-label="{{ __('storefront.nav.favorites') }}">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                    <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                     </svg>
                 </a>
                 @guest
                     <a href="{{ route('login') }}" class="transition-colors duration-300 hover:text-soft-gold" aria-label="{{ __('storefront.nav.login') }}">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                         </svg>
                     </a>
                 @else
                     <a href="{{ Route::has('profile') ? route('profile') : url('/') }}" class="transition-colors duration-300 hover:text-soft-gold" aria-label="{{ __('storefront.nav.account') }}">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                         </svg>
                     </a>
                 @endguest
                 <a href="{{ route('cart.page') }}" class="relative transition-colors duration-300 hover:text-soft-gold" aria-label="{{ __('storefront.nav.bag') }}">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                    <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.46 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z" />
                     </svg>
                 </a>
             </div>
         </div>
 
-        {{-- Mobile nav drawer --}}
-        <nav class="border-t border-intense-cocoa/10 lg:hidden" x-show="open" x-cloak aria-label="Mobile">
-            <div class="mx-auto flex max-w-storefront flex-col gap-3 px-margin-mobile py-4">
-                <a href="{{ url('/') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
+        {{-- Floating mobile navigation dropdown --}}
+        <nav
+            x-show="open"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 -translate-y-2"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 -translate-y-2"
+            class="absolute top-full left-0 right-0 z-50 border-b border-intense-cocoa/10 bg-soft-sand shadow-lg lg:hidden"
+            x-cloak
+            aria-label="Mobile"
+        >
+            <div class="mx-auto flex max-w-storefront flex-col gap-4 px-margin-mobile py-5">
+                <a href="{{ url('/') }}" x-on:click="open = false" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
                     {{ __('storefront.nav.home') }}
                 </a>
-                <a href="{{ route('products.index') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
+                <a href="{{ route('products.index') }}" x-on:click="open = false" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
                     {{ __('storefront.nav.shop') }}
                 </a>
-                <a href="{{ url('/about-us') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
+                <a href="{{ url('/about-us') }}" x-on:click="open = false" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
                     {{ __('storefront.nav.about') }}
                 </a>
-                <a href="{{ route('contact') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
+                <a href="{{ route('contact') }}" x-on:click="open = false" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
                     {{ __('storefront.nav.contact') }}
                 </a>
                 @guest
-                    <a href="{{ route('login') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
+                    <a href="{{ route('login') }}" x-on:click="open = false" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
                         {{ __('storefront.nav.login') }}
                     </a>
                 @else
-                    <a href="{{ Route::has('profile') ? route('profile') : url('/') }}" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
+                    <a href="{{ Route::has('profile') ? route('profile') : url('/') }}" x-on:click="open = false" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
                         {{ __('storefront.nav.account') }}
                     </a>
                 @endguest

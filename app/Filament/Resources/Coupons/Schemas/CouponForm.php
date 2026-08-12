@@ -62,10 +62,10 @@ final class CouponForm
                                 ->numeric()
                                 ->required()
                                 ->minValue(1)
-                                ->maxValue(fn (Get $get): ?int => $get('type') === CouponTypeEnum::Percentage->value
+                                ->maxValue(fn (Get $get): int => $get('type') === CouponTypeEnum::Percentage->value
                                     || $get('type') === CouponTypeEnum::Percentage
                                     ? 100
-                                    : null)
+                                    : 4294967295)
                                 ->helperText(fn (Get $get): string => (
                                     $get('type') === CouponTypeEnum::Fixed->value
                                     || $get('type') === CouponTypeEnum::Fixed
@@ -98,6 +98,7 @@ final class CouponForm
                                 ->label(__('coupons.fields.min_order_amount'))
                                 ->numeric()
                                 ->minValue(1)
+                                ->maxValue(4294967295)
                                 ->nullable()
                                 ->helperText(__('coupons.helpers.min_order'))
                                 ->columnSpan(1),
@@ -120,6 +121,7 @@ final class CouponForm
                                 ->label(__('coupons.fields.usage_limit'))
                                 ->numeric()
                                 ->minValue(1)
+                                ->maxValue(4294967295)
                                 ->nullable()
                                 ->helperText(__('coupons.helpers.usage_limit'))
                                 ->placeholder(__('coupons.placeholders.unlimited'))
@@ -128,6 +130,7 @@ final class CouponForm
                                 ->label(__('coupons.fields.usage_limit_per_user'))
                                 ->numeric()
                                 ->minValue(1)
+                                ->maxValue(4294967295)
                                 ->nullable()
                                 ->helperText(__('coupons.helpers.usage_limit_per_user'))
                                 ->placeholder(__('coupons.placeholders.unlimited'))

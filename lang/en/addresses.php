@@ -71,5 +71,6 @@ return [
         'city_required' => 'City is required.',
         'state_required' => 'State or department is required.',
         'country_invalid' => 'Country must be a 2-letter ISO code.',
+        'max_limit_reached' => 'You have reached the maximum limit of 4 saved addresses.',
     ],
 ];

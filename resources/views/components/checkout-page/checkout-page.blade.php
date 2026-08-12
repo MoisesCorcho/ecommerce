@@ -45,12 +45,7 @@
             </li>
         </ol>
 
-        {{-- Domain-error banner (R8) --}}
-        @if ($errorMessage)
-            <p class="mb-4 border border-error/20 bg-error/5 px-4 py-3 text-sm text-error" data-checkout-error role="alert">
-                {{ $errorMessage }}
-            </p>
-        @endif
+
 
         @if ($preview)
             <div class="grid gap-8 lg:grid-cols-[1.6fr_1fr] lg:gap-12">
@@ -95,32 +90,71 @@
                             <div class="mb-5 grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="{{ __('orders.checkout.address_title') }}">
                                 <label class="relative flex cursor-pointer">
                                     <input type="radio" wire:model.live="addressMode" value="saved" class="peer sr-only" />
-                                    <span class="flex w-full items-center justify-center border border-intense-cocoa/40 bg-silk-cream px-4 py-3 text-center text-sm font-medium text-intense-cocoa transition-colors peer-checked:border-intense-cocoa peer-checked:bg-intense-cocoa peer-checked:text-silk-cream">
+                                    <span class="flex h-11 w-full items-center justify-center border border-intense-cocoa bg-transparent text-xs font-semibold uppercase tracking-wider text-intense-cocoa transition-all duration-200 hover:border-soft-gold hover:text-soft-gold peer-checked:border-soft-gold peer-checked:bg-soft-sand peer-checked:text-intense-cocoa focus:outline-none">
                                         {{ __('orders.actions.use_saved_address') }}
                                     </span>
                                 </label>
                                 <label class="relative flex cursor-pointer">
                                     <input type="radio" wire:model.live="addressMode" value="one_shot" class="peer sr-only" />
-                                    <span class="flex w-full items-center justify-center border border-intense-cocoa/40 bg-silk-cream px-4 py-3 text-center text-sm font-medium text-intense-cocoa transition-colors peer-checked:border-intense-cocoa peer-checked:bg-intense-cocoa peer-checked:text-silk-cream">
+                                    <span class="flex h-11 w-full items-center justify-center border border-intense-cocoa bg-transparent text-xs font-semibold uppercase tracking-wider text-intense-cocoa transition-all duration-200 hover:border-soft-gold hover:text-soft-gold peer-checked:border-soft-gold peer-checked:bg-soft-sand peer-checked:text-intense-cocoa focus:outline-none">
                                         {{ __('orders.actions.use_one_shot_address') }}
                                     </span>
                                 </label>
                             </div>
 
                             @if ($addressMode === 'saved')
-                                <div class="mb-5 grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="{{ __('orders.fields.shipping_address_id') }}">
+                                <div class="mb-5 grid gap-4 sm:grid-cols-2" role="radiogroup" aria-label="{{ __('orders.fields.shipping_address_id') }}">
                                     @foreach (auth()->user()->addresses as $address)
                                         <label class="relative flex cursor-pointer" wire:key="address-option-{{ $address->id }}">
                                             <input type="radio" wire:model.live="shippingAddressId" value="{{ $address->id }}" class="peer sr-only" />
-                                            <span class="flex w-full flex-col gap-1 border border-intense-cocoa/40 bg-silk-cream px-4 py-3 text-sm text-intense-cocoa transition-colors peer-checked:border-intense-cocoa peer-checked:bg-intense-cocoa peer-checked:text-silk-cream">
-                                                <span class="font-medium">{{ $address->label ? $address->label.' · ' : '' }}{{ $address->full_name }}</span>
-                                                <span class="text-xs opacity-80">{{ $address->city }}</span>
-                                            </span>
+                                            <div class="flex w-full flex-col justify-between border border-intense-cocoa/20 bg-soft-sand p-6 text-sm text-intense-cocoa shadow-ambient transition-all duration-200 hover:border-soft-gold peer-checked:border-soft-gold peer-checked:bg-soft-sand peer-checked:ring-1 peer-checked:ring-soft-gold">
+                                                <div>
+                                                    {{-- Top status row: Label badge + Default star --}}
+                                                    <div class="mb-4 flex items-center justify-between gap-2 border-b border-intense-cocoa/10 pb-3">
+                                                        <span class="inline-flex items-center border border-intense-cocoa bg-intense-cocoa px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-silk-cream">
+                                                            {{ $address->label ? strtoupper($address->label) : __('orders.fields.shipping_address_id') }}
+                                                        </span>
+                                                        @if ($address->is_default)
+                                                            <span class="text-xs font-semibold text-soft-gold">
+                                                                ★ {{ __('account.addresses.default_badge') ?? 'Principal' }}
+                                                            </span>
+                                                        @endif
+                                                    </div>
+
+                                                    {{-- Address info --}}
+                                                    <div class="space-y-1.5">
+                                                        <h3 class="font-[family-name:var(--font-chillax)] text-base font-semibold text-intense-cocoa">
+                                                            {{ $address->full_name }}
+                                                        </h3>
+                                                        <p class="text-xs leading-relaxed text-intense-cocoa/80">
+                                                            {{ $address->address_line_1 }}
+                                                            @if ($address->address_line_2)
+                                                                , {{ $address->address_line_2 }}
+                                                            @endif
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                {{-- Bottom details chips --}}
+                                                <div class="mt-4 flex flex-wrap gap-1.5 border-t border-intense-cocoa/10 pt-3">
+                                                    <span class="inline-flex items-center gap-1 border border-intense-cocoa/20 bg-silk-cream/80 px-2.5 py-1 text-xs text-intense-cocoa/80">
+                                                        <span class="font-medium">{{ $address->city }}, {{ $address->state }}</span>
+                                                        @if ($address->postal_code)
+                                                            <span class="text-intense-cocoa/50">({{ $address->postal_code }})</span>
+                                                        @endif
+                                                    </span>
+                                                    @if ($address->phone)
+                                                        <span class="inline-flex items-center gap-1 border border-intense-cocoa/20 bg-silk-cream/80 px-2.5 py-1 text-xs text-intense-cocoa/80">
+                                                            <span class="font-medium">{{ $address->phone }}</span>
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                            </div>
                                         </label>
                                     @endforeach
                                 </div>
                                 @error('shippingAddressId')
-                                    <p class="mb-5 text-sm text-error">{{ $message }}</p>
+                                    <p class="mb-5 text-sm font-semibold text-error">{{ $message }}</p>
                                 @enderror
                             @endif
                         @endauth
@@ -216,8 +250,11 @@
                             </x-secondary-button>
                         </div>
                         @error('couponCode')
-                            <p class="mt-1 text-sm text-error">{{ $message }}</p>
+                            <p class="mt-2 text-sm font-medium text-error">{{ $message }}</p>
                         @enderror
+                        @if ($errorMessage)
+                            <p class="mt-2 text-sm font-medium text-error" data-checkout-coupon-error>{{ $errorMessage }}</p>
+                        @endif
                     </x-section-card.section-card>
 
                     {{-- Notes section (R12) --}}
@@ -305,6 +342,44 @@
                             <span><span class="font-medium text-intense-cocoa">{{ __('orders.checkout.secure_badge') }}:</span> {{ __('orders.checkout.secure_note') }}</span>
                         </p>
                     </x-section-card.section-card>
+
+                    {{-- Coupon success notification displayed immediately below order summary --}}
+                    @if (($preview['discount'] ?? 0) > 0)
+                        <div
+                            class="mt-4 border border-success/40 bg-success/10 p-4 text-sm text-success shadow-sm"
+                            role="status"
+                            data-checkout-coupon-success
+                        >
+                            <div class="flex items-start gap-2.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-success" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
+                                </svg>
+                                <div class="flex-1 font-medium leading-snug">
+                                    {{ __('coupons.ui.applied_successfully') }}
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Error message displayed immediately below order summary --}}
+                    @if ($errorMessage)
+                        <div
+                            x-data="{ show: true }"
+                            x-init="$el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })"
+                            class="mt-4 border border-error/40 bg-error/10 p-4 text-sm text-error shadow-sm"
+                            role="alert"
+                            data-checkout-summary-error
+                        >
+                            <div class="flex items-start gap-2.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 shrink-0 text-error" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clip-rule="evenodd" />
+                                </svg>
+                                <div class="flex-1 font-medium leading-snug">
+                                    {{ $errorMessage }}
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </aside>
             </div>
         @endif

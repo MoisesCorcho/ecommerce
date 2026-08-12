@@ -246,30 +246,48 @@
             {{-- Clear cart confirmation modal --}}
             <x-modal
                 name="confirmingClear"
-                title="{{ __('cart.page.clear_cart') }}"
+                title=""
                 title-id="clear-cart-modal-title"
+                max-width="sm"
                 data-cart-clear-modal
             >
-                <p class="mt-2 text-center text-sm text-intense-cocoa/90">
-                    {{ __('cart.page.clear_cart_confirm') }}
-                </p>
-                <div class="mt-6 flex justify-center gap-3">
-                    <x-primary-button
-                        type="button"
-                        x-on:click="confirmingClear = false"
-                        class="h-10 px-4"
-                    >
-                        {{ __('cart.page.clear_cart_cancel') }}
-                    </x-primary-button>
-                    <x-primary-button
-                        type="button"
-                        wire:click="clearCart"
-                        x-on:click="confirmingClear = false"
-                        class="h-10 px-4"
-                        data-cart-clear-confirm
-                    >
-                        {{ __('cart.page.clear_cart') }}
-                    </x-primary-button>
+                <div class="space-y-5 text-center">
+                    {{-- Warning Icon Badge (Square/rounded-none border) --}}
+                    <div class="mx-auto flex h-12 w-12 items-center justify-center border border-error/30 bg-error/10 text-error">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-6 w-6" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                        </svg>
+                    </div>
+
+                    {{-- Title & Body --}}
+                    <div class="space-y-2">
+                        <h2 id="clear-cart-modal-title" class="font-[family-name:var(--font-chillax)] text-xl font-semibold text-intense-cocoa">
+                            {{ __('cart.page.clear_cart') }}
+                        </h2>
+                        <p class="text-sm leading-relaxed text-intense-cocoa/80">
+                            {{ __('cart.page.clear_cart_confirm') }}
+                        </p>
+                    </div>
+
+                    {{-- Symmetrical Action Buttons Grid --}}
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <button
+                            type="button"
+                            x-on:click="confirmingClear = false"
+                            class="inline-flex h-10 items-center justify-center border border-intense-cocoa text-xs font-semibold uppercase tracking-wider text-intense-cocoa transition-all duration-200 hover:bg-intense-cocoa hover:text-silk-cream"
+                        >
+                            {{ __('cart.page.clear_cart_cancel') }}
+                        </button>
+                        <button
+                            type="button"
+                            wire:click="clearCart"
+                            x-on:click="confirmingClear = false"
+                            class="inline-flex h-10 items-center justify-center border border-error bg-transparent text-xs font-semibold uppercase tracking-wider text-error transition-all duration-200 hover:bg-error hover:text-silk-cream"
+                            data-cart-clear-confirm
+                        >
+                            {{ __('cart.page.clear_cart') }}
+                        </button>
+                    </div>
                 </div>
             </x-modal>
         @endif

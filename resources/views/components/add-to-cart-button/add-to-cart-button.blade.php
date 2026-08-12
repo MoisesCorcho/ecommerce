@@ -16,7 +16,7 @@
         type="button"
         wire:click="addToCart"
         wire:loading.attr="disabled"
-        class="rounded px-4 py-2 text-sm font-medium disabled:opacity-50"
+        class="rounded-none px-4 py-2 text-sm font-medium disabled:opacity-50"
         data-add-to-cart
     >
         <span wire:loading.remove>{{ __('storefront.add_to_cart') }}</span>
