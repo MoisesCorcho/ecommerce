@@ -105,6 +105,9 @@ return [
         'close_lightbox' => 'Cerrar',
         'stock_in_cart' => 'Todo el stock disponible ya está en tu carrito',
         'add_to_cart_error' => 'No se pudo agregar el producto al carrito',
+        'quick_view' => 'Vista rápida',
+        'quick_view_title' => 'Vista previa rápida del producto',
+        'view_full_details' => 'Ver detalles completos',
     ],
 
     'wishlist' => [

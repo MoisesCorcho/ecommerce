@@ -150,6 +150,8 @@
         </div>
     </footer>
 
+    <livewire:product-quick-view />
+
     @livewireScripts
 </body>
 </html>

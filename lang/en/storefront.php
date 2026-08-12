@@ -105,6 +105,9 @@ return [
         'close_lightbox' => 'Close',
         'stock_in_cart' => 'All available stock is already in your cart',
         'add_to_cart_error' => 'Could not add item to cart',
+        'quick_view' => 'Quick view',
+        'quick_view_title' => 'Product quick preview',
+        'view_full_details' => 'View full details',
     ],
 
     'wishlist' => [
