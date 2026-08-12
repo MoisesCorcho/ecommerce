@@ -122,11 +122,7 @@
                 @endforeach
             </div>
 
-            @if ($items->hasPages())
-                <div class="mt-12">
-                    {{ $items->links('vendor.pagination.custom') }}
-                </div>
-            @endif
+            <x-pagination :paginator="$items" class="mt-12" />
         @endif
     </div>
 </div>

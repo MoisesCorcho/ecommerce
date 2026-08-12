@@ -138,24 +138,23 @@
                                     <p class="text-sm leading-relaxed text-intense-cocoa/80">{{ $review->comment }}</p>
                                 @endif
                             </div>
-
                             {{-- 4. Action Buttons at the bottom --}}
-                            <div class="flex flex-wrap items-center justify-end gap-2 border-t border-intense-cocoa/10 pt-4">
+                            <div class="flex flex-wrap items-center justify-center gap-2 border-t border-intense-cocoa/10 pt-4 sm:justify-end">
                                 @if ($confirmingDeleteId === $review->id)
-                                    <div class="flex w-full flex-wrap items-center justify-between gap-3 border border-error/20 bg-error/5 p-2 px-3 text-xs">
+                                    <div class="flex w-full flex-col items-center justify-center gap-3 border border-error/20 bg-error/5 p-3 text-center text-xs sm:flex-row sm:justify-between">
                                         <span class="font-medium text-intense-cocoa">{{ __('account.reviews.confirm_delete_prompt') }}</span>
-                                        <div class="flex items-center gap-2">
+                                        <div class="flex items-center justify-center gap-2">
                                             <button
                                                 type="button"
                                                 wire:click="delete({{ $review->id }})"
-                                                class="border border-error bg-error px-3 py-1 text-xs font-semibold uppercase tracking-wider text-silk-cream transition-colors duration-200 hover:bg-error/80"
+                                                class="border border-error/30 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-error transition-all duration-200 hover:border-error hover:bg-error hover:text-silk-cream"
                                             >
                                                 {{ __('account.reviews.delete') }}
                                             </button>
                                             <button
                                                 type="button"
                                                 wire:click="cancelDeleteConfirmation"
-                                                class="border border-intense-cocoa/30 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream"
+                                                class="border border-intense-cocoa/30 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-intense-cocoa transition-all duration-200 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream"
                                             >
                                                 {{ __('account.reviews.cancel') }}
                                             </button>
@@ -178,7 +177,7 @@
                                         class="inline-flex items-center gap-1.5 border border-error/30 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-error transition-colors duration-200 hover:border-error hover:bg-error hover:text-silk-cream"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 1 .75.72v5.5a.75.75 0 0 1-1.5 0v-5.5a.75.75 0 0 1 .75-.72Zm3.34 0a.75.75 0 0 1 .75.72v5.5a.75.75 0 0 1-1.5 0v-5.5a.75.75 0 0 1 .75-.72Z" clip-rule="evenodd" />
+                                            <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 1 .75.72v6.5a.75.75 0 0 1-1.5 0v-6.5a.75.75 0 0 1 .75-.72Zm3.34 0a.75.75 0 0 1 .75.72v6.5a.75.75 0 0 1-1.5 0v-6.5a.75.75 0 0 1 .75-.72Z" clip-rule="evenodd" />
                                         </svg>
                                         {{ __('account.reviews.delete') }}
                                     </button>

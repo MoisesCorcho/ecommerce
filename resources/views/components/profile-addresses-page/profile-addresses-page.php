@@ -42,6 +42,8 @@ new #[Layout('layouts.storefront')] class extends Component
 
     public bool $isDefault = false;
 
+    public ?int $confirmingDeleteId = null;
+
     public bool $showForm = false;
 
     public ?string $statusMessage = null;
@@ -78,7 +80,7 @@ new #[Layout('layouts.storefront')] class extends Component
         $this->state = $address->state;
         $this->country = $address->country;
         $this->postalCode = (string) ($address->postal_code ?? '');
-        $this->isDefault = $address->is_default;
+        $this->isDefault = (bool) $address->is_default;
         $this->showForm = true;
     }
 
@@ -144,6 +146,16 @@ new #[Layout('layouts.storefront')] class extends Component
         $this->statusMessage = __('account.addresses.default_updated');
     }
 
+    public function confirmDelete(int $addressId): void
+    {
+        $this->confirmingDeleteId = $addressId;
+    }
+
+    public function cancelDeleteConfirmation(): void
+    {
+        $this->confirmingDeleteId = null;
+    }
+
     public function delete(int $addressId, DeleteAddressAction $action): void
     {
         $address = Address::query()->findOrFail($addressId);
@@ -155,6 +167,7 @@ new #[Layout('layouts.storefront')] class extends Component
             $this->resetForm();
         }
 
+        $this->confirmingDeleteId = null;
         $this->statusMessage = __('account.addresses.deleted');
     }
 

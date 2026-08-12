@@ -60,7 +60,7 @@ return [
         'confirm_delete' => '¿Eliminar esta dirección?',
         'empty' => 'Todavía no agregaste ninguna dirección.',
         'default_badge' => 'Predeterminada',
-        'make_default' => 'Marcar como predeterminada',
+        'make_default' => 'Marcar predeterminada',
         'default_updated' => 'Dirección predeterminada actualizada.',
         'fields' => [
             'label' => 'Etiqueta',
