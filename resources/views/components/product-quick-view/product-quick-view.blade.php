@@ -2,21 +2,12 @@
     use App\Support\ColorMap;
 @endphp
 
-<div>
+<div
+    x-data="{ show: @js($showModal) }"
+    x-effect="document.body.classList.toggle('overflow-hidden', @js($showModal))"
+>
     @if ($showModal && $product)
         <div
-            x-data="{ show: @js($showModal) }"
-            x-init="
-                document.body.classList.add('overflow-hidden');
-                $watch('show', value => {
-                    if (value) {
-                        document.body.classList.add('overflow-hidden');
-                    } else {
-                        document.body.classList.remove('overflow-hidden');
-                    }
-                });
-            "
-            x-destroy="document.body.classList.remove('overflow-hidden')"
             x-show="show"
             x-cloak
             x-transition:enter="ease-out duration-300"
@@ -36,7 +27,7 @@
 
             {{-- Modal Box --}}
             <div
-                class="relative z-10 my-auto flex max-h-[90vh] w-full max-w-4xl flex-col overflow-y-auto border border-soft-sand bg-silk-cream p-6 shadow-2xl sm:p-8"
+                class="relative z-10 my-auto flex max-h-[90vh] w-full max-w-3xl flex-col overflow-y-auto border border-soft-sand bg-silk-cream p-5 shadow-2xl sm:p-6 md:overflow-y-hidden"
                 x-on:click.outside="$wire.closeModal()"
             >
                 {{-- Close Button (44px WCAG Touch Target) --}}
@@ -44,17 +35,17 @@
                     type="button"
                     wire:click="closeModal"
                     aria-label="{{ __('storefront.shop.close_filters') }}"
-                    class="absolute top-4 right-4 z-20 flex h-11 w-11 items-center justify-center bg-intense-cocoa text-silk-cream transition-colors hover:bg-error hover:text-white focus:outline-none"
+                    class="absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center bg-intense-cocoa text-silk-cream transition-colors hover:bg-error hover:text-white focus:outline-none"
                 >
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                     </svg>
                 </button>
 
-                {{-- Two-column Grid Layout (Matching Product Detail) --}}
-                <div class="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10">
+                {{-- Two-column Grid Layout (Matching Product Detail 1-to-1) --}}
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
                     {{-- LEFT: Image Gallery --}}
-                    <div class="flex flex-col gap-4">
+                    <div class="flex flex-col gap-3">
                         <div class="group relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden bg-soft-sand">
                             @if ($product->images->count() > 0)
                                 @php
@@ -74,7 +65,7 @@
 
                             @if ($product->is_preorder)
                                 <div class="absolute top-3 left-3 z-10">
-                                    <span class="bg-intense-cocoa px-3 py-1 text-xs font-semibold uppercase tracking-widest text-silk-cream">
+                                    <span class="bg-intense-cocoa px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-silk-cream">
                                         {{ __('storefront.products.preorder_badge') }}
                                     </span>
                                 </div>
@@ -96,7 +87,7 @@
                                         <img
                                             src="/storage/{{ $image->path }}"
                                             alt="{{ $product->name }} — {{ $loop->iteration }}"
-                                            class="h-16 w-16 object-cover"
+                                            class="h-12 w-12 object-cover"
                                         >
                                     </button>
                                 @endforeach
@@ -104,8 +95,8 @@
                         @endif
                     </div>
 
-                    {{-- RIGHT: Details & Actions (Matching Product Detail) --}}
-                    <div class="flex flex-col gap-5">
+                    {{-- RIGHT: Details & Actions (Matching Product Detail 1-to-1) --}}
+                    <div class="flex flex-col gap-3.5">
                         {{-- Category & Title --}}
                         <div>
                             @if ($product->category)
@@ -151,22 +142,22 @@
 
                         {{-- Brief Description --}}
                         @if ($product->description)
-                            <p class="text-body-md text-intense-cocoa/80 line-clamp-3">
-                                {{ Str::limit($product->description, 180) }}
+                            <p class="text-body-md text-intense-cocoa/80 line-clamp-2">
+                                {{ Str::limit($product->description, 140) }}
                             </p>
                         @endif
 
-                        {{-- Grouped Variant Specifications Card (Chunked UI Layout) --}}
+                        {{-- Variant Specifications (Matching Product Detail 1-to-1) --}}
                         @if ($availableColors->count() > 0 || $availableSizes->count() > 0)
-                            <div class="flex flex-col gap-4 border border-soft-sand/60 bg-soft-sand/20 p-4">
-                                {{-- Color Selector (With Checkmark SVG & 44px Touch Target) --}}
+                            <div class="flex flex-col gap-3">
+                                {{-- Color Selector --}}
                                 @if ($availableColors->count() > 0)
                                     <div>
-                                        <p class="mb-2 text-sm font-medium text-intense-cocoa">
+                                        <p class="mb-1.5 text-sm font-medium text-intense-cocoa">
                                             {{ __('storefront.products.color_label') }}:
                                             <span class="font-normal text-intense-cocoa/60">{{ $selectedColor }}</span>
                                         </p>
-                                        <div class="flex flex-wrap gap-2.5" role="radiogroup" aria-label="{{ __('storefront.products.color_label') }}">
+                                        <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="{{ __('storefront.products.color_label') }}">
                                             @foreach ($availableColors as $colorName)
                                                 @php
                                                     $hex = ColorMap::HEX[strtolower($colorName)] ?? '#8B8B8B';
@@ -180,7 +171,7 @@
                                                     aria-checked="{{ $isSelected ? 'true' : 'false' }}"
                                                     aria-label="{{ $colorName }}"
                                                     title="{{ $colorName }}"
-                                                    class="relative h-11 w-11 border border-intense-cocoa/20 transition-all hover:ring-2 hover:ring-soft-gold hover:ring-offset-2 focus:outline-none disabled:opacity-50 {{ $isSelected ? 'border-intense-cocoa ring-2 ring-intense-cocoa ring-offset-2' : '' }}"
+                                                    class="relative h-9 w-9 border border-intense-cocoa/20 transition-all hover:ring-2 hover:ring-soft-gold hover:ring-offset-2 focus:outline-none disabled:opacity-50 {{ $isSelected ? 'border-intense-cocoa ring-2 ring-intense-cocoa ring-offset-2' : '' }}"
                                                     style="background-color: {{ $hex }}"
                                                 >
                                                     @if ($isSelected)
@@ -196,10 +187,10 @@
                                     </div>
                                 @endif
 
-                                {{-- Size Selector (Matching Product Detail) --}}
+                                {{-- Size Selector --}}
                                 @if ($availableSizes->count() > 0)
                                     <div>
-                                        <p class="mb-2 text-sm font-medium text-intense-cocoa">
+                                        <p class="mb-1.5 text-sm font-medium text-intense-cocoa">
                                             {{ __('storefront.products.size_label') }}
                                         </p>
                                         <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="{{ __('storefront.products.size_label') }}">
@@ -213,7 +204,7 @@
                                                     wire:loading.attr="disabled"
                                                     role="radio"
                                                     aria-checked="{{ $isSelected ? 'true' : 'false' }}"
-                                                    class="min-h-[44px] min-w-[44px] border px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none disabled:opacity-50 {{ $isSelected ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-transparent bg-soft-sand text-intense-cocoa hover:border-intense-cocoa' }}"
+                                                    class="min-h-[38px] min-w-[38px] border px-3 py-1.5 text-sm font-medium transition-all duration-200 focus:outline-none disabled:opacity-50 {{ $isSelected ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-transparent bg-soft-sand text-intense-cocoa hover:border-intense-cocoa' }}"
                                                 >
                                                     {{ $sizeName }}
                                                 </button>
