@@ -32,21 +32,21 @@
 <div class="py-8 lg:py-12">
     <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
         <nav aria-label="Breadcrumb" class="mb-8">
-            <ol class="flex flex-wrap items-center gap-2 text-[10px] font-semibold text-intense-cocoa/60">
-                <li><a href="{{ url('/') }}" class="transition-colors hover:text-soft-gold">{{ __('account.breadcrumb.home') }}</a></li>
-                <li><span class="text-intense-cocoa/30">/</span></li>
+            <ol class="flex flex-wrap items-center gap-1.5 text-sm text-intense-cocoa/60">
+                <li><a href="{{ url('/') }}" class="transition-colors hover:text-intense-cocoa hover:underline">{{ __('account.breadcrumb.home') }}</a></li>
+                <li aria-hidden="true" class="text-intense-cocoa/30">/</li>
                 @if ($hasSection)
-                    <li><a href="{{ route('profile') }}" class="transition-colors hover:text-soft-gold">{{ __('account.breadcrumb.account') }}</a></li>
-                    <li><span class="text-intense-cocoa/30">/</span></li>
+                    <li><a href="{{ route('profile') }}" class="transition-colors hover:text-intense-cocoa hover:underline">{{ __('account.breadcrumb.account') }}</a></li>
+                    <li aria-hidden="true" class="text-intense-cocoa/30">/</li>
                     @if ($hasOrderNumber)
-                        <li><a href="{{ $sectionRoutes[$active] }}" class="transition-colors hover:text-soft-gold">{{ $sectionLabels[$active] }}</a></li>
-                        <li><span class="text-intense-cocoa/30">/</span></li>
-                        <li aria-current="page" class="text-intense-cocoa">{{ $orderNumber }}</li>
+                        <li><a href="{{ $sectionRoutes[$active] }}" class="transition-colors hover:text-intense-cocoa hover:underline">{{ $sectionLabels[$active] }}</a></li>
+                        <li aria-hidden="true" class="text-intense-cocoa/30">/</li>
+                        <li aria-current="page" class="font-medium text-intense-cocoa">{{ $orderNumber }}</li>
                     @else
-                        <li aria-current="page" class="text-intense-cocoa">{{ $sectionLabels[$active] }}</li>
+                        <li aria-current="page" class="font-medium text-intense-cocoa">{{ $sectionLabels[$active] }}</li>
                     @endif
                 @else
-                    <li aria-current="page" class="text-intense-cocoa">{{ __('account.breadcrumb.account') }}</li>
+                    <li aria-current="page" class="font-medium text-intense-cocoa">{{ __('account.breadcrumb.account') }}</li>
                 @endif
             </ol>
         </nav>

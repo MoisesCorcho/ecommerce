@@ -85,16 +85,18 @@ Este documento guía la verificación manual paso a paso de todos los flujos de 
 
 ### Módulo 3B: Pasarelas de Pago de Prueba (Bold & Stripe)
 
-- [ ] **3.3. Pasarela Bold (COP - Sandbox)**:
-  - [ ] **1. Iniciar Pago**: Hacer clic en "Pagar ahora" en una orden en COP y verificar redirección a la pasarela Bold.
-  - [ ] **2. Transacción Exitosa**: Completar el pago con datos sandbox de prueba y comprobar el retorno a la tienda.
-  - [ ] **3. Verificación Webhook**: Confirmar que el estado del pedido cambie automáticamente a `Paid` (Pagado).
-  - [ ] **4. Edge Case (Cancelación en Pasarela)**: Simular cancelación en la ventana de Bold, volver a la tienda y verificar que la orden siga en `Pending` permitiendo reintentar.
+- [x] **3.3. Pasarela Bold (COP - Sandbox)**:
+  - [x] **1. Iniciar Pago**: Hacer clic en "Pagar ahora" en una orden en COP y verificar redirección a la pasarela Bold.
+  - [x] **2. Transacción Exitosa**: Completar el pago con datos sandbox de prueba y comprobar el retorno a la tienda.
+  - [x] **3. Verificación Webhook**: Confirmar que el estado del pedido cambie automáticamente a `Paid` (Pagado).
+  - [x] **4. Edge Case (Cancelación en Pasarela)**: Simular cancelación en la ventana de Bold, volver a la tienda y verificar que la orden siga en `Pending` permitiendo reintentar.
+  - [x] **5. Pago con Cupón de Descuento**: Aplicar un cupón en Checkout, verificar que Bold cobre el total neto descontado y validar el registro de redención e incremento de uso en BD.
 
-- [ ] **3.4. Pasarela Stripe (EUR - Test Mode)**:
-  - [ ] **1. Iniciar Pago en EUR**: Cambiar divisa a EUR, realizar checkout e iniciar pago hacia Stripe Checkout.
-  - [ ] **2. Tarjeta Exitosa**: Usar tarjeta de prueba `4242 4242 4242 4242` y comprobar retorno a `/thank-you` con estado `Paid`.
-  - [ ] **3. Edge Case (Tarjeta Declinada)**: Probar tarjeta `4000 0000 0000 0002` y verificar que la pasarela reporte el rechazo sin corromper la orden.
+- [x] **3.4. Pasarela Stripe (EUR - Test Mode)**:
+  - [x] **1. Iniciar Pago en EUR**: Cambiar divisa a EUR, realizar checkout e iniciar pago hacia Stripe Checkout.
+  - [x] **2. Tarjeta Exitosa**: Usar tarjeta de prueba `4242 4242 4242 4242` y comprobar retorno a `/thank-you` con estado `Paid`.
+  - [x] **3. Edge Case (Tarjeta Declinada)**: Probar tarjeta `4000 0000 0000 0002` y verificar que la pasarela reporte el rechazo sin corromper la orden.
+  - [x] **4. Pago con Cupón de Descuento (EUR)**: Aplicar cupón `EUR15`, verificar que Stripe cobre el total neto descontado (509,25 €) y validar el registro de redención e incremento de uso en BD.
 
 ---
 

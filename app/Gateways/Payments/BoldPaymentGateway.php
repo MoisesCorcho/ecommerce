@@ -49,8 +49,7 @@ class BoldPaymentGateway implements PaymentGatewayInterface
         }
 
         try {
-            $response = Http::timeout(15)
-                ->connectTimeout(5)
+            $response = Http::timeout(20)
                 ->withHeaders([
                     'Authorization' => 'x-api-key '.$apiKey,
                     'Content-Type' => 'application/json',
