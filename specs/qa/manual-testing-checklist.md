@@ -72,14 +72,14 @@ Este documento guía la verificación manual paso a paso de todos los flujos de 
 
 ### Módulo 3: Checkout y Proceso de Pedido
 
-- [ ] **3.1. Formulario de Checkout (`/checkout`)**:
+- [x] **3.1. Formulario de Checkout (`/checkout`)**:
   - [x] **1. Edge Case (Carrito Vacío)**: Intentar ingresar directamente a `/checkout` sin productos (debe redirigir a `/cart`).
-  - [ ] **2. Checkout como Invitado**: Completar datos de envío, contacto y dirección como usuario sin sesión activa.
-  - [ ] **3. Checkout como Autenticado**: Completar checkout con sesión iniciada utilizando una dirección guardada.
+  - [x] **2. Checkout como Invitado**: Completar datos de envío, contacto y dirección como usuario sin sesión activa.
+  - [x] **3. Checkout como Autenticado**: Completar checkout con sesión iniciada utilizando una dirección guardada.
 
-- [ ] **3.2. Página de Confirmación (`/orders/{order}/thank-you`)**:
-  - [ ] **1. Verificación de Resumen**: Comprobar datos de entrega, resumen de productos, total y estado inicial `Pendiente`.
-  - [ ] **2. Edge Case (Seguridad IDOR)**: Intentar abrir la URL de confirmación de un pedido perteneciente a otro usuario (debe retornar 403 Forbidden a menos que tenga firma válida).
+- [x] **3.2. Página de Confirmación (`/orders/{order}/thank-you`)**:
+  - [x] **1. Verificación de Resumen**: Comprobar datos de entrega, resumen de productos, total y estado inicial `Pendiente`.
+  - [x] **2. Edge Case (Seguridad IDOR)**: Intentar abrir la URL de confirmación de un pedido perteneciente a otro usuario (debe retornar 403 Forbidden a menos que tenga firma válida).
 
 ---
 
