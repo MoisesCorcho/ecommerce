@@ -103,8 +103,8 @@ Este documento guía la verificación manual paso a paso de todos los flujos de 
 ### Módulo 4: Autenticación y Área de Cliente
 
 - [ ] **4.1. Autenticación (`/login`, `/register`, `/forgot-password`)**:
-  - [ ] **1. Registro**: Crear una cuenta nueva en `/register` y verificar inicio de sesión automático.
-  - [ ] **2. Login Incorrecto**: Intentar ingresar con contraseña errónea (debe mostrar mensaje de validación).
+  - [x] **1. Registro**: Crear una cuenta nueva en `/register` y verificar inicio de sesión automático.
+  - [x] **2. Login Incorrecto**: Intentar ingresar con contraseña errónea (debe mostrar mensaje de validación).
   - [ ] **3. Recuperación de Clave**: Solicitar enlace de restablecimiento en `/forgot-password`.
 
 - [ ] **4.2. Mi Perfil (`/profile`)**:
