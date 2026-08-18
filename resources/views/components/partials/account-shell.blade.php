@@ -32,7 +32,7 @@
 <div class="py-8 lg:py-12">
     <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
         <nav aria-label="Breadcrumb" class="mb-8">
-            <ol class="flex flex-wrap items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-intense-cocoa/60">
+            <ol class="flex flex-wrap items-center gap-2 text-[10px] font-semibold text-intense-cocoa/60">
                 <li><a href="{{ url('/') }}" class="transition-colors hover:text-soft-gold">{{ __('account.breadcrumb.home') }}</a></li>
                 <li><span class="text-intense-cocoa/30">/</span></li>
                 @if ($hasSection)

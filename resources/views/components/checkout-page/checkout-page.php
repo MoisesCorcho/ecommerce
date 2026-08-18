@@ -76,9 +76,33 @@ new #[Layout('layouts.storefront')] class extends Component
             $this->email = (string) $user->email;
             $this->phone = (string) ($user->phone ?? '');
             $this->addressMode = 'saved';
+
+            $defaultAddress = $user->addresses()->where('is_default', true)->first()
+                ?? $user->addresses()->first();
+
+            if ($defaultAddress !== null) {
+                $this->shippingAddressId = $defaultAddress->id;
+                $this->updatedShippingAddressId();
+            } else {
+                $this->addressMode = 'one_shot';
+            }
         }
 
         $this->loadPreview($validateCartForCheckout);
+    }
+
+    public function updatedAddressMode(): void
+    {
+        if ($this->addressMode === 'saved' && $this->shippingAddressId === null && Auth::check()) {
+            $user = Auth::user();
+            $defaultAddress = $user->addresses()->where('is_default', true)->first()
+                ?? $user->addresses()->first();
+
+            if ($defaultAddress !== null) {
+                $this->shippingAddressId = $defaultAddress->id;
+                $this->updatedShippingAddressId();
+            }
+        }
     }
 
     public function updatedCouponCode(ValidateCartForCheckoutAction $validateCartForCheckout): void

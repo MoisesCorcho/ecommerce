@@ -90,14 +90,24 @@
                             <div class="mb-5 grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="{{ __('orders.checkout.address_title') }}">
                                 <label class="relative flex cursor-pointer">
                                     <input type="radio" wire:model.live="addressMode" value="saved" class="peer sr-only" />
-                                    <span class="flex h-11 w-full items-center justify-center border border-intense-cocoa bg-transparent text-xs font-semibold uppercase tracking-wider text-intense-cocoa transition-all duration-200 hover:border-soft-gold hover:text-soft-gold peer-checked:border-soft-gold peer-checked:bg-soft-sand peer-checked:text-intense-cocoa focus:outline-none">
-                                        {{ __('orders.actions.use_saved_address') }}
+                                    <span class="flex h-11 w-full items-center justify-center border border-intense-cocoa bg-transparent px-4 text-sm font-semibold text-intense-cocoa transition-all duration-200 hover:border-intense-cocoa hover:bg-intense-cocoa/15 peer-checked:border-intense-cocoa peer-checked:bg-intense-cocoa peer-checked:text-silk-cream peer-checked:[&_.radio-circle]:border-soft-gold peer-checked:[&_.radio-circle]:bg-soft-gold peer-checked:[&_.radio-icon]:opacity-100 focus:outline-none">
+                                        <span class="radio-circle mr-2.5 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full border-2 border-intense-cocoa transition-all duration-200">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="radio-icon h-3 w-3 text-intense-cocoa opacity-0 transition-opacity duration-200" aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                                            </svg>
+                                        </span>
+                                        <span>{{ __('orders.actions.use_saved_address') }}</span>
                                     </span>
                                 </label>
                                 <label class="relative flex cursor-pointer">
                                     <input type="radio" wire:model.live="addressMode" value="one_shot" class="peer sr-only" />
-                                    <span class="flex h-11 w-full items-center justify-center border border-intense-cocoa bg-transparent text-xs font-semibold uppercase tracking-wider text-intense-cocoa transition-all duration-200 hover:border-soft-gold hover:text-soft-gold peer-checked:border-soft-gold peer-checked:bg-soft-sand peer-checked:text-intense-cocoa focus:outline-none">
-                                        {{ __('orders.actions.use_one_shot_address') }}
+                                    <span class="flex h-11 w-full items-center justify-center border border-intense-cocoa bg-transparent px-4 text-sm font-semibold text-intense-cocoa transition-all duration-200 hover:border-intense-cocoa hover:bg-intense-cocoa/15 peer-checked:border-intense-cocoa peer-checked:bg-intense-cocoa peer-checked:text-silk-cream peer-checked:[&_.radio-circle]:border-soft-gold peer-checked:[&_.radio-circle]:bg-soft-gold peer-checked:[&_.radio-icon]:opacity-100 focus:outline-none">
+                                        <span class="radio-circle mr-2.5 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full border-2 border-intense-cocoa transition-all duration-200">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="radio-icon h-3 w-3 text-intense-cocoa opacity-0 transition-opacity duration-200" aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                                            </svg>
+                                        </span>
+                                        <span>{{ __('orders.actions.use_one_shot_address') }}</span>
                                     </span>
                                 </label>
                             </div>
@@ -107,16 +117,19 @@
                                     @foreach (auth()->user()->addresses as $address)
                                         <label class="relative flex cursor-pointer" wire:key="address-option-{{ $address->id }}">
                                             <input type="radio" wire:model.live="shippingAddressId" value="{{ $address->id }}" class="peer sr-only" />
-                                            <div class="flex w-full flex-col justify-between border border-intense-cocoa/20 bg-soft-sand p-6 text-sm text-intense-cocoa shadow-ambient transition-all duration-200 hover:border-soft-gold peer-checked:border-soft-gold peer-checked:bg-soft-sand peer-checked:ring-1 peer-checked:ring-soft-gold">
+                                            <div class="flex w-full flex-col justify-between border border-intense-cocoa bg-soft-sand p-6 text-sm text-intense-cocoa shadow-ambient transition-all duration-200 hover:border-soft-gold peer-checked:border-soft-gold peer-checked:bg-soft-sand peer-checked:ring-1 peer-checked:ring-soft-gold">
                                                 <div>
                                                     {{-- Top status row: Label badge + Default star --}}
-                                                    <div class="mb-4 flex items-center justify-between gap-2 border-b border-intense-cocoa/10 pb-3">
+                                                    <div class="mb-4 flex items-center justify-between gap-2 border-b border-intense-cocoa/30 pb-3">
                                                         <span class="inline-flex items-center border border-intense-cocoa bg-intense-cocoa px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-silk-cream">
                                                             {{ $address->label ? strtoupper($address->label) : __('orders.fields.shipping_address_id') }}
                                                         </span>
                                                         @if ($address->is_default)
-                                                            <span class="text-xs font-semibold text-soft-gold">
-                                                                ★ {{ __('account.addresses.default_badge') ?? 'Principal' }}
+                                                            <span class="inline-flex h-6 items-center gap-1 border border-soft-gold/60 bg-silk-cream px-2.5 text-[10px] font-semibold text-intense-cocoa">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3 w-3 text-soft-gold" aria-hidden="true">
+                                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.958a1 1 0 0 0 .95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.367 2.446a1 1 0 0 0-.363 1.118l1.287 3.957c.3.922-.755 1.688-1.538 1.118l-3.367-2.445a1 1 0 0 0-1.176 0l-3.367 2.445c-.783.57-1.838-.196-1.538-1.118l1.287-3.957a1 1 0 0 0-.363-1.118L2.63 9.385c-.783-.57-.38-1.81.588-1.81h4.163a1 1 0 0 0 .95-.69l1.286-3.958Z" />
+                                                                </svg>
+                                                                {{ __('account.addresses.default_badge') }}
                                                             </span>
                                                         @endif
                                                     </div>
@@ -126,7 +139,7 @@
                                                         <h3 class="font-[family-name:var(--font-chillax)] text-base font-semibold text-intense-cocoa">
                                                             {{ $address->full_name }}
                                                         </h3>
-                                                        <p class="text-xs leading-relaxed text-intense-cocoa/80">
+                                                        <p class="text-xs font-medium leading-relaxed text-intense-cocoa">
                                                             {{ $address->address_line_1 }}
                                                             @if ($address->address_line_2)
                                                                 , {{ $address->address_line_2 }}
@@ -136,16 +149,16 @@
                                                 </div>
 
                                                 {{-- Bottom details chips --}}
-                                                <div class="mt-4 flex flex-wrap gap-1.5 border-t border-intense-cocoa/10 pt-3">
-                                                    <span class="inline-flex items-center gap-1 border border-intense-cocoa/20 bg-silk-cream/80 px-2.5 py-1 text-xs text-intense-cocoa/80">
-                                                        <span class="font-medium">{{ $address->city }}, {{ $address->state }}</span>
+                                                <div class="mt-4 flex flex-wrap gap-1.5 border-t border-intense-cocoa/30 pt-3">
+                                                    <span class="inline-flex items-center gap-1 border border-intense-cocoa bg-silk-cream px-2.5 py-1 text-xs font-medium text-intense-cocoa">
+                                                        <span>{{ $address->city }}, {{ $address->state }}</span>
                                                         @if ($address->postal_code)
-                                                            <span class="text-intense-cocoa/50">({{ $address->postal_code }})</span>
+                                                            <span class="text-intense-cocoa/70">({{ $address->postal_code }})</span>
                                                         @endif
                                                     </span>
                                                     @if ($address->phone)
-                                                        <span class="inline-flex items-center gap-1 border border-intense-cocoa/20 bg-silk-cream/80 px-2.5 py-1 text-xs text-intense-cocoa/80">
-                                                            <span class="font-medium">{{ $address->phone }}</span>
+                                                        <span class="inline-flex items-center gap-1 border border-intense-cocoa bg-silk-cream px-2.5 py-1 text-xs font-medium text-intense-cocoa">
+                                                            <span>{{ $address->phone }}</span>
                                                         </span>
                                                     @endif
                                                 </div>
@@ -283,45 +296,45 @@
                         @endphp
                         <ul class="mb-4 space-y-3 text-sm text-intense-cocoa">
                             @foreach ($preview['lines'] as $line)
-                                <li class="flex justify-between gap-3 border-b border-intense-cocoa/10 pb-2">
+                                <li class="flex justify-between gap-3 border-b border-intense-cocoa/30 pb-2.5">
                                     <span class="flex flex-col gap-0.5">
-                                        <span class="font-medium">{{ $line['productName'] }}</span>
+                                        <span class="font-semibold text-intense-cocoa">{{ $line['productName'] }}</span>
                                         @if ($line['variantLabel'] || $line['quantity'])
-                                            <span class="text-xs text-intense-cocoa/60">
+                                            <span class="text-xs font-medium text-intense-cocoa">
                                                 @if ($line['variantLabel'])
-                                                    {{ $line['variantLabel'] }}
+                                                    <span>{{ $line['variantLabel'] }}</span>
                                                 @endif
                                                 @if ($line['variantLabel'] && $line['quantity'])
-                                                    <span class="mx-1.5 text-intense-cocoa">—</span>
+                                                    <span class="mx-1.5 text-intense-cocoa/70">—</span>
                                                 @endif
                                                 @if ($line['quantity'])
-                                                    <span class="font-medium text-intense-cocoa">× {{ $line['quantity'] }}</span>
+                                                    <span class="font-semibold text-intense-cocoa">× {{ $line['quantity'] }}</span>
                                                 @endif
                                             </span>
                                         @endif
                                     </span>
-                                    <span class="shrink-0 font-medium tabular-nums">{{ $currencyEnum?->format($line['lineSubtotal']) ?? number_format($line['lineSubtotal']).' '.$preview['currency'] }}</span>
+                                    <span class="shrink-0 font-semibold tabular-nums text-intense-cocoa">{{ $currencyEnum?->format($line['lineSubtotal']) ?? number_format($line['lineSubtotal']).' '.$preview['currency'] }}</span>
                                 </li>
                             @endforeach
                         </ul>
-                        <dl class="space-y-2 text-sm text-intense-cocoa">
+                        <dl class="space-y-2.5 text-sm text-intense-cocoa">
                             <div class="flex justify-between">
-                                <dt>{{ __('orders.fields.subtotal') }}</dt>
-                                <dd class="tabular-nums">{{ $currencyEnum?->format($preview['subtotal']) ?? number_format($preview['subtotal']).' '.$preview['currency'] }}</dd>
+                                <dt class="font-medium text-intense-cocoa">{{ __('orders.fields.subtotal') }}</dt>
+                                <dd class="font-semibold tabular-nums text-intense-cocoa">{{ $currencyEnum?->format($preview['subtotal']) ?? number_format($preview['subtotal']).' '.$preview['currency'] }}</dd>
                             </div>
                             <div class="flex justify-between">
-                                <dt>{{ __('orders.shipping.standard') }}</dt>
-                                <dd class="tabular-nums">{{ $currencyEnum?->format($preview['shippingCost']) ?? number_format($preview['shippingCost']).' '.$preview['currency'] }}</dd>
+                                <dt class="font-medium text-intense-cocoa">{{ __('orders.shipping.standard') }}</dt>
+                                <dd class="font-semibold tabular-nums text-intense-cocoa">{{ $currencyEnum?->format($preview['shippingCost']) ?? number_format($preview['shippingCost']).' '.$preview['currency'] }}</dd>
                             </div>
                             @if (($preview['discount'] ?? 0) > 0)
-                                <div class="flex justify-between text-success" data-checkout-discount>
+                                <div class="flex justify-between font-medium text-success" data-checkout-discount>
                                     <dt>{{ __('orders.fields.discount') }}</dt>
-                                    <dd>−{{ $currencyEnum?->format($preview['discount']) ?? number_format($preview['discount']).' '.$preview['currency'] }}</dd>
+                                    <dd class="font-semibold tabular-nums">−{{ $currencyEnum?->format($preview['discount']) ?? number_format($preview['discount']).' '.$preview['currency'] }}</dd>
                                 </div>
                             @endif
-                            <div class="flex justify-between border-t border-intense-cocoa/10 pt-3 text-base font-semibold">
+                            <div class="flex justify-between border-t border-intense-cocoa/30 pt-3 text-base font-semibold text-intense-cocoa">
                                 <dt>{{ __('orders.fields.total') }}</dt>
-                                <dd class="text-xl tabular-nums" data-checkout-total>{{ $currencyEnum?->format($preview['total']) ?? number_format($preview['total']).' '.$preview['currency'] }}</dd>
+                                <dd class="text-xl font-bold tabular-nums text-intense-cocoa" data-checkout-total>{{ $currencyEnum?->format($preview['total']) ?? number_format($preview['total']).' '.$preview['currency'] }}</dd>
                             </div>
                         </dl>
 

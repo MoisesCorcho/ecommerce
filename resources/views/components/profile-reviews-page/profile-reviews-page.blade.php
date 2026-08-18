@@ -57,14 +57,14 @@
                                     type="submit"
                                     wire:loading.attr="disabled"
                                     wire:target="save"
-                                    class="h-11 w-full min-w-[180px] bg-intense-cocoa px-5 text-xs font-semibold uppercase tracking-wider text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa focus:outline-none sm:w-auto"
+                                    class="h-11 w-full min-w-[180px] cursor-pointer bg-intense-cocoa px-5 text-sm font-semibold text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa focus:outline-none sm:w-auto"
                                 >
                                     {{ __('account.reviews.save') }}
                                 </button>
                                 <button
                                     type="button"
                                     wire:click="cancelEdit"
-                                    class="h-11 w-full min-w-[180px] border border-intense-cocoa/30 px-5 text-xs font-semibold uppercase tracking-wider text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none sm:w-auto"
+                                    class="h-11 w-full min-w-[180px] cursor-pointer border border-intense-cocoa/30 px-5 text-sm font-semibold text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none sm:w-auto"
                                 >
                                     {{ __('account.reviews.cancel') }}
                                 </button>
@@ -73,11 +73,11 @@
                     @else
                         <div class="space-y-4">
                             {{-- 1. Status badge & Date on top --}}
-                            <div class="flex items-center justify-between gap-2 border-b border-intense-cocoa/10 pb-3">
-                                <span class="inline-flex items-center border {{ $review->is_approved ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-soft-gold/50 bg-soft-sand text-intense-cocoa' }} px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest">
+                            <div class="flex items-center justify-between gap-2 border-b border-intense-cocoa/30 pb-3">
+                                <span class="inline-flex h-6 items-center border {{ $review->is_approved ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-soft-gold/60 bg-silk-cream text-intense-cocoa' }} px-2.5 text-xs font-semibold">
                                     {{ $review->is_approved ? __('account.reviews.status.approved') : __('account.reviews.status.pending') }}
                                 </span>
-                                <time class="text-xs text-intense-cocoa/50" datetime="{{ $review->created_at?->toIso8601String() }}">
+                                <time class="text-xs font-medium text-intense-cocoa" datetime="{{ $review->created_at?->toIso8601String() }}">
                                     {{ $review->created_at?->format('d/m/Y') }}
                                 </time>
                             </div>
@@ -93,23 +93,23 @@
                                 @if ($review->purchased_variants && count($review->purchased_variants) > 0)
                                     <div class="flex flex-wrap gap-1.5">
                                         @foreach ($review->purchased_variants as $variant)
-                                            <span class="inline-flex items-center gap-1 border border-intense-cocoa/20 bg-soft-sand/60 px-2.5 py-1 text-xs text-intense-cocoa/80">
+                                            <span class="inline-flex items-center gap-1 border border-intense-cocoa bg-silk-cream px-2.5 py-1 text-xs font-medium text-intense-cocoa">
                                                 @if ($variant['color'])
-                                                    <span class="font-medium">{{ $variant['color'] }}</span>
+                                                    <span>{{ $variant['color'] }}</span>
                                                 @endif
                                                 @if ($variant['size'])
-                                                    <span class="font-medium">{{ $variant['size'] }}</span>
+                                                    <span>{{ $variant['size'] }}</span>
                                                 @endif
                                                 @if ($variant['sku'])
-                                                    <span class="text-intense-cocoa/50">({{ $variant['sku'] }})</span>
+                                                    <span class="text-intense-cocoa/70">({{ $variant['sku'] }})</span>
                                                 @endif
                                             </span>
                                         @endforeach
                                     </div>
                                 @elseif ($purchasedVariant = $purchasedVariants->get($review->product_id))
                                     <div class="flex flex-wrap gap-1.5">
-                                        <span class="inline-flex items-center gap-1 border border-intense-cocoa/20 bg-soft-sand/60 px-2.5 py-1 text-xs text-intense-cocoa/80">
-                                            <span class="font-medium">{{ __('account.orders.sku_label') }}: {{ $purchasedVariant->sku }}</span>
+                                        <span class="inline-flex items-center gap-1 border border-intense-cocoa bg-silk-cream px-2.5 py-1 text-xs font-medium text-intense-cocoa">
+                                            <span>{{ __('account.orders.sku_label') }}: {{ $purchasedVariant->sku }}</span>
                                             @if ($purchasedVariant->variant_label)
                                                 <span>· {{ $purchasedVariant->variant_label }}</span>
                                             @endif
@@ -118,7 +118,7 @@
                                 @endif
 
                                 @if ($reviewsWithNewVariants->contains($review->id))
-                                    <p class="mt-2 rounded-none border border-soft-gold/40 bg-soft-sand/60 px-3 py-2 text-xs text-intense-cocoa/70">
+                                    <p class="mt-2 rounded-none border border-soft-gold/40 bg-soft-sand/60 px-3 py-2 text-xs font-medium text-intense-cocoa">
                                         {{ __('reviews.ui.new_variants_available') }}
                                     </p>
                                 @endif
@@ -135,11 +135,11 @@
                                 </div>
 
                                 @if ($review->comment)
-                                    <p class="text-sm leading-relaxed text-intense-cocoa/80">{{ $review->comment }}</p>
+                                    <p class="text-sm font-medium leading-relaxed text-intense-cocoa">{{ $review->comment }}</p>
                                 @endif
                             </div>
                             {{-- 4. Action Buttons at the bottom --}}
-                            <div class="flex flex-wrap items-center justify-center gap-2 border-t border-intense-cocoa/10 pt-4 sm:justify-end">
+                            <div class="flex flex-wrap items-center justify-center gap-2 border-t border-intense-cocoa/30 pt-4 sm:justify-end">
                                 @if ($confirmingDeleteId === $review->id)
                                     <div class="flex w-full flex-col items-center justify-center gap-3 border border-error/20 bg-error/5 p-3 text-center text-xs sm:flex-row sm:justify-between">
                                         <span class="font-medium text-intense-cocoa">{{ __('account.reviews.confirm_delete_prompt') }}</span>
@@ -147,14 +147,14 @@
                                             <button
                                                 type="button"
                                                 wire:click="delete({{ $review->id }})"
-                                                class="border border-error/30 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-error transition-all duration-200 hover:border-error hover:bg-error hover:text-silk-cream"
+                                                class="cursor-pointer border border-error/50 px-3 py-1.5 text-sm font-semibold text-error transition-all duration-200 hover:border-error hover:bg-error hover:text-silk-cream"
                                             >
                                                 {{ __('account.reviews.delete') }}
                                             </button>
                                             <button
                                                 type="button"
                                                 wire:click="cancelDeleteConfirmation"
-                                                class="border border-intense-cocoa/30 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-intense-cocoa transition-all duration-200 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream"
+                                                class="cursor-pointer border border-intense-cocoa/50 px-3 py-1.5 text-sm font-semibold text-intense-cocoa transition-all duration-200 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream"
                                             >
                                                 {{ __('account.reviews.cancel') }}
                                             </button>
@@ -164,7 +164,7 @@
                                     <button
                                         type="button"
                                         wire:click="edit({{ $review->id }})"
-                                        class="inline-flex items-center gap-1.5 border border-intense-cocoa/20 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-intense-cocoa transition-colors duration-200 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream"
+                                        class="inline-flex cursor-pointer items-center gap-1.5 border border-intense-cocoa/50 px-3 py-1.5 text-sm font-semibold text-intense-cocoa transition-colors duration-200 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5" aria-hidden="true">
                                             <path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z" />
@@ -174,7 +174,7 @@
                                     <button
                                         type="button"
                                         wire:click="confirmDelete({{ $review->id }})"
-                                        class="inline-flex items-center gap-1.5 border border-error/30 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-error transition-colors duration-200 hover:border-error hover:bg-error hover:text-silk-cream"
+                                        class="inline-flex cursor-pointer items-center gap-1.5 border border-error/50 px-3 py-1.5 text-sm font-semibold text-error transition-colors duration-200 hover:border-error hover:bg-error hover:text-silk-cream"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5" aria-hidden="true">
                                             <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 1 .75.72v6.5a.75.75 0 0 1-1.5 0v-6.5a.75.75 0 0 1 .75-.72Zm3.34 0a.75.75 0 0 1 .75.72v6.5a.75.75 0 0 1-1.5 0v-6.5a.75.75 0 0 1 .75-.72Z" clip-rule="evenodd" />

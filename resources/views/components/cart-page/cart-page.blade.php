@@ -274,7 +274,7 @@
                         <button
                             type="button"
                             x-on:click="confirmingClear = false"
-                            class="inline-flex h-10 items-center justify-center border border-intense-cocoa text-xs font-semibold uppercase tracking-wider text-intense-cocoa transition-all duration-200 hover:bg-intense-cocoa hover:text-silk-cream"
+                            class="inline-flex h-10 cursor-pointer items-center justify-center border border-intense-cocoa text-xs font-semibold uppercase tracking-wider text-intense-cocoa transition-all duration-200 hover:bg-intense-cocoa hover:text-silk-cream"
                         >
                             {{ __('cart.page.clear_cart_cancel') }}
                         </button>
@@ -282,7 +282,7 @@
                             type="button"
                             wire:click="clearCart"
                             x-on:click="confirmingClear = false"
-                            class="inline-flex h-10 items-center justify-center border border-error bg-transparent text-xs font-semibold uppercase tracking-wider text-error transition-all duration-200 hover:bg-error hover:text-silk-cream"
+                            class="inline-flex h-10 cursor-pointer items-center justify-center border border-error bg-transparent text-xs font-semibold uppercase tracking-wider text-error transition-all duration-200 hover:bg-error hover:text-silk-cream"
                             data-cart-clear-confirm
                         >
                             {{ __('cart.page.clear_cart') }}
