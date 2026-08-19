@@ -33,6 +33,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Storefront locale (F13)
+    |--------------------------------------------------------------------------
+    |
+    | Supported languages live in App\Enums\Localization\LocaleEnum (es | en).
+    | The visitor's choice is kept in the session for the current visit and
+    | mirrored to a long-lived functional cookie so a returning guest is not
+    | dropped back to APP_LOCALE once the session expires.
+    |
+    */
+
+    'locale' => [
+        'cookie_name' => env('ECOMMERCE_LOCALE_COOKIE', 'locale'),
+        'cookie_lifetime' => (int) env('ECOMMERCE_LOCALE_COOKIE_LIFETIME', 525600),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Standard shipping (F04)
     |--------------------------------------------------------------------------
     |
