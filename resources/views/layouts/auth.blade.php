@@ -25,7 +25,10 @@
             <div class="absolute inset-0 bg-intense-cocoa/30"></div>
         </div>
 
-        <div class="flex flex-1 flex-col items-center justify-center px-margin-mobile py-12 lg:w-1/2 lg:items-center lg:justify-start lg:overflow-y-auto lg:px-margin-desktop lg:py-section-gap">
+        {{-- Vertical breathing room scales with the viewport instead of being a
+             fixed 7.5rem: on a short laptop that constant spent a third of the
+             column height on padding and pushed the form into a scroll. --}}
+        <div class="flex flex-1 flex-col items-center justify-center px-margin-mobile py-12 lg:w-1/2 lg:items-center lg:justify-start lg:overflow-y-auto lg:px-margin-desktop lg:py-[8vh]">
             <a href="{{ url('/') }}" class="mb-8">
                 <img src="/images/logos/leen-brown.png" alt="{{ config('app.name', 'Leen') }}" class="h-16 w-auto">
             </a>

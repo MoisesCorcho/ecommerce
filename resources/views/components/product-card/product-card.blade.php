@@ -24,7 +24,7 @@
     $availableColors = $availableColors ?? $product->availableColors();
 @endphp
 
-<article {{ $attributes->merge(['class' => 'group relative flex flex-col h-full bg-surface-container transition-shadow duration-300 ease-out hover:shadow-ambient']) }}>
+<article dusk="product-card" {{ $attributes->merge(['class' => 'group relative flex flex-col h-full bg-surface-container transition-shadow duration-300 ease-out hover:shadow-ambient']) }}>
     {{-- Image --}}
     <div class="relative w-full aspect-[4/5] bg-surface-container overflow-hidden mb-2">
         <a href="{{ $detailUrl }}" class="block h-full">
@@ -70,6 +70,7 @@
                 <button
                     type="button"
                     wire:click="$dispatch('open-quick-view', { productId: {{ $product->id }} })"
+                    dusk="quick-view-trigger"
                     aria-label="{{ __('storefront.products.quick_view') }}"
                     title="{{ __('storefront.products.quick_view') }}"
                     class="flex h-10 w-10 cursor-pointer items-center justify-center bg-soft-sand text-intense-cocoa shadow-sm transition-colors hover:bg-soft-gold hover:text-intense-cocoa"

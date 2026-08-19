@@ -27,13 +27,14 @@
 
             {{-- Modal Box --}}
             <div
-                class="relative z-10 my-auto flex max-h-[90vh] w-full max-w-3xl flex-col overflow-y-auto border border-soft-sand bg-silk-cream p-5 shadow-2xl sm:p-6 md:overflow-y-hidden"
+                class="relative z-10 my-auto flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden border border-soft-sand bg-silk-cream p-5 shadow-2xl sm:p-6"
                 x-on:click.outside="$wire.closeModal()"
             >
                 {{-- Close Button (44px WCAG Touch Target) --}}
                 <button
                     type="button"
                     wire:click="closeModal"
+                    dusk="quick-view-close"
                     aria-label="{{ __('storefront.shop.close_filters') }}"
                     class="absolute top-3 right-3 z-20 flex h-9 w-9 cursor-pointer items-center justify-center bg-intense-cocoa text-silk-cream transition-colors hover:bg-error hover:text-white focus:outline-none"
                 >
@@ -43,7 +44,9 @@
                 </button>
 
                 {{-- Two-column Grid Layout (Matching Product Detail 1-to-1) --}}
-                <div class="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
+                {{-- Scrolls here, not on the modal box: the close button is
+                     positioned against the box and would scroll out of reach. --}}
+                <div dusk="quick-view-scroll" class="grid min-h-0 grid-cols-1 gap-6 overflow-y-auto md:grid-cols-2 md:gap-8">
                     {{-- LEFT: Image Gallery --}}
                     <div class="flex flex-col gap-3">
                         <div class="group relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden bg-soft-sand">
@@ -351,6 +354,7 @@
                             <button
                                 type="button"
                                 wire:click="toggleFavorite"
+                                dusk="quick-view-favorite"
                                 wire:loading.attr="disabled"
                                 class="flex h-12 w-full cursor-pointer items-center justify-center border border-soft-gold text-sm font-medium text-intense-cocoa transition-colors duration-200 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none disabled:opacity-50"
                                 aria-label="{{ $isFavorited ? __('storefront.products.remove_from_favorites_label') : __('storefront.products.add_to_favorites_label') }}"
