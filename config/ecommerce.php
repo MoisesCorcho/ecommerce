@@ -54,6 +54,55 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Trusted reverse proxies
+    |--------------------------------------------------------------------------
+    |
+    | Behind a CDN the socket address is the CDN's, so the visitor's own address
+    | only survives in forwarded headers. Those headers are attacker-controlled
+    | on any request that did not come through the proxy, and several rate
+    | limiters key on the visitor's address, so the list below is deliberately
+    | an allowlist rather than a wildcard: the origin stays reachable on its
+    | own address, and a wildcard would let anyone reaching it directly claim
+    | any address they like.
+    |
+    | Defaults to Cloudflare's published ranges (cloudflare.com/ips, fetched
+    | 2026-08-19). Set ECOMMERCE_TRUSTED_PROXIES to a comma-separated list to
+    | override, or to an empty string to trust none.
+    |
+    */
+
+    'trusted_proxies' => array_values(array_filter(array_map(
+        'trim',
+        explode(',', (string) env('ECOMMERCE_TRUSTED_PROXIES', implode(',', [
+            // IPv4
+            '173.245.48.0/20',
+            '103.21.244.0/22',
+            '103.22.200.0/22',
+            '103.31.4.0/22',
+            '141.101.64.0/18',
+            '108.162.192.0/18',
+            '190.93.240.0/20',
+            '188.114.96.0/20',
+            '197.234.240.0/22',
+            '198.41.128.0/17',
+            '162.158.0.0/15',
+            '104.16.0.0/13',
+            '104.24.0.0/14',
+            '172.64.0.0/13',
+            '131.0.72.0/22',
+            // IPv6
+            '2400:cb00::/32',
+            '2606:4700::/32',
+            '2803:f800::/32',
+            '2405:b500::/32',
+            '2405:8100::/32',
+            '2a06:98c0::/29',
+            '2c0f:f248::/32',
+        ]))),
+    ))),
+
+    /*
+    |--------------------------------------------------------------------------
     | Storefront locale (F13)
     |--------------------------------------------------------------------------
     |
