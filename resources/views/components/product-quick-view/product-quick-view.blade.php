@@ -162,7 +162,11 @@
                                             {{ __('storefront.products.color_label') }}:
                                             <span class="font-normal text-intense-cocoa/60">{{ $selectedColor }}</span>
                                         </p>
-                                        <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="{{ __('storefront.products.color_label') }}">
+                                        {{-- The selected and hovered swatches draw a ring two
+                                             pixels outside themselves, which the scrolling
+                                             column would clip. The negative margin gives the
+                                             ring room without shifting the swatches. --}}
+                                        <div class="-m-1 flex flex-wrap gap-2 p-1" role="radiogroup" aria-label="{{ __('storefront.products.color_label') }}">
                                             @foreach ($availableColors as $colorName)
                                                 @php
                                                     $hex = ColorMap::HEX[strtolower($colorName)] ?? '#8B8B8B';
@@ -307,7 +311,7 @@
                                     type="button"
                                     wire:click="addToCart"
                                     wire:loading.attr="disabled"
-                                    class="w-full focus:outline-none disabled:bg-intense-cocoa/40 disabled:hover:bg-intense-cocoa/40 disabled:hover:text-silk-cream"
+                                    class="w-full whitespace-nowrap focus:outline-none disabled:bg-intense-cocoa/40 disabled:hover:bg-intense-cocoa/40 disabled:hover:text-silk-cream md:px-3"
                                     aria-label="{{ $product->is_preorder ? __('storefront.products.add_to_cart_preorder') : __('storefront.products.add_to_cart') }}"
                                 >
                                     <span wire:loading.remove wire:target="addToCart" class="inline-flex items-center">
@@ -328,7 +332,7 @@
                                     type="button"
                                     wire:click="buyNow"
                                     wire:loading.attr="disabled"
-                                    class="w-full"
+                                    class="w-full whitespace-nowrap md:px-3"
                                     aria-label="{{ __('storefront.products.buy_now') }}"
                                 >
                                     <span wire:loading.remove wire:target="buyNow">
@@ -346,7 +350,7 @@
                                 <x-primary-button
                                     type="button"
                                     disabled
-                                    class="w-full focus:outline-none disabled:bg-intense-cocoa/40 disabled:hover:bg-intense-cocoa/40 disabled:hover:text-silk-cream"
+                                    class="w-full whitespace-nowrap focus:outline-none disabled:bg-intense-cocoa/40 disabled:hover:bg-intense-cocoa/40 disabled:hover:text-silk-cream md:px-3"
                                     aria-label="{{ __('storefront.products.add_to_cart') }}"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mr-2 h-5 w-5" aria-hidden="true">

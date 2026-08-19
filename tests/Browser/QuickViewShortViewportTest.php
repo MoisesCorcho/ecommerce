@@ -99,6 +99,43 @@ class QuickViewShortViewportTest extends DuskTestCase
         }
     }
 
+    public function test_the_colour_swatches_have_room_for_their_selection_ring(): void
+    {
+        $this->browse(function (Browser $browser): void {
+            $this->openQuickView($browser);
+
+            // The ring is drawn outside the swatch and the scrolling column
+            // clips on both axes, so the row has to reserve the space.
+            $padding = (float) $browser->driver->executeScript(
+                "const row = document.querySelector('[dusk=quick-view-details] [role=radiogroup]');
+                 return parseFloat(getComputedStyle(row).paddingTop);"
+            );
+
+            $this->assertGreaterThanOrEqual(
+                4.0,
+                $padding,
+                'Without padding the selection ring is clipped by the scrolling column.',
+            );
+        });
+    }
+
+    public function test_the_action_labels_fit_on_one_line(): void
+    {
+        $this->browse(function (Browser $browser): void {
+            $this->openQuickView($browser);
+
+            $overflowing = $browser->driver->executeScript(
+                "return [...document.querySelectorAll('[dusk=quick-view-details] button')]
+                    .filter(e => e.scrollWidth > e.clientWidth + 1)
+                    .map(e => e.textContent.trim().slice(0, 30));"
+            );
+
+            // Side by side the buttons are half as wide, and nowrap turns a
+            // label that no longer fits into one that spills out.
+            $this->assertSame([], $overflowing, 'Action labels are overflowing their buttons.');
+        });
+    }
+
     public function test_the_details_column_scrolls_on_a_short_viewport(): void
     {
         $this->browse(function (Browser $browser): void {
