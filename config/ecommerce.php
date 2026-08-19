@@ -33,6 +33,27 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Storefront currency preference (F14)
+    |--------------------------------------------------------------------------
+    |
+    | The visitor's market currency drives the whole storefront, not just the
+    | cart. It is resolved per request from session, then cookie, then the
+    | country reported by the CDN, falling back to `default_currency`.
+    |
+    | `country_header` is the upstream header carrying an ISO 3166-1 alpha-2
+    | country. Cloudflare sends CF-IPCountry. Leave the header absent and
+    | detection is simply skipped — no error, no external lookup.
+    |
+    */
+
+    'currency_preference' => [
+        'cookie_name' => env('ECOMMERCE_CURRENCY_COOKIE', 'currency'),
+        'cookie_lifetime' => (int) env('ECOMMERCE_CURRENCY_COOKIE_LIFETIME', 525600),
+        'country_header' => env('ECOMMERCE_COUNTRY_HEADER', 'CF-IPCountry'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Storefront locale (F13)
     |--------------------------------------------------------------------------
     |
@@ -61,6 +82,7 @@ return [
     'shipping' => [
         'standard_cost_cop' => (int) env('ECOMMERCE_SHIPPING_STANDARD_COST_COP', 0),
         'standard_cost_eur' => (int) env('ECOMMERCE_SHIPPING_STANDARD_COST_EUR', 0),
+        'standard_cost_usd' => (int) env('ECOMMERCE_SHIPPING_STANDARD_COST_USD', 0),
     ],
 
     /*

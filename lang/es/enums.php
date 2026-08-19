@@ -6,6 +6,7 @@ return [
     'currency' => [
         'COP' => 'Peso colombiano',
         'EUR' => 'Euro',
+        'USD' => 'Dólar estadounidense',
     ],
 
     'order_status' => [

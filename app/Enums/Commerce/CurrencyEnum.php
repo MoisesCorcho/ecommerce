@@ -9,12 +9,15 @@ use Filament\Support\Contracts\HasLabel;
 
 /**
  * Market currencies. Stored values are ISO 4217 codes.
- * COP: integer pesos (no minor units). EUR: integer cents (minor units).
+ *
+ * Amounts are always stored as integers in the currency's smallest unit:
+ * COP has no minor unit (1 = one peso), EUR and USD are cents.
  */
 enum CurrencyEnum: string implements HasLabel
 {
     case Cop = 'COP';
     case Eur = 'EUR';
+    case Usd = 'USD';
 
     public function getLabel(): string
     {
@@ -23,10 +26,7 @@ enum CurrencyEnum: string implements HasLabel
 
     public function label(): string
     {
-        return match ($this) {
-            self::Cop => __('enums.currency.COP'),
-            self::Eur => __('enums.currency.EUR'),
-        };
+        return __('enums.currency.'.$this->value);
     }
 
     /**
@@ -36,24 +36,49 @@ enum CurrencyEnum: string implements HasLabel
     {
         return match ($this) {
             self::Cop => PaymentProviderEnum::Bold,
-            self::Eur => PaymentProviderEnum::Stripe,
+            self::Eur, self::Usd => PaymentProviderEnum::Stripe,
         };
     }
 
     /**
-     * Format integer amount according to currency rules.
-     * COP: integer pesos (no minor units). EUR: integer cents (minor units).
+     * How many integer units make up one unit of the currency.
+     *
+     * Drives both formatting and the decimal precision shown to customers.
+     */
+    public function minorUnits(): int
+    {
+        return match ($this) {
+            self::Cop => 1,
+            self::Eur, self::Usd => 100,
+        };
+    }
+
+    /**
+     * Currency symbol shown next to amounts.
+     *
+     * USD is prefixed rather than a bare "$" because COP already uses that
+     * sign: an unqualified "$ 120.000" would be ambiguous to a shopper who
+     * can be seeing either market.
+     */
+    public function symbol(): string
+    {
+        return match ($this) {
+            self::Cop => '$',
+            self::Eur => '€',
+            self::Usd => 'US$',
+        };
+    }
+
+    /**
+     * Format an integer amount expressed in this currency's smallest unit.
      */
     public function format(int $amount, bool $withSymbol = true): string
     {
-        if ($this === self::Eur) {
-            $formatted = number_format($amount / 100, 2, ',', '.');
+        $minorUnits = $this->minorUnits();
+        $decimals = $minorUnits === 1 ? 0 : 2;
 
-            return $withSymbol ? '€ '.$formatted : $formatted;
-        }
+        $formatted = number_format($amount / $minorUnits, $decimals, ',', '.');
 
-        $formatted = number_format($amount, 0, ',', '.');
-
-        return $withSymbol ? '$ '.$formatted : $formatted;
+        return $withSymbol ? $this->symbol().' '.$formatted : $formatted;
     }
 }
