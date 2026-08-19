@@ -212,3 +212,16 @@
     display: none;
 }
 
+
+/* Scrollable regions that must not show a scrollbar: the quick view scrolls
+   its details column, and a native bar there reads as a system artefact
+   dropped into the design. The three declarations cover Firefox, legacy
+   Edge and WebKit respectively. */
+.no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}

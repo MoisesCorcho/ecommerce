@@ -44,9 +44,11 @@
                 </button>
 
                 {{-- Two-column Grid Layout (Matching Product Detail 1-to-1) --}}
-                {{-- Scrolls here, not on the modal box: the close button is
-                     positioned against the box and would scroll out of reach. --}}
-                <div dusk="quick-view-scroll" class="grid min-h-0 grid-cols-1 gap-6 overflow-y-auto md:grid-cols-2 md:gap-8">
+                {{-- Never the modal box: the close button is positioned against
+                     it and would scroll out of reach. In one column the whole
+                     body scrolls; in two, only the details do, so the photo
+                     stays put instead of sliding away with the copy. --}}
+                <div dusk="quick-view-scroll" class="no-scrollbar grid min-h-0 grid-cols-1 gap-6 overflow-y-auto md:grid-cols-2 md:gap-8 md:overflow-hidden">
                     {{-- LEFT: Image Gallery --}}
                     <div class="flex flex-col gap-3">
                         <div class="group relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden bg-soft-sand">
@@ -99,7 +101,7 @@
                     </div>
 
                     {{-- RIGHT: Details & Actions (Matching Product Detail 1-to-1) --}}
-                    <div class="flex flex-col gap-3.5">
+                    <div dusk="quick-view-details" class="no-scrollbar flex flex-col gap-3.5 md:min-h-0 md:overflow-y-auto">
                         {{-- Category & Title --}}
                         <div>
                             @if ($product->category)

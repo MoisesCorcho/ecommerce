@@ -32,23 +32,62 @@ class QuickViewShortViewportTest extends DuskTestCase
             "document.querySelector('[dusk=quick-view-trigger]').click();"
         );
 
-        return $browser->waitFor('@quick-view-scroll');
+        return $browser->waitFor('@quick-view-details');
     }
 
-    public function test_the_modal_body_can_scroll_on_a_short_viewport(): void
+    private function style(Browser $browser, string $dusk, string $property): string
+    {
+        return (string) $browser->driver->executeScript(
+            "return getComputedStyle(document.querySelector('[dusk={$dusk}]')).{$property};"
+        );
+    }
+
+    public function test_the_details_column_scrolls_on_a_short_viewport(): void
     {
         $this->browse(function (Browser $browser): void {
             $this->openQuickView($browser);
 
-            $overflow = $browser->driver->executeScript(
-                "return getComputedStyle(document.querySelector('[dusk=quick-view-scroll]')).overflowY;"
-            );
-
             $this->assertSame(
                 'auto',
-                $overflow,
-                'The modal body must stay scrollable at every width; a wide screen is not necessarily a tall one.',
+                $this->style($browser, 'quick-view-details', 'overflowY'),
+                'The details column must stay scrollable at every width; a wide screen is not necessarily a tall one.',
             );
+        });
+    }
+
+    public function test_the_photo_stays_put_while_the_details_scroll(): void
+    {
+        $this->browse(function (Browser $browser): void {
+            $this->openQuickView($browser);
+
+            // Scrolling the whole grid would drag the product photo out of
+            // view along with the copy, which is not what a two-column
+            // product modal should do.
+            $this->assertSame(
+                'hidden',
+                $this->style($browser, 'quick-view-scroll', 'overflowY'),
+                'The grid itself must not scroll in the two-column layout.',
+            );
+        });
+    }
+
+    public function test_no_scrollbar_is_painted(): void
+    {
+        $this->browse(function (Browser $browser): void {
+            $this->openQuickView($browser);
+
+            $this->assertSame(
+                'none',
+                $this->style($browser, 'quick-view-details', 'scrollbarWidth'),
+                'A native scrollbar inside the modal reads as a system artefact dropped into the design.',
+            );
+
+            $painted = $browser->driver->executeScript(
+                "const el = document.querySelector('[dusk=quick-view-details]');
+                 return el.offsetWidth - el.clientWidth;"
+            );
+
+            $this->assertSame(0, (int) $painted, 'The scrollbar is still taking up layout width.');
         });
     }
 
@@ -60,34 +99,33 @@ class QuickViewShortViewportTest extends DuskTestCase
             // Selenium scrolls an element into view before clicking, which is
             // exactly what a clipped, unscrollable container makes impossible.
             $browser->click('@quick-view-favorite')
-                ->waitForLocation('/login');
+                ->waitForLocation('/login')
+                ->assertPathIs('/login');
         });
     }
 
-    public function test_the_close_button_stays_put_while_the_body_scrolls(): void
+    public function test_the_close_button_stays_put_while_the_details_scroll(): void
     {
         $this->browse(function (Browser $browser): void {
             $this->openQuickView($browser);
 
-            $before = $browser->driver->executeScript(
+            $top = fn (): float => (float) $browser->driver->executeScript(
                 "return document.querySelector('[dusk=quick-view-close]').getBoundingClientRect().top;"
             );
+
+            $before = $top();
 
             $browser->driver->executeScript(
-                "document.querySelector('[dusk=quick-view-scroll]').scrollTop = 9999;"
-            );
-
-            $after = $browser->driver->executeScript(
-                "return document.querySelector('[dusk=quick-view-close]').getBoundingClientRect().top;"
+                "document.querySelector('[dusk=quick-view-details]').scrollTop = 9999;"
             );
 
             // The close button is positioned against the modal box, so the box
             // itself must never be the scrolling element.
             $this->assertEqualsWithDelta(
                 $before,
-                $after,
+                $top(),
                 1.0,
-                'The close button moved while the modal body scrolled, so it can be scrolled out of reach.',
+                'The close button moved while the details scrolled, so it can be scrolled out of reach.',
             );
         });
     }
