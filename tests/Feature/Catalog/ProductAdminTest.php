@@ -315,7 +315,7 @@ class ProductAdminTest extends TestCase
                     'is_active' => true,
                     'stock' => 1,
                     'prices' => [
-                        ['currency' => 'USD', 'price' => 100],
+                        ['currency' => 'GBP', 'price' => 100],
                     ],
                 ],
             ],

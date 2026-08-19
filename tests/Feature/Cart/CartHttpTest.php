@@ -76,7 +76,7 @@ class CartHttpTest extends TestCase
 
         $this->actingAs($user)
             ->postJson(route('cart.currency'), [
-                'currency' => 'USD',
+                'currency' => 'GBP',
             ])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['currency']);
