@@ -74,6 +74,15 @@ class ProductSeeder extends Seeder
                         'compare_at_price' => null,
                     ],
                 );
+
+                $usdPrice = (int) round(($data['price'] / 3900) * 100);
+                $variant->prices()->updateOrCreate(
+                    ['currency' => CurrencyEnum::Usd],
+                    [
+                        'price' => $usdPrice,
+                        'compare_at_price' => null,
+                    ],
+                );
             }
 
             foreach ($data['images'] as $index => $filename) {

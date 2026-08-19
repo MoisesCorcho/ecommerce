@@ -47,4 +47,12 @@ class ProductVariantPriceFactory extends Factory
             'price' => fake()->numberBetween(4_900, 25_000),
         ]);
     }
+
+    public function usd(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'currency' => CurrencyEnum::Usd,
+            'price' => fake()->numberBetween(4_900, 25_000),
+        ]);
+    }
 }
