@@ -72,37 +72,39 @@ Este documento guía la verificación manual paso a paso de todos los flujos de 
 
 ### Módulo 3: Checkout y Proceso de Pedido
 
-- [ ] **3.1. Formulario de Checkout (`/checkout`)**:
+- [x] **3.1. Formulario de Checkout (`/checkout`)**:
   - [x] **1. Edge Case (Carrito Vacío)**: Intentar ingresar directamente a `/checkout` sin productos (debe redirigir a `/cart`).
-  - [ ] **2. Checkout como Invitado**: Completar datos de envío, contacto y dirección como usuario sin sesión activa.
-  - [ ] **3. Checkout como Autenticado**: Completar checkout con sesión iniciada utilizando una dirección guardada.
+  - [x] **2. Checkout como Invitado**: Completar datos de envío, contacto y dirección como usuario sin sesión activa.
+  - [x] **3. Checkout como Autenticado**: Completar checkout con sesión iniciada utilizando una dirección guardada.
 
-- [ ] **3.2. Página de Confirmación (`/orders/{order}/thank-you`)**:
-  - [ ] **1. Verificación de Resumen**: Comprobar datos de entrega, resumen de productos, total y estado inicial `Pendiente`.
-  - [ ] **2. Edge Case (Seguridad IDOR)**: Intentar abrir la URL de confirmación de un pedido perteneciente a otro usuario (debe retornar 403 Forbidden a menos que tenga firma válida).
+- [x] **3.2. Página de Confirmación (`/orders/{order}/thank-you`)**:
+  - [x] **1. Verificación de Resumen**: Comprobar datos de entrega, resumen de productos, total y estado inicial `Pendiente`.
+  - [x] **2. Edge Case (Seguridad IDOR)**: Intentar abrir la URL de confirmación de un pedido perteneciente a otro usuario (debe retornar 403 Forbidden a menos que tenga firma válida).
 
 ---
 
 ### Módulo 3B: Pasarelas de Pago de Prueba (Bold & Stripe)
 
-- [ ] **3.3. Pasarela Bold (COP - Sandbox)**:
-  - [ ] **1. Iniciar Pago**: Hacer clic en "Pagar ahora" en una orden en COP y verificar redirección a la pasarela Bold.
-  - [ ] **2. Transacción Exitosa**: Completar el pago con datos sandbox de prueba y comprobar el retorno a la tienda.
-  - [ ] **3. Verificación Webhook**: Confirmar que el estado del pedido cambie automáticamente a `Paid` (Pagado).
-  - [ ] **4. Edge Case (Cancelación en Pasarela)**: Simular cancelación en la ventana de Bold, volver a la tienda y verificar que la orden siga en `Pending` permitiendo reintentar.
+- [x] **3.3. Pasarela Bold (COP - Sandbox)**:
+  - [x] **1. Iniciar Pago**: Hacer clic en "Pagar ahora" en una orden en COP y verificar redirección a la pasarela Bold.
+  - [x] **2. Transacción Exitosa**: Completar el pago con datos sandbox de prueba y comprobar el retorno a la tienda.
+  - [x] **3. Verificación Webhook**: Confirmar que el estado del pedido cambie automáticamente a `Paid` (Pagado).
+  - [x] **4. Edge Case (Cancelación en Pasarela)**: Simular cancelación en la ventana de Bold, volver a la tienda y verificar que la orden siga en `Pending` permitiendo reintentar.
+  - [x] **5. Pago con Cupón de Descuento**: Aplicar un cupón en Checkout, verificar que Bold cobre el total neto descontado y validar el registro de redención e incremento de uso en BD.
 
-- [ ] **3.4. Pasarela Stripe (EUR - Test Mode)**:
-  - [ ] **1. Iniciar Pago en EUR**: Cambiar divisa a EUR, realizar checkout e iniciar pago hacia Stripe Checkout.
-  - [ ] **2. Tarjeta Exitosa**: Usar tarjeta de prueba `4242 4242 4242 4242` y comprobar retorno a `/thank-you` con estado `Paid`.
-  - [ ] **3. Edge Case (Tarjeta Declinada)**: Probar tarjeta `4000 0000 0000 0002` y verificar que la pasarela reporte el rechazo sin corromper la orden.
+- [x] **3.4. Pasarela Stripe (EUR - Test Mode)**:
+  - [x] **1. Iniciar Pago en EUR**: Cambiar divisa a EUR, realizar checkout e iniciar pago hacia Stripe Checkout.
+  - [x] **2. Tarjeta Exitosa**: Usar tarjeta de prueba `4242 4242 4242 4242` y comprobar retorno a `/thank-you` con estado `Paid`.
+  - [x] **3. Edge Case (Tarjeta Declinada)**: Probar tarjeta `4000 0000 0000 0002` y verificar que la pasarela reporte el rechazo sin corromper la orden.
+  - [x] **4. Pago con Cupón de Descuento (EUR)**: Aplicar cupón `EUR15`, verificar que Stripe cobre el total neto descontado (509,25 €) y validar el registro de redención e incremento de uso en BD.
 
 ---
 
 ### Módulo 4: Autenticación y Área de Cliente
 
 - [ ] **4.1. Autenticación (`/login`, `/register`, `/forgot-password`)**:
-  - [ ] **1. Registro**: Crear una cuenta nueva en `/register` y verificar inicio de sesión automático.
-  - [ ] **2. Login Incorrecto**: Intentar ingresar con contraseña errónea (debe mostrar mensaje de validación).
+  - [x] **1. Registro**: Crear una cuenta nueva en `/register` y verificar inicio de sesión automático.
+  - [x] **2. Login Incorrecto**: Intentar ingresar con contraseña errónea (debe mostrar mensaje de validación).
   - [ ] **3. Recuperación de Clave**: Solicitar enlace de restablecimiento en `/forgot-password`.
 
 - [ ] **4.2. Mi Perfil (`/profile`)**:

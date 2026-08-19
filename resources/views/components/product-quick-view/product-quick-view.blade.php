@@ -35,7 +35,7 @@
                     type="button"
                     wire:click="closeModal"
                     aria-label="{{ __('storefront.shop.close_filters') }}"
-                    class="absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center bg-intense-cocoa text-silk-cream transition-colors hover:bg-error hover:text-white focus:outline-none"
+                    class="absolute top-3 right-3 z-20 flex h-9 w-9 cursor-pointer items-center justify-center bg-intense-cocoa text-silk-cream transition-colors hover:bg-error hover:text-white focus:outline-none"
                 >
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
