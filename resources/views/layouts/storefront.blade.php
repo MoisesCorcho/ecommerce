@@ -49,6 +49,9 @@
             {{-- Trailing icons — right side --}}
             <div class="flex flex-1 justify-end items-center gap-3 sm:gap-5 text-intense-cocoa">
                 <div class="hidden lg:block">
+                    <x-currency-switcher />
+                </div>
+                <div class="hidden lg:block">
                     <x-locale-switcher />
                 </div>
                 <a href="{{ route('wishlist') }}" class="transition-colors duration-300 hover:text-soft-gold" aria-label="{{ __('storefront.nav.favorites') }}">
@@ -112,8 +115,9 @@
                         {{ __('storefront.nav.account') }}
                     </a>
                 @endguest
-                <div class="border-t border-intense-cocoa/10 pt-4">
+                <div class="flex flex-col gap-4 border-t border-intense-cocoa/10 pt-4">
                     <x-locale-switcher variant="inline" />
+                    <x-currency-switcher variant="inline" />
                 </div>
             </div>
         </nav>

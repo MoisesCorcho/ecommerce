@@ -14,6 +14,7 @@ use App\Models\CartItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Support\Cart\ResolvesCurrentCart;
+use App\Support\Commerce\CurrentCurrency;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
@@ -45,8 +46,7 @@ new class extends Component
 
     public function mount(): void
     {
-        $code = (string) config('ecommerce.default_currency', CurrencyEnum::Cop->value);
-        $this->currency = CurrencyEnum::tryFrom($code)?->value ?? CurrencyEnum::Cop->value;
+        $this->currency = CurrentCurrency::get()->value;
     }
 
     #[On('open-quick-view')]

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\SetCurrency;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -21,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Appended to `web` (not global) so the session is already started
         // when the visitor's language preference is resolved.
         $middleware->appendToGroup('web', SetLocale::class);
+        $middleware->appendToGroup('web', SetCurrency::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

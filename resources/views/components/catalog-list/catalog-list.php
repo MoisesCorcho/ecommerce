@@ -13,6 +13,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariantPrice;
 use App\Support\Cart\ResolvesCurrentCart;
+use App\Support\Commerce\CurrentCurrency;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
@@ -56,8 +57,7 @@ new #[Layout('layouts.storefront')] class extends Component
 
     public function mount(): void
     {
-        $code = (string) config('ecommerce.default_currency', CurrencyEnum::Cop->value);
-        $this->currency = CurrencyEnum::tryFrom($code)?->value ?? CurrencyEnum::Cop->value;
+        $this->currency = CurrentCurrency::get()->value;
 
         if (is_string($this->category)) {
             $this->category = array_filter([$this->category]);

@@ -25,6 +25,7 @@ use App\Models\ProductVariant;
 use App\Models\Review;
 use App\Services\Reviews\ReviewEligibilityService;
 use App\Support\Cart\ResolvesCurrentCart;
+use App\Support\Commerce\CurrentCurrency;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -74,8 +75,7 @@ new #[Layout('layouts.storefront')] class extends Component
     {
         $this->slug = $slug;
 
-        $code = (string) config('ecommerce.default_currency', CurrencyEnum::Cop->value);
-        $this->currency = CurrencyEnum::tryFrom($code)?->value ?? CurrencyEnum::Cop->value;
+        $this->currency = CurrentCurrency::get()->value;
 
         $currency = CurrencyEnum::from($this->currency);
         $product = $this->findPublishedProduct($currency);
