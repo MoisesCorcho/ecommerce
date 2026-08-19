@@ -42,6 +42,63 @@ class QuickViewShortViewportTest extends DuskTestCase
         );
     }
 
+    public function test_it_fits_without_scrolling_on_laptop_screens(): void
+    {
+        // The scroll below is a safety net for extremes, not the normal
+        // experience: on the screens people actually shop from, everything
+        // has to be on screen at once.
+        foreach ([[1280, 800], [1366, 768], [1280, 720]] as [$width, $height]) {
+            $this->browse(function (Browser $browser) use ($width, $height): void {
+                $browser->resize($width, $height)
+                    ->visit('/products')
+                    ->waitFor('@product-card');
+
+                $count = (int) $browser->driver->executeScript(
+                    "return document.querySelectorAll('[dusk=quick-view-trigger]').length;"
+                );
+
+                for ($i = 0; $i < $count; $i++) {
+                    $browser->driver->executeScript(
+                        "document.querySelectorAll('[dusk=quick-view-trigger]')[{$i}].click();"
+                    );
+                    $browser->waitFor('@quick-view-details')->pause(250);
+
+                    $m = $browser->driver->executeScript(
+                        "const d = document.querySelector('[dusk=quick-view-details]');
+                         const fav = document.querySelector('[dusk=quick-view-favorite]');
+                         const box = document.querySelector('[dusk=quick-view-scroll]').parentElement;
+                         return {
+                             name: d.querySelector('h2').textContent.trim(),
+                             overflow: d.scrollHeight - d.clientHeight,
+                             favInside: fav ? fav.getBoundingClientRect().bottom <= box.getBoundingClientRect().bottom + 1 : true,
+                         };"
+                    );
+
+                    $at = "{$width}x{$height}";
+
+                    $this->assertSame(
+                        0,
+                        (int) $m['overflow'],
+                        "[{$m['name']}] overflows its column by {$m['overflow']}px at {$at}.",
+                    );
+
+                    // Measured against the box, not the column: a column that is
+                    // never constrained reports no overflow while its content
+                    // spills out and gets clipped.
+                    $this->assertTrue(
+                        (bool) $m['favInside'],
+                        "[{$m['name']}] pushes its last action outside the modal at {$at}.",
+                    );
+
+                    $browser->driver->executeScript(
+                        "document.querySelector('[dusk=quick-view-close]').click();"
+                    );
+                    $browser->pause(200);
+                }
+            });
+        }
+    }
+
     public function test_the_details_column_scrolls_on_a_short_viewport(): void
     {
         $this->browse(function (Browser $browser): void {

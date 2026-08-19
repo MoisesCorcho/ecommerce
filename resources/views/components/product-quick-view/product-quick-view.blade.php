@@ -27,7 +27,7 @@
 
             {{-- Modal Box --}}
             <div
-                class="relative z-10 my-auto flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden border border-soft-sand bg-silk-cream p-5 shadow-2xl sm:p-6"
+                class="relative z-10 my-auto flex max-h-[94vh] w-full max-w-4xl flex-col overflow-hidden border border-soft-sand bg-silk-cream p-5 shadow-2xl sm:p-6"
                 x-on:click.outside="$wire.closeModal()"
             >
                 {{-- Close Button (44px WCAG Touch Target) --}}
@@ -48,10 +48,10 @@
                      it and would scroll out of reach. In one column the whole
                      body scrolls; in two, only the details do, so the photo
                      stays put instead of sliding away with the copy. --}}
-                <div dusk="quick-view-scroll" class="no-scrollbar grid min-h-0 grid-cols-1 gap-6 overflow-y-auto md:grid-cols-2 md:gap-8 md:overflow-hidden">
+                <div dusk="quick-view-scroll" class="no-scrollbar grid min-h-0 grid-cols-1 gap-6 overflow-y-auto md:grid-cols-2 md:gap-8 md:overflow-hidden md:[grid-template-rows:minmax(0,1fr)]">
                     {{-- LEFT: Image Gallery --}}
-                    <div class="flex flex-col gap-3">
-                        <div class="group relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden bg-soft-sand">
+                    <div class="flex flex-col gap-3 md:min-h-0">
+                        <div class="group relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden bg-soft-sand md:aspect-auto md:min-h-0 md:flex-1">
                             @if ($product->images->count() > 0)
                                 @php
                                     $currentImage = $product->images->get($mainImageIndex) ?? $product->images->first();
@@ -101,7 +101,7 @@
                     </div>
 
                     {{-- RIGHT: Details & Actions (Matching Product Detail 1-to-1) --}}
-                    <div dusk="quick-view-details" class="no-scrollbar flex flex-col gap-3.5 md:min-h-0 md:overflow-y-auto">
+                    <div dusk="quick-view-details" class="no-scrollbar flex flex-col gap-3.5 md:min-h-0 md:gap-2 md:overflow-y-auto">
                         {{-- Category & Title --}}
                         <div>
                             @if ($product->category)
@@ -292,12 +292,16 @@
                         @endif
 
                         {{-- Action buttons (With Loading Feedback) --}}
-                        <div class="flex flex-col gap-3 pt-2">
+                        <div class="flex flex-col gap-3 pt-2 md:gap-1.5 md:pt-0">
                             @php
                                 $canAddToCart = $selectedVariant && $selectedVariant->stock > 0 && $availableStock > 0;
                             @endphp
 
-                            {{-- Add to cart --}}
+                            {{-- Add to cart. Side by side from md: two stacked
+                                 full-width buttons cost ~70px of height, which
+                                 is the difference between fitting a laptop
+                                 screen and not. --}}
+                            <div class="flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-2">
                             @if ($canAddToCart)
                                 <x-primary-button
                                     type="button"
@@ -352,13 +356,15 @@
                                 </x-primary-button>
                             @endif
 
+                            </div>
+
                             {{-- Favorites heart button matching Product Detail --}}
                             <button
                                 type="button"
                                 wire:click="toggleFavorite"
                                 dusk="quick-view-favorite"
                                 wire:loading.attr="disabled"
-                                class="flex h-12 w-full cursor-pointer items-center justify-center border border-soft-gold text-sm font-medium text-intense-cocoa transition-colors duration-200 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none disabled:opacity-50"
+                                class="flex h-12 w-full cursor-pointer items-center justify-center border border-soft-gold md:h-10 text-sm font-medium text-intense-cocoa transition-colors duration-200 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none disabled:opacity-50"
                                 aria-label="{{ $isFavorited ? __('storefront.products.remove_from_favorites_label') : __('storefront.products.add_to_favorites_label') }}"
                             >
                                 <svg
