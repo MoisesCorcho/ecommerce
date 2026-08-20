@@ -1,6 +1,16 @@
 @import './fonts.css';
 @import 'tailwindcss';
 
+/* Laptops with a bookmarks bar leave far less vertical room than the raw
+   window size suggests. At or below this height the quick view compacts instead of
+   spilling into a scroll. */
+@custom-variant short {
+    @media (max-height: 700px) {
+        @slot;
+    }
+}
+
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../views/layouts/*.blade.php';
@@ -224,4 +234,11 @@
 
 .no-scrollbar::-webkit-scrollbar {
     display: none;
+}
+
+/* Direct children of the scrolling details column must keep their natural
+   height. A flex child shrinks below its content by default, and a clamped
+   paragraph that shrinks keeps painting its text outside its own box. */
+.quick-view-details > * {
+    flex-shrink: 0;
 }

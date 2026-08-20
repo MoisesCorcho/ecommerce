@@ -47,7 +47,9 @@ class QuickViewShortViewportTest extends DuskTestCase
         // The scroll below is a safety net for extremes, not the normal
         // experience: on the screens people actually shop from, everything
         // has to be on screen at once.
-        foreach ([[1280, 800], [1366, 768], [1280, 720]] as [$width, $height]) {
+        // 1280x700 is the tight one: a laptop with the bookmarks bar open leaves
+        // roughly 557px of viewport, well under what the raw window size suggests.
+        foreach ([[1280, 800], [1366, 768], [1280, 720], [1280, 700]] as [$width, $height]) {
             $this->browse(function (Browser $browser) use ($width, $height): void {
                 $browser->resize($width, $height)
                     ->visit('/products')

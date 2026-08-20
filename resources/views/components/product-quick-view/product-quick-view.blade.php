@@ -27,7 +27,7 @@
 
             {{-- Modal Box --}}
             <div
-                class="relative z-10 my-auto flex max-h-[94vh] w-full max-w-4xl flex-col overflow-hidden border border-soft-sand bg-silk-cream p-5 shadow-2xl sm:p-6"
+                class="relative z-10 my-auto flex max-h-[94vh] w-full max-w-4xl short:max-h-[97vh] flex-col overflow-hidden border border-soft-sand bg-silk-cream p-5 shadow-2xl sm:p-6"
                 x-on:click.outside="$wire.closeModal()"
             >
                 {{-- Close Button (44px WCAG Touch Target) --}}
@@ -101,7 +101,7 @@
                     </div>
 
                     {{-- RIGHT: Details & Actions (Matching Product Detail 1-to-1) --}}
-                    <div dusk="quick-view-details" class="no-scrollbar flex flex-col gap-3.5 md:-mx-1.5 md:min-h-0 md:gap-2 md:overflow-y-auto md:px-1.5">
+                    <div dusk="quick-view-details" class="quick-view-details no-scrollbar flex flex-col gap-3.5 md:-mx-1.5 md:min-h-0 md:gap-2 md:overflow-y-auto md:px-1.5 short:gap-1">
                         {{-- Category & Title --}}
                         <div>
                             @if ($product->category)
@@ -109,7 +109,7 @@
                                     {{ $product->category->name }}
                                 </p>
                             @endif
-                            <h2 id="quick-view-title" class="font-chillax text-2xl font-semibold tracking-tight text-intense-cocoa sm:text-3xl">
+                            <h2 id="quick-view-title" class="font-chillax text-2xl font-semibold tracking-tight text-intense-cocoa sm:text-3xl short:text-xl">
                                 {{ $product->name }}
                             </h2>
                         </div>
@@ -120,7 +120,7 @@
                                 @php
                                     $price = $selectedVariant->priceIn($currencyEnum);
                                 @endphp
-                                <span class="font-sans text-2xl font-semibold tabular-nums text-intense-cocoa">
+                                <span class="font-sans text-2xl font-semibold tabular-nums text-intense-cocoa short:text-xl">
                                     {{ $currencyEnum->format($price->price) }}
                                 </span>
                             @endif
@@ -176,7 +176,7 @@
                                                     aria-checked="{{ $isSelected ? 'true' : 'false' }}"
                                                     aria-label="{{ $colorName }}"
                                                     title="{{ $colorName }}"
-                                                    class="relative h-9 w-9 border border-intense-cocoa/20 transition-all hover:ring-2 hover:ring-soft-gold hover:ring-offset-2 focus:outline-none disabled:opacity-50 {{ $isSelected ? 'border-intense-cocoa ring-2 ring-intense-cocoa ring-offset-2' : '' }}"
+                                                    class="relative h-9 w-9 border border-intense-cocoa/20 short:h-8 short:w-8 transition-all hover:ring-2 hover:ring-soft-gold hover:ring-offset-2 focus:outline-none disabled:opacity-50 {{ $isSelected ? 'border-intense-cocoa ring-2 ring-intense-cocoa ring-offset-2' : '' }}"
                                                     style="background-color: {{ $hex }}"
                                                 >
                                                     @if ($isSelected)
@@ -209,7 +209,7 @@
                                                     wire:loading.attr="disabled"
                                                     role="radio"
                                                     aria-checked="{{ $isSelected ? 'true' : 'false' }}"
-                                                    class="min-h-[38px] min-w-[38px] border px-3 py-1.5 text-sm font-medium transition-all duration-200 focus:outline-none disabled:opacity-50 {{ $isSelected ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-transparent bg-soft-sand text-intense-cocoa hover:border-intense-cocoa' }}"
+                                                    class="min-h-[38px] min-w-[38px] border px-3 py-1.5 text-sm short:min-h-[32px] short:py-1 font-medium transition-all duration-200 focus:outline-none disabled:opacity-50 {{ $isSelected ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-transparent bg-soft-sand text-intense-cocoa hover:border-intense-cocoa' }}"
                                                 >
                                                     {{ $sizeName }}
                                                 </button>
@@ -254,7 +254,7 @@
                                     </div>
                                 @endif
 
-                                <div class="inline-flex items-center overflow-hidden border border-intense-cocoa">
+                                <div class="inline-flex items-center overflow-hidden border border-intense-cocoa short:[&_button]:h-9 short:[&_span]:h-9">
                                     <button
                                         type="button"
                                         wire:click="$set('quantity', {{ max(1, $quantity - 1) }})"
@@ -307,7 +307,7 @@
                                     type="button"
                                     wire:click="addToCart"
                                     wire:loading.attr="disabled"
-                                    class="w-full whitespace-nowrap focus:outline-none disabled:bg-intense-cocoa/40 disabled:hover:bg-intense-cocoa/40 disabled:hover:text-silk-cream md:px-3"
+                                    class="w-full whitespace-nowrap short:h-10 focus:outline-none disabled:bg-intense-cocoa/40 disabled:hover:bg-intense-cocoa/40 disabled:hover:text-silk-cream md:px-3"
                                     aria-label="{{ $product->is_preorder ? __('storefront.products.add_to_cart_preorder') : __('storefront.products.add_to_cart') }}"
                                 >
                                     <span wire:loading.remove wire:target="addToCart" class="inline-flex items-center">
@@ -328,7 +328,7 @@
                                     type="button"
                                     wire:click="buyNow"
                                     wire:loading.attr="disabled"
-                                    class="w-full whitespace-nowrap md:px-3"
+                                    class="w-full whitespace-nowrap short:h-10 md:px-3"
                                     aria-label="{{ __('storefront.products.buy_now') }}"
                                 >
                                     <span wire:loading.remove wire:target="buyNow">
@@ -346,7 +346,7 @@
                                 <x-primary-button
                                     type="button"
                                     disabled
-                                    class="w-full whitespace-nowrap focus:outline-none disabled:bg-intense-cocoa/40 disabled:hover:bg-intense-cocoa/40 disabled:hover:text-silk-cream md:px-3"
+                                    class="w-full whitespace-nowrap short:h-10 focus:outline-none disabled:bg-intense-cocoa/40 disabled:hover:bg-intense-cocoa/40 disabled:hover:text-silk-cream md:px-3"
                                     aria-label="{{ __('storefront.products.add_to_cart') }}"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mr-2 h-5 w-5" aria-hidden="true">
@@ -364,7 +364,7 @@
                                 wire:click="toggleFavorite"
                                 dusk="quick-view-favorite"
                                 wire:loading.attr="disabled"
-                                class="flex h-12 w-full cursor-pointer items-center justify-center border border-soft-gold md:h-10 text-sm font-medium text-intense-cocoa transition-colors duration-200 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none disabled:opacity-50"
+                                class="flex h-12 w-full cursor-pointer items-center justify-center border border-soft-gold md:h-10 short:h-9 text-sm font-medium text-intense-cocoa transition-colors duration-200 hover:border-intense-cocoa hover:bg-intense-cocoa hover:text-silk-cream focus:outline-none disabled:opacity-50"
                                 aria-label="{{ $isFavorited ? __('storefront.products.remove_from_favorites_label') : __('storefront.products.add_to_favorites_label') }}"
                             >
                                 <svg
