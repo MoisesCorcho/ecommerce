@@ -131,6 +131,65 @@ class QuickViewShortViewportTest extends DuskTestCase
         });
     }
 
+    public function test_it_survives_the_cart_holding_all_the_stock(): void
+    {
+        // The tightest state there is: the "all stock is in your cart" notice
+        // and the cart badge are both on screen at once.
+        $this->browse(function (Browser $browser): void {
+            $browser->resize(1280, 700)
+                ->visit('/products')
+                ->waitFor('@product-card');
+
+            $browser->driver->executeScript(
+                "document.querySelectorAll('[dusk=quick-view-trigger]')[3].click();"
+            );
+            $browser->waitFor('@quick-view-details')->pause(500);
+
+            for ($i = 0; $i < 12; $i++) {
+                $exhausted = (bool) $browser->driver->executeScript(
+                    "return [...document.querySelectorAll('[dusk=quick-view-details] p')]
+                        .some(p => /^(All|Todo)/i.test(p.textContent.trim()));"
+                );
+
+                if ($exhausted) {
+                    break;
+                }
+
+                $browser->driver->executeScript(
+                    "const plus = [...document.querySelectorAll('[dusk=quick-view-details] button')]
+                        .find(b => b.textContent.trim() === '+');
+                     if (plus) { for (let k = 0; k < 9; k++) { plus.click(); } }"
+                );
+                $browser->pause(600);
+
+                $browser->driver->executeScript(
+                    "const b = [...document.querySelectorAll('[dusk=quick-view-details] button')]
+                        .find(x => /carrito|add to cart/i.test(x.textContent) && ! x.disabled);
+                     if (b) { b.click(); }"
+                );
+                $browser->pause(1600);
+            }
+
+            $state = $browser->driver->executeScript(
+                "const d = document.querySelector('[dusk=quick-view-details]');
+                 const actions = [...d.querySelectorAll('button')]
+                     .filter(b => /cart|carrito|Buy now|Comprar/i.test(b.textContent));
+                 return {
+                     overflow: d.scrollHeight - d.clientHeight,
+                     actions: actions.length,
+                     allDisabled: actions.every(b => b.disabled),
+                 };"
+            );
+
+            $this->assertSame(0, (int) $state['overflow'], 'The modal overflows once all the stock is in the cart.');
+
+            // Both actions stay on screen: one that vanishes reflows everything
+            // under it and leaves the shopper without an explanation.
+            $this->assertSame(2, (int) $state['actions'], 'An action disappeared instead of being disabled.');
+            $this->assertTrue((bool) $state['allDisabled'], 'An action stayed clickable with no stock left to add.');
+        });
+    }
+
     public function test_the_colour_swatches_have_room_for_their_selection_ring(): void
     {
         $this->browse(function (Browser $browser): void {

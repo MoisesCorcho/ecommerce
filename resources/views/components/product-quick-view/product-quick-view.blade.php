@@ -226,7 +226,7 @@
                                 {{ __('storefront.products.select_variant') }}
                             </p>
                         @elseif ($selectedVariant->stock > 0 && $availableStock <= 0)
-                            <p class="bg-soft-gold/20 px-4 py-2.5 text-body-md text-intense-cocoa/80 leading-relaxed">
+                            <p class="bg-soft-gold/20 px-4 py-2.5 text-body-md text-intense-cocoa/80 leading-relaxed short:px-3 short:py-1.5 short:text-xs">
                                 {{ __('storefront.products.stock_in_cart') }}
                             </p>
                         @endif
@@ -261,6 +261,10 @@
 
                                 </div>
 
+                                {{-- A stepper for a quantity that cannot be added is dead
+                                     controls: hidden once the cart already holds all the
+                                     stock, while the label and badge stay to explain why. --}}
+                                @if ($availableStock > 0)
                                 <div class="inline-flex items-center overflow-hidden border border-intense-cocoa short:[&_button]:h-9 short:[&_span]:h-9">
                                     <button
                                         type="button"
@@ -295,6 +299,7 @@
                                         </svg>
                                     </button>
                                 </div>
+                                @endif
                             </div>
                         @endif
 
@@ -361,6 +366,18 @@
                                     </svg>
                                     {{ __('storefront.products.add_to_cart') }}
                                 </x-primary-button>
+
+                                {{-- Disabled rather than removed: a button that vanishes
+                                     reflows everything under it and leaves the shopper
+                                     without an explanation. --}}
+                                <x-secondary-button
+                                    type="button"
+                                    disabled
+                                    class="w-full whitespace-nowrap short:h-10 disabled:border-intense-cocoa/25 disabled:text-intense-cocoa/40 disabled:hover:bg-transparent disabled:hover:text-intense-cocoa/40 md:px-3"
+                                    aria-label="{{ __('storefront.products.buy_now') }}"
+                                >
+                                    {{ __('storefront.products.buy_now') }}
+                                </x-secondary-button>
                             @endif
 
                             </div>
