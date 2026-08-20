@@ -241,18 +241,25 @@
                         {{-- Quantity Selector (Matching Product Detail) --}}
                         @if ($selectedVariant && $selectedVariant->stock > 0)
                             <div class="flex flex-col items-start">
-                                <label for="qv-product-qty" class="mb-2 block text-sm font-medium text-intense-cocoa">
+                                {{-- On a short screen the badge sits beside the label instead of
+                                     below it: stacked it costs about thirty-four pixels, and it
+                                     only appears after adding to the cart, which made the modal
+                                     grow past the viewport at the worst possible moment. --}}
+                                <div class="flex flex-col items-start short:mb-2 short:flex-row short:items-center short:gap-2">
+                                <label for="qv-product-qty" class="mb-2 block text-sm font-medium text-intense-cocoa short:mb-0">
                                     {{ __('storefront.products.quantity_label') }}
                                 </label>
 
                                 @if ($cartQuantity > 0)
-                                    <div class="mb-2.5 inline-flex items-center gap-1.5 rounded-none bg-soft-sand px-2.5 py-1 text-xs font-medium text-intense-cocoa">
+                                    <div class="mb-2.5 inline-flex items-center gap-1.5 rounded-none bg-soft-sand px-2.5 py-1 text-xs font-medium text-intense-cocoa short:mb-0">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5 text-intense-cocoa/70" aria-hidden="true">
                                             <path fill-rule="evenodd" d="M6 5v1H4.667a1.75 1.75 0 0 0-1.741 1.575l-.834 8.5A1.75 1.75 0 0 0 3.834 18h12.332a1.75 1.75 0 0 0 1.742-1.925l-.834-8.5A1.75 1.75 0 0 0 15.333 6H14V5a4 4 0 0 0-8 0Zm4-2.5A2.5 2.5 0 0 0 7.5 5v1h5V5A2.5 2.5 0 0 0 10 2.5ZM4.333 7.5h11.334l.833 8.5a.25.25 0 0 1-.249.275H3.834a.25.25 0 0 1-.249-.275l.833-8.5Z" clip-rule="evenodd" />
                                         </svg>
                                         <span>{{ __('storefront.products.already_in_cart', ['count' => $cartQuantity]) }}</span>
                                     </div>
                                 @endif
+
+                                </div>
 
                                 <div class="inline-flex items-center overflow-hidden border border-intense-cocoa short:[&_button]:h-9 short:[&_span]:h-9">
                                     <button

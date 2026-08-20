@@ -101,6 +101,36 @@ class QuickViewShortViewportTest extends DuskTestCase
         }
     }
 
+    public function test_it_still_fits_after_adding_to_the_cart(): void
+    {
+        // Adding to the cart reveals an "already in your cart" badge. Stacked
+        // under the label it cost about thirty-four pixels, so the modal grew
+        // past the viewport at the exact moment the shopper acted on it.
+        $this->browse(function (Browser $browser): void {
+            $browser->resize(1280, 700)
+                ->visit('/products')
+                ->waitFor('@product-card');
+
+            $browser->driver->executeScript(
+                "document.querySelectorAll('[dusk=quick-view-trigger]')[3].click();"
+            );
+            $browser->waitFor('@quick-view-details')->pause(500);
+
+            $browser->driver->executeScript(
+                "[...document.querySelectorAll('[dusk=quick-view-details] button')]
+                    .find(b => /carrito|cart/i.test(b.textContent)).click();"
+            );
+            $browser->pause(2500);
+
+            $after = (int) $browser->driver->executeScript(
+                "const d = document.querySelector('[dusk=quick-view-details]');
+                 return d.scrollHeight - d.clientHeight;"
+            );
+
+            $this->assertSame(0, $after, "The modal overflows by {$after}px once the cart badge appears.");
+        });
+    }
+
     public function test_the_colour_swatches_have_room_for_their_selection_ring(): void
     {
         $this->browse(function (Browser $browser): void {
