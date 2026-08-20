@@ -101,7 +101,7 @@
                     </div>
 
                     {{-- RIGHT: Details & Actions (Matching Product Detail 1-to-1) --}}
-                    <div dusk="quick-view-details" class="no-scrollbar flex flex-col gap-3.5 md:min-h-0 md:gap-2 md:overflow-y-auto">
+                    <div dusk="quick-view-details" class="no-scrollbar flex flex-col gap-3.5 md:-mx-1.5 md:min-h-0 md:gap-2 md:overflow-y-auto md:px-1.5">
                         {{-- Category & Title --}}
                         <div>
                             @if ($product->category)
@@ -162,11 +162,7 @@
                                             {{ __('storefront.products.color_label') }}:
                                             <span class="font-normal text-intense-cocoa/60">{{ $selectedColor }}</span>
                                         </p>
-                                        {{-- The selected and hovered swatches draw a ring two
-                                             pixels outside themselves, which the scrolling
-                                             column would clip. The negative margin gives the
-                                             ring room without shifting the swatches. --}}
-                                        <div class="-m-1 flex flex-wrap gap-2 p-1" role="radiogroup" aria-label="{{ __('storefront.products.color_label') }}">
+                                        <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="{{ __('storefront.products.color_label') }}">
                                             @foreach ($availableColors as $colorName)
                                                 @php
                                                     $hex = ColorMap::HEX[strtolower($colorName)] ?? '#8B8B8B';

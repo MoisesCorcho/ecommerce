@@ -104,17 +104,21 @@ class QuickViewShortViewportTest extends DuskTestCase
         $this->browse(function (Browser $browser): void {
             $this->openQuickView($browser);
 
-            // The ring is drawn outside the swatch and the scrolling column
-            // clips on both axes, so the row has to reserve the space.
-            $padding = (float) $browser->driver->executeScript(
-                "const row = document.querySelector('[dusk=quick-view-details] [role=radiogroup]');
-                 return parseFloat(getComputedStyle(row).paddingTop);"
+            // The ring is drawn four pixels outside the swatch, and clipping
+            // happens at the padding box of the scrolling column -- so the
+            // room has to be reserved on the column, not on the row inside it.
+            $clearance = (float) $browser->driver->executeScript(
+                "const col = document.querySelector('[dusk=quick-view-details]');
+                 const swatch = col.querySelector('[role=radiogroup] button');
+                 const clipLeft = col.getBoundingClientRect().left
+                     + parseFloat(getComputedStyle(col).borderLeftWidth);
+                 return swatch.getBoundingClientRect().left - clipLeft;"
             );
 
             $this->assertGreaterThanOrEqual(
                 4.0,
-                $padding,
-                'Without padding the selection ring is clipped by the scrolling column.',
+                $clearance,
+                "Only {$clearance}px between the swatch and the clip edge; the selection ring needs 4.",
             );
         });
     }
