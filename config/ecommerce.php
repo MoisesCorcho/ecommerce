@@ -172,7 +172,7 @@ return [
     */
 
     'contact' => [
-        'inbox' => env('CONTACT_MAIL_TO'),
+        'inbox' => env('CONTACT_MAIL_TO', env('CONTACT_PUBLIC_EMAIL', 'leenhandbags@gmail.com')),
         'public_email' => env('CONTACT_PUBLIC_EMAIL', 'leenhandbags@gmail.com'),
         'phone' => env('CONTACT_PHONE', '+57 300 123 4567'),
         'phone_raw' => env('CONTACT_PHONE_RAW', '+573001234567'),

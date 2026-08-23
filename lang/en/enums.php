@@ -35,4 +35,11 @@ return [
         'percentage' => 'Percentage',
         'fixed' => 'Fixed amount',
     ],
+
+    'contact_submission_status' => [
+        'new' => 'New',
+        'read' => 'Read',
+        'replied' => 'Replied',
+        'archived' => 'Archived',
+    ],
 ];
