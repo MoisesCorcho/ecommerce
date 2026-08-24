@@ -35,4 +35,11 @@ return [
         'percentage' => 'Porcentaje',
         'fixed' => 'Monto fijo',
     ],
+
+    'contact_submission_status' => [
+        'new' => 'Nuevo',
+        'read' => 'Leído',
+        'replied' => 'Respondido',
+        'archived' => 'Archivado',
+    ],
 ];

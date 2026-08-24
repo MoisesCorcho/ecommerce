@@ -141,6 +141,34 @@ class ContactPageTest extends TestCase
             fn (ContactFormSubmittedMail $mail): bool => $mail->hasTo('inbox@example.com')
                 && $mail->hasReplyTo('jane@example.com'),
         );
+
+        $this->assertDatabaseHas('contact_submissions', [
+            'name' => 'Jane Doe',
+            'email' => 'jane@example.com',
+            'subject' => 'Hello there',
+            'message' => 'A perfectly valid message.',
+            'status' => 'new',
+        ]);
+    }
+
+    public function test_authenticated_user_submission_records_user_id_in_database(): void
+    {
+        config(['ecommerce.contact.inbox' => 'inbox@example.com']);
+        Mail::fake();
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test('contact-page')
+            ->set('subject', 'My Order')
+            ->set('message', 'Where is my order?')
+            ->call('submit')
+            ->assertSet('sent', true);
+
+        $this->assertDatabaseHas('contact_submissions', [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'subject' => 'My Order',
+        ]);
     }
 
     public function test_send_another_resets_success_state_to_idle(): void
@@ -189,9 +217,9 @@ class ContactPageTest extends TestCase
         Mail::assertSentCount(ContactFormRateLimiter::MAX_ATTEMPTS);
     }
 
-    // --- R14: mail transport failure ---
+    // --- R14: mail transport failure with DB resilience ---
 
-    public function test_transport_failure_shows_error_banner_logs_and_preserves_fields(): void
+    public function test_transport_failure_logs_error_but_preserves_submission_in_database(): void
     {
         config(['ecommerce.contact.inbox' => 'inbox@example.com', 'ecommerce.contact.public_email' => 'support@example.com']);
 
@@ -206,12 +234,14 @@ class ContactPageTest extends TestCase
             ->set('subject', 'Hello there')
             ->set('message', 'A perfectly valid message.')
             ->call('submit')
-            ->assertSet('sent', false)
-            ->assertSet('errorMessage', __('contact.error.send_failed'))
-            ->assertSet('name', 'Jane Doe')
-            ->assertSet('email', 'jane@example.com')
-            ->assertSet('subject', 'Hello there')
-            ->assertSet('message', 'A perfectly valid message.');
+            ->assertSet('sent', true);
+
+        $this->assertDatabaseHas('contact_submissions', [
+            'name' => 'Jane Doe',
+            'email' => 'jane@example.com',
+            'subject' => 'Hello there',
+            'status' => 'new',
+        ]);
     }
 
     // --- R8, R9: storefront navigation links ---
