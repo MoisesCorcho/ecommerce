@@ -166,6 +166,46 @@ class StorefrontCatalogTest extends TestCase
             ->assertSet('maxPrice', null);
     }
 
+    public function test_price_range_facets_isolate_currencies_correctly(): void
+    {
+        $product1 = $this->createPublishedProduct('Bag 1', 'bag-1', CurrencyEnum::Cop, 700_000);
+        $variant1 = $product1->variants->first();
+        ProductVariantPrice::factory()->for($variant1, 'productVariant')->create([
+            'currency' => CurrencyEnum::Usd,
+            'price' => 180,
+        ]);
+
+        $product2 = $this->createPublishedProduct('Bag 2', 'bag-2', CurrencyEnum::Cop, 900_000);
+        $variant2 = $product2->variants->first();
+        ProductVariantPrice::factory()->for($variant2, 'productVariant')->create([
+            'currency' => CurrencyEnum::Usd,
+            'price' => 250,
+        ]);
+
+        // In COP mode: range should be 700,000 to 900,000 (never 180 or 250)
+        Livewire::test('catalog-list')
+            ->assertViewHas('globalMinPrice', 700_000)
+            ->assertViewHas('globalMaxPrice', 900_000);
+
+        // In USD mode: range should be 180 to 250 (never 700,000)
+        Config::set('ecommerce.default_currency', 'USD');
+        Livewire::test('catalog-list')
+            ->set('currency', 'USD')
+            ->assertViewHas('globalMinPrice', 180)
+            ->assertViewHas('globalMaxPrice', 250);
+    }
+
+    public function test_currency_change_resets_min_and_max_price_filters(): void
+    {
+        Livewire::test('catalog-list')
+            ->call('setPriceFilter', 700_000, 900_000)
+            ->assertSet('minPrice', 700_000)
+            ->assertSet('maxPrice', 900_000)
+            ->call('setCurrency', 'USD')
+            ->assertSet('minPrice', null)
+            ->assertSet('maxPrice', null);
+    }
+
     public function test_size_filter_filters_products_by_variant_size(): void
     {
         $productMini = $this->createPublishedProduct('Mini Bag', 'mini-bag', CurrencyEnum::Cop, 300_000);
@@ -235,5 +275,19 @@ class StorefrontCatalogTest extends TestCase
             ->assertSee('Mini')
             ->assertSee('Mediano')
             ->assertSee('Maxi');
+    }
+
+    public function test_catalog_card_renders_discounted_price_and_discount_badge(): void
+    {
+        $product = $this->createPublishedProduct('Card Discount Bag', 'card-discount-bag', CurrencyEnum::Cop, 600_000);
+        $variant = $product->variants->first();
+        $variant->prices()->first()->update([
+            'compare_at_price' => 800_000,
+        ]);
+
+        Livewire::test('catalog-list')
+            ->assertSee('600.000')
+            ->assertSee('800.000')
+            ->assertSee('-25%');
     }
 }

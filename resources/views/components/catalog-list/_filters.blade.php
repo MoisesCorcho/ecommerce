@@ -89,12 +89,21 @@
             x-data="{
                 floor: {{ $globalMinPrice }},
                 ceil: {{ $globalMaxPrice }},
+                minorUnits: {{ $currencyEnum->minorUnits() }},
+                symbol: '{{ $currencyEnum->symbol() }}',
+                decimals: {{ $currencyEnum->minorUnits() === 1 ? 0 : 2 }},
+                step: {{ $currencyEnum->minorUnits() === 1 ? 1000 : 100 }},
                 wireMin: $wire.entangle('minPrice').live,
                 wireMax: $wire.entangle('maxPrice').live,
                 localMin: {{ $globalMinPrice }},
                 localMax: {{ $globalMaxPrice }},
                 fmt(v) {
-                    return new Intl.NumberFormat('de-DE').format(v);
+                    var val = Number(v) / this.minorUnits;
+                    var formatted = new Intl.NumberFormat('es-CO', {
+                        minimumFractionDigits: this.decimals,
+                        maximumFractionDigits: this.decimals,
+                    }).format(val);
+                    return this.symbol + ' ' + formatted;
                 },
                 updateFill() {
                     var lo = parseInt(this.localMin);
@@ -152,6 +161,7 @@
                     class="price-slider__input price-slider__input--min"
                     :min="floor"
                     :max="ceil"
+                    :step="step"
                     :value="localMin"
                     @input="onMinInput($event.target.value)"
                     @change="sync()"
@@ -161,6 +171,7 @@
                     class="price-slider__input price-slider__input--max"
                     :min="floor"
                     :max="ceil"
+                    :step="step"
                     :value="localMax"
                     @input="onMaxInput($event.target.value)"
                     @change="sync()"

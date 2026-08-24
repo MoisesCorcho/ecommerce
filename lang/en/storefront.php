@@ -109,6 +109,8 @@ return [
         'quick_view' => 'Quick view',
         'quick_view_title' => 'Product quick preview',
         'view_full_details' => 'View full details',
+        'sale_badge' => 'Sale',
+        'compare_at_label' => 'Original',
     ],
 
     'wishlist' => [

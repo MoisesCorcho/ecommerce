@@ -112,6 +112,21 @@ new #[Layout('layouts.storefront')] class extends Component
         $this->resetPage();
     }
 
+    public function updatedCurrency(): void
+    {
+        $this->minPrice = null;
+        $this->maxPrice = null;
+        $this->resetPage();
+    }
+
+    public function setCurrency(string $currency): void
+    {
+        $this->currency = $currency;
+        $this->minPrice = null;
+        $this->maxPrice = null;
+        $this->resetPage();
+    }
+
     /**
      * Toggle a color in the filter array.
      */
@@ -378,24 +393,24 @@ new #[Layout('layouts.storefront')] class extends Component
     }
 
     /**
-     * Global price range (min, max) across all published products for this currency.
+     * Global price range (min, max) across all published products strictly for this currency.
      *
      * @return array{0: int|null, 1: int|null}
      */
     private function buildPriceRange(CurrencyEnum $currency): array
     {
-        $range = Product::query()
-            ->publishedForStorefront($currency)
-            ->whereHas('variants', fn (Builder $q) => $q->active()->withPriceIn($currency))
-            ->get()
-            ->flatMap(fn (Product $p) => $p->variants->flatMap(
-                fn ($v) => $v->prices->pluck('price')
-            ));
+        $stats = ProductVariantPrice::query()
+            ->where('currency', $currency->value)
+            ->whereHas('productVariant', fn (Builder $q) => $q->active()->whereHas(
+                'product', fn (Builder $pq) => $pq->publishedForStorefront($currency)
+            ))
+            ->selectRaw('MIN(price) as min_price, MAX(price) as max_price')
+            ->first();
 
-        if ($range->isEmpty()) {
+        if (! $stats || $stats->min_price === null || $stats->max_price === null) {
             return [null, null];
         }
 
-        return [(int) $range->min(), (int) $range->max()];
+        return [(int) $stats->min_price, (int) $stats->max_price];
     }
 };

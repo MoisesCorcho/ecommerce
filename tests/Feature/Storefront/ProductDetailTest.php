@@ -135,6 +135,55 @@ class ProductDetailTest extends TestCase
             ->assertDontSee('20cm x 15cm x 5cm');
     }
 
+    public function test_product_detail_renders_compare_at_price_and_discount_badge(): void
+    {
+        $product = Product::factory()->create([
+            'name' => 'Discounted Bag',
+            'slug' => 'discounted-bag',
+            'is_active' => true,
+        ]);
+
+        $variant = ProductVariant::factory()->for($product)->create([
+            'sku' => 'DISC-01',
+            'is_active' => true,
+            'stock' => 10,
+        ]);
+
+        ProductVariantPrice::factory()->for($variant, 'productVariant')->create([
+            'currency' => CurrencyEnum::Cop,
+            'price' => 700_000,
+            'compare_at_price' => 1_000_000,
+        ]);
+
+        Livewire::test('product-detail', ['slug' => 'discounted-bag'])
+            ->assertSee('700.000')
+            ->assertSee('1.000.000')
+            ->assertSee('-30%');
+    }
+
+    public function test_product_detail_renders_lightbox_zoom_trigger(): void
+    {
+        $product = Product::factory()->create([
+            'name' => 'Gallery Bag',
+            'slug' => 'gallery-bag',
+            'is_active' => true,
+        ]);
+
+        $variant = ProductVariant::factory()->for($product)->create([
+            'sku' => 'GAL-01',
+            'is_active' => true,
+        ]);
+
+        ProductVariantPrice::factory()->for($variant, 'productVariant')->create([
+            'currency' => CurrencyEnum::Cop,
+            'price' => 200_000,
+        ]);
+
+        Livewire::test('product-detail', ['slug' => 'gallery-bag'])
+            ->assertSeeHtml('@click="openLightbox(')
+            ->assertDontSeeHtml('wire:click="openLightbox(');
+    }
+
     /**
      * @param  array<int, array{sku: string, color: string, size: string}>  $variants
      */

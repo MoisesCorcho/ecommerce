@@ -109,6 +109,8 @@ return [
         'quick_view' => 'Vista rápida',
         'quick_view_title' => 'Vista previa rápida del producto',
         'view_full_details' => 'Ver detalles completos',
+        'sale_badge' => 'Oferta',
+        'compare_at_label' => 'Antes',
     ],
 
     'wishlist' => [

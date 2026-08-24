@@ -81,6 +81,33 @@ class ProductQuickViewTest extends TestCase
             ->assertSee('Mediano');
     }
 
+    public function test_quick_view_modal_renders_discounted_price_and_badge(): void
+    {
+        $product = Product::factory()->create([
+            'name' => 'Bolso Oferta',
+            'slug' => 'bolso-oferta',
+            'is_active' => true,
+        ]);
+
+        $variant = ProductVariant::factory()->for($product)->create([
+            'sku' => 'BO-01',
+            'is_active' => true,
+            'stock' => 5,
+        ]);
+
+        ProductVariantPrice::factory()->for($variant, 'productVariant')->create([
+            'currency' => CurrencyEnum::Cop,
+            'price' => 500_000,
+            'compare_at_price' => 800_000,
+        ]);
+
+        Livewire::test('product-quick-view')
+            ->dispatch('open-quick-view', productId: $product->id)
+            ->assertSee('500.000')
+            ->assertSee('800.000')
+            ->assertSee('-38%');
+    }
+
     public function test_quick_view_modal_does_not_open_for_invalid_product_id(): void
     {
         Livewire::test('product-quick-view')
