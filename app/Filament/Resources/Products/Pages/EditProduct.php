@@ -58,6 +58,7 @@ class EditProduct extends EditRecord
                 'sku' => $variant->sku,
                 'color' => $variant->color,
                 'size' => $variant->size,
+                'dimensions' => $variant->dimensions,
                 'stock' => $variant->stock,
                 'is_active' => $variant->is_active,
                 'prices' => $variant->prices->map(static function ($price): array {

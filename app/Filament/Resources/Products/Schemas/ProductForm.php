@@ -118,7 +118,7 @@ final class ProductForm
                         ->label(__('products.fields.variants'))
                         ->schema([
                             Hidden::make('id'),
-                            Grid::make(3)
+                            Grid::make(4)
                                 ->schema([
                                     TextInput::make('sku')
                                         ->label(__('products.fields.sku'))
@@ -152,6 +152,10 @@ final class ProductForm
                                         ->label(__('products.fields.size'))
                                         ->maxLength(255)
                                         ->placeholder(__('products.placeholders.size')),
+                                    TextInput::make('dimensions')
+                                        ->label(__('products.fields.dimensions'))
+                                        ->maxLength(255)
+                                        ->placeholder(__('products.placeholders.dimensions')),
                                 ]),
                             Grid::make(3)
                                 ->schema([

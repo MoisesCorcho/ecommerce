@@ -36,7 +36,6 @@ class UpdateProductAction
                 'slug' => $slug,
                 'description' => $dto->description,
                 'material' => $dto->material,
-                'dimensions' => $dto->dimensions,
                 'is_preorder' => $dto->isPreorder,
                 'is_active' => $dto->isActive,
             ]);
@@ -87,6 +86,7 @@ class UpdateProductAction
                 'sku' => $variantDto->sku,
                 'color' => $variantDto->color,
                 'size' => $variantDto->size,
+                'dimensions' => $variantDto->dimensions,
                 'stock' => $variantDto->stock,
                 'is_active' => $variantDto->isActive,
             ]);
@@ -100,6 +100,7 @@ class UpdateProductAction
             'sku' => $variantDto->sku,
             'color' => $variantDto->color,
             'size' => $variantDto->size,
+            'dimensions' => $variantDto->dimensions,
             'stock' => $variantDto->stock,
             'is_active' => $variantDto->isActive,
         ]);

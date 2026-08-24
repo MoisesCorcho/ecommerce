@@ -70,6 +70,7 @@ return [
         'sort_price_desc' => 'Price: High to Low',
         'filter_category' => 'Category',
         'filter_color' => 'Color',
+        'filter_size' => 'Size',
         'filter_price' => 'Price',
         'filter_availability' => 'Availability',
         'filter_in_stock' => 'In stock only',

@@ -16,6 +16,7 @@ readonly class UpsertProductVariantDTO
         public array $prices,
         public ?string $color = null,
         public ?string $size = null,
+        public ?string $dimensions = null,
         public ?int $id = null,
     ) {}
 
@@ -26,6 +27,7 @@ readonly class UpsertProductVariantDTO
      *     stock?: int|string|null,
      *     color?: string|null,
      *     size?: string|null,
+     *     dimensions?: string|null,
      *     id?: int|null,
      *     prices?: list<array<string, mixed>>
      * }  $data
@@ -44,6 +46,7 @@ readonly class UpsertProductVariantDTO
             prices: $prices,
             color: isset($data['color']) && $data['color'] !== '' ? (string) $data['color'] : null,
             size: isset($data['size']) && $data['size'] !== '' ? (string) $data['size'] : null,
+            dimensions: isset($data['dimensions']) && $data['dimensions'] !== '' ? (string) $data['dimensions'] : null,
             id: isset($data['id']) ? (int) $data['id'] : null,
         );
     }

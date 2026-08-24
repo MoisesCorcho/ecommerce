@@ -398,10 +398,10 @@
                                 <span class="text-intense-cocoa/70">{{ $product->material }}</span>
                             </div>
                         @endif
-                        @if ($selectedVariant?->size || $product->dimensions)
+                        @if ($selectedVariant?->dimensions)
                             <div>
                                 <span class="font-medium text-intense-cocoa">{{ __('storefront.products.dimensions_label') }}:</span>
-                                <span class="text-intense-cocoa/70">{{ $selectedVariant?->size ?: $product->dimensions }}</span>
+                                <span class="text-intense-cocoa/70">{{ $selectedVariant->dimensions }}</span>
                             </div>
                         @endif
                         <p class="whitespace-pre-line">{{ $product->description }}</p>

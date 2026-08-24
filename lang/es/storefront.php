@@ -70,6 +70,7 @@ return [
         'sort_price_desc' => 'Precio: mayor a menor',
         'filter_category' => 'Categoría',
         'filter_color' => 'Color',
+        'filter_size' => 'Tamaño',
         'filter_price' => 'Precio',
         'filter_availability' => 'Disponibilidad',
         'filter_in_stock' => 'Solo disponibles',

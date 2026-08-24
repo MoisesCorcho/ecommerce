@@ -90,6 +90,50 @@ class ProductDetailTest extends TestCase
             ->assertSet('selectedVariantId', $rojoVariant->id);
     }
 
+    public function test_product_detail_renders_variant_dimensions_in_specs_section(): void
+    {
+        $product = Product::factory()->create([
+            'name' => 'Dimension Bag',
+            'slug' => 'dimension-bag',
+            'description' => 'Bolso con dimensiones específicas',
+            'is_active' => true,
+        ]);
+
+        $miniVariant = ProductVariant::factory()->for($product)->create([
+            'sku' => 'DIM-MINI',
+            'color' => 'Miel',
+            'size' => 'Mini',
+            'dimensions' => '20cm x 15cm x 5cm',
+            'stock' => 10,
+            'is_active' => true,
+        ]);
+        ProductVariantPrice::factory()->for($miniVariant, 'productVariant')->create([
+            'currency' => CurrencyEnum::Cop,
+            'price' => 200_000,
+        ]);
+
+        $maxiVariant = ProductVariant::factory()->for($product)->create([
+            'sku' => 'DIM-MAXI',
+            'color' => 'Miel',
+            'size' => 'Maxi',
+            'dimensions' => '35cm x 25cm x 10cm',
+            'stock' => 10,
+            'is_active' => true,
+        ]);
+        ProductVariantPrice::factory()->for($maxiVariant, 'productVariant')->create([
+            'currency' => CurrencyEnum::Cop,
+            'price' => 350_000,
+        ]);
+
+        Livewire::test('product-detail', ['slug' => 'dimension-bag'])
+            ->assertSet('selectedSize', 'Mini')
+            ->assertSee('20cm x 15cm x 5cm')
+            ->assertDontSee('35cm x 25cm x 10cm')
+            ->set('selectedSize', 'Maxi')
+            ->assertSee('35cm x 25cm x 10cm')
+            ->assertDontSee('20cm x 15cm x 5cm');
+    }
+
     /**
      * @param  array<int, array{sku: string, color: string, size: string}>  $variants
      */

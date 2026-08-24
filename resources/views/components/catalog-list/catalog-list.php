@@ -43,6 +43,10 @@ new #[Layout('layouts.storefront')] class extends Component
     #[Url]
     public array $color = [];
 
+    /** @var array<int, string> Size names */
+    #[Url]
+    public array $size = [];
+
     #[Url]
     public ?int $minPrice = null;
 
@@ -78,6 +82,11 @@ new #[Layout('layouts.storefront')] class extends Component
     }
 
     public function updatedColor(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedSize(): void
     {
         $this->resetPage();
     }
@@ -120,6 +129,23 @@ new #[Layout('layouts.storefront')] class extends Component
     }
 
     /**
+     * Toggle a size in the filter array.
+     */
+    public function toggleSize(string $size): void
+    {
+        $key = array_search($size, $this->size, true);
+
+        if ($key === false) {
+            $this->size[] = $size;
+        } else {
+            unset($this->size[$key]);
+            $this->size = array_values($this->size);
+        }
+
+        $this->resetPage();
+    }
+
+    /**
      * Set min and max price filter in a single atomic Livewire action.
      */
     public function setPriceFilter(?int $min, ?int $max): void
@@ -136,6 +162,7 @@ new #[Layout('layouts.storefront')] class extends Component
     {
         $this->category = [];
         $this->color = [];
+        $this->size = [];
         $this->minPrice = null;
         $this->maxPrice = null;
         $this->inStock = false;
@@ -204,6 +231,7 @@ new #[Layout('layouts.storefront')] class extends Component
         // --- Facet data for sidebar ---
         $categories = $this->buildCategoryFacets($currency);
         $colors = $this->buildColorFacets($currency);
+        $sizes = $this->buildSizeFacets($currency);
         [$globalMinPrice, $globalMaxPrice] = $this->buildPriceRange($currency);
 
         return [
@@ -211,6 +239,7 @@ new #[Layout('layouts.storefront')] class extends Component
             'currencyEnum' => $currency,
             'categories' => $categories,
             'colors' => $colors,
+            'sizes' => $sizes,
             'globalMinPrice' => $globalMinPrice,
             'globalMaxPrice' => $globalMaxPrice,
         ];
@@ -230,6 +259,13 @@ new #[Layout('layouts.storefront')] class extends Component
             $query->whereHas(
                 'variants',
                 fn (Builder $q) => $q->active()->whereIn('color', $this->color)
+            );
+        }
+
+        if ($this->size !== []) {
+            $query->whereHas(
+                'variants',
+                fn (Builder $q) => $q->active()->whereIn('size', $this->size)
             );
         }
 
@@ -312,6 +348,26 @@ new #[Layout('layouts.storefront')] class extends Component
             ->with(['variants' => fn ($q) => $q->active()->whereNotNull('color')])
             ->get()
             ->flatMap(fn (Product $p) => $p->variants->pluck('color'))
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Size facets: distinct sizes from active variants of published products.
+     *
+     * @return array<int, string>
+     */
+    private function buildSizeFacets(CurrencyEnum $currency): array
+    {
+        return Product::query()
+            ->publishedForStorefront($currency)
+            ->whereHas('variants', fn (Builder $q) => $q->active()->whereNotNull('size'))
+            ->with(['variants' => fn ($q) => $q->active()->whereNotNull('size')])
+            ->get()
+            ->flatMap(fn (Product $p) => $p->variants->pluck('size'))
             ->filter()
             ->unique()
             ->sort()

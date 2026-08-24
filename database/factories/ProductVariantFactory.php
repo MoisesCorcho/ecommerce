@@ -23,6 +23,7 @@ class ProductVariantFactory extends Factory
             'sku' => strtoupper(fake()->unique()->bothify('LHB-###-???')),
             'color' => fake()->optional()->safeColorName(),
             'size' => null,
+            'dimensions' => null,
             'stock' => fake()->numberBetween(0, 50),
             'is_active' => true,
         ];

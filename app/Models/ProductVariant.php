@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'sku',
     'color',
     'size',
+    'dimensions',
     'stock',
     'is_active',
 ])]

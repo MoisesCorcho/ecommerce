@@ -21,7 +21,6 @@ use Illuminate\Support\Collection;
     'slug',
     'description',
     'material',
-    'dimensions',
     'is_preorder',
     'is_active',
 ])]

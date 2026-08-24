@@ -52,6 +52,30 @@
     </div>
 @endif
 
+{{-- Size filter --}}
+@if ($sizes !== [])
+    <div class="flex flex-col gap-stack-sm">
+        <x-filter-heading>
+            {{ __('storefront.shop.filter_size') }}
+        </x-filter-heading>
+        <ul class="flex flex-col gap-3 text-body-md text-intense-cocoa/80">
+            @foreach ($sizes as $sizeName)
+                <li>
+                    <x-checkbox
+                        align="center"
+                        label-class=""
+                        wrapper-class="cursor-pointer transition-colors hover:text-soft-gold"
+                        wire:model.live="size"
+                        value="{{ $sizeName }}"
+                    >
+                        {{ $sizeName }}
+                    </x-checkbox>
+                </li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 {{-- Price filter --}}
 @if ($globalMinPrice !== null && $globalMaxPrice !== null)
     <div class="flex flex-col gap-stack-sm">
@@ -166,7 +190,7 @@
 </div>
 
 {{-- Clear filters --}}
-@if ($category !== [] || $color !== [] || $minPrice !== null || $maxPrice !== null || $inStock)
+@if ($category !== [] || $color !== [] || $size !== [] || $minPrice !== null || $maxPrice !== null || $inStock)
     <x-secondary-button
         type="button"
         wire:click="clearFilters"
