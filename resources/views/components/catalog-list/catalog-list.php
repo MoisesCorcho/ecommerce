@@ -5,11 +5,13 @@ declare(strict_types=1);
 use App\Actions\Cart\AddCartItemAction;
 use App\DTOs\Cart\AddCartItemDTO;
 use App\Enums\Commerce\CurrencyEnum;
+use App\Enums\Products\SizeEnum;
 use App\Exceptions\Cart\CartAccessDeniedException;
 use App\Exceptions\Cart\CartItemNotEligibleException;
 use App\Exceptions\Cart\CartQuantityNotAllowedException;
 use App\Exceptions\Cart\InsufficientCartStockException;
 use App\Models\Category;
+use App\Models\Color;
 use App\Models\Product;
 use App\Models\ProductVariantPrice;
 use App\Support\Cart\ResolvesCurrentCart;
@@ -42,6 +44,10 @@ new #[Layout('layouts.storefront')] class extends Component
     /** @var array<int, string> Color names */
     #[Url]
     public array $color = [];
+
+    /** @var array<int, string> Size names */
+    #[Url]
+    public array $size = [];
 
     #[Url]
     public ?int $minPrice = null;
@@ -82,6 +88,11 @@ new #[Layout('layouts.storefront')] class extends Component
         $this->resetPage();
     }
 
+    public function updatedSize(): void
+    {
+        $this->resetPage();
+    }
+
     public function updatedMinPrice(): void
     {
         $this->resetPage();
@@ -102,6 +113,21 @@ new #[Layout('layouts.storefront')] class extends Component
         $this->resetPage();
     }
 
+    public function updatedCurrency(): void
+    {
+        $this->minPrice = null;
+        $this->maxPrice = null;
+        $this->resetPage();
+    }
+
+    public function setCurrency(string $currency): void
+    {
+        $this->currency = $currency;
+        $this->minPrice = null;
+        $this->maxPrice = null;
+        $this->resetPage();
+    }
+
     /**
      * Toggle a color in the filter array.
      */
@@ -114,6 +140,23 @@ new #[Layout('layouts.storefront')] class extends Component
         } else {
             unset($this->color[$key]);
             $this->color = array_values($this->color);
+        }
+
+        $this->resetPage();
+    }
+
+    /**
+     * Toggle a size in the filter array.
+     */
+    public function toggleSize(string $size): void
+    {
+        $key = array_search($size, $this->size, true);
+
+        if ($key === false) {
+            $this->size[] = $size;
+        } else {
+            unset($this->size[$key]);
+            $this->size = array_values($this->size);
         }
 
         $this->resetPage();
@@ -136,6 +179,7 @@ new #[Layout('layouts.storefront')] class extends Component
     {
         $this->category = [];
         $this->color = [];
+        $this->size = [];
         $this->minPrice = null;
         $this->maxPrice = null;
         $this->inStock = false;
@@ -204,6 +248,7 @@ new #[Layout('layouts.storefront')] class extends Component
         // --- Facet data for sidebar ---
         $categories = $this->buildCategoryFacets($currency);
         $colors = $this->buildColorFacets($currency);
+        $sizes = $this->buildSizeFacets($currency);
         [$globalMinPrice, $globalMaxPrice] = $this->buildPriceRange($currency);
 
         return [
@@ -211,6 +256,7 @@ new #[Layout('layouts.storefront')] class extends Component
             'currencyEnum' => $currency,
             'categories' => $categories,
             'colors' => $colors,
+            'sizes' => $sizes,
             'globalMinPrice' => $globalMinPrice,
             'globalMaxPrice' => $globalMaxPrice,
         ];
@@ -229,7 +275,17 @@ new #[Layout('layouts.storefront')] class extends Component
         if ($this->color !== []) {
             $query->whereHas(
                 'variants',
-                fn (Builder $q) => $q->active()->whereIn('color', $this->color)
+                fn (Builder $q) => $q->active()->whereHas(
+                    'colorModel',
+                    fn (Builder $cq) => $cq->whereIn('name', $this->color)
+                )
+            );
+        }
+
+        if ($this->size !== []) {
+            $query->whereHas(
+                'variants',
+                fn (Builder $q) => $q->active()->whereIn('size', $this->size)
             );
         }
 
@@ -306,38 +362,57 @@ new #[Layout('layouts.storefront')] class extends Component
      */
     private function buildColorFacets(CurrencyEnum $currency): array
     {
+        return Color::query()
+            ->active()
+            ->whereHas('variants', fn (Builder $q) => $q->active()->whereHas(
+                'product', fn (Builder $pq) => $pq->publishedForStorefront($currency)
+            ))
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->pluck('name')
+            ->all();
+    }
+
+    /**
+     * Size facets: distinct sizes from active variants of published products.
+     *
+     * @return array<int, string>
+     */
+    private function buildSizeFacets(CurrencyEnum $currency): array
+    {
         return Product::query()
             ->publishedForStorefront($currency)
-            ->whereHas('variants', fn (Builder $q) => $q->active()->whereNotNull('color'))
-            ->with(['variants' => fn ($q) => $q->active()->whereNotNull('color')])
+            ->whereHas('variants', fn (Builder $q) => $q->active()->whereNotNull('size'))
+            ->with(['variants' => fn ($q) => $q->active()->whereNotNull('size')])
             ->get()
-            ->flatMap(fn (Product $p) => $p->variants->pluck('color'))
+            ->flatMap(fn (Product $p) => $p->variants->pluck('size'))
+            ->map(fn ($size) => $size instanceof SizeEnum ? $size->value : (is_string($size) ? $size : null))
             ->filter()
             ->unique()
-            ->sort()
+            ->sortBy(fn (string $size) => SizeEnum::tryFrom($size)?->sortOrder() ?? 999)
             ->values()
             ->all();
     }
 
     /**
-     * Global price range (min, max) across all published products for this currency.
+     * Global price range (min, max) across all published products strictly for this currency.
      *
      * @return array{0: int|null, 1: int|null}
      */
     private function buildPriceRange(CurrencyEnum $currency): array
     {
-        $range = Product::query()
-            ->publishedForStorefront($currency)
-            ->whereHas('variants', fn (Builder $q) => $q->active()->withPriceIn($currency))
-            ->get()
-            ->flatMap(fn (Product $p) => $p->variants->flatMap(
-                fn ($v) => $v->prices->pluck('price')
-            ));
+        $stats = ProductVariantPrice::query()
+            ->where('currency', $currency->value)
+            ->whereHas('productVariant', fn (Builder $q) => $q->active()->whereHas(
+                'product', fn (Builder $pq) => $pq->publishedForStorefront($currency)
+            ))
+            ->selectRaw('MIN(price) as min_price, MAX(price) as max_price')
+            ->first();
 
-        if ($range->isEmpty()) {
+        if (! $stats || $stats->min_price === null || $stats->max_price === null) {
             return [null, null];
         }
 
-        return [(int) $range->min(), (int) $range->max()];
+        return [(int) $stats->min_price, (int) $stats->max_price];
     }
 };

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Support;
 
+use App\Models\Color;
+use Illuminate\Support\Str;
+
 /**
  * Static color-name → hex map for product variant swatches.
  *
@@ -70,4 +73,29 @@ final class ColorMap
         'blanco' => '#F5F1E8',
         'white' => '#F5F1E8',
     ];
+
+    public static function for(?string $colorName, ?string $fallback = '#8B8B8B'): string
+    {
+        if ($colorName === null || $colorName === '') {
+            return $fallback ?? '#8B8B8B';
+        }
+
+        $trimmed = trim($colorName);
+        $lower = strtolower($trimmed);
+
+        if (isset(self::HEX[$lower])) {
+            return self::HEX[$lower];
+        }
+
+        $colorModel = Color::query()
+            ->where('name', $trimmed)
+            ->orWhere('slug', Str::slug($trimmed))
+            ->first();
+
+        if ($colorModel && filled($colorModel->hex_code)) {
+            return $colorModel->hex_code;
+        }
+
+        return $fallback ?? '#8B8B8B';
+    }
 }

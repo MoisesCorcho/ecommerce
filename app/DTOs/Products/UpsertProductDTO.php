@@ -20,7 +20,6 @@ readonly class UpsertProductDTO
         public ?int $categoryId = null,
         public ?string $description = null,
         public ?string $material = null,
-        public ?string $dimensions = null,
     ) {}
 
     /**
@@ -32,7 +31,6 @@ readonly class UpsertProductDTO
      *     category_id?: int|string|null,
      *     description?: string|null,
      *     material?: string|null,
-     *     dimensions?: string|null,
      *     variants?: list<array<string, mixed>>,
      *     images?: list<array<string, mixed>>
      * }  $data
@@ -70,9 +68,6 @@ readonly class UpsertProductDTO
                 : null,
             material: isset($data['material']) && $data['material'] !== ''
                 ? (string) $data['material']
-                : null,
-            dimensions: isset($data['dimensions']) && $data['dimensions'] !== ''
-                ? (string) $data['dimensions']
                 : null,
         );
     }

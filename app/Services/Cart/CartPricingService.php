@@ -6,6 +6,7 @@ namespace App\Services\Cart;
 
 use App\DTOs\Cart\CartLineViewDTO;
 use App\DTOs\Cart\CartViewDTO;
+use App\Enums\Products\SizeEnum;
 use App\Models\Cart;
 
 /**
@@ -48,7 +49,7 @@ class CartPricingService
                 imagePath: $image?->path,
                 productSlug: $product?->slug,
                 color: $variant?->color,
-                size: $variant?->size,
+                size: $variant?->size instanceof SizeEnum ? $variant->size->label() : ($variant?->size ? (SizeEnum::tryFrom((string) $variant->size)?->label() ?? $variant->size) : null),
                 material: $product?->material,
                 stock: (int) ($variant?->stock ?? 0),
                 isAvailable: $variant !== null && $variant->is_active && $priceRow !== null,

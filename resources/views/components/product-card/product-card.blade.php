@@ -49,6 +49,12 @@
                         {{ __('storefront.products.preorder_badge') ?? 'Preventa' }}
                     </span>
                 </div>
+            @elseif ($price?->hasDiscount() && $isAvailable && ! $isOutOfStock)
+                <div class="absolute top-3 left-3 z-10">
+                    <span class="bg-terracotta text-silk-cream px-2.5 py-1 text-label-caps font-semibold uppercase tracking-wider">
+                        -{{ $price->discountPercentage() }}%
+                    </span>
+                </div>
             @elseif (! $isAvailable)
                 <div class="absolute inset-0 bg-silk-cream/40 backdrop-blur-[1px] flex items-center justify-center z-10" data-wishlist-badge-unavailable>
                     <span class="bg-soft-sand px-5 py-2.5 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa">
@@ -119,9 +125,16 @@
         @endif
 
         @if ($price)
-            <p class="font-headline-sm text-2xl text-soft-gold">
-                {{ $currencyEnum->format($price->price) }}
-            </p>
+            <div class="flex flex-wrap items-baseline gap-2">
+                <p class="font-headline-sm text-2xl text-soft-gold">
+                    {{ $currencyEnum->format($price->price) }}
+                </p>
+                @if ($price->hasDiscount())
+                    <p class="text-sm font-normal line-through text-intense-cocoa/40">
+                        {{ $currencyEnum->format($price->compare_at_price) }}
+                    </p>
+                @endif
+            </div>
         @endif
 
         @if ($availableColors && $availableColors->count() > 1 && !isset($variantInfo))
@@ -129,7 +142,7 @@
                 @foreach ($availableColors->take(5) as $colorName)
                     <span
                         class="h-3 w-3 border border-intense-cocoa/10"
-                        style="background-color: {{ ColorMap::HEX[strtolower($colorName)] ?? '#8B8B8B' }}"
+                        style="background-color: {{ ColorMap::for($colorName) }}"
                         title="{{ $colorName }}"
                     ></span>
                 @endforeach

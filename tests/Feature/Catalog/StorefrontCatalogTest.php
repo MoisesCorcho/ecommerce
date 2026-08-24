@@ -165,4 +165,129 @@ class StorefrontCatalogTest extends TestCase
             ->assertSet('minPrice', null)
             ->assertSet('maxPrice', null);
     }
+
+    public function test_price_range_facets_isolate_currencies_correctly(): void
+    {
+        $product1 = $this->createPublishedProduct('Bag 1', 'bag-1', CurrencyEnum::Cop, 700_000);
+        $variant1 = $product1->variants->first();
+        ProductVariantPrice::factory()->for($variant1, 'productVariant')->create([
+            'currency' => CurrencyEnum::Usd,
+            'price' => 180,
+        ]);
+
+        $product2 = $this->createPublishedProduct('Bag 2', 'bag-2', CurrencyEnum::Cop, 900_000);
+        $variant2 = $product2->variants->first();
+        ProductVariantPrice::factory()->for($variant2, 'productVariant')->create([
+            'currency' => CurrencyEnum::Usd,
+            'price' => 250,
+        ]);
+
+        // In COP mode: range should be 700,000 to 900,000 (never 180 or 250)
+        Livewire::test('catalog-list')
+            ->assertViewHas('globalMinPrice', 700_000)
+            ->assertViewHas('globalMaxPrice', 900_000);
+
+        // In USD mode: range should be 180 to 250 (never 700,000)
+        Config::set('ecommerce.default_currency', 'USD');
+        Livewire::test('catalog-list')
+            ->set('currency', 'USD')
+            ->assertViewHas('globalMinPrice', 180)
+            ->assertViewHas('globalMaxPrice', 250);
+    }
+
+    public function test_currency_change_resets_min_and_max_price_filters(): void
+    {
+        Livewire::test('catalog-list')
+            ->call('setPriceFilter', 700_000, 900_000)
+            ->assertSet('minPrice', 700_000)
+            ->assertSet('maxPrice', 900_000)
+            ->call('setCurrency', 'USD')
+            ->assertSet('minPrice', null)
+            ->assertSet('maxPrice', null);
+    }
+
+    public function test_size_filter_filters_products_by_variant_size(): void
+    {
+        $productMini = $this->createPublishedProduct('Mini Bag', 'mini-bag', CurrencyEnum::Cop, 300_000);
+        $variantMini = $productMini->variants->first();
+        $variantMini->update(['size' => 'mini']);
+
+        $productMaxi = $this->createPublishedProduct('Maxi Bag', 'maxi-bag', CurrencyEnum::Cop, 600_000);
+        $variantMaxi = $productMaxi->variants->first();
+        $variantMaxi->update(['size' => 'maxi']);
+
+        $productMedium = $this->createPublishedProduct('Medium Bag', 'medium-bag', CurrencyEnum::Cop, 450_000);
+        $variantMedium = $productMedium->variants->first();
+        $variantMedium->update(['size' => 'medium']);
+
+        Livewire::test('catalog-list')
+            ->set('size', ['mini'])
+            ->assertViewHas('products', function ($products) {
+                return $products->contains('name', 'Mini Bag')
+                    && ! $products->contains('name', 'Maxi Bag')
+                    && ! $products->contains('name', 'Medium Bag');
+            })
+            ->set('size', ['mini', 'maxi'])
+            ->assertViewHas('products', function ($products) {
+                return $products->contains('name', 'Mini Bag')
+                    && $products->contains('name', 'Maxi Bag')
+                    && ! $products->contains('name', 'Medium Bag');
+            });
+
+        $this->get(route('products.index', ['size' => ['mini']]))
+            ->assertOk()
+            ->assertSee('Mini Bag')
+            ->assertDontSee('Maxi Bag')
+            ->assertDontSee('Medium Bag');
+    }
+
+    public function test_toggle_size_and_clear_filters_for_size(): void
+    {
+        Livewire::test('catalog-list')
+            ->call('toggleSize', 'mini')
+            ->assertSet('size', ['mini'])
+            ->call('toggleSize', 'maxi')
+            ->assertSet('size', ['mini', 'maxi'])
+            ->call('toggleSize', 'mini')
+            ->assertSet('size', ['maxi'])
+            ->call('clearFilters')
+            ->assertSet('size', []);
+    }
+
+    public function test_size_facets_in_view_contains_available_sizes(): void
+    {
+        $productMini = $this->createPublishedProduct('Mini Bag', 'mini-bag', CurrencyEnum::Cop, 300_000);
+        $productMini->variants->first()->update(['size' => 'mini']);
+
+        $productMaxi = $this->createPublishedProduct('Maxi Bag', 'maxi-bag', CurrencyEnum::Cop, 600_000);
+        $productMaxi->variants->first()->update(['size' => 'maxi']);
+
+        $productMedium = $this->createPublishedProduct('Medium Bag', 'medium-bag', CurrencyEnum::Cop, 450_000);
+        $productMedium->variants->first()->update(['size' => 'medium']);
+
+        app()->setLocale('es');
+
+        Livewire::test('catalog-list')
+            ->assertViewHas('sizes', function (array $sizes) {
+                return in_array('mini', $sizes, true) && in_array('maxi', $sizes, true) && in_array('medium', $sizes, true);
+            })
+            ->assertSeeHtml('wire:model.live="size"')
+            ->assertSee('Mini')
+            ->assertSee('Mediano')
+            ->assertSee('Maxi');
+    }
+
+    public function test_catalog_card_renders_discounted_price_and_discount_badge(): void
+    {
+        $product = $this->createPublishedProduct('Card Discount Bag', 'card-discount-bag', CurrencyEnum::Cop, 600_000);
+        $variant = $product->variants->first();
+        $variant->prices()->first()->update([
+            'compare_at_price' => 800_000,
+        ]);
+
+        Livewire::test('catalog-list')
+            ->assertSee('600.000')
+            ->assertSee('800.000')
+            ->assertSee('-25%');
+    }
 }

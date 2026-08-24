@@ -45,6 +45,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleAndAdminBackfillSeeder::class,
             CustomerSeeder::class,
+            ColorSeeder::class,
             ProductSeeder::class,
             CouponSeeder::class,
             OrderAndPaymentSeeder::class,

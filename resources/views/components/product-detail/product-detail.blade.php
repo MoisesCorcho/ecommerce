@@ -18,10 +18,18 @@
 <x-partials.toast>
 <div
     x-data="{
+        activeImageIndex: @js($mainImageIndex),
         lightbox: false,
-        lightboxIndex: @js($mainImageIndex),
+        lightboxIndex: 0,
+        init() {
+            this.$watch('$wire.mainImageIndex', (val) => {
+                if (val !== undefined && val !== null) {
+                    this.activeImageIndex = val;
+                }
+            });
+        },
         openLightbox(index) {
-            this.lightboxIndex = index;
+            this.lightboxIndex = (index !== undefined) ? index : this.activeImageIndex;
             this.lightbox = true;
         },
         closeLightbox() {
@@ -50,17 +58,20 @@
         {{-- LEFT: Gallery (R2, R3, R4) --}}
         <div>
             {{-- Main image — centered in container --}}
-            <div class="group relative flex aspect-[4/5] cursor-zoom-in items-center justify-center overflow-hidden bg-soft-sand lg:max-h-[70vh]" wire:click="openLightbox({{ $mainImageIndex }})">
+            <div
+                class="group relative flex aspect-[4/5] cursor-zoom-in items-center justify-center overflow-hidden bg-soft-sand lg:max-h-[70vh]"
+                @click="openLightbox(activeImageIndex)"
+            >
                 @if ($product->images->count() > 0)
-                    @php
-                        $currentImage = $product->images->get($mainImageIndex) ?? $product->images->first();
-                    @endphp
-                    <img
-                        src="/storage/{{ $currentImage->path }}"
-                        alt="{{ $product->name }}"
-                        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                        wire:key="main-image-{{ $mainImageIndex }}"
-                    >
+                    @foreach ($product->images as $index => $image)
+                        <img
+                            x-show="activeImageIndex === {{ $index }}"
+                            x-cloak
+                            src="/storage/{{ $image->path }}"
+                            alt="{{ $product->name }} — {{ $loop->iteration }}"
+                            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                        >
+                    @endforeach
                     {{-- Zoom hint --}}
                     <div class="absolute inset-0 flex items-center justify-center bg-intense-cocoa/0 transition-colors group-hover:bg-intense-cocoa/10">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-8 w-8 text-silk-cream opacity-0 transition-opacity group-hover:opacity-80" aria-hidden="true">
@@ -80,11 +91,12 @@
                     @foreach ($product->images as $index => $image)
                         <button
                             type="button"
-                            wire:click="$set('mainImageIndex', {{ $index }})"
+                            @click="activeImageIndex = {{ $index }}"
                             role="option"
-                            aria-selected="{{ $mainImageIndex === $index ? 'true' : 'false' }}"
+                            :aria-selected="activeImageIndex === {{ $index }} ? 'true' : 'false'"
                             aria-label="Image {{ $loop->iteration }}"
-                            class="group/thumbnail relative flex-shrink-0 overflow-hidden border-2 transition-all duration-200 {{ $mainImageIndex === $index ? 'border-intense-cocoa' : 'border-transparent hover:border-intense-cocoa/30' }}"
+                            class="group/thumbnail relative flex-shrink-0 overflow-hidden border-2 transition-all duration-200"
+                            :class="activeImageIndex === {{ $index }} ? 'border-intense-cocoa' : 'border-transparent hover:border-intense-cocoa/30'"
                         >
                             <img
                                 src="/storage/{{ $image->path }}"
@@ -123,7 +135,7 @@
             </div>
 
             {{-- Price + Stock (R5, R18) --}}
-            <div class="flex flex-wrap items-center gap-3">
+            <div class="flex flex-wrap items-baseline gap-3">
                 @if ($selectedVariant && $selectedVariant->priceIn($currencyEnum))
                     @php
                         $price = $selectedVariant->priceIn($currencyEnum);
@@ -131,6 +143,14 @@
                     <span class="font-[family-name:var(--font-sans)] text-2xl font-semibold tabular-nums text-intense-cocoa">
                         {{ $currencyEnum->format($price->price) }}
                     </span>
+                    @if ($price->hasDiscount())
+                        <span class="font-[family-name:var(--font-sans)] text-xl font-normal line-through text-intense-cocoa/40">
+                            {{ $currencyEnum->format($price->compare_at_price) }}
+                        </span>
+                        <span class="bg-terracotta text-silk-cream px-2.5 py-0.5 text-label-caps font-semibold uppercase tracking-wider">
+                            -{{ $price->discountPercentage() }}%
+                        </span>
+                    @endif
                 @elseif($pricedVariants->first()?->priceIn($currencyEnum))
                     @php
                         $price = $pricedVariants->first()->priceIn($currencyEnum);
@@ -138,6 +158,14 @@
                     <span class="font-[family-name:var(--font-sans)] text-2xl font-semibold tabular-nums text-intense-cocoa">
                         {{ $currencyEnum->format($price->price) }}
                     </span>
+                    @if ($price->hasDiscount())
+                        <span class="font-[family-name:var(--font-sans)] text-xl font-normal line-through text-intense-cocoa/40">
+                            {{ $currencyEnum->format($price->compare_at_price) }}
+                        </span>
+                        <span class="bg-terracotta text-silk-cream px-2.5 py-0.5 text-label-caps font-semibold uppercase tracking-wider">
+                            -{{ $price->discountPercentage() }}%
+                        </span>
+                    @endif
                 @endif
 
                 {{-- Out of stock badge (R18) --}}
@@ -185,7 +213,7 @@
                     <div class="flex flex-wrap gap-2.5" role="radiogroup" aria-label="{{ __('storefront.products.color_label') }}">
                         @foreach ($availableColors as $colorName)
                             @php
-                                $hex = ColorMap::HEX[strtolower($colorName)] ?? '#8B8B8B';
+                                $hex = ColorMap::for($colorName);
                                 $isSelected = $selectedColor === $colorName;
                             @endphp
                             <button
@@ -229,7 +257,7 @@
                                 aria-checked="{{ $isSelected ? 'true' : 'false' }}"
                                 class="min-h-[44px] min-w-[44px] border px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none {{ $isSelected ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-transparent bg-soft-sand text-intense-cocoa hover:border-intense-cocoa' }}"
                             >
-                                {{ $sizeName }}
+                                {{ \App\Enums\Products\SizeEnum::tryFrom($sizeName)?->label() ?? $sizeName }}
                             </button>
                         @endforeach
                     </div>
@@ -398,10 +426,10 @@
                                 <span class="text-intense-cocoa/70">{{ $product->material }}</span>
                             </div>
                         @endif
-                        @if ($selectedVariant?->size || $product->dimensions)
+                        @if ($selectedVariant?->dimensions)
                             <div>
                                 <span class="font-medium text-intense-cocoa">{{ __('storefront.products.dimensions_label') }}:</span>
-                                <span class="text-intense-cocoa/70">{{ $selectedVariant?->size ?: $product->dimensions }}</span>
+                                <span class="text-intense-cocoa/70">{{ $selectedVariant->dimensions }}</span>
                             </div>
                         @endif
                         <p class="whitespace-pre-line">{{ $product->description }}</p>

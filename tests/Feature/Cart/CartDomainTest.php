@@ -17,6 +17,7 @@ use App\DTOs\Cart\ChangeCartCurrencyDTO;
 use App\DTOs\Cart\ResolveCartDTO;
 use App\DTOs\Cart\UpdateCartItemQuantityDTO;
 use App\Enums\Commerce\CurrencyEnum;
+use App\Enums\Products\SizeEnum;
 use App\Exceptions\Cart\CartAccessDeniedException;
 use App\Exceptions\Cart\CartCurrencyChangeBlockedException;
 use App\Exceptions\Cart\CartItemNotEligibleException;
@@ -234,7 +235,7 @@ class CartDomainTest extends TestCase
             'is_active' => true,
             'stock' => 4,
             'color' => 'Marrón',
-            'size' => 'M',
+            'size' => SizeEnum::Medium,
         ]);
         ProductVariantPrice::factory()->for($variant, 'productVariant')->cop()->create(['price' => 30_000]);
         ProductImage::factory()->for($product)->create([
@@ -252,7 +253,7 @@ class CartDomainTest extends TestCase
         $this->assertSame('products/variant-primary.jpg', $line->imagePath);
         $this->assertSame('bolso-artesanal', $line->productSlug);
         $this->assertSame('Marrón', $line->color);
-        $this->assertSame('M', $line->size);
+        $this->assertSame(SizeEnum::Medium->label(), $line->size);
         $this->assertSame('Cuero', $line->material);
         $this->assertSame(4, $line->stock);
         $this->assertTrue($line->isAvailable);

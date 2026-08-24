@@ -11,6 +11,7 @@ use App\Actions\Wishlist\ToggleWishlistAction;
 use App\DTOs\Cart\AddCartItemDTO;
 use App\DTOs\Reviews\UpsertReviewDTO;
 use App\Enums\Commerce\CurrencyEnum;
+use App\Enums\Products\SizeEnum;
 use App\Exceptions\Cart\CartAccessDeniedException;
 use App\Exceptions\Cart\CartItemNotEligibleException;
 use App\Exceptions\Cart\CartQuantityNotAllowedException;
@@ -83,7 +84,7 @@ new #[Layout('layouts.storefront')] class extends Component
         $firstVariant = $product->variants->first();
         $this->selectedVariantId = $firstVariant?->id;
         $this->selectedColor = $firstVariant?->color;
-        $this->selectedSize = $firstVariant?->size;
+        $this->selectedSize = $firstVariant?->size instanceof SizeEnum ? $firstVariant->size->value : $firstVariant?->size;
         $this->mainImageIndex = $this->resolveMainImageIndex($product, $firstVariant);
 
         $this->hydrateViewerReviewForm($product);
@@ -266,7 +267,7 @@ new #[Layout('layouts.storefront')] class extends Component
 
         if ($variant) {
             $this->selectedColor = $variant->color;
-            $this->selectedSize = $variant->size;
+            $this->selectedSize = $variant->size instanceof SizeEnum ? $variant->size->value : $variant->size;
             $this->selectedVariantId = $variant->id;
             $this->mainImageIndex = $this->resolveMainImageIndex($product, $variant);
         }
@@ -450,7 +451,7 @@ new #[Layout('layouts.storefront')] class extends Component
     {
         return $product->variants
             ->filter(fn (ProductVariant $v): bool => $v->priceIn($currency) !== null && $v->size !== null)
-            ->pluck('size')
+            ->map(fn (ProductVariant $v) => $v->size instanceof SizeEnum ? $v->size->value : (string) $v->size)
             ->unique()
             ->values();
     }
@@ -464,7 +465,7 @@ new #[Layout('layouts.storefront')] class extends Component
             ->filter(fn (ProductVariant $v): bool => $v->priceIn($currency) !== null
                 && $v->size !== null
                 && $v->color === $color)
-            ->pluck('size')
+            ->map(fn (ProductVariant $v) => $v->size instanceof SizeEnum ? $v->size->value : (string) $v->size)
             ->unique()
             ->values();
     }
@@ -477,7 +478,7 @@ new #[Layout('layouts.storefront')] class extends Component
         return $product->variants
             ->filter(fn (ProductVariant $v): bool => $v->priceIn($currency) !== null
                 && $v->color !== null
-                && $v->size === $size)
+                && ($v->size instanceof SizeEnum ? $v->size->value : $v->size) === $size)
             ->pluck('color')
             ->unique()
             ->values();
@@ -490,8 +491,9 @@ new #[Layout('layouts.storefront')] class extends Component
         }
 
         return $product->variants->first(function (ProductVariant $v) use ($currency): bool {
+            $variantSize = $v->size instanceof SizeEnum ? $v->size->value : $v->size;
             $matchesColor = $this->selectedColor === null || $v->color === $this->selectedColor;
-            $matchesSize = $this->selectedSize === null || $v->size === $this->selectedSize;
+            $matchesSize = $this->selectedSize === null || $variantSize === $this->selectedSize;
 
             return $matchesColor && $matchesSize && $v->priceIn($currency) !== null;
         });

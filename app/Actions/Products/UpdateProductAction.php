@@ -36,7 +36,6 @@ class UpdateProductAction
                 'slug' => $slug,
                 'description' => $dto->description,
                 'material' => $dto->material,
-                'dimensions' => $dto->dimensions,
                 'is_preorder' => $dto->isPreorder,
                 'is_active' => $dto->isActive,
             ]);
@@ -85,8 +84,9 @@ class UpdateProductAction
 
             $variant->update([
                 'sku' => $variantDto->sku,
-                'color' => $variantDto->color,
+                'color_id' => $variantDto->colorId,
                 'size' => $variantDto->size,
+                'dimensions' => $variantDto->dimensions,
                 'stock' => $variantDto->stock,
                 'is_active' => $variantDto->isActive,
             ]);
@@ -98,8 +98,9 @@ class UpdateProductAction
 
         return $product->variants()->create([
             'sku' => $variantDto->sku,
-            'color' => $variantDto->color,
+            'color_id' => $variantDto->colorId,
             'size' => $variantDto->size,
+            'dimensions' => $variantDto->dimensions,
             'stock' => $variantDto->stock,
             'is_active' => $variantDto->isActive,
         ]);

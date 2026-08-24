@@ -74,14 +74,14 @@
                             @if ($variant->color || $variant->size)
                                 <p class="text-sm text-intense-cocoa/60" data-wishlist-variant-attributes>
                                     @if ($variant->color)
-                                        <span class="inline-block h-3 w-3 border border-intense-cocoa/10 align-middle" style="background-color: {{ ColorMap::HEX[strtolower($variant->color)] ?? '#8B8B8B' }}"></span>
+                                        <span class="inline-block h-3 w-3 border border-intense-cocoa/10 align-middle" style="background-color: {{ ColorMap::for($variant->color) }}"></span>
                                         {{ __('storefront.products.color_label') }}: {{ $variant->color }}
                                     @endif
                                     @if ($variant->color && $variant->size)
                                         &middot;
                                     @endif
                                     @if ($variant->size)
-                                        {{ __('storefront.products.size_label') }}: {{ $variant->size }}
+                                        {{ __('storefront.products.size_label') }}: {{ $variant->size instanceof \App\Enums\Products\SizeEnum ? $variant->size->label() : (\App\Enums\Products\SizeEnum::tryFrom((string) $variant->size)?->label() ?? $variant->size) }}
                                     @endif
                                 </p>
                             @elseif (! $isAvailable)

@@ -70,6 +70,7 @@ return [
         'sort_price_desc' => 'Precio: mayor a menor',
         'filter_category' => 'Categoría',
         'filter_color' => 'Color',
+        'filter_size' => 'Tamaño',
         'filter_price' => 'Precio',
         'filter_availability' => 'Disponibilidad',
         'filter_in_stock' => 'Solo disponibles',
@@ -108,6 +109,8 @@ return [
         'quick_view' => 'Vista rápida',
         'quick_view_title' => 'Vista previa rápida del producto',
         'view_full_details' => 'Ver detalles completos',
+        'sale_badge' => 'Oferta',
+        'compare_at_label' => 'Antes',
     ],
 
     'wishlist' => [

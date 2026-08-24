@@ -115,7 +115,7 @@
                         </div>
 
                         {{-- Price & Stock Status --}}
-                        <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex flex-wrap items-baseline gap-3">
                             @if ($selectedVariant && $selectedVariant->priceIn($currencyEnum))
                                 @php
                                     $price = $selectedVariant->priceIn($currencyEnum);
@@ -123,6 +123,14 @@
                                 <span class="font-sans text-2xl font-semibold tabular-nums text-intense-cocoa short:text-xl">
                                     {{ $currencyEnum->format($price->price) }}
                                 </span>
+                                @if ($price->hasDiscount())
+                                    <span class="font-sans text-lg font-normal line-through text-intense-cocoa/40">
+                                        {{ $currencyEnum->format($price->compare_at_price) }}
+                                    </span>
+                                    <span class="bg-terracotta text-silk-cream px-2 py-0.5 text-label-caps font-semibold uppercase tracking-wider">
+                                        -{{ $price->discountPercentage() }}%
+                                    </span>
+                                @endif
                             @endif
 
                             @if ($selectedVariant && $selectedVariant->stock <= 0 && ! $product->is_preorder)
@@ -165,7 +173,7 @@
                                         <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="{{ __('storefront.products.color_label') }}">
                                             @foreach ($availableColors as $colorName)
                                                 @php
-                                                    $hex = ColorMap::HEX[strtolower($colorName)] ?? '#8B8B8B';
+                                                    $hex = ColorMap::for($colorName);
                                                     $isSelected = $selectedColor === $colorName;
                                                 @endphp
                                                 <button
@@ -211,7 +219,7 @@
                                                     aria-checked="{{ $isSelected ? 'true' : 'false' }}"
                                                     class="min-h-[38px] min-w-[38px] border px-3 py-1.5 text-sm short:min-h-[32px] short:py-1 font-medium transition-all duration-200 focus:outline-none disabled:opacity-50 {{ $isSelected ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-transparent bg-soft-sand text-intense-cocoa hover:border-intense-cocoa' }}"
                                                 >
-                                                    {{ $sizeName }}
+                                                    {{ \App\Enums\Products\SizeEnum::tryFrom($sizeName)?->label() ?? $sizeName }}
                                                 </button>
                                             @endforeach
                                         </div>
