@@ -173,7 +173,7 @@
                                         <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="{{ __('storefront.products.color_label') }}">
                                             @foreach ($availableColors as $colorName)
                                                 @php
-                                                    $hex = ColorMap::HEX[strtolower($colorName)] ?? '#8B8B8B';
+                                                    $hex = ColorMap::for($colorName);
                                                     $isSelected = $selectedColor === $colorName;
                                                 @endphp
                                                 <button

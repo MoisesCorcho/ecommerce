@@ -55,7 +55,7 @@ class CreateProductAction
 
         $variant = $product->variants()->create([
             'sku' => $variantDto->sku,
-            'color' => $variantDto->color,
+            'color_id' => $variantDto->colorId,
             'size' => $variantDto->size,
             'dimensions' => $variantDto->dimensions,
             'stock' => $variantDto->stock,

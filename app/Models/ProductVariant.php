@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\Commerce\CurrencyEnum;
 use App\Enums\Products\SizeEnum;
+use App\Support\ColorMap;
 use Database\Factories\ProductVariantFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,11 +14,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 #[Fillable([
     'product_id',
     'sku',
-    'color',
+    'color_id',
     'size',
     'dimensions',
     'stock',
@@ -34,10 +36,43 @@ class ProductVariant extends Model
     protected function casts(): array
     {
         return [
+            'color_id' => 'integer',
             'size' => SizeEnum::class,
             'stock' => 'integer',
             'is_active' => 'boolean',
         ];
+    }
+
+    public function getColorAttribute(): ?string
+    {
+        return $this->colorModel?->name;
+    }
+
+    public function setColorAttribute(string|Color|null $value): void
+    {
+        if ($value instanceof Color) {
+            $this->attributes['color_id'] = $value->id;
+        } elseif (is_string($value) && $value !== '') {
+            $color = Color::query()
+                ->where('name', $value)
+                ->orWhere('slug', Str::slug($value))
+                ->first()
+                ?? Color::create([
+                    'name' => $value,
+                    'slug' => Str::slug($value),
+                    'hex_code' => ColorMap::for($value),
+                    'is_active' => true,
+                ]);
+
+            $this->attributes['color_id'] = $color->id;
+        } else {
+            $this->attributes['color_id'] = null;
+        }
+    }
+
+    public function getColorHexAttribute(): string
+    {
+        return $this->colorModel?->hex_code ?? '#8B8B8B';
     }
 
     /**
@@ -86,6 +121,14 @@ class ProductVariant extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * @return BelongsTo<Color, $this>
+     */
+    public function colorModel(): BelongsTo
+    {
+        return $this->belongsTo(Color::class, 'color_id');
     }
 
     /**

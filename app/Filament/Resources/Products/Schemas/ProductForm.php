@@ -8,8 +8,10 @@ use App\Enums\Commerce\CurrencyEnum;
 use App\Enums\Products\SizeEnum;
 use App\Filament\Support\ExclusiveToggleInRepeater;
 use App\Filament\Support\NameSlugInputs;
+use App\Models\Color;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
@@ -145,9 +147,32 @@ final class ProductForm
                                                 }
                                             };
                                         }),
-                                    TextInput::make('color')
+                                    Select::make('color_id')
                                         ->label(__('products.fields.color'))
-                                        ->maxLength(255)
+                                        ->options(fn (): array => Color::query()->active()->orderBy('sort_order')->orderBy('name')->pluck('name', 'id')->all())
+                                        ->searchable()
+                                        ->preload()
+                                        ->nullable()
+                                        ->native(false)
+                                        ->createOptionForm([
+                                            TextInput::make('name')
+                                                ->label(__('colors.fields.name'))
+                                                ->required()
+                                                ->maxLength(255),
+                                            ColorPicker::make('hex_code')
+                                                ->label(__('colors.fields.hex_code'))
+                                                ->required(),
+                                        ])
+                                        ->createOptionUsing(function (array $data): int {
+                                            $color = Color::create([
+                                                'name' => $data['name'],
+                                                'hex_code' => $data['hex_code'],
+                                                'sort_order' => (Color::max('sort_order') ?? 0) + 1,
+                                                'is_active' => true,
+                                            ]);
+
+                                            return $color->id;
+                                        })
                                         ->placeholder(__('products.placeholders.color')),
                                     Select::make('size')
                                         ->label(__('products.fields.size'))
@@ -336,7 +361,20 @@ final class ProductForm
     {
         $sku = (string) ($variant['sku'] ?? '');
 
-        $descriptor = collect([$variant['color'] ?? null, $variant['size'] ?? null])
+        $colorName = null;
+        if (! empty($variant['color_id'])) {
+            $colorName = Color::find($variant['color_id'])?->name;
+        } elseif (! empty($variant['color'])) {
+            $colorName = (string) $variant['color'];
+        }
+
+        $sizeLabel = null;
+        if (! empty($variant['size'])) {
+            $sizeVal = $variant['size'] instanceof SizeEnum ? $variant['size']->value : (string) $variant['size'];
+            $sizeLabel = SizeEnum::tryFrom($sizeVal)?->label() ?? $sizeVal;
+        }
+
+        $descriptor = collect([$colorName, $sizeLabel])
             ->filter(fn (mixed $value): bool => is_string($value) && $value !== '')
             ->implode(' / ');
 

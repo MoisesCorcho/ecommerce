@@ -84,7 +84,7 @@ class UpdateProductAction
 
             $variant->update([
                 'sku' => $variantDto->sku,
-                'color' => $variantDto->color,
+                'color_id' => $variantDto->colorId,
                 'size' => $variantDto->size,
                 'dimensions' => $variantDto->dimensions,
                 'stock' => $variantDto->stock,
@@ -98,7 +98,7 @@ class UpdateProductAction
 
         return $product->variants()->create([
             'sku' => $variantDto->sku,
-            'color' => $variantDto->color,
+            'color_id' => $variantDto->colorId,
             'size' => $variantDto->size,
             'dimensions' => $variantDto->dimensions,
             'stock' => $variantDto->stock,

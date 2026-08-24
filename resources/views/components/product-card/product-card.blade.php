@@ -142,7 +142,7 @@
                 @foreach ($availableColors->take(5) as $colorName)
                     <span
                         class="h-3 w-3 border border-intense-cocoa/10"
-                        style="background-color: {{ ColorMap::HEX[strtolower($colorName)] ?? '#8B8B8B' }}"
+                        style="background-color: {{ ColorMap::for($colorName) }}"
                         title="{{ $colorName }}"
                     ></span>
                 @endforeach

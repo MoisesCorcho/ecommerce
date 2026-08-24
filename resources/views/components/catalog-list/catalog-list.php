@@ -11,6 +11,7 @@ use App\Exceptions\Cart\CartItemNotEligibleException;
 use App\Exceptions\Cart\CartQuantityNotAllowedException;
 use App\Exceptions\Cart\InsufficientCartStockException;
 use App\Models\Category;
+use App\Models\Color;
 use App\Models\Product;
 use App\Models\ProductVariantPrice;
 use App\Support\Cart\ResolvesCurrentCart;
@@ -274,7 +275,10 @@ new #[Layout('layouts.storefront')] class extends Component
         if ($this->color !== []) {
             $query->whereHas(
                 'variants',
-                fn (Builder $q) => $q->active()->whereIn('color', $this->color)
+                fn (Builder $q) => $q->active()->whereHas(
+                    'colorModel',
+                    fn (Builder $cq) => $cq->whereIn('name', $this->color)
+                )
             );
         }
 
@@ -358,16 +362,14 @@ new #[Layout('layouts.storefront')] class extends Component
      */
     private function buildColorFacets(CurrencyEnum $currency): array
     {
-        return Product::query()
-            ->publishedForStorefront($currency)
-            ->whereHas('variants', fn (Builder $q) => $q->active()->whereNotNull('color'))
-            ->with(['variants' => fn ($q) => $q->active()->whereNotNull('color')])
-            ->get()
-            ->flatMap(fn (Product $p) => $p->variants->pluck('color'))
-            ->filter()
-            ->unique()
-            ->sort()
-            ->values()
+        return Color::query()
+            ->active()
+            ->whereHas('variants', fn (Builder $q) => $q->active()->whereHas(
+                'product', fn (Builder $pq) => $pq->publishedForStorefront($currency)
+            ))
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->pluck('name')
             ->all();
     }
 

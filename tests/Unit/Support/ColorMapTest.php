@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Support;
 
+use App\Models\Color;
 use App\Support\ColorMap;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class ColorMapTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_seeded_rojo_oscuro_casing_resolves_after_lowercasing(): void
     {
         $this->assertArrayHasKey(strtolower('Rojo oscuro'), ColorMap::HEX);
@@ -35,5 +39,26 @@ class ColorMapTest extends TestCase
         foreach ($expected as $key => $hex) {
             $this->assertSame($hex, ColorMap::HEX[$key] ?? null, "Missing or mismatched hex for key [{$key}]");
         }
+    }
+
+    public function test_color_map_for_resolves_color_and_falls_back_gracefully(): void
+    {
+        $this->assertSame('#201b14', ColorMap::for('Negro'));
+        $this->assertSame('#8B5A2B', ColorMap::for('cognac'));
+        $this->assertSame('#8B8B8B', ColorMap::for('non-existent-color-12345'));
+        $this->assertSame('#8B8B8B', ColorMap::for(null));
+        $this->assertSame('#CUSTOM', ColorMap::for(null, '#CUSTOM'));
+    }
+
+    public function test_color_map_for_resolves_dynamic_color_from_database(): void
+    {
+        Color::create([
+            'name' => 'Verde Menta',
+            'hex_code' => '#98FF98',
+            'is_active' => true,
+        ]);
+
+        $this->assertSame('#98FF98', ColorMap::for('Verde Menta'));
+        $this->assertSame('#98FF98', ColorMap::for('verde-menta'));
     }
 }

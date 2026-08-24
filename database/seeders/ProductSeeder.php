@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Enums\Commerce\CurrencyEnum;
 use App\Enums\Products\SizeEnum;
 use App\Models\Category;
+use App\Models\Color;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
@@ -46,10 +47,12 @@ class ProductSeeder extends Seeder
                     ? $data['sku'].'-'.Str::of($color)->slug('-')->upper()
                     : $data['sku'];
 
+                $colorModel = Color::query()->where('name', $color)->orWhere('slug', Str::slug($color))->first();
+
                 $variant = $product->variants()->updateOrCreate(
                     ['sku' => $sku],
                     [
-                        'color' => $color,
+                        'color_id' => $colorModel?->id,
                         'size' => $data['size'],
                         'dimensions' => $data['dimensions'],
                         'stock' => $data['stock'],
