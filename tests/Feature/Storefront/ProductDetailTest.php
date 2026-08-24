@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Storefront;
 
 use App\Enums\Commerce\CurrencyEnum;
+use App\Enums\Products\SizeEnum;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\ProductVariantPrice;
@@ -26,9 +27,9 @@ class ProductDetailTest extends TestCase
     public function test_selecting_a_color_resolves_the_size_that_actually_exists_for_it(): void
     {
         $product = $this->createProductWithVariants('cross-match', [
-            ['sku' => 'CM-NEGRO-36', 'color' => 'Negro', 'size' => '36cm x 29cm x 8cm'],
-            ['sku' => 'CM-ROJO-36', 'color' => 'Rojo', 'size' => '36cm x 29cm x 8cm'],
-            ['sku' => 'CM-AMARILLO-90', 'color' => 'Amarillo', 'size' => '90cm x 30cm x 12cm'],
+            ['sku' => 'CM-NEGRO-36', 'color' => 'Negro', 'size' => 'medium'],
+            ['sku' => 'CM-ROJO-36', 'color' => 'Rojo', 'size' => 'medium'],
+            ['sku' => 'CM-AMARILLO-90', 'color' => 'Amarillo', 'size' => 'maxi'],
         ]);
 
         $amarilloVariant = $product->variants->firstWhere('color', 'Amarillo');
@@ -36,18 +37,18 @@ class ProductDetailTest extends TestCase
 
         Livewire::test('product-detail', ['slug' => 'cross-match'])
             ->assertSet('selectedColor', 'Negro')
-            ->assertSet('selectedSize', '36cm x 29cm x 8cm')
+            ->assertSet('selectedSize', 'medium')
             ->set('selectedColor', 'Amarillo')
-            ->assertSet('selectedSize', '90cm x 30cm x 12cm')
+            ->assertSet('selectedSize', 'maxi')
             ->assertSet('selectedVariantId', $amarilloVariant->id);
     }
 
     public function test_selecting_a_size_resolves_the_color_that_actually_exists_for_it(): void
     {
         $product = $this->createProductWithVariants('cross-match-size', [
-            ['sku' => 'CMS-NEGRO-36', 'color' => 'Negro', 'size' => '36cm x 29cm x 8cm'],
-            ['sku' => 'CMS-ROJO-36', 'color' => 'Rojo', 'size' => '36cm x 29cm x 8cm'],
-            ['sku' => 'CMS-AMARILLO-90', 'color' => 'Amarillo', 'size' => '90cm x 30cm x 12cm'],
+            ['sku' => 'CMS-NEGRO-36', 'color' => 'Negro', 'size' => 'medium'],
+            ['sku' => 'CMS-ROJO-36', 'color' => 'Rojo', 'size' => 'medium'],
+            ['sku' => 'CMS-AMARILLO-90', 'color' => 'Amarillo', 'size' => 'maxi'],
         ]);
 
         $amarilloVariant = $product->variants->firstWhere('color', 'Amarillo');
@@ -56,8 +57,8 @@ class ProductDetailTest extends TestCase
         $component = Livewire::test('product-detail', ['slug' => 'cross-match-size'])
             ->call('selectVariant', $amarilloVariant->id)
             ->assertSet('selectedColor', 'Amarillo')
-            ->assertSet('selectedSize', '90cm x 30cm x 12cm')
-            ->set('selectedSize', '36cm x 29cm x 8cm');
+            ->assertSet('selectedSize', 'maxi')
+            ->set('selectedSize', 'medium');
 
         $resolvedColor = $component->get('selectedColor');
         $this->assertContains($resolvedColor, ['Negro', 'Rojo']);
@@ -68,15 +69,15 @@ class ProductDetailTest extends TestCase
 
         $resolvedVariant = $product->variants->firstWhere('id', $variantId);
         $this->assertNotNull($resolvedVariant);
-        $this->assertSame('36cm x 29cm x 8cm', $resolvedVariant->size);
+        $this->assertSame(SizeEnum::Medium, $resolvedVariant->size);
         $this->assertSame($resolvedColor, $resolvedVariant->color);
     }
 
     public function test_selecting_a_color_keeps_the_shared_size_when_every_color_has_the_same_size(): void
     {
         $product = $this->createProductWithVariants('shared-size', [
-            ['sku' => 'SS-NEGRO', 'color' => 'Negro', 'size' => 'Única'],
-            ['sku' => 'SS-ROJO', 'color' => 'Rojo', 'size' => 'Única'],
+            ['sku' => 'SS-NEGRO', 'color' => 'Negro', 'size' => 'one_size'],
+            ['sku' => 'SS-ROJO', 'color' => 'Rojo', 'size' => 'one_size'],
         ]);
 
         $rojoVariant = $product->variants->firstWhere('color', 'Rojo');
@@ -84,9 +85,9 @@ class ProductDetailTest extends TestCase
 
         Livewire::test('product-detail', ['slug' => 'shared-size'])
             ->assertSet('selectedColor', 'Negro')
-            ->assertSet('selectedSize', 'Única')
+            ->assertSet('selectedSize', 'one_size')
             ->set('selectedColor', 'Rojo')
-            ->assertSet('selectedSize', 'Única')
+            ->assertSet('selectedSize', 'one_size')
             ->assertSet('selectedVariantId', $rojoVariant->id);
     }
 
@@ -102,7 +103,7 @@ class ProductDetailTest extends TestCase
         $miniVariant = ProductVariant::factory()->for($product)->create([
             'sku' => 'DIM-MINI',
             'color' => 'Miel',
-            'size' => 'Mini',
+            'size' => SizeEnum::Mini,
             'dimensions' => '20cm x 15cm x 5cm',
             'stock' => 10,
             'is_active' => true,
@@ -115,7 +116,7 @@ class ProductDetailTest extends TestCase
         $maxiVariant = ProductVariant::factory()->for($product)->create([
             'sku' => 'DIM-MAXI',
             'color' => 'Miel',
-            'size' => 'Maxi',
+            'size' => SizeEnum::Maxi,
             'dimensions' => '35cm x 25cm x 10cm',
             'stock' => 10,
             'is_active' => true,
@@ -126,10 +127,10 @@ class ProductDetailTest extends TestCase
         ]);
 
         Livewire::test('product-detail', ['slug' => 'dimension-bag'])
-            ->assertSet('selectedSize', 'Mini')
+            ->assertSet('selectedSize', 'mini')
             ->assertSee('20cm x 15cm x 5cm')
             ->assertDontSee('35cm x 25cm x 10cm')
-            ->set('selectedSize', 'Maxi')
+            ->set('selectedSize', 'maxi')
             ->assertSee('35cm x 25cm x 10cm')
             ->assertDontSee('20cm x 15cm x 5cm');
     }

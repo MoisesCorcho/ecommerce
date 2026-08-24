@@ -7,6 +7,7 @@ namespace Tests\Feature\Reviews;
 use App\Actions\Reviews\CreateReviewAction;
 use App\Actions\Reviews\UpdateReviewAction;
 use App\DTOs\Reviews\UpsertReviewDTO;
+use App\Enums\Products\SizeEnum;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -40,7 +41,7 @@ class ReviewPurchasedVariantsTest extends TestCase
         $this->assertCount(1, $review->purchased_variants);
         $this->assertSame($variant->sku, $review->purchased_variants[0]['sku']);
         $this->assertSame($variant->color, $review->purchased_variants[0]['color']);
-        $this->assertSame($variant->size, $review->purchased_variants[0]['size']);
+        $this->assertSame($variant->size?->value ?? $variant->size, $review->purchased_variants[0]['size']);
     }
 
     public function test_create_review_stores_multiple_variants(): void
@@ -51,12 +52,12 @@ class ReviewPurchasedVariantsTest extends TestCase
         $variant1 = ProductVariant::factory()->for($product)->create([
             'sku' => 'BAG-NEGRO-M',
             'color' => 'Negro',
-            'size' => 'M',
+            'size' => SizeEnum::Medium,
         ]);
         $variant2 = ProductVariant::factory()->for($product)->create([
             'sku' => 'BAG-ROJO-S',
             'color' => 'Rojo',
-            'size' => 'S',
+            'size' => SizeEnum::Mini,
         ]);
 
         $order = Order::factory()->paid()->create(['user_id' => $user->id]);
@@ -90,7 +91,7 @@ class ReviewPurchasedVariantsTest extends TestCase
         $variant1 = ProductVariant::factory()->for($product)->create([
             'sku' => 'BAG-1',
             'color' => 'Negro',
-            'size' => 'M',
+            'size' => SizeEnum::Medium,
         ]);
 
         $order = Order::factory()->paid()->create(['user_id' => $user->id]);
@@ -112,7 +113,7 @@ class ReviewPurchasedVariantsTest extends TestCase
         $variant2 = ProductVariant::factory()->for($product)->create([
             'sku' => 'BAG-2',
             'color' => 'Rojo',
-            'size' => 'S',
+            'size' => SizeEnum::Mini,
         ]);
 
         $order2 = Order::factory()->paid()->create(['user_id' => $user->id]);
@@ -186,7 +187,7 @@ class ReviewPurchasedVariantsTest extends TestCase
         $variant = ProductVariant::factory()->for($product)->create([
             'sku' => 'BAG-NEGRO-M',
             'color' => 'Negro',
-            'size' => 'M',
+            'size' => SizeEnum::Medium,
         ]);
 
         $order = Order::factory()->paid()->create(['user_id' => $user->id]);

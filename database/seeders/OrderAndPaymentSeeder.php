@@ -9,6 +9,7 @@ use App\Enums\Coupons\CouponTypeEnum;
 use App\Enums\Orders\OrderStatusEnum;
 use App\Enums\Payments\PaymentProviderEnum;
 use App\Enums\Payments\PaymentStatusEnum;
+use App\Enums\Products\SizeEnum;
 use App\Models\Address;
 use App\Models\Coupon;
 use App\Models\CouponRedemption;
@@ -97,10 +98,11 @@ class OrderAndPaymentSeeder extends Seeder
                 $quantity = rand(1, 2);
                 $subtotal += ($unitPrice * $quantity);
 
+                $sizeLabel = $variant->size instanceof SizeEnum ? $variant->size->label() : ($variant->size ?? '');
                 $itemsData[] = [
                     'product_variant_id' => $variant->id,
                     'product_name' => $variant->product->name,
-                    'variant_label' => trim($variant->color.' '.$variant->size),
+                    'variant_label' => trim(($variant->color ?? '').' '.$sizeLabel),
                     'sku' => $variant->sku,
                     'unit_price' => $unitPrice,
                     'quantity' => $quantity,

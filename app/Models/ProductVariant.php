@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\Commerce\CurrencyEnum;
+use App\Enums\Products\SizeEnum;
 use Database\Factories\ProductVariantFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,6 +34,7 @@ class ProductVariant extends Model
     protected function casts(): array
     {
         return [
+            'size' => SizeEnum::class,
             'stock' => 'integer',
             'is_active' => 'boolean',
         ];

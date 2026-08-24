@@ -81,7 +81,7 @@
                                         &middot;
                                     @endif
                                     @if ($variant->size)
-                                        {{ __('storefront.products.size_label') }}: {{ $variant->size }}
+                                        {{ __('storefront.products.size_label') }}: {{ $variant->size instanceof \App\Enums\Products\SizeEnum ? $variant->size->label() : (\App\Enums\Products\SizeEnum::tryFrom((string) $variant->size)?->label() ?? $variant->size) }}
                                     @endif
                                 </p>
                             @elseif (! $isAvailable)

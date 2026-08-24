@@ -229,7 +229,7 @@
                                 aria-checked="{{ $isSelected ? 'true' : 'false' }}"
                                 class="min-h-[44px] min-w-[44px] border px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none {{ $isSelected ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-transparent bg-soft-sand text-intense-cocoa hover:border-intense-cocoa' }}"
                             >
-                                {{ $sizeName }}
+                                {{ \App\Enums\Products\SizeEnum::tryFrom($sizeName)?->label() ?? $sizeName }}
                             </button>
                         @endforeach
                     </div>

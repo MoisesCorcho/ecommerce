@@ -57,7 +57,7 @@ class EditProduct extends EditRecord
                 'id' => $variant->id,
                 'sku' => $variant->sku,
                 'color' => $variant->color,
-                'size' => $variant->size,
+                'size' => $variant->size?->value ?? $variant->size,
                 'dimensions' => $variant->dimensions,
                 'stock' => $variant->stock,
                 'is_active' => $variant->is_active,

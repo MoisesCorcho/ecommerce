@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Reviews;
 
 use App\Enums\Orders\OrderStatusEnum;
+use App\Enums\Products\SizeEnum;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -40,7 +41,7 @@ class ReviewVariantService
             ->map(fn ($item) => [
                 'sku' => $item->sku ?? $item->productVariant?->sku ?? '',
                 'color' => $item->productVariant?->color,
-                'size' => $item->productVariant?->size,
+                'size' => $item->productVariant?->size instanceof SizeEnum ? $item->productVariant->size->value : $item->productVariant?->size,
             ])
             ->unique(fn (array $v): string => $v['sku'])
             ->values()

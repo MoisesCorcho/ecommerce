@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Enums\Commerce\CurrencyEnum;
+use App\Enums\Products\SizeEnum;
 use App\Filament\Support\ExclusiveToggleInRepeater;
 use App\Filament\Support\NameSlugInputs;
 use App\Models\Product;
@@ -148,9 +149,13 @@ final class ProductForm
                                         ->label(__('products.fields.color'))
                                         ->maxLength(255)
                                         ->placeholder(__('products.placeholders.color')),
-                                    TextInput::make('size')
+                                    Select::make('size')
                                         ->label(__('products.fields.size'))
-                                        ->maxLength(255)
+                                        ->options(SizeEnum::class)
+                                        ->nullable()
+                                        ->searchable()
+                                        ->preload()
+                                        ->native(false)
                                         ->placeholder(__('products.placeholders.size')),
                                     TextInput::make('dimensions')
                                         ->label(__('products.fields.dimensions'))

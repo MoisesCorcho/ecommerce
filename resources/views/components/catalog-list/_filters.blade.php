@@ -59,16 +59,19 @@
             {{ __('storefront.shop.filter_size') }}
         </x-filter-heading>
         <ul class="flex flex-col gap-3 text-body-md text-intense-cocoa/80">
-            @foreach ($sizes as $sizeName)
+            @foreach ($sizes as $sizeValue)
+                @php
+                    $sizeLabel = \App\Enums\Products\SizeEnum::tryFrom($sizeValue)?->label() ?? $sizeValue;
+                @endphp
                 <li>
                     <x-checkbox
                         align="center"
                         label-class=""
                         wrapper-class="cursor-pointer transition-colors hover:text-soft-gold"
                         wire:model.live="size"
-                        value="{{ $sizeName }}"
+                        value="{{ $sizeValue }}"
                     >
-                        {{ $sizeName }}
+                        {{ $sizeLabel }}
                     </x-checkbox>
                 </li>
             @endforeach

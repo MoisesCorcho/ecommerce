@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Actions\Cart\AddCartItemAction;
 use App\DTOs\Cart\AddCartItemDTO;
 use App\Enums\Commerce\CurrencyEnum;
+use App\Enums\Products\SizeEnum;
 use App\Exceptions\Cart\CartAccessDeniedException;
 use App\Exceptions\Cart\CartItemNotEligibleException;
 use App\Exceptions\Cart\CartQuantityNotAllowedException;
@@ -368,9 +369,10 @@ new #[Layout('layouts.storefront')] class extends Component
             ->with(['variants' => fn ($q) => $q->active()->whereNotNull('size')])
             ->get()
             ->flatMap(fn (Product $p) => $p->variants->pluck('size'))
+            ->map(fn ($size) => $size instanceof SizeEnum ? $size->value : (is_string($size) ? $size : null))
             ->filter()
             ->unique()
-            ->sort()
+            ->sortBy(fn (string $size) => SizeEnum::tryFrom($size)?->sortOrder() ?? 999)
             ->values()
             ->all();
     }

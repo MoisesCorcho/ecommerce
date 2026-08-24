@@ -170,31 +170,31 @@ class StorefrontCatalogTest extends TestCase
     {
         $productMini = $this->createPublishedProduct('Mini Bag', 'mini-bag', CurrencyEnum::Cop, 300_000);
         $variantMini = $productMini->variants->first();
-        $variantMini->update(['size' => 'Mini']);
+        $variantMini->update(['size' => 'mini']);
 
         $productMaxi = $this->createPublishedProduct('Maxi Bag', 'maxi-bag', CurrencyEnum::Cop, 600_000);
         $variantMaxi = $productMaxi->variants->first();
-        $variantMaxi->update(['size' => 'Maxi']);
+        $variantMaxi->update(['size' => 'maxi']);
 
         $productMedium = $this->createPublishedProduct('Medium Bag', 'medium-bag', CurrencyEnum::Cop, 450_000);
         $variantMedium = $productMedium->variants->first();
-        $variantMedium->update(['size' => 'Medium']);
+        $variantMedium->update(['size' => 'medium']);
 
         Livewire::test('catalog-list')
-            ->set('size', ['Mini'])
+            ->set('size', ['mini'])
             ->assertViewHas('products', function ($products) {
                 return $products->contains('name', 'Mini Bag')
                     && ! $products->contains('name', 'Maxi Bag')
                     && ! $products->contains('name', 'Medium Bag');
             })
-            ->set('size', ['Mini', 'Maxi'])
+            ->set('size', ['mini', 'maxi'])
             ->assertViewHas('products', function ($products) {
                 return $products->contains('name', 'Mini Bag')
                     && $products->contains('name', 'Maxi Bag')
                     && ! $products->contains('name', 'Medium Bag');
             });
 
-        $this->get(route('products.index', ['size' => ['Mini']]))
+        $this->get(route('products.index', ['size' => ['mini']]))
             ->assertOk()
             ->assertSee('Mini Bag')
             ->assertDontSee('Maxi Bag')
@@ -204,12 +204,12 @@ class StorefrontCatalogTest extends TestCase
     public function test_toggle_size_and_clear_filters_for_size(): void
     {
         Livewire::test('catalog-list')
-            ->call('toggleSize', 'Mini')
-            ->assertSet('size', ['Mini'])
-            ->call('toggleSize', 'Maxi')
-            ->assertSet('size', ['Mini', 'Maxi'])
-            ->call('toggleSize', 'Mini')
-            ->assertSet('size', ['Maxi'])
+            ->call('toggleSize', 'mini')
+            ->assertSet('size', ['mini'])
+            ->call('toggleSize', 'maxi')
+            ->assertSet('size', ['mini', 'maxi'])
+            ->call('toggleSize', 'mini')
+            ->assertSet('size', ['maxi'])
             ->call('clearFilters')
             ->assertSet('size', []);
     }
@@ -217,17 +217,23 @@ class StorefrontCatalogTest extends TestCase
     public function test_size_facets_in_view_contains_available_sizes(): void
     {
         $productMini = $this->createPublishedProduct('Mini Bag', 'mini-bag', CurrencyEnum::Cop, 300_000);
-        $productMini->variants->first()->update(['size' => 'Mini']);
+        $productMini->variants->first()->update(['size' => 'mini']);
 
         $productMaxi = $this->createPublishedProduct('Maxi Bag', 'maxi-bag', CurrencyEnum::Cop, 600_000);
-        $productMaxi->variants->first()->update(['size' => 'Maxi']);
+        $productMaxi->variants->first()->update(['size' => 'maxi']);
+
+        $productMedium = $this->createPublishedProduct('Medium Bag', 'medium-bag', CurrencyEnum::Cop, 450_000);
+        $productMedium->variants->first()->update(['size' => 'medium']);
+
+        app()->setLocale('es');
 
         Livewire::test('catalog-list')
             ->assertViewHas('sizes', function (array $sizes) {
-                return in_array('Mini', $sizes, true) && in_array('Maxi', $sizes, true);
+                return in_array('mini', $sizes, true) && in_array('maxi', $sizes, true) && in_array('medium', $sizes, true);
             })
             ->assertSeeHtml('wire:model.live="size"')
             ->assertSee('Mini')
+            ->assertSee('Mediano')
             ->assertSee('Maxi');
     }
 }

@@ -8,6 +8,7 @@ use App\Actions\Products\CreateProductAction;
 use App\Actions\Products\UpdateProductAction;
 use App\DTOs\Products\UpsertProductDTO;
 use App\Enums\Commerce\CurrencyEnum;
+use App\Enums\Products\SizeEnum;
 use App\Filament\Resources\Products\Pages\CreateProduct;
 use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Models\Category;
@@ -82,7 +83,7 @@ class ProductVariantDimensionsTest extends TestCase
         $this->assertNull($product->getAttribute('dimensions'));
         $variant = $product->variants->first();
         $this->assertNotNull($variant);
-        $this->assertSame('Mini', $variant->size);
+        $this->assertSame(SizeEnum::Mini, $variant->size);
         $this->assertSame('18cm x 15cm x 10cm', $variant->dimensions);
     }
 
@@ -96,7 +97,7 @@ class ProductVariantDimensionsTest extends TestCase
 
         $variant = ProductVariant::factory()->for($product)->create([
             'sku' => 'INIT-VAR',
-            'size' => 'Medium',
+            'size' => SizeEnum::Medium,
             'dimensions' => '20cm x 20cm x 10cm',
         ]);
 
@@ -115,7 +116,7 @@ class ProductVariantDimensionsTest extends TestCase
                     'id' => $variant->id,
                     'sku' => 'INIT-VAR',
                     'color' => 'Miel',
-                    'size' => 'Maxi',
+                    'size' => SizeEnum::Maxi,
                     'dimensions' => '35cm x 30cm x 15cm',
                     'stock' => 15,
                     'is_active' => true,
@@ -133,7 +134,7 @@ class ProductVariantDimensionsTest extends TestCase
 
         $freshVariant = $updatedProduct->variants()->first();
         $this->assertNotNull($freshVariant);
-        $this->assertSame('Maxi', $freshVariant->size);
+        $this->assertSame(SizeEnum::Maxi, $freshVariant->size);
         $this->assertSame('35cm x 30cm x 15cm', $freshVariant->dimensions);
     }
 
@@ -152,7 +153,7 @@ class ProductVariantDimensionsTest extends TestCase
                 [
                     'sku' => 'HC-MINI-01',
                     'color' => 'Dorado',
-                    'size' => 'Mini',
+                    'size' => SizeEnum::Mini->value,
                     'dimensions' => '22cm x 14cm x 6cm',
                     'stock' => 8,
                     'is_active' => true,
@@ -174,7 +175,7 @@ class ProductVariantDimensionsTest extends TestCase
         $this->assertNotNull($product);
         $variant = $product->variants->first();
         $this->assertNotNull($variant);
-        $this->assertSame('Mini', $variant->size);
+        $this->assertSame(SizeEnum::Mini, $variant->size);
         $this->assertSame('22cm x 14cm x 6cm', $variant->dimensions);
 
         // Test editing via Filament EditProduct

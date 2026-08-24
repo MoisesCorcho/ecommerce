@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\DTOs\Products;
 
+use App\Enums\Products\SizeEnum;
+
 readonly class UpsertProductVariantDTO
 {
     /**
@@ -15,7 +17,7 @@ readonly class UpsertProductVariantDTO
         public int $stock,
         public array $prices,
         public ?string $color = null,
-        public ?string $size = null,
+        public SizeEnum|string|null $size = null,
         public ?string $dimensions = null,
         public ?int $id = null,
     ) {}
@@ -26,7 +28,7 @@ readonly class UpsertProductVariantDTO
      *     is_active?: bool|int|string|null,
      *     stock?: int|string|null,
      *     color?: string|null,
-     *     size?: string|null,
+     *     size?: SizeEnum|string|null,
      *     dimensions?: string|null,
      *     id?: int|null,
      *     prices?: list<array<string, mixed>>
@@ -39,13 +41,21 @@ readonly class UpsertProductVariantDTO
             $prices[] = UpsertProductVariantPriceDTO::fromArray($priceData);
         }
 
+        $size = match (true) {
+            isset($data['size']) && $data['size'] instanceof SizeEnum => $data['size']->value,
+            isset($data['size']) && is_string($data['size']) && $data['size'] !== '' => SizeEnum::tryFrom($data['size'])?->value
+                ?? SizeEnum::tryFrom(strtolower($data['size']))?->value
+                ?? $data['size'],
+            default => null,
+        };
+
         return new self(
             sku: (string) $data['sku'],
             isActive: filter_var($data['is_active'] ?? true, FILTER_VALIDATE_BOOLEAN),
             stock: (int) ($data['stock'] ?? 0),
             prices: $prices,
             color: isset($data['color']) && $data['color'] !== '' ? (string) $data['color'] : null,
-            size: isset($data['size']) && $data['size'] !== '' ? (string) $data['size'] : null,
+            size: $size,
             dimensions: isset($data['dimensions']) && $data['dimensions'] !== '' ? (string) $data['dimensions'] : null,
             id: isset($data['id']) ? (int) $data['id'] : null,
         );

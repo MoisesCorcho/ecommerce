@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Enums\Commerce\CurrencyEnum;
+use App\Enums\Products\SizeEnum;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
@@ -146,7 +147,7 @@ class ProductSeeder extends Seeder
                 'name' => 'Clutch Queen Bee',
                 'material' => 'Cuero',
                 'description' => $description,
-                'size' => 'Mini',
+                'size' => SizeEnum::Mini->value,
                 'dimensions' => '24cm x 12cm x 5cm',
                 'sku' => 'D2300-3-2-4',
                 'price' => 850_000,
@@ -158,7 +159,7 @@ class ProductSeeder extends Seeder
                 'name' => 'Honey Bag Medium',
                 'material' => 'Cuero',
                 'description' => $description,
-                'size' => 'Medium',
+                'size' => SizeEnum::Medium->value,
                 'dimensions' => '36cm x 29cm x 8cm',
                 'sku' => 'D2401',
                 'price' => 799_000,
@@ -170,7 +171,7 @@ class ProductSeeder extends Seeder
                 'name' => 'Maxi Honey Bag',
                 'material' => 'Cuero',
                 'description' => $description,
-                'size' => 'Maxi',
+                'size' => SizeEnum::Maxi->value,
                 'dimensions' => '26cm x 25cm x 6cm',
                 'sku' => 'D2402',
                 'price' => 999_000,
@@ -182,7 +183,7 @@ class ProductSeeder extends Seeder
                 'name' => 'Mini Basket Bag',
                 'material' => 'Cuero',
                 'description' => $description,
-                'size' => 'Mini',
+                'size' => SizeEnum::Mini->value,
                 'dimensions' => '15cm x 12cm x 12cm',
                 'sku' => 'd1000',
                 'price' => 699_000,
@@ -194,7 +195,7 @@ class ProductSeeder extends Seeder
                 'name' => 'Mini Honey Bag',
                 'material' => 'Cuero',
                 'description' => $description,
-                'size' => 'Mini',
+                'size' => SizeEnum::Mini->value,
                 'dimensions' => '27cm x 27cm x 10cm',
                 'sku' => 'D2409',
                 'price' => 689_000,

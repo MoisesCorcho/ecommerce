@@ -32,7 +32,7 @@ class ProductQuickViewTest extends TestCase
         int $price = 150_000,
         int $stock = 10,
         ?string $color = 'Camel',
-        ?string $size = 'Medium',
+        ?string $size = 'medium',
     ): Product {
         $product = Product::factory()->create([
             'name' => $name,
@@ -68,6 +68,7 @@ class ProductQuickViewTest extends TestCase
 
     public function test_quick_view_modal_opens_when_open_quick_view_event_is_dispatched(): void
     {
+        app()->setLocale('es');
         $product = $this->createPublishedProduct('Cartera Miel', 'cartera-miel', CurrencyEnum::Cop, 220_000);
 
         Livewire::test('product-quick-view')
@@ -77,7 +78,7 @@ class ProductQuickViewTest extends TestCase
             ->assertSee('Cartera Miel')
             ->assertSee('220.000')
             ->assertSee('Camel')
-            ->assertSee('Medium');
+            ->assertSee('Mediano');
     }
 
     public function test_quick_view_modal_does_not_open_for_invalid_product_id(): void

@@ -42,4 +42,11 @@ return [
         'replied' => 'Respondido',
         'archived' => 'Archivado',
     ],
+
+    'size' => [
+        'mini' => 'Mini',
+        'medium' => 'Mediano',
+        'maxi' => 'Maxi',
+        'one_size' => 'Único',
+    ],
 ];
