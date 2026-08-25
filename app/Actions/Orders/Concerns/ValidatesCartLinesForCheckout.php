@@ -7,6 +7,7 @@ namespace App\Actions\Orders\Concerns;
 use App\Actions\Cart\Concerns\AssertsCartItemEligibility;
 use App\DTOs\Orders\CheckoutPreviewLineDTO;
 use App\Enums\Commerce\CurrencyEnum;
+use App\Enums\Products\SizeEnum;
 use App\Exceptions\Cart\CartItemNotEligibleException;
 use App\Exceptions\Cart\CartQuantityNotAllowedException;
 use App\Exceptions\Cart\InsufficientCartStockException;
@@ -110,9 +111,15 @@ trait ValidatesCartLinesForCheckout
 
     protected function variantLabel(ProductVariant $variant): ?string
     {
+        $size = match (true) {
+            $variant->size instanceof SizeEnum => $variant->size->label(),
+            is_string($variant->size) && $variant->size !== '' => SizeEnum::tryFrom($variant->size)?->label() ?? $variant->size,
+            default => null,
+        };
+
         $parts = array_values(array_filter([
             $variant->color,
-            $variant->size,
+            $size,
         ], static fn (?string $value): bool => $value !== null && $value !== ''));
 
         if ($parts === []) {
