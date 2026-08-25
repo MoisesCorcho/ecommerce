@@ -12,6 +12,7 @@ use App\DTOs\Orders\CheckoutContactDTO;
 use App\DTOs\Orders\CheckoutShippingDTO;
 use App\DTOs\Orders\CreateOrderFromCartDTO;
 use App\Enums\Orders\OrderStatusEnum;
+use App\Enums\Products\SizeEnum;
 use App\Exceptions\Orders\CheckoutCartEmptyException;
 use App\Exceptions\Orders\CheckoutCartNotReadyException;
 use App\Exceptions\Orders\OrderAccessDeniedException;
@@ -54,6 +55,36 @@ class OrderDomainTest extends TestCase
         $this->assertSame(0, $preview->taxAmount);
         $this->assertSame(45_000, $preview->total);
         $this->assertCount(1, $preview->lines);
+    }
+
+    public function test_validate_checkout_formats_variant_label_with_size_enum_and_color(): void
+    {
+        $cart = Cart::factory()->guest()->create();
+        $product = Product::factory()->create(['name' => 'Leather Bag', 'is_active' => true]);
+        $variant = ProductVariant::factory()->for($product)->create([
+            'sku' => 'BAG-BLK-MED',
+            'is_active' => true,
+            'stock' => 10,
+            'color' => 'Black',
+            'size' => SizeEnum::Medium,
+        ]);
+        ProductVariantPrice::factory()
+            ->for($variant, 'productVariant')
+            ->cop()
+            ->create(['price' => 50_000]);
+
+        CartItem::factory()->for($cart)->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => 1,
+        ]);
+
+        $preview = app(ValidateCartForCheckoutAction::class)(
+            $cart->id,
+            new CartOwnerDTO(sessionId: $cart->session_id),
+        );
+
+        $this->assertCount(1, $preview->lines);
+        $this->assertSame('Black / '.SizeEnum::Medium->label(), $preview->lines[0]->variantLabel);
     }
 
     public function test_validate_fails_when_cart_empty(): void
