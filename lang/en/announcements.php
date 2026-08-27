@@ -29,5 +29,8 @@ return [
         'starts_at' => 'Starts At',
         'ends_at' => 'Ends At',
     ],
+    'badges' => [
+        'primary' => 'Primary',
+    ],
     'close' => 'Close announcement',
 ];

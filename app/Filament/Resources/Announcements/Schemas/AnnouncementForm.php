@@ -4,45 +4,51 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Announcements\Schemas;
 
+use App\Enums\Localization\LocaleEnum;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 
 final class AnnouncementForm
 {
     public static function configure(Schema $schema): Schema
     {
+        $translationTabs = collect(LocaleEnum::cases())->map(function (LocaleEnum $locale): Tab {
+            $isDefault = ($locale === LocaleEnum::Es);
+
+            return Tab::make($locale->label())
+                ->badge($isDefault ? __('announcements.badges.primary') : null)
+                ->schema([
+                    TextInput::make("text.{$locale->value}")
+                        ->label(__('announcements.fields.text')." ({$locale->label()})")
+                        ->placeholder($locale === LocaleEnum::Es ? '¡Envío gratis en compras mayores a $150.000!' : 'Free shipping on orders over $150,000!')
+                        ->required($isDefault)
+                        ->nullable(! $isDefault)
+                        ->maxLength(255),
+                ]);
+        })->values()->all();
+
         return $schema
             ->components([
                 Section::make(__('announcements.sections.content'))
                     ->description(__('announcements.sections.content_description'))
                     ->schema([
-                        Grid::make(2)->schema([
-                            TextInput::make('text.es')
-                                ->label(__('announcements.fields.text_es'))
-                                ->placeholder('¡Envío gratis en compras mayores a $150.000!')
-                                ->required()
-                                ->maxLength(255)
-                                ->columnSpan(1),
+                        Tabs::make('Translations')
+                            ->tabs($translationTabs)
+                            ->columnSpanFull(),
 
-                            TextInput::make('text.en')
-                                ->label(__('announcements.fields.text_en'))
-                                ->placeholder('Free shipping on orders over $150,000!')
-                                ->nullable()
-                                ->maxLength(255)
-                                ->columnSpan(1),
-
-                            TextInput::make('url')
-                                ->label(__('announcements.fields.url'))
-                                ->helperText(__('announcements.fields.url_helper'))
-                                ->placeholder('https://... o /tienda')
-                                ->nullable()
-                                ->maxLength(2048)
-                                ->columnSpanFull(),
-                        ]),
+                        TextInput::make('url')
+                            ->label(__('announcements.fields.url'))
+                            ->helperText(__('announcements.fields.url_helper'))
+                            ->placeholder('https://... o /tienda')
+                            ->nullable()
+                            ->maxLength(2048)
+                            ->columnSpanFull(),
                     ])
                     ->columnSpanFull(),
 

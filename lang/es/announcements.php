@@ -29,5 +29,8 @@ return [
         'starts_at' => 'Fecha de Inicio',
         'ends_at' => 'Fecha de Fin',
     ],
+    'badges' => [
+        'primary' => 'Principal',
+    ],
     'close' => 'Cerrar anuncio',
 ];

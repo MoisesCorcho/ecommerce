@@ -23,9 +23,8 @@
                     document.getElementById('announcement-bar-{{ $announcement->id }}').style.display = 'none';
                 }
             </script>
-            <div class="mx-auto flex max-w-storefront items-center justify-between gap-4 px-margin-mobile lg:px-margin-desktop">
-
-                <div class="flex-1 text-center font-medium tracking-wide">
+            <div class="mx-auto flex max-w-storefront items-center justify-center px-8 sm:px-12">
+                <div class="text-center font-medium tracking-wide">
                     @if ($announcement->url)
                         <a
                             href="{{ $announcement->url }}"
@@ -46,18 +45,18 @@
                         <span>{{ $text }}</span>
                     @endif
                 </div>
-
-                <button
-                    type="button"
-                    @click="dismissed = true; localStorage.setItem('leen_announcement_dismissed_' + id, '1')"
-                    aria-label="{{ __('announcements.close') }}"
-                    class="shrink-0 text-silk-cream/70 hover:text-silk-cream transition-colors p-1 -mr-1"
-                >
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                    </svg>
-                </button>
             </div>
+
+            <button
+                type="button"
+                @click="dismissed = true; localStorage.setItem('leen_announcement_dismissed_' + id, '1')"
+                aria-label="{{ __('announcements.close') }}"
+                class="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 text-silk-cream/70 hover:text-silk-cream transition-colors p-1"
+            >
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
         </aside>
     @endif
 @endif
