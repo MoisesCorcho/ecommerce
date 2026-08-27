@@ -10,15 +10,21 @@
 
     @if (! empty($text))
         <aside
+            id="announcement-bar-{{ $announcement->id }}"
             x-data="{ dismissed: false, id: {{ $announcement->id }} }"
             x-init="dismissed = localStorage.getItem('leen_announcement_dismissed_' + id) === '1'"
             x-show="!dismissed"
-            x-cloak
             dusk="announcement-bar"
             aria-label="{{ __('announcements.model.label') }}"
             class="relative z-50 bg-intense-cocoa text-silk-cream text-xs py-2 px-4 transition-all duration-300"
         >
+            <script>
+                if (localStorage.getItem('leen_announcement_dismissed_{{ $announcement->id }}') === '1') {
+                    document.getElementById('announcement-bar-{{ $announcement->id }}').style.display = 'none';
+                }
+            </script>
             <div class="mx-auto flex max-w-storefront items-center justify-between gap-4 px-margin-mobile lg:px-margin-desktop">
+
                 <div class="flex-1 text-center font-medium tracking-wide">
                     @if ($announcement->url)
                         <a

@@ -176,6 +176,6 @@ class AnnouncementBarTest extends TestCase
         $response->assertOk();
         $response->assertSee('x-data="{ dismissed: false, id: '.$announcement->id.' }"', false);
         $response->assertSee("localStorage.getItem('leen_announcement_dismissed_' + id)", false);
-        $response->assertSee('x-cloak', false);
+        $response->assertSee("document.getElementById('announcement-bar-{$announcement->id}').style.display = 'none'", false);
     }
 }
