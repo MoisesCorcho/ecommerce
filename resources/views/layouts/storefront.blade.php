@@ -175,6 +175,7 @@
     </footer>
 
     <livewire:product-quick-view />
+    <x-promotional-popup />
 
     @livewireScripts
 </body>
