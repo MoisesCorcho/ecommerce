@@ -148,7 +148,7 @@ class PromotionalPopupTest extends TestCase
         $response->assertDontSee('Título en Español');
     }
 
-    public function test_promotional_popup_includes_alpine_7_days_dismiss_logic(): void
+    public function test_promotional_popup_includes_alpine_1_day_dismiss_logic(): void
     {
         $popup = PromotionalPopup::factory()->create([
             'title' => ['es' => 'Pop-up con descarte'],
@@ -161,7 +161,23 @@ class PromotionalPopupTest extends TestCase
         $response->assertOk();
         $response->assertSee('x-data="{ show: false, copied: false, id: '.$popup->id.', delay: 7 }"', false);
         $response->assertSee("const dismissedKey = 'leen_popup_dismissed_' + id;", false);
-        $response->assertSee('const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;', false);
+        $response->assertSee('const oneDayMs = 24 * 60 * 60 * 1000;', false);
         $response->assertSee("localStorage.setItem('leen_popup_dismissed_' + id, Date.now().toString())", false);
+    }
+
+    public function test_promotional_popup_cta_click_persists_dismissal_in_local_storage(): void
+    {
+        $popup = PromotionalPopup::factory()->create([
+            'title' => ['es' => 'Pop-up con CTA'],
+            'cta_text' => ['es' => 'Aprovechar Oferta'],
+            'cta_url' => '/shop',
+            'is_active' => true,
+        ]);
+
+        $response = $this->withSession(['locale' => 'es'])->get('/');
+
+        $response->assertOk();
+        $response->assertSee('href="/shop"', false);
+        $response->assertSee('@click="localStorage.setItem(\'leen_popup_dismissed_\' + id, Date.now().toString())"', false);
     }
 }

@@ -99,8 +99,8 @@ app/Filament/Resources/PromotionalPopups/
     ```javascript
     const dismissedKey = 'leen_popup_dismissed_' + id;
     const dismissedAt = localStorage.getItem(dismissedKey);
-    const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
-    if (!dismissedAt || (Date.now() - parseInt(dismissedAt, 10)) > sevenDaysMs) {
+    const oneDayMs = 24 * 60 * 60 * 1000;
+    if (!dismissedAt || (Date.now() - parseInt(dismissedAt, 10)) > oneDayMs) {
         setTimeout(() => { show = true; }, delay * 1000);
     }
     ```

@@ -26,7 +26,7 @@
 2. **Como** administrador, **quiero** programar fechas de inicio y fin (`starts_at`, `ends_at`) y poder activar o pausar el pop-up en cualquier momento con un switch, **para** controlar campañas de marketing estacionales.
 3. **Como** visitante, **quiero** ver un modal atractivo y no invasivo tras navegar unos segundos en la tienda, **para** descubrir ofertas exclusivas o códigos de descuento.
 4. **Como** visitante, **quiero** poder copiar el código del cupón con un solo clic (o aplicarlo directamente), **para** usarlo de inmediato en mi carrito.
-5. **Como** visitante, **quiero** cerrar el pop-up y que no vuelva a interrumpirme durante mi sesión o durante los próximos 7 días, **para** una experiencia de navegación cómoda.
+5. **Como** visitante, **quiero** cerrar el pop-up y que no vuelva a interrumpirme durante mi sesión del día o durante las próximas 24 horas, **para** una experiencia de navegación cómoda.
 
 ---
 
@@ -38,7 +38,7 @@
 
 - **R2 (Frecuencia y Descarte en Cliente):**  
   *Si* el visitante ya cerró el pop-up previamente,  
-  *el sistema cliente (Alpine.js / localStorage)* no deberá mostrar el modal mientras el registro de descarte (`leen_popup_dismissed_{id}`) tenga menos de 7 días de antigüedad (calculado por timestamp).
+  *el sistema cliente (Alpine.js / localStorage)* no deberá mostrar el modal mientras el registro de descarte (`leen_popup_dismissed_{id}`) tenga menos de 24 horas (1 día) de antigüedad (calculado por timestamp).
 
 - **R3 (Temporizador de Aparición):**  
   *Cuando* la página termine de cargar y el pop-up sea elegible,  
