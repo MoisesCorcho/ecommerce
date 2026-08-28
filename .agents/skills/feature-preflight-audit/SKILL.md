@@ -71,16 +71,26 @@ Trigger this skill **before writing any code** when:
 
 ---
 
-### Fase 1: Descubrimiento de Código Existente (Baseline Discovery)
+### Fase 1: Descubrimiento de Código Base y Precedentes (Baseline & Sibling Discovery)
 
-Do **NOT** assume a feature starts from a clean slate. First inspect the existing codebase:
+Do **NOT** assume a feature starts from a clean slate or exists in a vacuum. First inspect the existing codebase and sibling precedents:
 
-1. **CodeGraph Exploration**: Use `codegraph_explore` or read-only CLI (`codegraph query`, `codegraph callers`, `codegraph callees`) to map out related symbols and call chains.
-2. **Inventory Classification**: Categorize existing artifacts:
+1. **Stack Capabilities & Installed Packages (`composer.json` + Traits)**:
+   * Inspect `composer.json` and existing models to identify already adopted ecosystem solutions (e.g. `spatie/laravel-translatable`, `spatie/laravel-permission`).
+   * **Hard Rule**: If a package/trait is already adopted in the project, specs must NOT invent alternative/ad-hoc database designs (such as `_es`/`_en` columns).
+2. **Sibling Feature & Precedent Audit (`specs/features/` + `app/Models/`)**:
+   * Identify the **conceptual family** of the feature (e.g. Marketing Storefront for Pop-up F16 ↔ Announcements F15; Discounts for Cart Threshold F17 ↔ Coupons F06).
+   * Verify how sibling features solved:
+     * Internationalization (i18n) and locale enums (`LocaleEnum`).
+     * Prioritization and sorting (`sort_order`, `scopeOrdered`).
+     * Scheduling and validity (`starts_at`, `ends_at`, `scopeActive`).
+     * Filament v5 form/table organization (`Schemas/` directory decomposition).
+3. **CodeGraph Exploration**: Use `codegraph_explore` or read-only CLI (`codegraph query`, `codegraph callers`, `codegraph callees`) to map out related symbols and call chains.
+4. **Inventory Classification**: Categorize existing artifacts:
    * **Ya implementado y funcional**: Clases, migraciones, modelos, enums o traits existentes que NO deben duplicarse ni reescribirse.
    * **Parcialmente implementado**: Componentes que requieren extensión o refactorización controlada.
    * **Faltante (In Scope)**: Lo que verdaderamente debe construirse desde cero.
-3. **Anti-Reinvention Rule**: Never create duplicate utilities, enums (e.g. `CurrencyEnum`), helpers, or base Actions if equivalent mechanisms already exist in `app/`.
+5. **Anti-Reinvention Rule**: Never create duplicate utilities, enums (e.g. `CurrencyEnum`), helpers, or base Actions if equivalent mechanisms already exist in `app/`.
 
 ---
 
@@ -120,6 +130,9 @@ Review the feature spec against real-world production risks:
    * Payloads use `readonly` DTOs (`app/DTOs/{Area}/...DTO.php`) with strict types and constructor promotion.
    * Models remain flat in `app/Models/`.
    * No vertical domain directories (`app/Catalog/...` is strictly prohibited).
+4. **Pattern Drift Detection (Deriva de Patrones vs Features Hermanas)**:
+   * Does the spec introduce an ad-hoc mechanism where a sibling feature already established a project standard? (e.g. ad-hoc `_es`/`_en` columns instead of `HasTranslations`, missing `sort_order` or `ordered()` scope, monolithic forms instead of Filament v5 `Schemas/`).
+   * Any detected pattern drift MUST be highlighted as a top-priority item in the Architectural Decisions Table.
 
 ---
 
