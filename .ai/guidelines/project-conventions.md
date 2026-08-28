@@ -194,3 +194,5 @@ When specifying or implementing a product feature:
 2. Follow the feature’s three artifacts; acceptance criteria use EARS with `R1…Rn` and tasks cite `_(cubre Rx)_`.
 3. Code still follows the conventions above (Actions, enums as strings, etc.).
 4. Domain schema truth remains `app/Models`, `app/Enums/{Area}`, and migrations—update those when a feature changes data shape.
+5. Before coding (`En implementación`), run preflight audit via skill `feature-preflight-audit` (or `/audit-feature`) to verify blast radius, existing code baselines, domain invariants, and edge cases.
+6. After completing implementation, generate an exhaustive verification checklist via skill `feature-qa-checklist` (or `/qa-checklist`) for QA and release handoff.

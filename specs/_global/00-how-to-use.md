@@ -35,17 +35,18 @@ Ubicación: `specs/features/<NN-slug>/`.
 3. Abrir `requirements.md`. Resolver ambigüedades **antes** de design o código.
 4. Ajustar `design.md` (alineado a convenciones + esquema BD). Verificar APIs con Boost/docs, no de memoria.
 5. Ejecutar `tasks.md` como checklist. Marcar items al completarlos.
-6. Antes de cerrar: Definition of Done de `tasks.md` + criterios R1…Rn de requirements.
+6. Antes de cerrar: Definition of Done de `tasks.md` + criterios R1…Rn de requirements + generar checklist de verificación de QA vía skill `feature-qa-checklist` (o `/qa-checklist`).
 
-### Auditoría y corrección de specs
+### Auditoría y Preflight de Feature antes de Implementar
 
-Antes de implementar una feature cuyas specs no fueron revisadas:
+Antes de pasar una feature a `En implementación`:
 
-1. **Auditar** según `02-feature-quality.md` (solo lectura; una feature por sesión).
-2. Tras confirmación del equipo, **corregir** según el mismo documento (sección corrección).
-3. Luego implementar.
+1. **Preflight Audit**: Activar la skill `feature-preflight-audit` (o ejecutar `/audit-feature <slug>`).
+2. **Revisar Radio de Impacto y Baseline**: Verificar código existente vs faltante (evitar duplicar), modelos de datos, invariantes, transacciones y edge cases.
+3. **Resolver Gaps**: Si el veredicto es `ACCIÓN REQUERIDA`, consensuar la tabla de decisiones arquitectónicas y reflejar los acuerdos en `requirements.md` / `design.md` antes de codificar.
+4. Solo cuando el veredicto sea `LISTA PARA IMPLEMENTAR` y los prerequisitos estén en `Completa`, iniciar la ejecución de `tasks.md`.
 
-Los comandos de pipeline del agente (`/sdd-new`, `/sdd-ff`, etc.) son **orquestación** (explore → propose → …). Esta carpeta es el **contrato de producto y calidad** versionado en git. Pueden usarse juntos: el pipeline produce borradores; la barra de `02` los hace auditables.
+Los comandos de pipeline del agente (`/sdd-new`, `/sdd-ff`, etc.) son **orquestación** (explore → propose → …). Esta carpeta es el **contrato de producto y calidad** versionado en git. Pueden usarse juntos: el pipeline produce borradores; la barra de `02` y la skill `feature-preflight-audit` los hacen auditables y seguros antes de tocar código.
 
 ## Convención de estado
 
