@@ -11,6 +11,7 @@ return [
         'catalog' => 'Catálogo',
         'orders' => 'Pedidos',
         'commerce' => 'Comercio',
+        'marketing' => 'Marketing',
         'support' => 'Soporte',
     ],
 ];

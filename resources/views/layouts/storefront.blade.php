@@ -16,7 +16,10 @@
     @livewireStyles
 </head>
 <body class="flex min-h-screen flex-col bg-silk-cream text-intense-cocoa font-sans antialiased">
+    <x-announcement-bar />
+
     <header class="sticky top-0 z-50 bg-soft-sand border-b border-intense-cocoa/10" x-data="{ open: false }">
+
         <div class="relative mx-auto flex max-w-storefront items-center justify-between px-margin-mobile py-5 lg:px-margin-desktop">
             {{-- Navigation links (desktop) — left side --}}
             <nav class="hidden flex-1 lg:flex items-center gap-8" aria-label="Primary">
