@@ -39,6 +39,7 @@ class PromotionalPopupTest extends TestCase
         $response->assertOk();
         $response->assertSee('¡Bienvenido a Leen!');
         $response->assertSee('Obtén 10% en tu primer bolso.');
+        $response->assertSee('Una oferta más dulce que la miel');
         $response->assertSee('dusk="promotional-popup"', false);
     }
 
@@ -145,7 +146,9 @@ class PromotionalPopupTest extends TestCase
         $response->assertSee('Title in English');
         $response->assertSee('Subtitle in English');
         $response->assertSee('Shop Now');
+        $response->assertSee('An offer sweeter than honey');
         $response->assertDontSee('Título en Español');
+        $response->assertDontSee('Una oferta más dulce que la miel');
     }
 
     public function test_promotional_popup_includes_alpine_1_day_dismiss_logic(): void

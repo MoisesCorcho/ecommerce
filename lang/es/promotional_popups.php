@@ -44,6 +44,7 @@ return [
         'has_coupon' => 'Con Cupón',
     ],
     'storefront' => [
+        'eyebrow' => 'Una oferta más dulce que la miel',
         'copy_code' => 'Copiar código',
         'code_copied' => '¡Copiado!',
         'close' => 'Cerrar ventana emergente',

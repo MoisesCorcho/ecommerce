@@ -44,6 +44,7 @@ return [
         'has_coupon' => 'With Coupon',
     ],
     'storefront' => [
+        'eyebrow' => 'An offer sweeter than honey',
         'copy_code' => 'Copy code',
         'code_copied' => 'Copied!',
         'close' => 'Close popup',
