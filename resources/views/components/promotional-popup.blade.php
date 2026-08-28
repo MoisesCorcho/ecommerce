@@ -61,14 +61,14 @@
                     type="button"
                     @click="show = false; localStorage.setItem('leen_popup_dismissed_' + id, Date.now().toString())"
                     aria-label="{{ __('promotional_popups.storefront.close') }}"
-                    class="group absolute -top-px -right-px z-30 flex h-8 w-8 sm:h-9 sm:w-9 cursor-pointer items-center justify-center border-b border-l border-intense-cocoa/35 bg-silk-cream text-intense-cocoa transition-colors duration-200 focus:outline-none"
+                    class="group absolute -top-px -right-px z-30 flex h-9 w-9 sm:h-10 sm:w-10 cursor-pointer items-center justify-center border-b border-l border-intense-cocoa/35 bg-silk-cream text-intense-cocoa transition-colors duration-200 focus:outline-none"
                 >
                     <svg
-                        class="h-4 w-4 animate-close-idle transition-transform duration-300 group-hover:![animation:none] group-hover:rotate-90"
+                        class="h-5 w-5 animate-close-idle transition-transform duration-300 group-hover:![animation:none] group-hover:rotate-90"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
-                        stroke-width="1.5"
+                        stroke-width="2"
                         aria-hidden="true"
                     >
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
