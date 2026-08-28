@@ -243,3 +243,33 @@
 .quick-view-details > * {
     flex-shrink: 0;
 }
+
+/* ── Modal Close Idle Animation ───────────────────────────── */
+@keyframes close-icon-idle-nudge {
+    0%, 75%, 100% {
+        transform: rotate(0deg) scale(1);
+    }
+    80% {
+        transform: rotate(-18deg) scale(1.1);
+    }
+    85% {
+        transform: rotate(18deg) scale(1.1);
+    }
+    90% {
+        transform: rotate(-8deg) scale(1.05);
+    }
+    95% {
+        transform: rotate(0deg) scale(1);
+    }
+}
+
+.animate-close-idle {
+    animation: close-icon-idle-nudge 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-close-idle {
+        animation: none !important;
+    }
+}
+

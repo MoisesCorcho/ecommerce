@@ -56,20 +56,27 @@
                 x-transition:leave-end="opacity-0 scale-95"
                 class="relative w-full max-w-lg border border-intense-cocoa/20 bg-silk-cream text-intense-cocoa shadow-2xl p-2.5 sm:p-3.5 z-10 my-8"
             >
-                {{-- Marco Interior (Estuche de Atelier) --}}
-                <div class="relative border border-intense-cocoa/15 bg-silk-cream p-6 sm:p-8">
-                    
-                    {{-- Botón de Cierre Cuadrado (Consistente con Quick View) --}}
-                    <button
-                        type="button"
-                        @click="show = false; localStorage.setItem('leen_popup_dismissed_' + id, Date.now().toString())"
-                        aria-label="{{ __('promotional_popups.storefront.close') }}"
-                        class="absolute top-3 right-3 z-20 flex h-9 w-9 cursor-pointer items-center justify-center bg-intense-cocoa text-silk-cream transition-colors hover:bg-error hover:text-white focus:outline-none"
+                {{-- Botón de Cierre: Lengüeta Editorial Integrada al Marco Exterior (Idle Nudge + Hover Spin) --}}
+                <button
+                    type="button"
+                    @click="show = false; localStorage.setItem('leen_popup_dismissed_' + id, Date.now().toString())"
+                    aria-label="{{ __('promotional_popups.storefront.close') }}"
+                    class="group absolute -top-px -right-px z-30 flex h-8 w-8 sm:h-9 sm:w-9 cursor-pointer items-center justify-center border-b border-l border-intense-cocoa/35 bg-silk-cream text-intense-cocoa transition-colors duration-200 focus:outline-none"
+                >
+                    <svg
+                        class="h-4 w-4 animate-close-idle transition-transform duration-300 group-hover:![animation:none] group-hover:rotate-90"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        aria-hidden="true"
                     >
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                {{-- Marco Interior (Estuche de Atelier) --}}
+                <div class="relative border border-intense-cocoa/35 bg-silk-cream p-6 sm:p-8">
 
                     {{-- Banner de Imagen Editorial con Filigrana --}}
                     @if ($popup->image_path)
