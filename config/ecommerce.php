@@ -204,4 +204,20 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Wishlist automated marketing alerts (F18)
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for price-drop and low-stock scheduled marketing alerts.
+    |
+    */
+
+    'wishlist_alerts' => [
+        'enabled' => (bool) env('ECOMMERCE_WISHLIST_ALERTS_ENABLED', true),
+        'low_stock_threshold' => (int) env('ECOMMERCE_WISHLIST_LOW_STOCK_THRESHOLD', 3),
+        'cooldown_days' => (int) env('ECOMMERCE_WISHLIST_COOLDOWN_DAYS', 7),
+        'max_alerts_per_user' => (int) env('ECOMMERCE_WISHLIST_MAX_ALERTS_PER_USER', 3),
+    ],
+
 ];

@@ -1,7 +1,8 @@
 # F18 — Notificaciones Automáticas de Wishlist (Marketing Alerts)
 
-> **Estado:** Lista para implementar  
+> **Estado:** Completa  
 > **ID:** F18 (F-03) · **Slug:** `18-wishlist-alerts`  
+
 > **Prerequisitos:** F01 (Catálogo), F08 (Auth storefront), F10 (Wishlist) — ver [`01-product-and-roadmap.md`](../../_global/01-product-and-roadmap.md)  
 > **Desbloquea:** Automatización de marketing, recuperación de interés y fidelización  
 > **Presupuesto / Estimación:** 13 horas (104 €)
