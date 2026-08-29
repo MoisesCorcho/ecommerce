@@ -68,6 +68,8 @@ class CreateOrderFromCartAction
 
             $subtotal = array_sum(array_column($lines, 'lineSubtotal'));
             $shippingCost = $this->shippingCostService->standardCost($cart->currency);
+            $thresholdDiscount = $cart->currency->calculateThresholdDiscount($subtotal);
+            $netSubtotal = max(0, $subtotal - $thresholdDiscount);
             $taxAmount = 0;
 
             $couponId = null;
@@ -82,6 +84,7 @@ class CreateOrderFromCartAction
                     currency: $cart->currency,
                     userId: $dto->userId,
                     forUpdate: true,
+                    discountableSubtotal: $netSubtotal,
                 );
                 $lockedCoupon = $quote->coupon;
                 $couponId = (int) $lockedCoupon->id;
@@ -89,7 +92,7 @@ class CreateOrderFromCartAction
                 $redeemCode = $quote->code;
             }
 
-            $total = $subtotal + $shippingCost - $discount + $taxAmount;
+            $total = max(0, $subtotal - $thresholdDiscount - $discount) + $shippingCost + $taxAmount;
 
             $order = Order::query()->create([
                 'order_number' => $this->orderNumberGenerator->generate(),
@@ -101,6 +104,7 @@ class CreateOrderFromCartAction
                 'subtotal' => $subtotal,
                 'shipping_cost' => $shippingCost,
                 'discount' => $discount,
+                'threshold_discount' => $thresholdDiscount,
                 'tax_amount' => $taxAmount,
                 'total' => $total,
                 'shipping_address_id' => $shippingSnapshot['shipping_address_id'],

@@ -81,4 +81,52 @@ enum CurrencyEnum: string implements HasLabel
 
         return $withSymbol ? $this->symbol().' '.$formatted : $formatted;
     }
+
+    /**
+     * Minimum cart subtotal required to unlock the automatic volume discount.
+     */
+    public function thresholdDiscountMinAmount(): int
+    {
+        if (! (bool) config('ecommerce.cart_threshold_discount.enabled', true)) {
+            return 0;
+        }
+
+        return (int) config("ecommerce.cart_threshold_discount.min_amounts.{$this->value}", 0);
+    }
+
+    /**
+     * Percentage of automatic volume discount applied on qualification.
+     */
+    public function thresholdDiscountPercentage(): int
+    {
+        if (! (bool) config('ecommerce.cart_threshold_discount.enabled', true)) {
+            return 0;
+        }
+
+        return (int) config('ecommerce.cart_threshold_discount.percentage', 10);
+    }
+
+    /**
+     * Check if a given subtotal meets or exceeds the threshold for this currency.
+     */
+    public function isThresholdDiscountEligible(int $subtotal): bool
+    {
+        $min = $this->thresholdDiscountMinAmount();
+
+        return $min > 0 && $subtotal >= $min;
+    }
+
+    /**
+     * Calculate the integer discount amount for a given subtotal.
+     */
+    public function calculateThresholdDiscount(int $subtotal): int
+    {
+        if (! $this->isThresholdDiscountEligible($subtotal)) {
+            return 0;
+        }
+
+        $percentage = $this->thresholdDiscountPercentage();
+
+        return (int) floor(($subtotal * $percentage) / 100);
+    }
 }

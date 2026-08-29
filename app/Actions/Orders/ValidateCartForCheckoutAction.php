@@ -49,6 +49,8 @@ class ValidateCartForCheckoutAction
         $lines = $this->validatedCheckoutLines($cart);
         $subtotal = array_sum(array_column($lines, 'lineSubtotal'));
         $shippingCost = $this->shippingCostService->standardCost($cart->currency);
+        $thresholdDiscount = $cart->currency->calculateThresholdDiscount($subtotal);
+        $netSubtotal = max(0, $subtotal - $thresholdDiscount);
         $discount = 0;
 
         if (! $this->couponPricingService->isBlank($couponCode)) {
@@ -57,12 +59,13 @@ class ValidateCartForCheckoutAction
                 subtotal: $subtotal,
                 currency: $cart->currency,
                 userId: $owner->userId,
+                discountableSubtotal: $netSubtotal,
             );
             $discount = $quote->discountAmount;
         }
 
         $taxAmount = 0;
-        $total = $subtotal + $shippingCost - $discount + $taxAmount;
+        $total = max(0, $subtotal - $thresholdDiscount - $discount) + $shippingCost + $taxAmount;
 
         return new CheckoutPreviewDTO(
             cartId: (int) $cart->id,
@@ -73,6 +76,7 @@ class ValidateCartForCheckoutAction
             discount: $discount,
             taxAmount: $taxAmount,
             total: $total,
+            thresholdDiscount: $thresholdDiscount,
         );
     }
 }

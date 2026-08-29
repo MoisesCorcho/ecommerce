@@ -79,6 +79,39 @@
                         </div>
                     @endif
 
+                    {{-- Threshold discount progress banner (F17) --}}
+                    @if ($cartView->thresholdMinAmount > 0)
+                        @php
+                            $progressPercent = min(100, (int) round(($cartView->subtotal / $cartView->thresholdMinAmount) * 100));
+                        @endphp
+                        <div class="mb-6 border border-intense-cocoa/20 bg-silk-cream p-4 text-intense-cocoa shadow-sm" data-cart-threshold-banner>
+                            <div class="mb-2 flex items-center justify-between text-xs font-medium sm:text-sm">
+                                @if ($cartView->thresholdReached)
+                                    <span class="flex items-center gap-1.5 font-bold text-intense-cocoa">
+                                        <svg class="h-4 w-4 text-soft-gold" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        {{ __('cart.threshold.unlocked') }}
+                                    </span>
+                                    <span class="text-xs font-bold uppercase tracking-wider text-soft-gold">-10%</span>
+                                @else
+                                    <span>
+                                        {{ __('cart.threshold.progress', ['amount' => $cartView->currency->format($cartView->remainingForThreshold)]) }}
+                                    </span>
+                                    <span class="tabular-nums font-semibold">{{ $progressPercent }}%</span>
+                                @endif
+                            </div>
+
+                            {{-- Progress Bar --}}
+                            <div class="h-2 w-full overflow-hidden bg-soft-sand">
+                                <div
+                                    class="h-full bg-soft-gold transition-all duration-500 ease-out"
+                                    style="width: {{ $progressPercent }}%"
+                                ></div>
+                            </div>
+                        </div>
+                    @endif
+
                     <ul class="divide-y divide-soft-sand" data-cart-lines>
                         @foreach ($cartView->lines as $line)
                             @php
@@ -212,9 +245,17 @@
                             <div class="flex items-center justify-between">
                                 <span>{{ __('cart.summary.subtotal') }}</span>
                                 <span class="tabular-nums" data-cart-subtotal>
-                                    {{ $cartView->currency->format($cartView->total) }}
+                                    {{ $cartView->currency->format($cartView->subtotal) }}
                                 </span>
                             </div>
+                            @if ($cartView->thresholdDiscountAmount > 0)
+                                <div class="flex items-center justify-between font-medium text-terracotta" data-cart-threshold-discount>
+                                    <span>{{ __('cart.summary.threshold_discount') }}</span>
+                                    <span class="tabular-nums">
+                                        −{{ $cartView->currency->format($cartView->thresholdDiscountAmount) }}
+                                    </span>
+                                </div>
+                            @endif
                         </div>
 
                         <div class="mt-4 flex items-center justify-between border-t border-intense-cocoa/10 pt-4">

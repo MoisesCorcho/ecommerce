@@ -184,4 +184,24 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Cart threshold discount (F17)
+    |--------------------------------------------------------------------------
+    |
+    | Automatic progressive discount applied when cart subtotal meets or exceeds
+    | the currency threshold. Amounts are in minor units (COP pesos, EUR/USD cents).
+    |
+    */
+
+    'cart_threshold_discount' => [
+        'enabled' => (bool) env('ECOMMERCE_THRESHOLD_DISCOUNT_ENABLED', true),
+        'percentage' => (int) env('ECOMMERCE_THRESHOLD_DISCOUNT_PERCENTAGE', 10),
+        'min_amounts' => [
+            'COP' => (int) env('ECOMMERCE_THRESHOLD_MIN_COP', 1_200_000),
+            'EUR' => (int) env('ECOMMERCE_THRESHOLD_MIN_EUR', 30_000),
+            'USD' => (int) env('ECOMMERCE_THRESHOLD_MIN_USD', 32_000),
+        ],
+    ],
+
 ];

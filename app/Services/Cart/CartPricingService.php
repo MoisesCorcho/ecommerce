@@ -23,7 +23,7 @@ class CartPricingService
         ]);
 
         $lines = [];
-        $total = 0;
+        $subtotal = 0;
 
         foreach ($cart->items as $item) {
             $variant = $item->productVariant;
@@ -31,7 +31,7 @@ class CartPricingService
             $priceRow = $variant?->priceIn($cart->currency);
             $unitPrice = $priceRow?->price ?? 0;
             $lineSubtotal = $unitPrice * (int) $item->quantity;
-            $total += $lineSubtotal;
+            $subtotal += $lineSubtotal;
 
             $variantImages = $variant?->images ?? collect();
             $image = $variantImages->firstWhere('is_primary', true)
@@ -56,10 +56,21 @@ class CartPricingService
             );
         }
 
+        $thresholdMin = $cart->currency->thresholdDiscountMinAmount();
+        $thresholdReached = $cart->currency->isThresholdDiscountEligible($subtotal);
+        $thresholdDiscountAmount = $cart->currency->calculateThresholdDiscount($subtotal);
+        $remainingForThreshold = $thresholdMin > 0 ? max(0, $thresholdMin - $subtotal) : 0;
+        $total = max(0, $subtotal - $thresholdDiscountAmount);
+
         return new CartViewDTO(
             cartId: (int) $cart->id,
             currency: $cart->currency,
             lines: $lines,
+            subtotal: $subtotal,
+            thresholdDiscountAmount: $thresholdDiscountAmount,
+            thresholdMinAmount: $thresholdMin,
+            remainingForThreshold: $remainingForThreshold,
+            thresholdReached: $thresholdReached,
             total: $total,
             userId: $cart->user_id !== null ? (int) $cart->user_id : null,
             sessionId: $cart->session_id,

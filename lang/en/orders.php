@@ -20,6 +20,7 @@ return [
         'subtotal' => 'Subtotal',
         'shipping_cost' => 'Shipping',
         'discount' => 'Discount',
+        'threshold_discount' => 'Volume discount (10%)',
         'coupon_code' => 'Coupon code',
         'tax_amount' => 'Tax',
         'total' => 'Total',
