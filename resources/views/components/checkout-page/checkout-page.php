@@ -306,6 +306,7 @@ new #[Layout('layouts.storefront')] class extends Component
                 'subtotal' => $preview->subtotal,
                 'shippingCost' => $preview->shippingCost,
                 'discount' => $preview->discount,
+                'thresholdDiscount' => $preview->thresholdDiscount,
                 'taxAmount' => $preview->taxAmount,
                 'total' => $preview->total,
                 'lines' => array_map(
@@ -342,6 +343,7 @@ new #[Layout('layouts.storefront')] class extends Component
                 'subtotal' => $preview->subtotal,
                 'shippingCost' => $preview->shippingCost,
                 'discount' => $preview->discount,
+                'thresholdDiscount' => $preview->thresholdDiscount,
                 'taxAmount' => $preview->taxAmount,
                 'total' => $preview->total,
                 'lines' => array_map(

@@ -43,9 +43,16 @@ return [
         'title' => 'Resumen del pedido',
         'items_count' => ':count producto|:count productos',
         'subtotal' => 'Subtotal',
+        'threshold_discount' => 'Descuento por volumen (10%)',
         'total' => 'Total',
         'checkout' => 'Finalizar compra',
         'continue_shopping' => 'Continuar comprando',
+    ],
+
+    'threshold' => [
+        'progress' => 'Añade :amount más para obtener un 10% de descuento',
+        'unlocked' => '¡Tienes 10% de descuento aplicado!',
+        'discount_label' => 'Descuento por volumen (10%)',
     ],
 
     'empty' => [
