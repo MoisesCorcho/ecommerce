@@ -6,11 +6,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Admin panel emails
+    | Admin seed emails (Seeding / Provisioning only)
     |--------------------------------------------------------------------------
     |
-    | Comma-separated list of emails allowed into the Filament admin panel.
-    | Compared strictly to the authenticated user's email (F01 gate; no Spatie).
+    | Comma-separated list of emails used exclusively during database seeding
+    | (php artisan db:seed / RoleAndAdminBackfillSeeder & OrderAndPaymentSeeder)
+    | to provision the initial Spatie 'admin' role and link fixture orders.
+    |
+    | RUNTIME AUTHORIZATION NOTE:
+    | This list is NOT evaluated at runtime. Filament panel access and policies
+    | are governed 100% by Spatie RBAC via User::canAccessPanel() -> hasRole('admin').
     |
     */
 
