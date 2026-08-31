@@ -1,6 +1,6 @@
 # F07 — Reviews (opiniones de producto)
 
-> **Estado:** Lista para implementar  
+> **Estado:** Completa  
 > **ID:** F07 · **Slug:** `07-reviews`  
 > **Prerequisitos:** F01 (catálogo), F04/F05 (órdenes pagadas para elegibilidad de compra) — ver [`01-product-and-roadmap.md`](../../_global/01-product-and-roadmap.md)  
 > **Desbloquea:** moderación de UGC; promedio/listado de opiniones en PDP; base para filtro “mejor valorados” (F01-S / shop)
