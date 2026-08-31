@@ -6,11 +6,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Admin panel emails
+    | Admin seed emails (Seeding / Provisioning only)
     |--------------------------------------------------------------------------
     |
-    | Comma-separated list of emails allowed into the Filament admin panel.
-    | Compared strictly to the authenticated user's email (F01 gate; no Spatie).
+    | Comma-separated list of emails used exclusively during database seeding
+    | (php artisan db:seed / RoleAndAdminBackfillSeeder & OrderAndPaymentSeeder)
+    | to provision the initial Spatie 'admin' role and link fixture orders.
+    |
+    | RUNTIME AUTHORIZATION NOTE:
+    | This list is NOT evaluated at runtime. Filament panel access and policies
+    | are governed 100% by Spatie RBAC via User::canAccessPanel() -> hasRole('admin').
     |
     */
 
@@ -202,6 +207,22 @@ return [
             'EUR' => (int) env('ECOMMERCE_THRESHOLD_MIN_EUR', 30_000),
             'USD' => (int) env('ECOMMERCE_THRESHOLD_MIN_USD', 32_000),
         ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Wishlist automated marketing alerts (F18)
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for price-drop and low-stock scheduled marketing alerts.
+    |
+    */
+
+    'wishlist_alerts' => [
+        'enabled' => (bool) env('ECOMMERCE_WISHLIST_ALERTS_ENABLED', true),
+        'low_stock_threshold' => (int) env('ECOMMERCE_WISHLIST_LOW_STOCK_THRESHOLD', 3),
+        'cooldown_days' => (int) env('ECOMMERCE_WISHLIST_COOLDOWN_DAYS', 7),
+        'max_alerts_per_user' => (int) env('ECOMMERCE_WISHLIST_MAX_ALERTS_PER_USER', 3),
     ],
 
 ];

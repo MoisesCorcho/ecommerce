@@ -1,6 +1,6 @@
 # F-05: Regla de Descuento Progresivo en Carrito (Threshold Discount)
 
-> **Estado:** Specs en progreso  
+> **Estado:** Completa  
 > **ID:** F-05 · **Slug:** `17-cart-threshold-discount`  
 > **Prerequisitos:** F03 (Carrito), F04 (Checkout y Órdenes), F06 (Cupones)  
 > **Desbloquea:** Incremento de ticket promedio (AOV) e incentivos visuales en carrito  
