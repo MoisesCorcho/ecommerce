@@ -32,6 +32,9 @@
                 <a href="{{ url('/about-us') }}" class="text-xs font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
                     {{ __('storefront.nav.about') }}
                 </a>
+                <a href="{{ route('blog.index') }}" class="text-xs font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
+                    {{ __('storefront.nav.blog') }}
+                </a>
                 <a href="{{ route('contact') }}" class="text-xs font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
                     {{ __('storefront.nav.contact') }}
                 </a>
@@ -106,6 +109,9 @@
                 <a href="{{ url('/about-us') }}" x-on:click="open = false" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
                     {{ __('storefront.nav.about') }}
                 </a>
+                <a href="{{ route('blog.index') }}" x-on:click="open = false" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
+                    {{ __('storefront.nav.blog') }}
+                </a>
                 <a href="{{ route('contact') }}" x-on:click="open = false" class="text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:text-soft-gold">
                     {{ __('storefront.nav.contact') }}
                 </a>
@@ -146,6 +152,9 @@
                     <nav class="flex items-center gap-8" aria-label="Footer">
                         <a href="{{ url('/faq') }}" class="text-[11px] font-semibold uppercase tracking-widest text-intense-cocoa/80 transition-colors hover:text-soft-gold">
                             {{ __('storefront.footer.faqs') }}
+                        </a>
+                        <a href="{{ route('blog.index') }}" class="text-[11px] font-semibold uppercase tracking-widest text-intense-cocoa/80 transition-colors hover:text-soft-gold">
+                            {{ __('storefront.footer.blog') }}
                         </a>
                         <a href="{{ route('contact') }}" class="text-[11px] font-semibold uppercase tracking-widest text-intense-cocoa/80 transition-colors hover:text-soft-gold">
                             {{ __('storefront.footer.contact') }}

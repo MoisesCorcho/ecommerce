@@ -49,4 +49,9 @@ return [
         'maxi' => 'Maxi',
         'one_size' => 'One Size',
     ],
+
+    'post_status' => [
+        'draft' => 'Draft',
+        'published' => 'Published',
+    ],
 ];
