@@ -51,6 +51,7 @@ class DatabaseSeeder extends Seeder
             OrderAndPaymentSeeder::class,
             ReviewSeeder::class,
             WishlistAndCartSeeder::class,
+            BlogSeeder::class,
         ]);
     }
 }
