@@ -10,6 +10,7 @@ use App\Models\PostCategory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -324,5 +325,30 @@ class BlogStorefrontTest extends TestCase
             ->assertOk()
             ->assertSee(__('blog.storefront.no_search_results', ['term' => 'InexistenteTerminoXYZ']))
             ->assertSee(__('blog.storefront.reset_filters'), false);
+    }
+
+    public function test_blog_post_detail_injects_seo_and_opengraph_meta_tags_in_head(): void
+    {
+        Storage::fake('public');
+
+        Post::factory()->create([
+            'title' => ['es' => 'Título SEO de Prueba'],
+            'meta_title' => ['es' => 'Título Optimizado para Google | Leen'],
+            'meta_description' => ['es' => 'Esta es una meta descripción persuasiva para pruebas de SEO.'],
+            'cover_image_path' => 'blog/portada-test.jpg',
+            'slug' => 'post-seo-tags-test',
+            'status' => PostStatusEnum::Published,
+            'published_at' => now()->subDay(),
+        ]);
+
+        $this->get(route('blog.show', ['slug' => 'post-seo-tags-test']))
+            ->assertOk()
+            ->assertSeeHtml('<title>Título Optimizado para Google | Leen</title>')
+            ->assertSeeHtml('<meta name="description" content="Esta es una meta descripción persuasiva para pruebas de SEO.">')
+            ->assertSeeHtml('<meta property="og:title" content="Título Optimizado para Google | Leen">')
+            ->assertSeeHtml('<meta property="og:description" content="Esta es una meta descripción persuasiva para pruebas de SEO.">')
+            ->assertSeeHtml('<meta property="og:type" content="article">')
+            ->assertSeeHtml('<meta property="og:url" content="'.route('blog.show', ['slug' => 'post-seo-tags-test']).'">')
+            ->assertSeeHtml('<meta property="og:image" content="'.Storage::url('blog/portada-test.jpg').'">');
     }
 }

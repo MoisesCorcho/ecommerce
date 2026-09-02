@@ -47,7 +47,7 @@ new #[Layout('layouts.storefront')] class extends Component
 
     public function render()
     {
-        return $this->view();
+        return $this->view()->title($this->post->getLocalizedMetaTitle());
     }
 
     private function resolveRelatedPosts(Post $post): Collection

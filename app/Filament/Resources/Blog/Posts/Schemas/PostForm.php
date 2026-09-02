@@ -72,12 +72,14 @@ final class PostForm
                     TextInput::make("meta_title.{$locale->value}")
                         ->label(__('blog.posts.fields.meta_title')." ({$locale->label()})")
                         ->helperText(__('blog.posts.fields.meta_title_helper'))
+                        ->hintIcon('heroicon-m-information-circle', tooltip: __('blog.posts.fields.meta_title_tooltip'))
                         ->nullable()
                         ->maxLength(255),
 
                     Textarea::make("meta_description.{$locale->value}")
                         ->label(__('blog.posts.fields.meta_description')." ({$locale->label()})")
                         ->helperText(__('blog.posts.fields.meta_description_helper'))
+                        ->hintIcon('heroicon-m-information-circle', tooltip: __('blog.posts.fields.meta_description_tooltip'))
                         ->nullable()
                         ->rows(2),
                 ]);
@@ -101,6 +103,7 @@ final class PostForm
                             TextInput::make('slug')
                                 ->label(__('blog.posts.fields.slug'))
                                 ->helperText(__('blog.posts.fields.slug_helper'))
+                                ->hintIcon('heroicon-m-information-circle', tooltip: __('blog.posts.fields.slug_tooltip'))
                                 ->required()
                                 ->maxLength(255)
                                 ->unique(table: Post::class, column: 'slug', ignoreRecord: true)

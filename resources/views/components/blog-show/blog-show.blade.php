@@ -1,7 +1,6 @@
 <div class="py-8 lg:py-12">
     {{-- OpenGraph and SEO Tags --}}
-    @section('meta')
-        <title>{{ $post->getLocalizedMetaTitle() }}</title>
+    @push('meta')
         <meta name="description" content="{{ $post->getLocalizedMetaDescription() }}">
         <meta property="og:title" content="{{ $post->getLocalizedMetaTitle() }}">
         <meta property="og:description" content="{{ $post->getLocalizedMetaDescription() }}">
@@ -10,7 +9,7 @@
         @if ($post->cover_image_path)
             <meta property="og:image" content="{{ Storage::url($post->cover_image_path) }}">
         @endif
-    @endsection
+    @endpush
 
     {{-- Breadcrumb --}}
     <x-breadcrumb.breadcrumb :items="array_values(array_filter([
