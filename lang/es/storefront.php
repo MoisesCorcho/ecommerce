@@ -7,6 +7,7 @@ return [
         'home' => 'Inicio',
         'shop' => 'Tienda',
         'about' => 'Quiénes somos',
+        'blog' => 'Blog',
         'contact' => 'Contacto',
         'search' => 'Buscar',
         'favorites' => 'Favoritos',
@@ -18,6 +19,7 @@ return [
 
     'footer' => [
         'faqs' => 'FAQs',
+        'blog' => 'Blog',
         'contact' => 'Contacto',
         'instagram' => 'Instagram',
         'tiktok' => 'TikTok',

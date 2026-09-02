@@ -12,6 +12,7 @@ return [
         'orders' => 'Pedidos',
         'commerce' => 'Comercio',
         'marketing' => 'Marketing',
+        'content' => 'Contenido',
         'support' => 'Soporte',
     ],
 ];

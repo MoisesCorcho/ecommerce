@@ -20,6 +20,8 @@ Route::livewire('/checkout', 'checkout-page')->name('checkout.show');
 Route::livewire('/contact', 'contact-page')->name('contact');
 Route::livewire('/faq', 'faq-page')->name('faq');
 Route::livewire('/about-us', 'about-page')->name('about');
+Route::livewire('/blog', 'blog-list')->name('blog.index');
+Route::livewire('/blog/{slug}', 'blog-show')->name('blog.show');
 
 // Language preference. POST (not GET) because it mutates server-side state:
 // a GET switcher would be prefetchable, proxy-cacheable and triggerable from

@@ -7,7 +7,7 @@
 **Alcance DoD:** dominio Reviews + Policy + Filament moderación + enganche PDP (estilo marca) + i18n + tests.  
 **Fuera de DoD:** guests, auto-approve, fotos/título/reply, denormalize rating, admin create, emails, shop sort, login feature formal.
 
-**Estado de implementación:** Código implementado — tests pendientes de ejecución (Sail/Docker no disponible en el entorno).
+**Estado de implementación:** Completa (código y tests en verde).
 
 ---
 
@@ -92,12 +92,12 @@
 
 ## Definition of Done (checklist tasks)
 
-- [ ] Criterios **R1–R20** implementados y testeados.
+- [x] Criterios **R1–R20** implementados y testeados.
 - [x] Sin migración innecesaria; unique `(user_id, product_id)` respetado.
 - [x] Actions/DTO/Policy/Exceptions en área **Reviews**.
 - [x] Filament: moderación sin Create de marketing.
 - [x] PDP: sección opiniones con estilo de marca del storefront existente.
 - [x] Elegibilidad D8 (paid|processing|shipped|delivered).
 - [x] Edit re-modera; público solo approved.
-- [ ] PHPUnit del alcance en verde vía Sail; Pint OK.
-- [ ] Specs + roadmap con estado **Completa** (al cerrar implementación).
+- [x] PHPUnit del alcance en verde vía Sail; Pint OK.
+- [x] Specs + roadmap con estado **Completa** (al cerrar implementación).
