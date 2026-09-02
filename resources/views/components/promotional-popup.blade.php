@@ -90,7 +90,7 @@
                         @endif
 
                         {{-- Bloque de Contenido y Acciones (Columna Derecha en Laptop / Inferior en Monitor Grande y Mobile) --}}
-                        <div class="{{ $popup->image_path ? 'w-full laptop-horizontal:w-7/12 p-6 sm:p-8 laptop-horizontal:p-6 lg:laptop-horizontal:p-7 flex flex-col justify-center text-center laptop-horizontal:text-left' : '' }}">
+                        <div class="{{ $popup->image_path ? 'w-full laptop-horizontal:w-7/12 p-6 sm:p-8 laptop-horizontal:p-6 lg:laptop-horizontal:p-7 flex flex-col justify-center text-center' : '' }}">
                             <span class="font-labelle-aurore text-2xl sm:text-3xl text-soft-gold block leading-none mb-1.5 select-none">
                                 {{ __('promotional_popups.storefront.eyebrow') }}
                             </span>
@@ -100,21 +100,21 @@
                             </h3>
 
                             @if ($subtitle)
-                                <p class="mt-2.5 text-sm sm:text-base text-intense-cocoa/75 font-sans leading-relaxed {{ $popup->image_path ? 'max-w-sm mx-auto laptop-horizontal:max-w-md laptop-horizontal:mx-0' : 'max-w-sm mx-auto' }}">
+                                <p class="mt-2.5 text-sm sm:text-base text-intense-cocoa/75 font-sans leading-relaxed max-w-sm laptop-horizontal:max-w-md mx-auto">
                                     {{ $subtitle }}
                                 </p>
                             @endif
 
                             {{-- Bloque de Cupón: Voucher de Atelier --}}
                             @if ($hasCoupon)
-                                <div class="mt-6 laptop-horizontal:mt-4 border border-dashed border-intense-cocoa/30 bg-soft-sand/70 p-4 relative">
+                                <div class="mt-6 laptop-horizontal:mt-4 border border-dashed border-intense-cocoa/30 bg-soft-sand/70 p-4 relative text-center">
                                     @if ($popup->coupon->type === \App\Enums\Coupons\CouponTypeEnum::Percentage)
-                                        <div class="inline-block bg-soft-gold text-intense-cocoa px-3.5 py-1 text-xs font-bold tracking-widest uppercase mb-3 laptop-horizontal:mb-2 border border-soft-gold/30">
+                                        <div class="w-fit mx-auto bg-soft-gold text-intense-cocoa px-3.5 py-1 text-xs font-bold tracking-widest uppercase mb-3 laptop-horizontal:mb-2 border border-soft-gold/30">
                                             -{{ $popup->coupon->value }}% {{ __('promotional_popups.storefront.off') }}
                                         </div>
                                     @endif
 
-                                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center {{ $popup->image_path ? 'laptop-horizontal:justify-start' : '' }} gap-2">
+                                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2">
                                         <span class="font-sans text-base font-bold tracking-[0.2em] text-intense-cocoa px-4 py-2 bg-silk-cream border border-intense-cocoa/20 text-center select-all">
                                             {{ $popup->coupon->code }}
                                         </span>
@@ -144,13 +144,13 @@
 
                             {{-- Botón Principal CTA Cuadrado --}}
                             @if ($popup->cta_url && $ctaText)
-                                <div class="mt-6 laptop-horizontal:mt-4">
+                                <div class="mt-6 laptop-horizontal:mt-4 text-center">
                                     <a
                                         href="{{ $popup->cta_url }}"
                                         @click="localStorage.setItem('leen_popup_dismissed_' + id, Date.now().toString())"
-                                        class="flex h-12 laptop-horizontal:h-11 w-full items-center justify-center cursor-pointer bg-intense-cocoa px-6 text-sm font-semibold tracking-wider text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa focus:outline-none"
+                                        class="flex h-12 laptop-horizontal:h-11 w-full items-center justify-center text-center cursor-pointer bg-intense-cocoa px-6 text-sm font-semibold tracking-wider text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa focus:outline-none"
                                     >
-                                        {{ $ctaText }}
+                                        <span class="w-full text-center">{{ $ctaText }}</span>
                                     </a>
                                 </div>
                             @endif
