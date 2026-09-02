@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\HasLocalizedAttributes;
 use Database\Factories\AnnouncementFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,7 +23,7 @@ use Spatie\Translatable\HasTranslations;
 class Announcement extends Model
 {
     /** @use HasFactory<AnnouncementFactory> */
-    use HasFactory, HasTranslations;
+    use HasFactory, HasLocalizedAttributes, HasTranslations;
 
     /**
      * @var array<int, string>
@@ -80,13 +81,6 @@ class Announcement extends Model
      */
     public function getLocalizedText(?string $locale = null): string
     {
-        $locale = $locale ?? app()->getLocale();
-        $translated = $this->getTranslation('text', $locale, false);
-
-        if (! empty($translated)) {
-            return $translated;
-        }
-
-        return $this->getTranslation('text', 'es', false) ?: '';
+        return $this->getLocalizedAttribute('text', $locale);
     }
 }

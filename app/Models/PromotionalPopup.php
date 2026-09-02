@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\HasLocalizedAttributes;
 use Database\Factories\PromotionalPopupFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,10 +14,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Translatable\HasTranslations;
 
 #[Fillable([
+    'coupon_id',
     'title',
     'subtitle',
     'image_path',
-    'coupon_id',
     'cta_text',
     'cta_url',
     'delay_seconds',
@@ -28,7 +29,7 @@ use Spatie\Translatable\HasTranslations;
 class PromotionalPopup extends Model
 {
     /** @use HasFactory<PromotionalPopupFactory> */
-    use HasFactory, HasTranslations;
+    use HasFactory, HasLocalizedAttributes, HasTranslations;
 
     /**
      * @var array<int, string>
@@ -99,14 +100,7 @@ class PromotionalPopup extends Model
      */
     public function getLocalizedTitle(?string $locale = null): string
     {
-        $locale = $locale ?? app()->getLocale();
-        $translated = $this->getTranslation('title', $locale, false);
-
-        if (! empty($translated)) {
-            return $translated;
-        }
-
-        return $this->getTranslation('title', 'es', false) ?: '';
+        return $this->getLocalizedAttribute('title', $locale);
     }
 
     /**
@@ -114,16 +108,7 @@ class PromotionalPopup extends Model
      */
     public function getLocalizedSubtitle(?string $locale = null): ?string
     {
-        $locale = $locale ?? app()->getLocale();
-        $translated = $this->getTranslation('subtitle', $locale, false);
-
-        if (! empty($translated)) {
-            return $translated;
-        }
-
-        $fallback = $this->getTranslation('subtitle', 'es', false);
-
-        return ! empty($fallback) ? $fallback : null;
+        return $this->getLocalizedNullableAttribute('subtitle', $locale);
     }
 
     /**
@@ -131,16 +116,7 @@ class PromotionalPopup extends Model
      */
     public function getLocalizedCtaText(?string $locale = null): ?string
     {
-        $locale = $locale ?? app()->getLocale();
-        $translated = $this->getTranslation('cta_text', $locale, false);
-
-        if (! empty($translated)) {
-            return $translated;
-        }
-
-        $fallback = $this->getTranslation('cta_text', 'es', false);
-
-        return ! empty($fallback) ? $fallback : null;
+        return $this->getLocalizedNullableAttribute('cta_text', $locale);
     }
 
     /**

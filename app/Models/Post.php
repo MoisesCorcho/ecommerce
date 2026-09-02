@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\Blog\PostStatusEnum;
+use App\Models\Concerns\HasLocalizedAttributes;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -30,7 +31,7 @@ use Spatie\Translatable\HasTranslations;
 class Post extends Model
 {
     /** @use HasFactory<PostFactory> */
-    use HasFactory, HasTranslations;
+    use HasFactory, HasLocalizedAttributes, HasTranslations;
 
     protected static function booted(): void
     {
@@ -98,14 +99,7 @@ class Post extends Model
      */
     public function getLocalizedTitle(?string $locale = null): string
     {
-        $locale = $locale ?? app()->getLocale();
-        $translated = $this->getTranslation('title', $locale, false);
-
-        if (! empty($translated)) {
-            return $translated;
-        }
-
-        return $this->getTranslation('title', 'es', false) ?: '';
+        return $this->getLocalizedAttribute('title', $locale);
     }
 
     /**
@@ -113,14 +107,7 @@ class Post extends Model
      */
     public function getLocalizedExcerpt(?string $locale = null): string
     {
-        $locale = $locale ?? app()->getLocale();
-        $translated = $this->getTranslation('excerpt', $locale, false);
-
-        if (! empty($translated)) {
-            return $translated;
-        }
-
-        return $this->getTranslation('excerpt', 'es', false) ?: '';
+        return $this->getLocalizedAttribute('excerpt', $locale);
     }
 
     /**
@@ -128,14 +115,7 @@ class Post extends Model
      */
     public function getLocalizedContent(?string $locale = null): string
     {
-        $locale = $locale ?? app()->getLocale();
-        $translated = $this->getTranslation('content', $locale, false);
-
-        if (! empty($translated)) {
-            return $translated;
-        }
-
-        return $this->getTranslation('content', 'es', false) ?: '';
+        return $this->getLocalizedAttribute('content', $locale);
     }
 
     /**
@@ -143,16 +123,10 @@ class Post extends Model
      */
     public function getLocalizedMetaTitle(?string $locale = null): string
     {
-        $locale = $locale ?? app()->getLocale();
-        $translated = $this->getTranslation('meta_title', $locale, false);
+        $meta = $this->getLocalizedAttribute('meta_title', $locale);
 
-        if (! empty($translated)) {
-            return $translated;
-        }
-
-        $fallbackEs = $this->getTranslation('meta_title', 'es', false);
-        if (! empty($fallbackEs)) {
-            return $fallbackEs;
+        if ($meta !== '') {
+            return $meta;
         }
 
         $title = $this->getLocalizedTitle($locale);
@@ -165,16 +139,10 @@ class Post extends Model
      */
     public function getLocalizedMetaDescription(?string $locale = null): string
     {
-        $locale = $locale ?? app()->getLocale();
-        $translated = $this->getTranslation('meta_description', $locale, false);
+        $meta = $this->getLocalizedAttribute('meta_description', $locale);
 
-        if (! empty($translated)) {
-            return $translated;
-        }
-
-        $fallbackEs = $this->getTranslation('meta_description', 'es', false);
-        if (! empty($fallbackEs)) {
-            return $fallbackEs;
+        if ($meta !== '') {
+            return $meta;
         }
 
         return $this->getLocalizedExcerpt($locale);

@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Database\Factories\PostCategoryFactory;
+use App\Models\Concerns\HasLocalizedAttributes;
+use Database\Factories\Blog\PostCategoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,7 +23,7 @@ use Spatie\Translatable\HasTranslations;
 class PostCategory extends Model
 {
     /** @use HasFactory<PostCategoryFactory> */
-    use HasFactory, HasTranslations;
+    use HasFactory, HasLocalizedAttributes, HasTranslations;
 
     /**
      * @var array<int, string>
@@ -80,13 +81,6 @@ class PostCategory extends Model
      */
     public function getLocalizedName(?string $locale = null): string
     {
-        $locale = $locale ?? app()->getLocale();
-        $translated = $this->getTranslation('name', $locale, false);
-
-        if (! empty($translated)) {
-            return $translated;
-        }
-
-        return $this->getTranslation('name', 'es', false) ?: '';
+        return $this->getLocalizedAttribute('name', $locale);
     }
 }
