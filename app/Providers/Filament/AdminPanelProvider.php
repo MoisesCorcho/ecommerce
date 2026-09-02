@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
-use Filament\FontProviders\GoogleFontProvider;
+use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -12,6 +12,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\Support\Colors\Color;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -34,15 +35,9 @@ class AdminPanelProvider extends PanelProvider
             ->darkModeBrandLogo(asset('images/logos/leen-white.png'))
             ->brandLogoHeight('4rem')
             ->favicon(asset('favicon.png'))
-            ->font('Montserrat', provider: GoogleFontProvider::class)
-            ->viteTheme('resources/css/filament/admin/theme.css')
-            ->darkMode(false)
+            ->defaultThemeMode(ThemeMode::Dark)
             ->colors([
-                'primary' => '#372621',
-                'warning' => '#D2AE36',
-                'success' => '#5A8A4A',
-                'danger' => '#B33A3A',
-                'gray' => '#E9DED3',
+                'primary' => Color::Amber,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
