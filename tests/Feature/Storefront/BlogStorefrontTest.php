@@ -42,6 +42,7 @@ class BlogStorefrontTest extends TestCase
             ->assertSee('Artículo Publicado de Prueba', false)
             ->assertSee('Extracto visible en el catálogo.', false)
             ->assertDontSee('Artículo en Borrador Oculto', false)
+            ->assertSeeHtml('aria-label="Breadcrumb"')
             ->assertSeeHtml('mt-auto pt-6 border-t');
     }
 
@@ -99,6 +100,7 @@ class BlogStorefrontTest extends TestCase
             ->assertSee('El Alma de una Cartera Leen', false)
             ->assertSee('Párrafo principal con detalles artesanales de lujo.', false)
             ->assertSee('Moda Consciente', false)
+            ->assertSeeHtml('aria-label="Breadcrumb"')
             ->assertSeeHtml('prose-editorial')
             ->assertSeeHtml('aria-label="WhatsApp"')
             ->assertSee('17.472 14.382', false);
@@ -138,7 +140,8 @@ class BlogStorefrontTest extends TestCase
             ->get(route('blog.show', ['slug' => 'borrador-exclusivo-admin']))
             ->assertOk()
             ->assertSee('Borrador Exclusivo Admin', false)
-            ->assertSee('Contenido preview para administradores.', false);
+            ->assertSee('Contenido preview para administradores.', false)
+            ->assertSee(__('blog.storefront.preview_notice'), false);
     }
 
     public function test_blog_post_detail_displays_related_posts_with_fallback(): void

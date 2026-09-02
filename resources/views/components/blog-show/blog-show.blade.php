@@ -1,4 +1,4 @@
-<div class="bg-silk-cream min-h-screen py-10 lg:py-16">
+<div class="py-8 lg:py-12">
     {{-- OpenGraph and SEO Tags --}}
     @section('meta')
         <title>{{ $post->getLocalizedMetaTitle() }}</title>
@@ -12,29 +12,26 @@
         @endif
     @endsection
 
-    <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
-        {{-- Breadcrumb --}}
-        <nav class="mb-8 flex items-center gap-2 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa/60" aria-label="Breadcrumb">
-            <a href="{{ url('/') }}" class="transition-colors hover:text-soft-gold">{{ __('storefront.nav.home') }}</a>
-            <span class="text-intense-cocoa/30">/</span>
-            <a href="{{ route('blog.index') }}" class="transition-colors hover:text-soft-gold">{{ __('storefront.nav.blog') }}</a>
-            @if ($post->category)
-                <span class="text-intense-cocoa/30">/</span>
-                <a href="{{ route('blog.index', ['category' => $post->category->slug]) }}" class="transition-colors hover:text-soft-gold">
-                    {{ $post->category->getLocalizedName() }}
-                </a>
-            @endif
-            <span class="text-intense-cocoa/30">/</span>
-            <span class="text-intense-cocoa truncate max-w-[200px] sm:max-w-xs">{{ $post->getLocalizedTitle() }}</span>
-        </nav>
+    {{-- Breadcrumb --}}
+    <x-breadcrumb.breadcrumb :items="array_values(array_filter([
+        ['label' => __('storefront.nav.home'), 'href' => url('/')],
+        ['label' => __('storefront.nav.blog'), 'href' => route('blog.index')],
+        $post->category ? ['label' => $post->category->getLocalizedName(), 'href' => route('blog.index', ['category' => $post->category->slug])] : null,
+        ['label' => $post->getLocalizedTitle()],
+    ]))" />
 
+    <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
         {{-- Admin Preview Warning Banner --}}
         @if ($isPreview)
-            <div class="mb-8 bg-terracotta/10 border border-terracotta text-terracotta px-4 py-3 text-sm flex items-center gap-3">
-                <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
-                </svg>
-                <span><strong>Modo Previsualización:</strong> Este artículo está en borrador o programado a futuro y solo es visible para administradores.</span>
+            <div class="mb-8 max-w-3xl mx-auto">
+                <x-alert type="info">
+                    <div class="flex items-center gap-2">
+                        <svg class="h-5 w-5 shrink-0 text-intense-cocoa" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                        </svg>
+                        <span>{{ __('blog.storefront.preview_notice') }}</span>
+                    </div>
+                </x-alert>
             </div>
         @endif
 
@@ -51,7 +48,7 @@
                 </div>
             @endif
 
-            <h1 class="font-chillax text-display-lg text-intense-cocoa font-normal tracking-tight leading-tight">
+            <h1 class="font-chillax text-display-lg-mobile md:text-display-lg text-intense-cocoa font-normal tracking-tight leading-tight">
                 {{ $post->getLocalizedTitle() }}
             </h1>
 
@@ -137,54 +134,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
                     @foreach ($relatedPosts as $related)
-                        <article class="group flex flex-col bg-soft-sand/30 border border-intense-cocoa/10 overflow-hidden transition-all duration-300 hover:shadow-ambient hover:border-intense-cocoa/20">
-                            <a href="{{ route('blog.show', ['slug' => $related->slug]) }}" class="relative aspect-[16/10] overflow-hidden bg-soft-sand block">
-                                @if ($related->cover_image_path)
-                                    <img
-                                        src="{{ Storage::url($related->cover_image_path) }}"
-                                        alt="{{ $related->getLocalizedTitle() }}"
-                                        loading="lazy"
-                                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 rounded-none"
-                                    >
-                                @else
-                                    <div class="w-full h-full flex flex-col items-center justify-center p-6 bg-gradient-to-br from-soft-sand to-soft-sand/60">
-                                        <img src="/images/logos/leen-brown.png" alt="Leen" class="h-8 w-auto opacity-30">
-                                    </div>
-                                @endif
-
-                                @if ($related->category)
-                                    <div class="absolute top-3 left-3">
-                                        <span class="bg-silk-cream/95 backdrop-blur-xs text-intense-cocoa px-2.5 py-1 text-label-caps font-semibold uppercase tracking-wider shadow-xs">
-                                            {{ $related->category->getLocalizedName() }}
-                                        </span>
-                                    </div>
-                                @endif
-                            </a>
-
-                            <div class="p-6 flex flex-col flex-1">
-                                <div class="flex items-center gap-2 text-label-caps text-intense-cocoa/60 mb-2">
-                                    <span>{{ __('blog.storefront.reading_time', ['min' => $related->readingTime()]) }}</span>
-                                </div>
-
-                                <h3 class="font-chillax text-headline-sm text-intense-cocoa font-medium leading-snug group-hover:text-soft-gold transition-colors duration-300 line-clamp-2">
-                                    <a href="{{ route('blog.show', ['slug' => $related->slug]) }}">
-                                        {{ $related->getLocalizedTitle() }}
-                                    </a>
-                                </h3>
-
-                                <div class="mt-auto pt-6 border-t border-intense-cocoa/10 flex items-center justify-between">
-                                    <a
-                                        href="{{ route('blog.show', ['slug' => $related->slug]) }}"
-                                        class="inline-flex items-center gap-2 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa group-hover:text-soft-gold transition-colors duration-300"
-                                    >
-                                        <span>{{ __('blog.storefront.read_more') }}</span>
-                                        <svg class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                                        </svg>
-                                    </a>
-                                </div>
-                            </div>
-                        </article>
+                        <x-article-card :post="$related" :show-excerpt="false" heading-tag="h3" />
                     @endforeach
                 </div>
             </section>

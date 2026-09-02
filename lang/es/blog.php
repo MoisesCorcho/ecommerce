@@ -97,5 +97,6 @@ return [
         'empty_description' => 'Estamos redactando nuevas historias. Vuelve pronto para descubrir nuestras novedades.',
         'back_to_blog' => 'Volver al blog',
         'share' => 'Compartir historia',
+        'preview_notice' => 'Modo Previsualización: Este artículo está en borrador o programado a futuro y solo es visible para administradores.',
     ],
 ];

@@ -97,5 +97,6 @@ return [
         'empty_description' => 'We are preparing new stories. Check back soon for our latest updates.',
         'back_to_blog' => 'Back to blog',
         'share' => 'Share story',
+        'preview_notice' => 'Preview Mode: This post is a draft or scheduled for the future and is only visible to administrators.',
     ],
 ];
