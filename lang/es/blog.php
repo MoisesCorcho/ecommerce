@@ -102,5 +102,9 @@ return [
         'show_less' => 'Ver menos',
         'previous_categories' => 'Categorías anteriores',
         'next_categories' => 'Categorías siguientes',
+        'search_placeholder' => 'Buscar historias, guías o temas...',
+        'clear_search' => 'Limpiar búsqueda',
+        'reset_filters' => 'Restablecer filtros',
+        'no_search_results' => 'No encontramos ningún artículo que coincida con ":term".',
     ],
 ];

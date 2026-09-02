@@ -7,7 +7,7 @@
 
     <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
         {{-- Hero Editorial Header --}}
-        <div class="mb-14 text-center">
+        <div class="mb-10 text-center">
             <h1 class="font-chillax text-display-lg-mobile md:text-display-lg text-intense-cocoa font-normal tracking-tight">
                 {{ __('blog.storefront.hero_title') }}
             </h1>
@@ -17,6 +17,35 @@
             <p class="font-sans text-body-md text-intense-cocoa/75 max-w-2xl mx-auto mt-4 leading-relaxed">
                 {{ __('blog.storefront.hero_description') }}
             </p>
+        </div>
+
+        {{-- Search Input Bar --}}
+        <div class="mb-10 max-w-md mx-auto">
+            <div class="relative flex items-center">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-intense-cocoa/40">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                </div>
+                <input
+                    type="search"
+                    wire:model.live.debounce.300ms="search"
+                    placeholder="{{ __('blog.storefront.search_placeholder') }}"
+                    class="w-full bg-soft-sand/40 border border-intense-cocoa/20 pl-10 pr-10 py-2.5 text-body-sm text-intense-cocoa placeholder:text-intense-cocoa/40 focus:border-soft-gold focus:ring-1 focus:ring-soft-gold focus:outline-hidden transition-colors [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-ms-clear]:hidden"
+                />
+                @if (filled($search))
+                    <button
+                        type="button"
+                        wire:click="$set('search', '')"
+                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-intense-cocoa/40 hover:text-intense-cocoa transition-colors"
+                        aria-label="{{ __('blog.storefront.clear_search') }}"
+                    >
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                @endif
+            </div>
         </div>
 
         {{-- Categories Filter Pills --}}
@@ -203,15 +232,19 @@
                     {{ __('blog.storefront.empty_heading') }}
                 </h3>
                 <p class="font-sans text-body-md text-intense-cocoa/70">
-                    {{ __('blog.storefront.empty_description') }}
+                    @if (filled($search))
+                        {{ __('blog.storefront.no_search_results', ['term' => $search]) }}
+                    @else
+                        {{ __('blog.storefront.empty_description') }}
+                    @endif
                 </p>
-                @if ($activeCategory)
+                @if ($activeCategory || filled($search))
                     <div class="mt-6 flex justify-center">
                         <x-primary-button
                             type="button"
-                            wire:click="selectCategory(null)"
+                            wire:click="resetFilters"
                         >
-                            {{ __('blog.storefront.all_categories') }}
+                            {{ __('blog.storefront.reset_filters') }}
                         </x-primary-button>
                     </div>
                 @endif

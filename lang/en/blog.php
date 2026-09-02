@@ -102,5 +102,9 @@ return [
         'show_less' => 'Show less',
         'previous_categories' => 'Previous categories',
         'next_categories' => 'Next categories',
+        'search_placeholder' => 'Search stories, guides or topics...',
+        'clear_search' => 'Clear search',
+        'reset_filters' => 'Reset filters',
+        'no_search_results' => 'We couldn\'t find any articles matching ":term".',
     ],
 ];

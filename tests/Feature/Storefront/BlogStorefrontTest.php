@@ -247,4 +247,82 @@ class BlogStorefrontTest extends TestCase
             ->assertSee(__('storefront.nav.blog'), false)
             ->assertSee(__('storefront.footer.blog'), false);
     }
+
+    public function test_blog_index_searches_by_keyword_in_title(): void
+    {
+        $postMatch = Post::factory()->create([
+            'title' => ['es' => 'Guía de Cuero Premium'],
+            'excerpt' => ['es' => 'Extracto de cuero.'],
+            'status' => PostStatusEnum::Published,
+            'published_at' => now()->subDay(),
+        ]);
+
+        $postOther = Post::factory()->create([
+            'title' => ['es' => 'Historia de la Marca'],
+            'excerpt' => ['es' => 'Extracto de historia.'],
+            'status' => PostStatusEnum::Published,
+            'published_at' => now()->subDay(),
+        ]);
+
+        $this->get(route('blog.index', ['search' => 'Premium']))
+            ->assertOk()
+            ->assertSee('Guía de Cuero Premium', false)
+            ->assertDontSee('Historia de la Marca', false)
+            ->assertSeeHtml('[&::-webkit-search-cancel-button]:hidden');
+    }
+
+    public function test_blog_index_search_is_case_insensitive(): void
+    {
+        Post::factory()->create([
+            'title' => ['es' => 'Artesanía Fina en Cuero'],
+            'excerpt' => ['es' => 'Detalles exclusivos de fabricación.'],
+            'status' => PostStatusEnum::Published,
+            'published_at' => now()->subDay(),
+        ]);
+
+        // Search with uppercase
+        $this->get(route('blog.index', ['search' => 'ARTESANÍA']))
+            ->assertOk()
+            ->assertSee('Artesanía Fina en Cuero', false);
+
+        // Search with lowercase
+        $this->get(route('blog.index', ['search' => 'artesanía']))
+            ->assertOk()
+            ->assertSee('Artesanía Fina en Cuero', false);
+
+        // Search with mixed case
+        $this->get(route('blog.index', ['search' => 'cUErO']))
+            ->assertOk()
+            ->assertSee('Artesanía Fina en Cuero', false);
+
+        // Search without accent matches accented title (artesania -> matches Artesanía)
+        $this->get(route('blog.index', ['search' => 'artesania']))
+            ->assertOk()
+            ->assertSee('Artesanía Fina en Cuero', false);
+
+        // Search without accent matches another accented word (guia -> matches Guía)
+        Post::factory()->create([
+            'title' => ['es' => 'Guía de Estilo'],
+            'status' => PostStatusEnum::Published,
+            'published_at' => now()->subDay(),
+        ]);
+
+        $this->get(route('blog.index', ['search' => 'guia']))
+            ->assertOk()
+            ->assertSee('Guía de Estilo', false);
+    }
+
+    public function test_blog_index_shows_search_empty_state_when_no_matches_found(): void
+    {
+        Post::factory()->create([
+            'title' => ['es' => 'Historia de la Marca'],
+            'status' => PostStatusEnum::Published,
+            'published_at' => now()->subDay(),
+        ]);
+
+        $this->get(route('blog.index', ['search' => 'InexistenteTerminoXYZ']))
+            ->assertOk()
+            ->assertSee(__('blog.storefront.no_search_results', ['term' => 'InexistenteTerminoXYZ']))
+            ->assertSee(__('blog.storefront.reset_filters'), false);
+    }
 }
