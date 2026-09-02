@@ -4,9 +4,9 @@
     'headingTag' => 'h2',
 ])
 
-<article class="group flex flex-col bg-soft-sand/30 border border-intense-cocoa/10 overflow-hidden transition-all duration-300 hover:shadow-ambient hover:border-intense-cocoa/20">
+<article class="group flex flex-col h-full bg-soft-sand/30 border border-intense-cocoa/10 overflow-hidden transition-all duration-300 hover:shadow-ambient hover:border-intense-cocoa/20">
     {{-- Cover Image --}}
-    <a href="{{ route('blog.show', ['slug' => $post->slug]) }}" class="relative aspect-[16/10] overflow-hidden bg-soft-sand block">
+    <a href="{{ route('blog.show', ['slug' => $post->slug]) }}" class="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-soft-sand block">
         @if ($post->cover_image_path)
             <img
                 src="{{ Storage::url($post->cover_image_path) }}"
@@ -42,7 +42,7 @@
             <span>{{ __('blog.storefront.reading_time', ['min' => $post->readingTime()]) }}</span>
         </div>
 
-        <{{ $headingTag }} class="font-chillax text-headline-sm text-intense-cocoa font-medium leading-snug group-hover:text-soft-gold transition-colors duration-300 line-clamp-2">
+        <{{ $headingTag }} class="font-chillax text-headline-sm text-intense-cocoa font-medium leading-snug group-hover:text-soft-gold transition-colors duration-300 line-clamp-2 min-h-[4.25rem]">
             <a href="{{ route('blog.show', ['slug' => $post->slug]) }}">
                 {{ $post->getLocalizedTitle() }}
             </a>

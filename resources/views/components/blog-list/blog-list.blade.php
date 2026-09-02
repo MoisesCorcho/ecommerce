@@ -21,8 +21,118 @@
 
         {{-- Categories Filter Pills --}}
         @if ($categories->isNotEmpty())
-            <div class="mb-12 flex items-center justify-center">
-                <div class="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1 max-w-full">
+            @php
+                $desktopLimit = 7;
+                $hasOverflowCategories = $categories->count() > $desktopLimit;
+                $activeCategoryIsHidden = $hasOverflowCategories && $categories->slice($desktopLimit)->contains('slug', $activeCategory);
+            @endphp
+            <div
+                x-data="{
+                    expanded: {{ $activeCategoryIsHidden ? 'true' : 'false' }},
+                    canScrollLeft: false,
+                    canScrollRight: false,
+                    checkScroll() {
+                        if (!this.$refs.scrollContainer) return;
+                        const el = this.$refs.scrollContainer;
+                        this.canScrollLeft = el.scrollLeft > 4;
+                        this.canScrollRight = el.scrollLeft < (el.scrollWidth - el.clientWidth - 4);
+                    },
+                    scrollLeft() {
+                        this.$refs.scrollContainer.scrollBy({ left: -160, behavior: 'smooth' });
+                    },
+                    scrollRight() {
+                        this.$refs.scrollContainer.scrollBy({ left: 160, behavior: 'smooth' });
+                    }
+                }"
+                x-init="$nextTick(() => { checkScroll(); }); window.addEventListener('resize', () => checkScroll())"
+                class="mb-12"
+            >
+                {{-- Mobile View: Touch Carousel with Navigation Arrows and Edge Fades (md:hidden) --}}
+                <div class="md:hidden relative flex items-center w-full">
+                    {{-- Left Arrow --}}
+                    <button
+                        type="button"
+                        x-show="canScrollLeft"
+                        x-cloak
+                        x-transition:enter="transition-opacity duration-200"
+                        x-transition:enter-start="opacity-0"
+                        x-transition:enter-end="opacity-100"
+                        x-transition:leave="transition-opacity duration-200"
+                        x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0"
+                        x-on:click="scrollLeft()"
+                        class="absolute left-0 z-20 flex h-8 w-8 items-center justify-center bg-silk-cream/95 border border-intense-cocoa/20 text-intense-cocoa shadow-sm hover:bg-soft-sand transition-colors"
+                        aria-label="{{ __('blog.storefront.previous_categories') }}"
+                    >
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                        </svg>
+                    </button>
+
+                    {{-- Left Fade Gradient --}}
+                    <div
+                        x-show="canScrollLeft"
+                        x-cloak
+                        x-transition.opacity
+                        class="pointer-events-none absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-silk-cream to-transparent z-10"
+                    ></div>
+
+                    {{-- Scrollable Container --}}
+                    <div
+                        x-ref="scrollContainer"
+                        x-on:scroll.passive="checkScroll()"
+                        class="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1 w-full"
+                    >
+                        <button
+                            type="button"
+                            wire:click="selectCategory(null)"
+                            class="shrink-0 px-5 py-2 text-label-caps font-semibold uppercase tracking-widest transition-all duration-300 rounded-none {{ empty($activeCategory) ? 'bg-intense-cocoa text-silk-cream shadow-sm' : 'border border-intense-cocoa/20 text-intense-cocoa hover:bg-soft-sand hover:border-intense-cocoa/40' }}"
+                        >
+                            {{ __('blog.storefront.all_categories') }}
+                        </button>
+
+                        @foreach ($categories as $cat)
+                            <button
+                                type="button"
+                                wire:click="selectCategory('{{ $cat->slug }}')"
+                                class="shrink-0 px-5 py-2 text-label-caps font-semibold uppercase tracking-widest transition-all duration-300 rounded-none {{ $activeCategory === $cat->slug ? 'bg-intense-cocoa text-silk-cream shadow-sm' : 'border border-intense-cocoa/20 text-intense-cocoa hover:bg-soft-sand hover:border-intense-cocoa/40' }}"
+                            >
+                                {{ $cat->getLocalizedName() }}
+                            </button>
+                        @endforeach
+                    </div>
+
+                    {{-- Right Fade Gradient --}}
+                    <div
+                        x-show="canScrollRight"
+                        x-cloak
+                        x-transition.opacity
+                        class="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-silk-cream to-transparent z-10"
+                    ></div>
+
+                    {{-- Right Arrow --}}
+                    <button
+                        type="button"
+                        x-show="canScrollRight"
+                        x-cloak
+                        x-transition:enter="transition-opacity duration-200"
+                        x-transition:enter-start="opacity-0"
+                        x-transition:enter-end="opacity-100"
+                        x-transition:leave="transition-opacity duration-200"
+                        x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0"
+                        x-on:click="scrollRight()"
+                        class="absolute right-0 z-20 flex h-8 w-8 items-center justify-center bg-silk-cream/95 border border-intense-cocoa/20 text-intense-cocoa shadow-sm hover:bg-soft-sand transition-colors"
+                        aria-label="{{ __('blog.storefront.next_categories') }}"
+                    >
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- Desktop View: Centered flex-wrap with 'Show More' accordion if > 7 categories (hidden md:flex) --}}
+                <div class="hidden md:flex md:flex-wrap md:justify-center md:items-center gap-3 max-w-4xl mx-auto">
                     <button
                         type="button"
                         wire:click="selectCategory(null)"
@@ -32,14 +142,43 @@
                     </button>
 
                     @foreach ($categories as $cat)
+                        @if ($loop->iteration <= $desktopLimit)
+                            <button
+                                type="button"
+                                wire:click="selectCategory('{{ $cat->slug }}')"
+                                class="shrink-0 px-5 py-2 text-label-caps font-semibold uppercase tracking-widest transition-all duration-300 rounded-none {{ $activeCategory === $cat->slug ? 'bg-intense-cocoa text-silk-cream shadow-sm' : 'border border-intense-cocoa/20 text-intense-cocoa hover:bg-soft-sand hover:border-intense-cocoa/40' }}"
+                            >
+                                {{ $cat->getLocalizedName() }}
+                            </button>
+                        @else
+                            <button
+                                type="button"
+                                x-show="expanded"
+                                x-cloak
+                                x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0 -translate-y-1"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                wire:click="selectCategory('{{ $cat->slug }}')"
+                                class="shrink-0 px-5 py-2 text-label-caps font-semibold uppercase tracking-widest transition-all duration-300 rounded-none {{ $activeCategory === $cat->slug ? 'bg-intense-cocoa text-silk-cream shadow-sm' : 'border border-intense-cocoa/20 text-intense-cocoa hover:bg-soft-sand hover:border-intense-cocoa/40' }}"
+                            >
+                                {{ $cat->getLocalizedName() }}
+                            </button>
+                        @endif
+                    @endforeach
+
+                    @if ($hasOverflowCategories)
                         <button
                             type="button"
-                            wire:click="selectCategory('{{ $cat->slug }}')"
-                            class="shrink-0 px-5 py-2 text-label-caps font-semibold uppercase tracking-widest transition-all duration-300 rounded-none {{ $activeCategory === $cat->slug ? 'bg-intense-cocoa text-silk-cream shadow-sm' : 'border border-intense-cocoa/20 text-intense-cocoa hover:bg-soft-sand hover:border-intense-cocoa/40' }}"
+                            x-on:click="expanded = !expanded"
+                            class="shrink-0 px-4 py-2 text-label-caps font-semibold uppercase tracking-widest text-soft-gold border border-soft-gold/40 hover:bg-soft-gold/10 hover:border-soft-gold transition-all duration-300 inline-flex items-center gap-1.5 cursor-pointer"
+                            :aria-expanded="expanded"
                         >
-                            {{ $cat->getLocalizedName() }}
+                            <span x-text="expanded ? '{{ __('blog.storefront.show_less') }}' : '{{ __('blog.storefront.show_more') }} (+{{ $categories->count() - $desktopLimit }})'"></span>
+                            <svg class="h-3.5 w-3.5 transition-transform duration-300" :class="expanded ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
                         </button>
-                    @endforeach
+                    @endif
                 </div>
             </div>
         @endif

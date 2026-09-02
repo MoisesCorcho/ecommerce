@@ -98,5 +98,9 @@ return [
         'back_to_blog' => 'Back to blog',
         'share' => 'Share story',
         'preview_notice' => 'Preview Mode: This post is a draft or scheduled for the future and is only visible to administrators.',
+        'show_more' => 'Show more',
+        'show_less' => 'Show less',
+        'previous_categories' => 'Previous categories',
+        'next_categories' => 'Next categories',
     ],
 ];

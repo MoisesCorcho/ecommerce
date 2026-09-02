@@ -98,5 +98,9 @@ return [
         'back_to_blog' => 'Volver al blog',
         'share' => 'Compartir historia',
         'preview_notice' => 'Modo Previsualización: Este artículo está en borrador o programado a futuro y solo es visible para administradores.',
+        'show_more' => 'Ver más',
+        'show_less' => 'Ver menos',
+        'previous_categories' => 'Categorías anteriores',
+        'next_categories' => 'Categorías siguientes',
     ],
 ];

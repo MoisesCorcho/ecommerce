@@ -43,6 +43,7 @@ class BlogStorefrontTest extends TestCase
             ->assertSee('Extracto visible en el catálogo.', false)
             ->assertDontSee('Artículo en Borrador Oculto', false)
             ->assertSeeHtml('aria-label="Breadcrumb"')
+            ->assertSeeHtml('min-h-[4.25rem]')
             ->assertSeeHtml('mt-auto pt-6 border-t');
     }
 
@@ -77,7 +78,33 @@ class BlogStorefrontTest extends TestCase
         $this->get(route('blog.index', ['category' => 'tendencias']))
             ->assertOk()
             ->assertSee('Post de Tendencias', false)
-            ->assertDontSee('Post de Cuidados', false);
+            ->assertDontSee('Post de Cuidados', false)
+            ->assertSeeHtml('md:flex-wrap md:justify-center md:items-center')
+            ->assertSeeHtml('aria-label="'.__('blog.storefront.previous_categories').'"')
+            ->assertSeeHtml('aria-label="'.__('blog.storefront.next_categories').'"');
+    }
+
+    public function test_blog_index_displays_show_more_button_when_categories_exceed_desktop_limit(): void
+    {
+        for ($i = 1; $i <= 9; $i++) {
+            $cat = PostCategory::factory()->create([
+                'name' => ['es' => "Categoría {$i}"],
+                'slug' => "categoria-{$i}",
+                'sort_order' => $i,
+            ]);
+
+            Post::factory()->create([
+                'title' => ['es' => "Post en Categoría {$i}"],
+                'post_category_id' => $cat->id,
+                'status' => PostStatusEnum::Published,
+                'published_at' => now()->subDay(),
+            ]);
+        }
+
+        $this->get(route('blog.index'))
+            ->assertOk()
+            ->assertSee(__('blog.storefront.show_more'), false)
+            ->assertSeeHtml('(+2)');
     }
 
     public function test_blog_post_detail_is_accessible_for_published_post(): void
@@ -177,6 +204,7 @@ class BlogStorefrontTest extends TestCase
             ->assertOk()
             ->assertSee('Relacionado Misma Categoría', false)
             ->assertSee('Post Reciente de Otra Categoría', false)
+            ->assertSeeHtml('min-h-[4.25rem]')
             ->assertSeeHtml('mt-auto pt-6 border-t');
     }
 
