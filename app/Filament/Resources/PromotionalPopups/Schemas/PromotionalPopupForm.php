@@ -31,19 +31,19 @@ final class PromotionalPopupForm
                         ->placeholder($locale === LocaleEnum::Es ? '¡Oferta Especial de Bienvenida!' : 'Special Welcome Offer!')
                         ->required($isDefault)
                         ->nullable(! $isDefault)
-                        ->maxLength(255),
+                        ->maxLength(60),
 
                     TextInput::make("subtitle.{$locale->value}")
                         ->label(__('promotional_popups.fields.subtitle')." ({$locale->label()})")
                         ->placeholder($locale === LocaleEnum::Es ? 'Recibe un descuento exclusivo en tu primera compra.' : 'Get an exclusive discount on your first order.')
                         ->nullable()
-                        ->maxLength(500),
+                        ->maxLength(160),
 
                     TextInput::make("cta_text.{$locale->value}")
                         ->label(__('promotional_popups.fields.cta_text')." ({$locale->label()})")
                         ->placeholder($locale === LocaleEnum::Es ? 'Aprovechar Descuento' : 'Claim Discount')
                         ->nullable()
-                        ->maxLength(100),
+                        ->maxLength(35),
                 ]);
         })->values()->all();
 

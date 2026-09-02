@@ -148,6 +148,34 @@ class PromotionalPopupResourceTest extends TestCase
             ->assertHasFormErrors(['ends_at']);
     }
 
+    public function test_create_validates_field_max_lengths(): void
+    {
+        $this->actingAsAdmin();
+
+        // title.es max 60
+        Livewire::test(CreatePromotionalPopup::class)
+            ->set('data.title.es', str_repeat('a', 61))
+            ->set('data.delay_seconds', 5)
+            ->call('create')
+            ->assertHasFormErrors(['title.es']);
+
+        // subtitle.es max 160
+        Livewire::test(CreatePromotionalPopup::class)
+            ->set('data.title.es', 'Título válido')
+            ->set('data.subtitle.es', str_repeat('b', 161))
+            ->set('data.delay_seconds', 5)
+            ->call('create')
+            ->assertHasFormErrors(['subtitle.es']);
+
+        // cta_text.es max 35
+        Livewire::test(CreatePromotionalPopup::class)
+            ->set('data.title.es', 'Título válido')
+            ->set('data.cta_text.es', str_repeat('c', 36))
+            ->set('data.delay_seconds', 5)
+            ->call('create')
+            ->assertHasFormErrors(['cta_text.es']);
+    }
+
     public function test_admin_can_edit_promotional_popup(): void
     {
         $this->actingAsAdmin();

@@ -183,4 +183,73 @@ class PromotionalPopupTest extends TestCase
         $response->assertSee('href="/shop"', false);
         $response->assertSee('@click="localStorage.setItem(\'leen_popup_dismissed_\' + id, Date.now().toString())"', false);
     }
+
+    public function test_promotional_popup_includes_responsive_classes(): void
+    {
+        PromotionalPopup::factory()->create([
+            'title' => ['es' => 'Pop-up adaptativo'],
+            'subtitle' => ['es' => 'Subtítulo'],
+            'is_active' => true,
+        ]);
+
+        $response = $this->withSession(['locale' => 'es'])->get('/');
+
+        $response->assertOk();
+        $response->assertSee('my-auto', false);
+        $response->assertSee('no-scrollbar', false);
+        $response->assertSee('max-h-[calc(100vh-2rem)]', false);
+    }
+
+    public function test_promotional_popup_with_image_uses_horizontal_split_layout_on_laptop(): void
+    {
+        PromotionalPopup::factory()->create([
+            'title' => ['es' => 'Pop-up con imagen'],
+            'image_path' => 'popups/test-banner.jpg',
+            'is_active' => true,
+        ]);
+
+        $response = $this->withSession(['locale' => 'es'])->get('/');
+
+        $response->assertOk();
+        $response->assertSee('laptop-horizontal:max-w-2xl', false);
+        $response->assertSee('laptop-horizontal:flex-row', false);
+        $response->assertSee('laptop-horizontal:w-5/12', false);
+    }
+
+    public function test_promotional_popup_without_image_preserves_compact_single_column_layout(): void
+    {
+        PromotionalPopup::factory()->create([
+            'title' => ['es' => 'Pop-up sin imagen'],
+            'image_path' => null,
+            'is_active' => true,
+        ]);
+
+        $response = $this->withSession(['locale' => 'es'])->get('/');
+
+        $response->assertOk();
+        $response->assertSee('max-w-lg', false);
+        $response->assertDontSee('laptop-horizontal:max-w-2xl', false);
+        $response->assertDontSee('laptop-horizontal:w-5/12', false);
+    }
+
+    public function test_copy_button_checkmark_icon_has_accessible_hover_contrast(): void
+    {
+        $coupon = Coupon::factory()->create([
+            'code' => 'ACCESSIBLE10',
+            'is_active' => true,
+        ]);
+
+        PromotionalPopup::factory()->create([
+            'title' => ['es' => 'Pop-up con cupón'],
+            'coupon_id' => $coupon->id,
+            'is_active' => true,
+        ]);
+
+        $response = $this->withSession(['locale' => 'es'])->get('/');
+
+        $response->assertOk();
+        // Checkmark should not have text-soft-gold without hover contrast handling
+        $response->assertDontSee('<svg class="h-3.5 w-3.5 text-soft-gold"', false);
+        $response->assertSee('group-hover:text-intense-cocoa', false);
+    }
 }
