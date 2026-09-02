@@ -99,7 +99,7 @@
                                 </p>
                             @endif
 
-                            <div class="mt-6 pt-5 border-t border-intense-cocoa/10 flex items-center justify-between">
+                            <div class="mt-auto pt-6 border-t border-intense-cocoa/10 flex items-center justify-between">
                                 <a
                                     href="{{ route('blog.show', ['slug' => $post->slug]) }}"
                                     class="inline-flex items-center gap-2 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa group-hover:text-soft-gold transition-colors duration-300"

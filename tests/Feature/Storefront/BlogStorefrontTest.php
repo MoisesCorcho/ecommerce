@@ -41,7 +41,8 @@ class BlogStorefrontTest extends TestCase
             ->assertOk()
             ->assertSee('Artículo Publicado de Prueba', false)
             ->assertSee('Extracto visible en el catálogo.', false)
-            ->assertDontSee('Artículo en Borrador Oculto', false);
+            ->assertDontSee('Artículo en Borrador Oculto', false)
+            ->assertSeeHtml('mt-auto pt-6 border-t');
     }
 
     public function test_blog_index_filters_by_category(): void
@@ -97,7 +98,10 @@ class BlogStorefrontTest extends TestCase
             ->assertOk()
             ->assertSee('El Alma de una Cartera Leen', false)
             ->assertSee('Párrafo principal con detalles artesanales de lujo.', false)
-            ->assertSee('Moda Consciente', false);
+            ->assertSee('Moda Consciente', false)
+            ->assertSeeHtml('prose-editorial')
+            ->assertSeeHtml('aria-label="WhatsApp"')
+            ->assertSee('17.472 14.382', false);
     }
 
     public function test_blog_post_detail_returns_404_for_draft_post_to_guest_and_customer(): void
@@ -169,7 +173,8 @@ class BlogStorefrontTest extends TestCase
         $this->get(route('blog.show', ['slug' => 'post-actual']))
             ->assertOk()
             ->assertSee('Relacionado Misma Categoría', false)
-            ->assertSee('Post Reciente de Otra Categoría', false);
+            ->assertSee('Post Reciente de Otra Categoría', false)
+            ->assertSeeHtml('mt-auto pt-6 border-t');
     }
 
     public function test_blog_switches_language_when_locale_changes(): void
