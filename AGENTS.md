@@ -204,6 +204,14 @@ When specifying or implementing a product feature:
 4. Domain schema truth remains `app/Models`, `app/Enums/{Area}`, and migrations—update those when a feature changes data shape.
 5. Before coding (`En implementación`), run preflight audit via skill `feature-preflight-audit` (or `/audit-feature`) to verify blast radius, existing code baselines, domain invariants, and edge cases.
 6. After completing implementation, generate an exhaustive verification checklist via skill `feature-qa-checklist` (or `/qa-checklist`) for QA and release handoff.
+7. Delivery certification via Receipt-Driven Development (RDD / Gentle AI):
+   Before declaring implementation complete, finishing a session, or committing, all production/test code changes must complete the Gentle AI RDD review lifecycle:
+   - Isolate changes: `git add <files>` under the `staged` projection.
+   - Freeze candidate: `gentle-ai review start --projection staged` (with `--consent granted`).
+   - Derive required review arguments: `gentle-ai review status --lineage <id> --contract gentle-ai.review-integration/v2 --projection staged --next-transition`.
+   - Perform adversarial inspection: inspect immutable diff via `gentle-ai review inspect-candidate` for every changed manifest path under the assigned review lenses (`review-reliability`, `review-risk`, etc.).
+   - Capture verdict: inject reviewer JSON result conforming to `https://gentle-ai.dev/schema/review/reviewer/v1` via `gentle-ai review capture-result`.
+   - Burn authority & emit receipt: execute `gentle-ai review acknowledge-approved` with the token returned by the engine until repository status converges to `clean`.
 
 === foundation rules ===
 

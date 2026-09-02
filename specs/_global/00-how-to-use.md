@@ -36,6 +36,7 @@ Ubicación: `specs/features/<NN-slug>/`.
 4. Ajustar `design.md` (alineado a convenciones + esquema BD). Verificar APIs con Boost/docs, no de memoria.
 5. Ejecutar `tasks.md` como checklist. Marcar items al completarlos.
 6. Antes de cerrar: Definition of Done de `tasks.md` + criterios R1…Rn de requirements + generar checklist de verificación de QA vía skill `feature-qa-checklist` (o `/qa-checklist`).
+7. **Certificación de entrega vía RDD (Gentle AI):** Ejecutar el ciclo formal de revisión por recibos (`staged` -> `gentle-ai review start` -> `capture-result` -> `acknowledge-approved`) para quemar la autoridad de revisión y certificar estabilidad antes de commitear o cerrar la sesión.
 
 ### Auditoría y Preflight de Feature antes de Implementar
 
