@@ -61,7 +61,7 @@
                     type="button"
                     @click="show = false; localStorage.setItem('leen_popup_dismissed_' + id, Date.now().toString())"
                     aria-label="{{ __('promotional_popups.storefront.close') }}"
-                    class="group absolute -top-px -right-px z-30 flex h-9 w-9 sm:h-10 sm:w-10 cursor-pointer items-center justify-center border-b border-l border-intense-cocoa/35 bg-silk-cream text-intense-cocoa transition-colors duration-200 focus:outline-none"
+                    class="group absolute -top-px -right-px z-30 flex h-9 w-9 sm:h-10 sm:w-10 cursor-pointer items-center justify-center border-b border-l border-intense-cocoa/35 bg-silk-cream text-intense-cocoa transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-intense-cocoa focus-visible:ring-offset-2 focus-visible:ring-offset-silk-cream"
                 >
                     <svg
                         class="h-5 w-5 animate-close-idle transition-transform duration-300 group-hover:![animation:none] group-hover:rotate-90"
@@ -91,7 +91,7 @@
 
                         {{-- Bloque de Contenido y Acciones (Columna Derecha en Laptop / Inferior en Monitor Grande y Mobile) --}}
                         <div class="{{ $popup->image_path ? 'w-full laptop-horizontal:w-7/12 p-6 sm:p-8 laptop-horizontal:p-6 lg:laptop-horizontal:p-7 flex flex-col justify-center text-center' : '' }}">
-                            <span class="font-labelle-aurore text-2xl sm:text-3xl text-soft-gold block leading-none mb-1.5 select-none">
+                            <span class="font-labelle-aurore text-2xl sm:text-3xl text-soft-gold block leading-none mb-1.5 select-none px-4 sm:px-0">
                                 {{ __('promotional_popups.storefront.eyebrow') }}
                             </span>
 
@@ -123,7 +123,7 @@
                                             type="button"
                                             dusk="copy-coupon-btn"
                                             @click="navigator.clipboard.writeText('{{ $popup->coupon->code }}'); copied = true; setTimeout(() => copied = false, 2500)"
-                                            class="group flex h-11 laptop-horizontal:h-10 items-center justify-center gap-2 cursor-pointer bg-intense-cocoa px-4 text-xs font-semibold tracking-wider text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa focus:outline-none"
+                                            class="group flex h-11 laptop-horizontal:h-10 items-center justify-center gap-2 cursor-pointer border border-intense-cocoa bg-transparent px-4 text-xs font-semibold tracking-wider text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-intense-cocoa focus-visible:ring-offset-2 focus-visible:ring-offset-soft-sand"
                                         >
                                             <span x-show="!copied" class="inline-flex items-center gap-1.5">
                                                 <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -132,12 +132,15 @@
                                                 {{ __('promotional_popups.storefront.copy_code') }}
                                             </span>
                                             <span x-show="copied" x-cloak class="inline-flex items-center gap-1.5 font-bold">
-                                                <svg class="h-3.5 w-3.5 text-soft-gold group-hover:text-intense-cocoa transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                                                <svg class="h-3.5 w-3.5 text-soft-gold group-hover:text-silk-cream transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                                                 </svg>
                                                 {{ __('promotional_popups.storefront.code_copied') }}
                                             </span>
                                         </button>
+
+                                        {{-- Región accesible para lectores de pantalla --}}
+                                        <span class="sr-only" role="status" aria-live="polite" x-text="copied ? '{{ __('promotional_popups.storefront.code_copied') }}' : ''"></span>
                                     </div>
                                 </div>
                             @endif
@@ -148,7 +151,7 @@
                                     <a
                                         href="{{ $popup->cta_url }}"
                                         @click="localStorage.setItem('leen_popup_dismissed_' + id, Date.now().toString())"
-                                        class="flex h-12 laptop-horizontal:h-11 w-full items-center justify-center text-center cursor-pointer bg-intense-cocoa px-6 text-sm font-semibold tracking-wider text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa focus:outline-none"
+                                        class="flex h-12 laptop-horizontal:h-11 w-full items-center justify-center text-center cursor-pointer bg-intense-cocoa px-6 text-sm font-semibold tracking-wider text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-intense-cocoa focus-visible:ring-offset-2 focus-visible:ring-offset-silk-cream"
                                     >
                                         <span class="w-full text-center">{{ $ctaText }}</span>
                                     </a>

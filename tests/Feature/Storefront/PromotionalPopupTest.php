@@ -248,8 +248,8 @@ class PromotionalPopupTest extends TestCase
         $response = $this->withSession(['locale' => 'es'])->get('/');
 
         $response->assertOk();
-        // Checkmark should not have text-soft-gold without hover contrast handling
-        $response->assertDontSee('<svg class="h-3.5 w-3.5 text-soft-gold"', false);
-        $response->assertSee('group-hover:text-intense-cocoa', false);
+        $response->assertSee('text-soft-gold group-hover:text-silk-cream', false);
+        $response->assertSee('focus-visible:ring-intense-cocoa', false);
+        $response->assertSee('aria-live="polite"', false);
     }
 }
