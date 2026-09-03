@@ -133,8 +133,14 @@
                                 <dt class="font-medium text-intense-cocoa">{{ __('orders.fields.shipping_cost') }}</dt>
                                 <dd class="font-semibold tabular-nums text-intense-cocoa">{{ $order->currency->format($order->shipping_cost) }}</dd>
                             </div>
+                            @if ($order->threshold_discount > 0)
+                                <div class="flex justify-between font-medium text-success" data-order-threshold-discount>
+                                    <dt>{{ __('orders.fields.threshold_discount') }}</dt>
+                                    <dd class="font-semibold tabular-nums">-{{ $order->currency->format($order->threshold_discount) }}</dd>
+                                </div>
+                            @endif
                             @if ($order->discount > 0)
-                                <div class="flex justify-between font-medium text-success">
+                                <div class="flex justify-between font-medium text-success" data-order-discount>
                                     <dt>{{ __('orders.fields.discount') }}</dt>
                                     <dd class="font-semibold tabular-nums">-{{ $order->currency->format($order->discount) }}</dd>
                                 </div>

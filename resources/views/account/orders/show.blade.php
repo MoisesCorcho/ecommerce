@@ -47,16 +47,22 @@
                     <dt class="font-medium text-intense-cocoa">{{ __('orders.fields.subtotal') }}</dt>
                     <dd class="font-semibold tabular-nums text-intense-cocoa">{{ $order->currency->format($order->subtotal) }}</dd>
                 </div>
-                @if ($order->discount > 0)
-                    <div class="flex justify-between border-b border-intense-cocoa/30 pb-2 text-success">
-                        <dt class="font-medium">{{ __('orders.fields.discount') }}</dt>
-                        <dd class="font-semibold tabular-nums">-{{ $order->currency->format($order->discount) }}</dd>
-                    </div>
-                @endif
                 <div class="flex justify-between border-b border-intense-cocoa/30 pb-2">
                     <dt class="font-medium text-intense-cocoa">{{ __('orders.fields.shipping_cost') }}</dt>
                     <dd class="font-semibold tabular-nums text-intense-cocoa">{{ $order->currency->format($order->shipping_cost) }}</dd>
                 </div>
+                @if ($order->threshold_discount > 0)
+                    <div class="flex justify-between border-b border-intense-cocoa/30 pb-2 text-success" data-order-threshold-discount>
+                        <dt class="font-medium">{{ __('orders.fields.threshold_discount') }}</dt>
+                        <dd class="font-semibold tabular-nums">-{{ $order->currency->format($order->threshold_discount) }}</dd>
+                    </div>
+                @endif
+                @if ($order->discount > 0)
+                    <div class="flex justify-between border-b border-intense-cocoa/30 pb-2 text-success" data-order-discount>
+                        <dt class="font-medium">{{ __('orders.fields.discount') }}</dt>
+                        <dd class="font-semibold tabular-nums">-{{ $order->currency->format($order->discount) }}</dd>
+                    </div>
+                @endif
                 <div class="flex justify-between pt-1">
                     <dt class="font-semibold text-intense-cocoa">{{ __('orders.fields.total') }}</dt>
                     <dd class="text-base font-bold tabular-nums text-intense-cocoa">{{ $order->currency->format($order->total) }}</dd>

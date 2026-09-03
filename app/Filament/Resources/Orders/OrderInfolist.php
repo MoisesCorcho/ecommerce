@@ -39,6 +39,10 @@ class OrderInfolist
                         TextEntry::make('shipping_cost')
                             ->label(__('orders.fields.shipping_cost'))
                             ->formatStateUsing(fn (int $state, Order $record): string => $record->currency->format($state)),
+                        TextEntry::make('threshold_discount')
+                            ->label(__('orders.fields.threshold_discount'))
+                            ->formatStateUsing(fn (int $state, Order $record): string => $record->currency->format($state))
+                            ->visible(fn (Order $record): bool => $record->threshold_discount > 0),
                         TextEntry::make('discount')
                             ->label(__('orders.fields.discount'))
                             ->formatStateUsing(fn (int $state, Order $record): string => $record->currency->format($state)),
