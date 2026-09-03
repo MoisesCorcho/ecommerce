@@ -28,7 +28,7 @@ class BoldPaymentGateway implements PaymentGatewayInterface
         $base = rtrim((string) config('ecommerce.payments.bold.api_base', 'https://integrations.api.bold.co'), '/');
 
         if ($apiKey === '') {
-            throw PaymentGatewayException::make();
+            throw PaymentGatewayException::make(diagnostic: 'Bold API key is not configured');
         }
 
         $payload = [
@@ -63,19 +63,29 @@ class BoldPaymentGateway implements PaymentGatewayInterface
                 'exception' => $e::class,
             ]);
 
-            throw PaymentGatewayException::make($e);
+            throw PaymentGatewayException::make($e, $e->getMessage());
         }
 
         if (! $response->successful()) {
+            /** @var array<string, mixed> $body */
+            $body = $response->json() ?? [];
+            $rawError = $body['message'] ?? ($body['errors'] ?? null);
+            $errorMessage = is_array($rawError)
+                ? json_encode($rawError, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                : (is_string($rawError) ? $rawError : null);
+
             Log::channel('payments')->warning('payments.gateway.bold.create_rejected', [
                 'provider' => 'bold',
                 'order_id' => $order->id,
                 'payment_id' => $payment->id,
                 'http_status' => $response->status(),
+                'error_message' => $errorMessage,
                 'body_length' => strlen($response->body()),
             ]);
 
-            throw PaymentGatewayException::make();
+            $diagnostic = $errorMessage ?? "Bold rejected checkout with HTTP {$response->status()}";
+
+            throw PaymentGatewayException::make(diagnostic: $diagnostic);
         }
 
         /** @var array<string, mixed> $body */
@@ -94,7 +104,7 @@ class BoldPaymentGateway implements PaymentGatewayInterface
                 'has_url' => $url !== '',
             ]);
 
-            throw PaymentGatewayException::make();
+            throw PaymentGatewayException::make(diagnostic: 'Bold response missing payment_link or URL');
         }
 
         return new HostedCheckoutSessionDTO(

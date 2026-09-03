@@ -28,7 +28,7 @@ class StripePaymentGateway implements PaymentGatewayInterface
         $base = rtrim((string) config('ecommerce.payments.stripe.api_base', 'https://api.stripe.com'), '/');
 
         if ($secret === '') {
-            throw PaymentGatewayException::make();
+            throw PaymentGatewayException::make(diagnostic: 'Stripe secret key is not configured');
         }
 
         try {
@@ -55,19 +55,35 @@ class StripePaymentGateway implements PaymentGatewayInterface
                 'exception' => $e::class,
             ]);
 
-            throw PaymentGatewayException::make($e);
+            throw PaymentGatewayException::make($e, $e->getMessage());
         }
 
         if (! $response->successful()) {
+            /** @var array<string, mixed> $body */
+            $body = $response->json() ?? [];
+            /** @var array<string, mixed> $error */
+            $error = is_array($body['error'] ?? null) ? $body['error'] : [];
+
+            $errorType = isset($error['type']) ? (string) $error['type'] : null;
+            $errorCode = isset($error['code']) ? (string) $error['code'] : null;
+            $errorParam = isset($error['param']) ? (string) $error['param'] : null;
+            $errorMessage = isset($error['message']) ? (string) $error['message'] : null;
+
             Log::channel('payments')->warning('payments.gateway.stripe.create_rejected', [
                 'provider' => 'stripe',
                 'order_id' => $order->id,
                 'payment_id' => $payment->id,
                 'http_status' => $response->status(),
+                'error_type' => $errorType,
+                'error_code' => $errorCode,
+                'error_param' => $errorParam,
+                'error_message' => $errorMessage,
                 'body_length' => strlen($response->body()),
             ]);
 
-            throw PaymentGatewayException::make();
+            $diagnostic = $errorMessage ?? "Stripe rejected checkout with HTTP {$response->status()}";
+
+            throw PaymentGatewayException::make(diagnostic: $diagnostic);
         }
 
         /** @var array<string, mixed> $body */
@@ -84,7 +100,7 @@ class StripePaymentGateway implements PaymentGatewayInterface
                 'has_url' => $url !== '',
             ]);
 
-            throw PaymentGatewayException::make();
+            throw PaymentGatewayException::make(diagnostic: 'Stripe response missing session ID or URL');
         }
 
         return new HostedCheckoutSessionDTO(

@@ -6,6 +6,7 @@ namespace Tests\Feature\Payments;
 
 use App\Actions\Payments\ProcessPaymentWebhookAction;
 use App\Actions\Payments\StartOrderPaymentAction;
+use App\DTOs\Payments\HostedCheckoutReturnDTO;
 use App\Enums\Commerce\CurrencyEnum;
 use App\Enums\Orders\OrderStatusEnum;
 use App\Enums\Payments\PaymentProviderEnum;
@@ -15,6 +16,7 @@ use App\Exceptions\Payments\OrderNotPayableException;
 use App\Exceptions\Payments\PaymentGatewayException;
 use App\Exceptions\Payments\PaymentStockUnavailableException;
 use App\Gateways\Payments\FakePaymentGateway;
+use App\Gateways\Payments\StripePaymentGateway;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
@@ -23,6 +25,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
@@ -556,6 +559,106 @@ class PaymentDomainTest extends TestCase
             'is_active' => true,
             'stock' => $stock,
         ]);
+    }
+
+    public function test_start_pay_rejects_order_with_zero_or_negative_total(): void
+    {
+        $user = User::factory()->create();
+        $variant = $this->createVariant(stock: 5);
+        $order = $this->createPendingOrder(
+            user: $user,
+            currency: CurrencyEnum::Eur,
+            total: 0,
+            variant: $variant,
+            quantity: 1,
+        );
+
+        $this->expectException(OrderNotPayableException::class);
+
+        app(StartOrderPaymentAction::class)($order->id);
+    }
+
+    public function test_thank_you_page_omits_pay_button_when_order_total_is_zero(): void
+    {
+        $user = User::factory()->create();
+        $variant = $this->createVariant(stock: 5);
+        $order = $this->createPendingOrder(
+            user: $user,
+            currency: CurrencyEnum::Eur,
+            total: 0,
+            variant: $variant,
+            quantity: 1,
+        );
+
+        $this->actingAs($user)
+            ->get(route('orders.thank-you', $order))
+            ->assertOk()
+            ->assertDontSee('data-pay-form', false)
+            ->assertDontSee('data-pay-button', false);
+    }
+
+    public function test_stripe_gateway_logs_structured_error_details_on_rejection(): void
+    {
+        $paymentsLog = \Mockery::mock(LoggerInterface::class);
+        $paymentsLog->shouldReceive('warning')
+            ->once()
+            ->withArgs(function (string $message, array $context = []): bool {
+                return $message === 'payments.gateway.stripe.create_rejected'
+                    && ($context['http_status'] ?? null) === 400
+                    && ($context['error_code'] ?? null) === 'parameter_invalid_integer'
+                    && ($context['error_param'] ?? null) === 'line_items[0][price_data][unit_amount]'
+                    && ($context['error_message'] ?? null) === 'Invalid integer: line_items[0][price_data][unit_amount] must be greater than 0'
+                    && ! array_key_exists('body', $context);
+            });
+        Log::shouldReceive('channel')->with('payments')->andReturn($paymentsLog);
+
+        config([
+            'ecommerce.payments.stripe.secret_key' => 'sk_test_123',
+            'ecommerce.payments.stripe.api_base' => 'https://api.stripe.com',
+        ]);
+
+        Http::fake([
+            'api.stripe.com/v1/checkout/sessions' => Http::response([
+                'error' => [
+                    'type' => 'invalid_request_error',
+                    'code' => 'parameter_invalid_integer',
+                    'param' => 'line_items[0][price_data][unit_amount]',
+                    'message' => 'Invalid integer: line_items[0][price_data][unit_amount] must be greater than 0',
+                ],
+            ], 400),
+        ]);
+
+        $user = User::factory()->create();
+        $variant = $this->createVariant(stock: 5);
+        $order = $this->createPendingOrder(
+            user: $user,
+            currency: CurrencyEnum::Eur,
+            total: 0,
+            variant: $variant,
+            quantity: 1,
+        );
+
+        $payment = Payment::factory()->for($order)->create([
+            'amount' => 0,
+            'provider' => PaymentProviderEnum::Stripe,
+            'currency' => CurrencyEnum::Eur,
+            'status' => PaymentStatusEnum::Pending,
+        ]);
+
+        try {
+            app(StripePaymentGateway::class)->createHostedCheckout(
+                $order,
+                $payment,
+                new HostedCheckoutReturnDTO(
+                    successUrl: 'https://shop.example.com/ok',
+                    cancelUrl: 'https://shop.example.com/cancel',
+                ),
+            );
+            $this->fail('Expected PaymentGatewayException');
+        } catch (PaymentGatewayException $e) {
+            $this->assertSame('Invalid integer: line_items[0][price_data][unit_amount] must be greater than 0', $e->diagnostic);
+            $this->assertSame(__('payments.errors.gateway'), $e->getMessage());
+        }
     }
 
     private function createPendingOrder(

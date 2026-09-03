@@ -136,8 +136,8 @@ class BoldPaymentGatewayTest extends TestCase
                 ),
             );
             $this->fail('Expected PaymentGatewayException');
-        } catch (PaymentGatewayException) {
-            // expected
+        } catch (PaymentGatewayException $e) {
+            $this->assertSame('Forbidden', $e->diagnostic);
         }
     }
 

@@ -12,8 +12,17 @@ use Throwable;
  */
 class PaymentGatewayException extends RuntimeException
 {
-    public static function make(?Throwable $previous = null): self
+    public function __construct(
+        string $message = '',
+        int $code = 0,
+        ?Throwable $previous = null,
+        public readonly ?string $diagnostic = null,
+    ) {
+        parent::__construct($message, $code, $previous);
+    }
+
+    public static function make(?Throwable $previous = null, ?string $diagnostic = null): self
     {
-        return new self(__('payments.errors.gateway'), 0, $previous);
+        return new self(__('payments.errors.gateway'), 0, $previous, $diagnostic);
     }
 }
