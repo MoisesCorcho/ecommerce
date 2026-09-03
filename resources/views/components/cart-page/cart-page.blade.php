@@ -49,28 +49,6 @@
             <div class="grid gap-8 lg:grid-cols-[1.6fr_1fr] lg:gap-12">
                 {{-- LEFT: Line items --}}
                 <div>
-                    {{-- Currency selector --}}
-                    <div class="mb-6 flex flex-wrap items-center gap-3">
-                        <label class="text-sm font-medium text-intense-cocoa" for="cart-currency">{{ __('cart.page.currency_label') }}</label>
-                        <div class="relative">
-                            <select
-                                id="cart-currency"
-                                wire:model="currency"
-                                wire:change="changeCurrency($event.target.value)"
-                                class="peer cursor-pointer appearance-none border border-intense-cocoa bg-transparent px-3 py-2 pr-10 text-sm text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream focus:bg-intense-cocoa focus:text-silk-cream focus:outline-none"
-                                data-cart-currency
-                            >
-                                <option value="COP" class="bg-silk-cream text-intense-cocoa hover:bg-soft-gold hover:text-intense-cocoa">COP</option>
-                                <option value="EUR" class="bg-silk-cream text-intense-cocoa hover:bg-soft-gold hover:text-intense-cocoa">EUR</option>
-                            </select>
-                            <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-intense-cocoa transition-all duration-200 peer-hover:text-silk-cream peer-focus:text-silk-cream peer-focus:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                            </svg>
-                        </div>
-                        @error('currency')
-                            <span class="text-sm text-error">{{ $message }}</span>
-                        @enderror
-                    </div>
 
                     {{-- Stock-changed banner (R6) --}}
                     @if ($hasStockIssue)
@@ -84,7 +62,7 @@
                         @php
                             $progressPercent = min(100, (int) round(($cartView->subtotal / $cartView->thresholdMinAmount) * 100));
                         @endphp
-                        <div class="mb-6 border border-intense-cocoa/20 bg-silk-cream p-4 text-intense-cocoa shadow-sm" data-cart-threshold-banner>
+                        <div class="mb-6 bg-soft-sand p-4 text-intense-cocoa" data-cart-threshold-banner>
                             <div class="mb-2 flex items-center justify-between text-xs font-medium sm:text-sm">
                                 @if ($cartView->thresholdReached)
                                     <span class="flex items-center gap-1.5 font-bold text-intense-cocoa">
@@ -249,7 +227,7 @@
                                 </span>
                             </div>
                             @if ($cartView->thresholdDiscountAmount > 0)
-                                <div class="flex items-center justify-between font-medium text-terracotta" data-cart-threshold-discount>
+                                <div class="flex items-center justify-between font-medium text-success" data-cart-threshold-discount>
                                     <span>{{ __('cart.summary.threshold_discount') }}</span>
                                     <span class="tabular-nums">
                                         −{{ $cartView->currency->format($cartView->thresholdDiscountAmount) }}

@@ -125,7 +125,9 @@ class CartThresholdLivewireTest extends TestCase
 
         Livewire::test('checkout-page')
             ->assertSee(__('orders.fields.threshold_discount'))
-            ->assertSee('−'.CurrencyEnum::Eur->format(3_000));
+            ->assertSee('−'.CurrencyEnum::Eur->format(3_000))
+            ->assertSeeHtml('text-success')
+            ->assertDontSeeHtml('text-terracotta');
     }
 
     private function createProductWithPrice(int $price, CurrencyEnum $currency, int $stock = 10): Product

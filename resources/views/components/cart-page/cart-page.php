@@ -1,13 +1,10 @@
 <?php
 
-use App\Actions\Cart\ChangeCartCurrencyAction;
 use App\Actions\Cart\ClearCartAction;
 use App\Actions\Cart\GetCartViewAction;
 use App\Actions\Cart\RemoveCartItemAction;
 use App\Actions\Cart\UpdateCartItemQuantityAction;
-use App\DTOs\Cart\ChangeCartCurrencyDTO;
 use App\DTOs\Cart\UpdateCartItemQuantityDTO;
-use App\Enums\Commerce\CurrencyEnum;
 use App\Exceptions\Cart\CartAccessDeniedException;
 use App\Exceptions\Cart\CartCurrencyChangeBlockedException;
 use App\Exceptions\Cart\CartItemNotEligibleException;
@@ -116,37 +113,6 @@ new #[Layout('layouts.storefront')] class extends Component
             $this->syncFromCart();
         } catch (Throwable $e) {
             $this->handleDomainError($e);
-        }
-    }
-
-    public function changeCurrency(string $currency): void
-    {
-        $this->clearMessages();
-        $this->currency = $currency;
-
-        $this->validate([
-            'currency' => ['required', 'string', 'in:COP,EUR'],
-        ]);
-
-        $target = CurrencyEnum::from($this->currency);
-
-        try {
-            $cart = $this->resolveCurrentCart();
-            $owner = $this->cartOwner();
-
-            app(ChangeCartCurrencyAction::class)(new ChangeCartCurrencyDTO(
-                cartId: $cart->id,
-                currency: $target,
-                userId: $owner->userId,
-                sessionId: $owner->sessionId,
-            ));
-
-            $this->currency = $target->value;
-            $this->statusMessage = __('cart.status.currency_updated');
-            $this->syncFromCart();
-        } catch (Throwable $e) {
-            $this->handleDomainError($e);
-            $this->syncFromCart();
         }
     }
 

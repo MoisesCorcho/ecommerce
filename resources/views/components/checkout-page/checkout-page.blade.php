@@ -327,7 +327,7 @@
                                 <dd class="font-semibold tabular-nums text-intense-cocoa">{{ $currencyEnum?->format($preview['shippingCost']) ?? number_format($preview['shippingCost']).' '.$preview['currency'] }}</dd>
                             </div>
                             @if (($preview['thresholdDiscount'] ?? 0) > 0)
-                                <div class="flex justify-between font-medium text-terracotta" data-checkout-threshold-discount>
+                                <div class="flex justify-between font-medium text-success" data-checkout-threshold-discount>
                                     <dt>{{ __('orders.fields.threshold_discount') }}</dt>
                                     <dd class="font-semibold tabular-nums">−{{ $currencyEnum?->format($preview['thresholdDiscount']) ?? number_format($preview['thresholdDiscount']).' '.$preview['currency'] }}</dd>
                                 </div>
