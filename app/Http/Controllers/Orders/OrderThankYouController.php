@@ -17,7 +17,17 @@ class OrderThankYouController extends Controller
     {
         $order->loadMissing('items');
 
-        $hasValidSignature = $request->hasValidSignature();
+        $hasValidSignature = URL::hasValidSignature($request, absolute: true, ignoreQuery: [
+            'bold-order-id',
+            'bold_order_id',
+            'payment_id',
+            'transaction_id',
+            'reference',
+            'status',
+            'utm_source',
+            'utm_medium',
+            'utm_campaign',
+        ]);
         $user = $request->user();
 
         $allowed = $hasValidSignature
