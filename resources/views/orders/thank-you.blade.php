@@ -8,7 +8,11 @@
                 </h1>
 
                 <p class="mt-4 text-base font-medium text-intense-cocoa">
-                    {{ __('orders.thank_you.body', ['number' => $order->order_number]) }}
+                    @if ($order->status === \App\Enums\Orders\OrderStatusEnum::Pending)
+                        {{ __('orders.thank_you.body', ['number' => $order->order_number]) }}
+                    @else
+                        {{ __('orders.thank_you.body_confirmed', ['number' => $order->order_number]) }}
+                    @endif
                 </p>
 
                 <p class="mt-2 text-sm font-medium text-intense-cocoa" data-order-status>

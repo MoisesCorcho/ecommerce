@@ -68,6 +68,7 @@ return [
     'thank_you' => [
         'title' => 'Gracias por su compra',
         'body' => 'Su pedido :number fue recibido y está pendiente de pago.',
+        'body_confirmed' => 'Su pedido :number fue recibido y confirmado.',
         'status' => 'Estado: :status',
         'continue_shopping' => 'Seguir comprando',
         'banner' => [

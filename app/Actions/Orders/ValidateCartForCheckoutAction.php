@@ -67,6 +67,12 @@ class ValidateCartForCheckoutAction
         $taxAmount = 0;
         $total = max(0, $subtotal - $thresholdDiscount - $discount) + $shippingCost + $taxAmount;
 
+        $minChargeable = $cart->currency->minimumChargeableAmount();
+        if ($total > 0 && $total < $minChargeable) {
+            $discount += $total;
+            $total = 0;
+        }
+
         return new CheckoutPreviewDTO(
             cartId: (int) $cart->id,
             currency: $cart->currency,

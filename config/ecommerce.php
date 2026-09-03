@@ -163,6 +163,11 @@ return [
             'webhook_secret' => env('BOLD_WEBHOOK_SECRET'),
             'api_base' => env('BOLD_API_BASE', 'https://integrations.api.bold.co'),
         ],
+        'min_chargeable_amounts' => [
+            'COP' => (int) env('PAYMENTS_MIN_AMOUNT_COP', 1_000),
+            'EUR' => (int) env('PAYMENTS_MIN_AMOUNT_EUR', 50),
+            'USD' => (int) env('PAYMENTS_MIN_AMOUNT_USD', 50),
+        ],
     ],
 
     /*

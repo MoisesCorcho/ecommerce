@@ -29,7 +29,7 @@ class OrderThankYouController extends Controller
         $paymentReturn = is_string($paymentReturn) ? $paymentReturn : null;
 
         $payUrl = null;
-        if ($order->status === OrderStatusEnum::Pending && (int) $order->total > 0) {
+        if ($order->status === OrderStatusEnum::Pending && (int) $order->total >= $order->currency->minimumChargeableAmount()) {
             if ($hasValidSignature) {
                 $payUrl = URL::temporarySignedRoute(
                     'orders.pay',

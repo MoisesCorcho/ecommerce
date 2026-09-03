@@ -597,6 +597,42 @@ class PaymentDomainTest extends TestCase
             ->assertDontSee('data-pay-button', false);
     }
 
+    public function test_start_pay_rejects_order_with_total_below_currency_minimum_chargeable_amount(): void
+    {
+        $user = User::factory()->create();
+        $variant = $this->createVariant(stock: 5);
+        $order = $this->createPendingOrder(
+            user: $user,
+            currency: CurrencyEnum::Eur,
+            total: 20, // 20 cents < 50 cents (Stripe min)
+            variant: $variant,
+            quantity: 1,
+        );
+
+        $this->expectException(OrderNotPayableException::class);
+
+        app(StartOrderPaymentAction::class)($order->id);
+    }
+
+    public function test_thank_you_page_omits_pay_button_when_order_total_is_below_minimum_chargeable_amount(): void
+    {
+        $user = User::factory()->create();
+        $variant = $this->createVariant(stock: 5);
+        $order = $this->createPendingOrder(
+            user: $user,
+            currency: CurrencyEnum::Eur,
+            total: 20, // 20 cents < 50 cents
+            variant: $variant,
+            quantity: 1,
+        );
+
+        $this->actingAs($user)
+            ->get(route('orders.thank-you', $order))
+            ->assertOk()
+            ->assertDontSee('data-pay-form', false)
+            ->assertDontSee('data-pay-button', false);
+    }
+
     public function test_stripe_gateway_logs_structured_error_details_on_rejection(): void
     {
         $paymentsLog = \Mockery::mock(LoggerInterface::class);

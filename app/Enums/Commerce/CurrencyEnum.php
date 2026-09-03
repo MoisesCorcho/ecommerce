@@ -129,4 +129,17 @@ enum CurrencyEnum: string implements HasLabel
 
         return (int) floor(($subtotal * $percentage) / 100);
     }
+
+    /**
+     * Minimum chargeable amount for this currency by its payment gateway.
+     * Amounts below this cannot be processed by Stripe (EUR/USD) or Bold (COP)
+     * and are absorbed during checkout.
+     */
+    public function minimumChargeableAmount(): int
+    {
+        return (int) config("ecommerce.payments.min_chargeable_amounts.{$this->value}", match ($this) {
+            self::Cop => 1_000,
+            self::Eur, self::Usd => 50,
+        });
+    }
 }

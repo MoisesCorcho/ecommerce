@@ -56,7 +56,7 @@ class StartOrderPaymentAction
                 throw OrderNotPayableException::make();
             }
 
-            if ((int) $order->total <= 0) {
+            if ((int) $order->total < $order->currency->minimumChargeableAmount()) {
                 throw OrderNotPayableException::make();
             }
 
