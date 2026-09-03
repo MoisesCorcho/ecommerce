@@ -41,8 +41,8 @@ class WishlistMailsTest extends TestCase
         $rendered = $mail->render();
 
         $this->assertStringContainsString('Bolso Miel', $rendered);
-        $this->assertStringContainsString('$ 350.000', $rendered);
-        $this->assertStringContainsString('$ 280.000', $rendered);
+        $this->assertStringContainsString('COP$ 350.000', $rendered);
+        $this->assertStringContainsString('COP$ 280.000', $rendered);
         $this->assertStringContainsString('Ver en la tienda y comprar', $rendered);
         $this->assertStringContainsString('leen-brown.png', $rendered);
     }

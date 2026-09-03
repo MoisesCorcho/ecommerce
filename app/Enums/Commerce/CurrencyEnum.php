@@ -56,14 +56,13 @@ enum CurrencyEnum: string implements HasLabel
     /**
      * Currency symbol shown next to amounts.
      *
-     * USD is prefixed rather than a bare "$" because COP already uses that
-     * sign: an unqualified "$ 120.000" would be ambiguous to a shopper who
-     * can be seeing either market.
+     * Both USD and COP prefix the "$" sign ("US$", "COP$") to prevent
+     * ambiguity between US dollars and Colombian pesos across markets.
      */
     public function symbol(): string
     {
         return match ($this) {
-            self::Cop => '$',
+            self::Cop => 'COP$',
             self::Eur => '€',
             self::Usd => 'US$',
         };
