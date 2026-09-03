@@ -128,8 +128,9 @@ return [
     | Standard shipping (F04)
     |--------------------------------------------------------------------------
     |
-    | Single shipping option "Envío estándar". Costs are integers in the same
-    | minor-unit convention as catalog prices (COP pesos, EUR cents).
+    | Single shipping option "Envío estándar". Costs are stored as integers
+    | in currency minor units: COP pesos (1 = $1 COP), EUR/USD cents (500 = €5.00 / $5.00).
+    | A cost of 0 enables free shipping for that market currency.
     |
     */
 
@@ -144,8 +145,12 @@ return [
     | Payments (F05)
     |--------------------------------------------------------------------------
     |
-    | Hosted checkout providers. Keys never committed; use env only.
-    | COP → Bold, EUR → Stripe (see CurrencyEnum::paymentProvider()).
+    | Hosted checkout providers and payment limits. Keys never committed; use env only.
+    | Provider routing: COP → Bold, EUR/USD → Stripe (see CurrencyEnum::paymentProvider()).
+    |
+    | - min_chargeable_amounts: Minimum transaction total allowed by each gateway's
+    |   API (minor units: COP 1.000 pesos, EUR 50 cents, USD 50 cents). Amounts
+    |   below these limits cannot be processed and are absorbed during checkout.
     |
     */
 
@@ -175,9 +180,13 @@ return [
     | Contact page (contacto)
     |--------------------------------------------------------------------------
     |
-    | `inbox` receives every contact-form submission (Mail::to). `public_email`
-    | is shown to visitors as the info-column mailto and as the error-banner
-    | fallback when the transactional send fails.
+    | Contact channels and metadata for visitor inquiries.
+    |
+    | - inbox: Receives every contact-form submission (Mail::to).
+    | - public_email: Displayed in UI and used as fallback in error banners.
+    | - phone: Human-formatted phone string for presentation (e.g. '+57 300 123 4567').
+    | - phone_raw: E.164 normalized phone string without spaces for 'tel:' links.
+    | - whatsapp_url: Pre-encoded URL for direct WhatsApp web/app redirection.
     |
     */
 
@@ -219,14 +228,20 @@ return [
     | Wishlist automated marketing alerts (F18)
     |--------------------------------------------------------------------------
     |
-    | Configuration for price-drop and low-stock scheduled marketing alerts.
+    | Configuration for scheduled price-drop and low-stock marketing alerts.
+    |
+    | - low_stock_threshold: Triggers alert when 1 <= stock <= threshold.
+    | - price_drop_cooldown_days: Min days between price drop emails for same product.
+    | - low_stock_cooldown_days: Min days between low stock emails for same product.
+    | - max_alerts_per_user: Anti-flood limit per scheduled execution (10:00 AM).
     |
     */
 
     'wishlist_alerts' => [
         'enabled' => (bool) env('ECOMMERCE_WISHLIST_ALERTS_ENABLED', true),
         'low_stock_threshold' => (int) env('ECOMMERCE_WISHLIST_LOW_STOCK_THRESHOLD', 3),
-        'cooldown_days' => (int) env('ECOMMERCE_WISHLIST_COOLDOWN_DAYS', 7),
+        'price_drop_cooldown_days' => (int) env('ECOMMERCE_WISHLIST_PRICE_DROP_COOLDOWN_DAYS', 2),
+        'low_stock_cooldown_days' => (int) env('ECOMMERCE_WISHLIST_LOW_STOCK_COOLDOWN_DAYS', 7),
         'max_alerts_per_user' => (int) env('ECOMMERCE_WISHLIST_MAX_ALERTS_PER_USER', 3),
     ],
 
