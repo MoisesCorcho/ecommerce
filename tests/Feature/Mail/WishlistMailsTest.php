@@ -41,10 +41,11 @@ class WishlistMailsTest extends TestCase
         $rendered = $mail->render();
 
         $this->assertStringContainsString('Bolso Miel', $rendered);
-        $this->assertStringContainsString('$ 350.000', $rendered);
-        $this->assertStringContainsString('$ 280.000', $rendered);
+        $this->assertStringContainsString('COP$ 350.000', $rendered);
+        $this->assertStringContainsString('COP$ 280.000', $rendered);
         $this->assertStringContainsString('Ver en la tienda y comprar', $rendered);
         $this->assertStringContainsString('leen-brown.png', $rendered);
+        $this->assertStringContainsString('#FBF9F5', $rendered);
     }
 
     public function test_wishlist_low_stock_mail_renders_correctly(): void
@@ -69,6 +70,8 @@ class WishlistMailsTest extends TestCase
         $this->assertStringContainsString('2', $rendered);
         $this->assertStringContainsString('Comprar ahora antes de que se agote', $rendered);
         $this->assertStringContainsString('leen-brown.png', $rendered);
+        $this->assertStringContainsString('#FBF9F5', $rendered);
+        $this->assertStringContainsString('#FEF2F2', $rendered);
     }
 
     public function test_wishlist_mails_support_english_locale(): void

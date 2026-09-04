@@ -23,7 +23,8 @@ final class SendWishlistAlertsAction
         }
 
         $lowStockThreshold = (int) config('ecommerce.wishlist_alerts.low_stock_threshold', 3);
-        $cooldownDays = (int) config('ecommerce.wishlist_alerts.cooldown_days', 7);
+        $priceDropCooldownDays = (int) config('ecommerce.wishlist_alerts.price_drop_cooldown_days', 2);
+        $lowStockCooldownDays = (int) config('ecommerce.wishlist_alerts.low_stock_cooldown_days', 7);
         $maxAlertsPerUser = (int) config('ecommerce.wishlist_alerts.max_alerts_per_user', 3);
 
         $priceDropsSent = 0;
@@ -42,7 +43,8 @@ final class SendWishlistAlertsAction
             ])
             ->get();
 
-        $cooldownThreshold = Carbon::now()->subDays($cooldownDays);
+        $priceDropCooldownThreshold = Carbon::now()->subDays($priceDropCooldownDays);
+        $lowStockCooldownThreshold = Carbon::now()->subDays($lowStockCooldownDays);
 
         foreach ($users as $user) {
             $alertsSentForUser = 0;
@@ -93,7 +95,7 @@ final class SendWishlistAlertsAction
                         ->where('user_id', $user->id)
                         ->where('product_variant_id', $variant->id)
                         ->where('notification_type', WishlistNotificationTypeEnum::PriceDrop->value)
-                        ->where('sent_at', '>=', $cooldownThreshold)
+                        ->where('sent_at', '>=', $priceDropCooldownThreshold)
                         ->exists();
 
                     if ($isOnCooldown) {
@@ -131,7 +133,7 @@ final class SendWishlistAlertsAction
                         ->where('user_id', $user->id)
                         ->where('product_variant_id', $variant->id)
                         ->where('notification_type', WishlistNotificationTypeEnum::LowStock->value)
-                        ->where('sent_at', '>=', $cooldownThreshold)
+                        ->where('sent_at', '>=', $lowStockCooldownThreshold)
                         ->exists();
 
                     if ($isOnCooldown) {

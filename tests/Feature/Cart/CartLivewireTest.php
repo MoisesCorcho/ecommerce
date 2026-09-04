@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Tests\Feature\Cart;
 
 use App\Enums\Commerce\CurrencyEnum;
+use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\ProductVariantPrice;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -122,6 +124,55 @@ class CartLivewireTest extends TestCase
             ->assertNotSet('errorMessage', null);
 
         $this->assertSame(0, CartItem::query()->count());
+    }
+
+    public function test_cart_page_does_not_render_redundant_currency_selector(): void
+    {
+        $product = $this->createPublishedProduct('Bolso Test', 'bolso-test', stock: 8, price: 15_000);
+        $variant = $product->variants->first();
+        $this->assertNotNull($variant);
+
+        Livewire::test('product-detail', ['slug' => 'bolso-test'])
+            ->set('quantity', 1)
+            ->call('addToCart');
+
+        Livewire::test('cart-page')
+            ->assertDontSeeHtml('id="cart-currency"')
+            ->assertDontSeeHtml('data-cart-currency');
+    }
+
+    public function test_cart_page_renders_threshold_discount_with_text_success(): void
+    {
+        config()->set('ecommerce.cart_threshold_discount.enabled', true);
+        config()->set('ecommerce.cart_threshold_discount.thresholds.EUR', 30_000);
+        config()->set('ecommerce.cart_threshold_discount.percentages.EUR', 10);
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $product = $this->createPublishedProduct('Lux Bag', 'lux-bag', stock: 10, price: 30_000);
+        $variant = $product->variants->first();
+        $this->assertNotNull($variant);
+
+        ProductVariantPrice::factory()->for($variant, 'productVariant')->create([
+            'currency' => CurrencyEnum::Eur,
+            'price' => 30_000,
+        ]);
+
+        $cart = Cart::factory()->create([
+            'user_id' => $user->id,
+            'currency' => CurrencyEnum::Eur,
+        ]);
+
+        CartItem::factory()->for($cart)->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => 1,
+        ]);
+
+        Livewire::test('cart-page')
+            ->assertSeeHtml('data-cart-threshold-discount')
+            ->assertSeeHtml('text-success')
+            ->assertDontSeeHtml('text-terracotta');
     }
 
     private function createPublishedProduct(

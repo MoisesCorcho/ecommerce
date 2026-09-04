@@ -33,6 +33,7 @@ class ProductQuickViewTest extends TestCase
         int $stock = 10,
         ?string $color = 'Camel',
         ?string $size = 'medium',
+        ?int $compareAtPrice = null,
     ): Product {
         $product = Product::factory()->create([
             'name' => $name,
@@ -54,6 +55,7 @@ class ProductQuickViewTest extends TestCase
             ->create([
                 'currency' => $currency,
                 'price' => $price,
+                'compare_at_price' => $compareAtPrice,
             ]);
 
         return $product->fresh(['variants.prices', 'images']);
@@ -148,5 +150,18 @@ class ProductQuickViewTest extends TestCase
             ->call('buyNow')
             ->assertDispatched('cart-updated')
             ->assertRedirect(route('cart.page'));
+    }
+
+    public function test_quick_view_modal_renders_centered_golden_discount_badge_when_variant_has_discount(): void
+    {
+        $product = $this->createPublishedProduct('Bolso Rebaja', 'bolso-rebaja', CurrencyEnum::Cop, 100_000, stock: 3, compareAtPrice: 150_000);
+
+        Livewire::test('product-quick-view')
+            ->dispatch('open-quick-view', productId: $product->id)
+            ->assertOk()
+            ->assertSeeHtml('items-center gap-3')
+            ->assertSeeHtml('bg-soft-gold text-intense-cocoa')
+            ->assertSeeHtml('-33%')
+            ->assertDontSeeHtml('bg-terracotta');
     }
 }

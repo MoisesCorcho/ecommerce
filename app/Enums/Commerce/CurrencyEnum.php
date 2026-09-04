@@ -56,14 +56,13 @@ enum CurrencyEnum: string implements HasLabel
     /**
      * Currency symbol shown next to amounts.
      *
-     * USD is prefixed rather than a bare "$" because COP already uses that
-     * sign: an unqualified "$ 120.000" would be ambiguous to a shopper who
-     * can be seeing either market.
+     * Both USD and COP prefix the "$" sign ("US$", "COP$") to prevent
+     * ambiguity between US dollars and Colombian pesos across markets.
      */
     public function symbol(): string
     {
         return match ($this) {
-            self::Cop => '$',
+            self::Cop => 'COP$',
             self::Eur => '€',
             self::Usd => 'US$',
         };
@@ -128,5 +127,18 @@ enum CurrencyEnum: string implements HasLabel
         $percentage = $this->thresholdDiscountPercentage();
 
         return (int) floor(($subtotal * $percentage) / 100);
+    }
+
+    /**
+     * Minimum chargeable amount for this currency by its payment gateway.
+     * Amounts below this cannot be processed by Stripe (EUR/USD) or Bold (COP)
+     * and are absorbed during checkout.
+     */
+    public function minimumChargeableAmount(): int
+    {
+        return (int) config("ecommerce.payments.min_chargeable_amounts.{$this->value}", match ($this) {
+            self::Cop => 1_000,
+            self::Eur, self::Usd => 50,
+        });
     }
 }

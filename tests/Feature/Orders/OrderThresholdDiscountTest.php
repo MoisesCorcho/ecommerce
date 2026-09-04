@@ -15,6 +15,8 @@ use App\Enums\Coupons\CouponTypeEnum;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Coupon;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\ProductVariantPrice;
@@ -170,5 +172,53 @@ class OrderThresholdDiscountTest extends TestCase
         $this->assertSame(150_000, $order->threshold_discount);
         $this->assertSame(0, $order->discount);
         $this->assertSame(1_350_000 + $order->shipping_cost, $order->total);
+    }
+
+    public function test_thank_you_page_renders_threshold_discount_when_present(): void
+    {
+        $user = User::factory()->create();
+        $order = Order::factory()->for($user)->create([
+            'currency' => CurrencyEnum::Eur,
+            'subtotal' => 30_000,
+            'threshold_discount' => 3_000,
+            'discount' => 0,
+            'shipping_cost' => 0,
+            'total' => 27_000,
+        ]);
+        OrderItem::factory()->create([
+            'order_id' => $order->id,
+            'unit_price' => 15_000,
+            'quantity' => 2,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('orders.thank-you', $order))
+            ->assertOk()
+            ->assertSee(__('orders.fields.threshold_discount'))
+            ->assertSee('-€ 30,00');
+    }
+
+    public function test_account_order_detail_renders_threshold_discount_when_present(): void
+    {
+        $user = User::factory()->create();
+        $order = Order::factory()->for($user)->create([
+            'currency' => CurrencyEnum::Eur,
+            'subtotal' => 30_000,
+            'threshold_discount' => 3_000,
+            'discount' => 0,
+            'shipping_cost' => 0,
+            'total' => 27_000,
+        ]);
+        OrderItem::factory()->create([
+            'order_id' => $order->id,
+            'unit_price' => 15_000,
+            'quantity' => 2,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('profile.orders.show', $order))
+            ->assertOk()
+            ->assertSee(__('orders.fields.threshold_discount'))
+            ->assertSee('-€ 30,00');
     }
 }

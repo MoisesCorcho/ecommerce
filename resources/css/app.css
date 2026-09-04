@@ -5,7 +5,15 @@
    window size suggests. At or below this height the quick view compacts instead of
    spilling into a scroll. */
 @custom-variant short {
-    @media (max-height: 700px) {
+    @media (max-height: 780px) {
+        @slot;
+    }
+}
+
+/* Laptops with wide aspect ratio (>= 768px) and constrained vertical viewport (<= 820px)
+   switch to the horizontal split layout, while large desktop monitors (> 820px) keep vertical. */
+@custom-variant laptop-horizontal {
+    @media (min-width: 768px) and (max-height: 820px) {
         @slot;
     }
 }

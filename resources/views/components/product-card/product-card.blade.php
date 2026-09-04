@@ -51,7 +51,7 @@
                 </div>
             @elseif ($price?->hasDiscount() && $isAvailable && ! $isOutOfStock)
                 <div class="absolute top-3 left-3 z-10">
-                    <span class="bg-terracotta text-silk-cream px-2.5 py-1 text-label-caps font-semibold uppercase tracking-wider">
+                    <span class="bg-soft-gold text-intense-cocoa border border-soft-gold/30 px-2.5 py-1 text-label-caps font-semibold uppercase tracking-wider">
                         -{{ $price->discountPercentage() }}%
                     </span>
                 </div>

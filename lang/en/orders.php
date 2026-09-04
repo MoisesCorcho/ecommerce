@@ -68,6 +68,7 @@ return [
     'thank_you' => [
         'title' => 'Thank you for your order',
         'body' => 'Your order :number has been received and is pending payment.',
+        'body_confirmed' => 'Your order :number has been received and confirmed.',
         'status' => 'Status: :status',
         'continue_shopping' => 'Continue shopping',
         'banner' => [

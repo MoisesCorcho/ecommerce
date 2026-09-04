@@ -28,7 +28,13 @@ class BoldPaymentGateway implements PaymentGatewayInterface
         $base = rtrim((string) config('ecommerce.payments.bold.api_base', 'https://integrations.api.bold.co'), '/');
 
         if ($apiKey === '') {
-            throw PaymentGatewayException::make();
+            throw PaymentGatewayException::make(diagnostic: 'Bold API key is not configured');
+        }
+
+        if ($this->isProductionEnvironment() && $this->webhookSigningSecret() === '') {
+            Log::channel('payments')->critical('payments.gateway.bold.empty_webhook_secret_in_production');
+
+            throw PaymentGatewayException::make(diagnostic: 'Bold webhook signing secret cannot be empty in production');
         }
 
         $payload = [
@@ -41,6 +47,12 @@ class BoldPaymentGateway implements PaymentGatewayInterface
             'reference' => 'pay-'.$payment->id,
             'description' => 'Order '.$order->order_number,
         ];
+
+        if (is_string($order->email) && $order->email !== '') {
+            $payload['payer_email'] = $order->email;
+        }
+
+        $payload['expiration_date'] = (int) (now()->addDay()->timestamp * 1_000_000_000);
 
         // Bold rejects localhost / non-public callbacks with 403 Forbidden.
         // Only send when the return URL is public HTTPS (e.g. production or tunnel).
@@ -63,19 +75,29 @@ class BoldPaymentGateway implements PaymentGatewayInterface
                 'exception' => $e::class,
             ]);
 
-            throw PaymentGatewayException::make($e);
+            throw PaymentGatewayException::make($e, $e->getMessage());
         }
 
         if (! $response->successful()) {
+            /** @var array<string, mixed> $body */
+            $body = $response->json() ?? [];
+            $rawError = $body['message'] ?? ($body['errors'] ?? null);
+            $errorMessage = is_array($rawError)
+                ? json_encode($rawError, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                : (is_string($rawError) ? $rawError : null);
+
             Log::channel('payments')->warning('payments.gateway.bold.create_rejected', [
                 'provider' => 'bold',
                 'order_id' => $order->id,
                 'payment_id' => $payment->id,
                 'http_status' => $response->status(),
+                'error_message' => $errorMessage,
                 'body_length' => strlen($response->body()),
             ]);
 
-            throw PaymentGatewayException::make();
+            $diagnostic = $errorMessage ?? "Bold rejected checkout with HTTP {$response->status()}";
+
+            throw PaymentGatewayException::make(diagnostic: $diagnostic);
         }
 
         /** @var array<string, mixed> $body */
@@ -94,7 +116,7 @@ class BoldPaymentGateway implements PaymentGatewayInterface
                 'has_url' => $url !== '',
             ]);
 
-            throw PaymentGatewayException::make();
+            throw PaymentGatewayException::make(diagnostic: 'Bold response missing payment_link or URL');
         }
 
         return new HostedCheckoutSessionDTO(
@@ -114,6 +136,13 @@ class BoldPaymentGateway implements PaymentGatewayInterface
         // Production: signature secret key.
         // Test mode (docs): secret MUST be empty string "" — not the prod secret_key.
         $secret = $this->webhookSigningSecret();
+
+        if ($this->isProductionEnvironment() && $secret === '') {
+            Log::channel('payments')->critical('payments.gateway.bold.empty_webhook_secret_in_production');
+
+            throw InvalidPaymentWebhookSignatureException::make();
+        }
+
         $encoded = base64_encode($rawPayload);
         $expected = hash_hmac('sha256', $encoded, $secret);
 
@@ -260,5 +289,10 @@ class BoldPaymentGateway implements PaymentGatewayInterface
         }
 
         return true;
+    }
+
+    protected function isProductionEnvironment(): bool
+    {
+        return app()->isProduction();
     }
 }

@@ -184,6 +184,34 @@ class ProductDetailTest extends TestCase
             ->assertDontSeeHtml('wire:click="openLightbox(');
     }
 
+    public function test_product_detail_renders_centered_golden_discount_badge_when_variant_has_discount(): void
+    {
+        $product = Product::factory()->create([
+            'name' => 'Discounted Bag',
+            'slug' => 'discounted-bag',
+            'is_active' => true,
+        ]);
+
+        $variant = ProductVariant::factory()->for($product)->create([
+            'sku' => 'DISC-01',
+            'is_active' => true,
+            'stock' => 10,
+        ]);
+
+        ProductVariantPrice::factory()->for($variant, 'productVariant')->create([
+            'currency' => CurrencyEnum::Cop,
+            'price' => 100_000,
+            'compare_at_price' => 150_000,
+        ]);
+
+        Livewire::test('product-detail', ['slug' => 'discounted-bag'])
+            ->assertOk()
+            ->assertSeeHtml('items-center gap-3')
+            ->assertSeeHtml('bg-soft-gold text-intense-cocoa')
+            ->assertSeeHtml('-33%')
+            ->assertDontSeeHtml('bg-terracotta');
+    }
+
     /**
      * @param  array<int, array{sku: string, color: string, size: string}>  $variants
      */

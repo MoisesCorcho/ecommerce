@@ -17,7 +17,17 @@ class OrderThankYouController extends Controller
     {
         $order->loadMissing('items');
 
-        $hasValidSignature = $request->hasValidSignature();
+        $hasValidSignature = URL::hasValidSignature($request, absolute: true, ignoreQuery: [
+            'bold-order-id',
+            'bold_order_id',
+            'payment_id',
+            'transaction_id',
+            'reference',
+            'status',
+            'utm_source',
+            'utm_medium',
+            'utm_campaign',
+        ]);
         $user = $request->user();
 
         $allowed = $hasValidSignature
@@ -29,7 +39,7 @@ class OrderThankYouController extends Controller
         $paymentReturn = is_string($paymentReturn) ? $paymentReturn : null;
 
         $payUrl = null;
-        if ($order->status === OrderStatusEnum::Pending) {
+        if ($order->status === OrderStatusEnum::Pending && (int) $order->total >= $order->currency->minimumChargeableAmount()) {
             if ($hasValidSignature) {
                 $payUrl = URL::temporarySignedRoute(
                     'orders.pay',

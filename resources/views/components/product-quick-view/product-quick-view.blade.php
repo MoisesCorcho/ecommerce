@@ -115,7 +115,7 @@
                         </div>
 
                         {{-- Price & Stock Status --}}
-                        <div class="flex flex-wrap items-baseline gap-3">
+                        <div class="flex flex-wrap items-center gap-3">
                             @if ($selectedVariant && $selectedVariant->priceIn($currencyEnum))
                                 @php
                                     $price = $selectedVariant->priceIn($currencyEnum);
@@ -127,7 +127,7 @@
                                     <span class="font-sans text-lg font-normal line-through text-intense-cocoa/40">
                                         {{ $currencyEnum->format($price->compare_at_price) }}
                                     </span>
-                                    <span class="bg-terracotta text-silk-cream px-2 py-0.5 text-label-caps font-semibold uppercase tracking-wider">
+                                    <span class="bg-soft-gold text-intense-cocoa border border-soft-gold/30 px-2 py-0.5 text-label-caps font-semibold uppercase tracking-wider">
                                         -{{ $price->discountPercentage() }}%
                                     </span>
                                 @endif

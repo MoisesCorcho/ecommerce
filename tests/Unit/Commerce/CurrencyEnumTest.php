@@ -23,12 +23,11 @@ class CurrencyEnumTest extends TestCase
         $this->assertSame('120.000', CurrencyEnum::Cop->format(120_000, withSymbol: false));
     }
 
-    public function test_dollars_are_not_shown_with_a_bare_dollar_sign(): void
+    public function test_dollars_and_pesos_are_not_shown_with_a_bare_dollar_sign(): void
     {
-        // COP already uses "$", so an unqualified sign would leave the shopper
-        // unable to tell a 4.000 peso bag from a 4.000 dollar one.
+        // Both USD and COP prefix "$" ("US$", "COP$") to avoid ambiguity between markets.
         $this->assertSame('US$ 49,99', CurrencyEnum::Usd->format(4_999));
-        $this->assertSame('$ 120.000', CurrencyEnum::Cop->format(120_000));
+        $this->assertSame('COP$ 120.000', CurrencyEnum::Cop->format(120_000));
         $this->assertSame('€ 49,99', CurrencyEnum::Eur->format(4_999));
     }
 

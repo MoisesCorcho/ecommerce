@@ -60,7 +60,9 @@ class StorefrontLayoutTest extends TestCase
         $this->get('/_test/storefront-layout')
             ->assertOk()
             ->assertSee('x-data', false)
-            ->assertSee(__('storefront.nav.menu_toggle'), false);
+            ->assertSee(__('storefront.nav.menu_toggle'), false)
+            ->assertSee('xl:hidden', false)
+            ->assertSee('xl:flex', false);
     }
 
     public function test_storefront_layout_renders_main_content_slot(): void

@@ -17,6 +17,7 @@ use App\Models\Wishlist;
 use App\Models\WishlistNotificationLog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
@@ -30,6 +31,11 @@ class SendWishlistAlertsActionTest extends TestCase
     {
         parent::setUp();
         Mail::fake();
+        Config::set('ecommerce.wishlist_alerts.enabled', true);
+        Config::set('ecommerce.wishlist_alerts.low_stock_threshold', 3);
+        Config::set('ecommerce.wishlist_alerts.price_drop_cooldown_days', 2);
+        Config::set('ecommerce.wishlist_alerts.low_stock_cooldown_days', 7);
+        Config::set('ecommerce.wishlist_alerts.max_alerts_per_user', 3);
         $this->category = Category::factory()->create();
     }
 
@@ -147,8 +153,94 @@ class SendWishlistAlertsActionTest extends TestCase
         ]);
     }
 
-    public function test_it_suppresses_alert_if_same_notification_type_sent_within_7_days(): void
+    public function test_it_suppresses_price_drop_alert_if_sent_within_2_days_cooldown(): void
     {
+        $user = User::factory()->create(['email_verified_at' => now()]);
+        $product = $this->createPublishedProduct();
+        $variant = $this->createActiveVariant($product, [], 200_000, CurrencyEnum::Cop);
+
+        Wishlist::create([
+            'user_id' => $user->id,
+            'product_variant_id' => $variant->id,
+            'price_when_added' => 250_000,
+            'currency_when_added' => CurrencyEnum::Cop,
+        ]);
+
+        WishlistNotificationLog::create([
+            'user_id' => $user->id,
+            'product_variant_id' => $variant->id,
+            'notification_type' => WishlistNotificationTypeEnum::PriceDrop,
+            'sent_at' => Carbon::now()->subDays(1),
+        ]);
+
+        $action = app(SendWishlistAlertsAction::class);
+        $result = $action();
+
+        $this->assertSame(0, $result->totalSent());
+        $this->assertSame(1, $result->skippedCooldown);
+        Mail::assertNothingQueued();
+    }
+
+    public function test_it_allows_price_drop_alert_after_2_days_cooldown_expires(): void
+    {
+        $user = User::factory()->create(['email_verified_at' => now()]);
+        $product = $this->createPublishedProduct();
+        $variant = $this->createActiveVariant($product, [], 200_000, CurrencyEnum::Cop);
+
+        Wishlist::create([
+            'user_id' => $user->id,
+            'product_variant_id' => $variant->id,
+            'price_when_added' => 250_000,
+            'currency_when_added' => CurrencyEnum::Cop,
+        ]);
+
+        WishlistNotificationLog::create([
+            'user_id' => $user->id,
+            'product_variant_id' => $variant->id,
+            'notification_type' => WishlistNotificationTypeEnum::PriceDrop,
+            'sent_at' => Carbon::now()->subDays(3),
+        ]);
+
+        $action = app(SendWishlistAlertsAction::class);
+        $result = $action();
+
+        $this->assertSame(1, $result->priceDropsSent);
+        $this->assertSame(0, $result->skippedCooldown);
+        Mail::assertQueued(WishlistPriceDropMail::class);
+    }
+
+    public function test_it_suppresses_low_stock_alert_if_sent_within_7_days(): void
+    {
+        $user = User::factory()->create(['email_verified_at' => now()]);
+        $product = $this->createPublishedProduct();
+        $variant = $this->createActiveVariant($product, ['stock' => 1], 250_000, CurrencyEnum::Cop);
+
+        Wishlist::create([
+            'user_id' => $user->id,
+            'product_variant_id' => $variant->id,
+            'price_when_added' => 250_000,
+            'currency_when_added' => CurrencyEnum::Cop,
+        ]);
+
+        WishlistNotificationLog::create([
+            'user_id' => $user->id,
+            'product_variant_id' => $variant->id,
+            'notification_type' => WishlistNotificationTypeEnum::LowStock,
+            'sent_at' => Carbon::now()->subDays(4),
+        ]);
+
+        $action = app(SendWishlistAlertsAction::class);
+        $result = $action();
+
+        $this->assertSame(0, $result->totalSent());
+        $this->assertSame(1, $result->skippedCooldown);
+        Mail::assertNothingQueued();
+    }
+
+    public function test_it_respects_custom_price_drop_cooldown_from_configuration(): void
+    {
+        Config::set('ecommerce.wishlist_alerts.price_drop_cooldown_days', 4);
+
         $user = User::factory()->create(['email_verified_at' => now()]);
         $product = $this->createPublishedProduct();
         $variant = $this->createActiveVariant($product, [], 200_000, CurrencyEnum::Cop);

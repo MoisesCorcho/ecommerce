@@ -13,8 +13,10 @@ use App\DTOs\Orders\CheckoutShippingDTO;
 use App\DTOs\Orders\CreateOrderFromCartDTO;
 use App\Enums\Commerce\CurrencyEnum;
 use App\Enums\Coupons\CouponRejectionReasonEnum;
+use App\Enums\Coupons\CouponTypeEnum;
 use App\Enums\Orders\OrderStatusEnum;
 use App\Exceptions\Coupons\InvalidCouponException;
+use App\Exceptions\Orders\CheckoutCartNotReadyException;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Coupon;
@@ -512,6 +514,201 @@ class CouponCheckoutDomainTest extends TestCase
 
         $this->assertSame($coupon->id, $second->coupon_id);
         $this->assertSame(1, $coupon->fresh()->used_count);
+    }
+
+    public function test_free_order_with_total_zero_is_marked_paid_and_decrements_stock_immediately(): void
+    {
+        config(['ecommerce.shipping.standard_cost_cop' => 0]);
+
+        $user = User::factory()->create();
+        $coupon = Coupon::factory()->create([
+            'code' => 'FREE100',
+            'type' => CouponTypeEnum::Percentage,
+            'value' => 100,
+            'is_active' => true,
+        ]);
+
+        $cart = Cart::factory()->create(['user_id' => $user->id, 'currency' => CurrencyEnum::Cop]);
+        $variant = $this->createEligibleVariant(stock: 10, copPrice: 50_000);
+        CartItem::factory()->for($cart)->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => 2,
+        ]);
+
+        $order = app(CreateOrderFromCartAction::class)($this->createOrderDto(
+            cart: $cart,
+            userId: (int) $user->id,
+            couponCode: 'free100',
+        ));
+
+        $this->assertSame(OrderStatusEnum::Paid, $order->status);
+        $this->assertNotNull($order->paid_at);
+        $this->assertSame(0, $order->total);
+        $this->assertSame(100_000, $order->subtotal);
+        $this->assertSame(100_000, $order->discount);
+        $this->assertSame(0, $order->shipping_cost);
+        $this->assertSame(8, (int) $variant->fresh()->stock);
+        $this->assertSame(1, $coupon->fresh()->used_count);
+        $this->assertSame(0, CartItem::query()->where('cart_id', $cart->id)->count());
+    }
+
+    public function test_thank_you_page_renders_confirmed_body_and_no_pay_button_for_free_order(): void
+    {
+        $user = User::factory()->create();
+        $order = Order::factory()->paid()->create([
+            'user_id' => $user->id,
+            'total' => 0,
+            'subtotal' => 50_000,
+            'discount' => 50_000,
+            'shipping_cost' => 0,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('orders.thank-you', $order))
+            ->assertOk()
+            ->assertSee(__('orders.thank_you.body_confirmed', ['number' => $order->order_number]))
+            ->assertSee(__('orders.thank_you.banner.paid'))
+            ->assertDontSee('data-pay-form', false)
+            ->assertDontSee('data-pay-button', false);
+    }
+
+    public function test_free_order_rolls_back_if_stock_becomes_insufficient_during_lock(): void
+    {
+        config(['ecommerce.shipping.standard_cost_cop' => 0]);
+
+        $user = User::factory()->create();
+        $coupon = Coupon::factory()->create([
+            'code' => 'FREE100',
+            'type' => CouponTypeEnum::Percentage,
+            'value' => 100,
+            'is_active' => true,
+        ]);
+
+        $cart = Cart::factory()->create(['user_id' => $user->id, 'currency' => CurrencyEnum::Cop]);
+        $variant = $this->createEligibleVariant(stock: 1, copPrice: 50_000);
+        CartItem::factory()->for($cart)->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => 2,
+        ]);
+
+        $this->expectException(CheckoutCartNotReadyException::class);
+
+        app(CreateOrderFromCartAction::class)($this->createOrderDto(
+            cart: $cart,
+            userId: (int) $user->id,
+            couponCode: 'free100',
+        ));
+    }
+
+    public function test_sub_threshold_residual_order_is_absorbed_and_marked_paid_in_eur(): void
+    {
+        config(['ecommerce.shipping.standard_cost_eur' => 0]);
+
+        $user = User::factory()->create();
+        $coupon = Coupon::factory()->create([
+            'code' => 'SAVE9960',
+            'type' => CouponTypeEnum::Fixed,
+            'value' => 9_960,
+            'currency' => CurrencyEnum::Eur,
+            'is_active' => true,
+        ]);
+
+        $cart = Cart::factory()->create(['user_id' => $user->id, 'currency' => CurrencyEnum::Eur]);
+        $product = Product::factory()->create(['is_active' => true]);
+        $variant = ProductVariant::factory()->for($product)->create([
+            'sku' => 'SKU-EUR-'.uniqid(),
+            'stock' => 5,
+            'is_active' => true,
+        ]);
+        ProductVariantPrice::factory()
+            ->for($variant, 'productVariant')
+            ->eur()
+            ->create(['price' => 10_000]);
+
+        CartItem::factory()->for($cart)->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => 1,
+        ]);
+
+        $order = app(CreateOrderFromCartAction::class)($this->createOrderDto(
+            cart: $cart,
+            userId: (int) $user->id,
+            couponCode: 'SAVE9960',
+        ));
+
+        $this->assertSame(OrderStatusEnum::Paid, $order->status);
+        $this->assertNotNull($order->paid_at);
+        $this->assertSame(0, $order->total);
+        $this->assertSame(10_000, $order->subtotal);
+        $this->assertSame(10_000, $order->discount);
+        $this->assertSame(0, $order->shipping_cost);
+        $this->assertSame(4, (int) $variant->fresh()->stock);
+        $this->assertSame(1, $coupon->fresh()->used_count);
+    }
+
+    public function test_sub_threshold_residual_order_is_absorbed_and_marked_paid_in_cop(): void
+    {
+        config(['ecommerce.shipping.standard_cost_cop' => 0]);
+
+        $user = User::factory()->create();
+        $coupon = Coupon::factory()->create([
+            'code' => 'SAVECOP',
+            'type' => CouponTypeEnum::Fixed,
+            'value' => 99_500,
+            'currency' => CurrencyEnum::Cop,
+            'is_active' => true,
+        ]);
+
+        $cart = Cart::factory()->create(['user_id' => $user->id, 'currency' => CurrencyEnum::Cop]);
+        $variant = $this->createEligibleVariant(stock: 5, copPrice: 100_000);
+        CartItem::factory()->for($cart)->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => 1,
+        ]);
+
+        $order = app(CreateOrderFromCartAction::class)($this->createOrderDto(
+            cart: $cart,
+            userId: (int) $user->id,
+            couponCode: 'SAVECOP',
+        ));
+
+        $this->assertSame(OrderStatusEnum::Paid, $order->status);
+        $this->assertNotNull($order->paid_at);
+        $this->assertSame(0, $order->total);
+        $this->assertSame(100_000, $order->subtotal);
+        $this->assertSame(100_000, $order->discount);
+        $this->assertSame(0, $order->shipping_cost);
+        $this->assertSame(4, (int) $variant->fresh()->stock);
+    }
+
+    public function test_validate_cart_for_checkout_absorbs_sub_threshold_residual(): void
+    {
+        config(['ecommerce.shipping.standard_cost_cop' => 0]);
+
+        $user = User::factory()->create();
+        $coupon = Coupon::factory()->create([
+            'code' => 'SAVECOP',
+            'type' => CouponTypeEnum::Fixed,
+            'value' => 99_500,
+            'currency' => CurrencyEnum::Cop,
+            'is_active' => true,
+        ]);
+
+        $cart = Cart::factory()->create(['user_id' => $user->id, 'currency' => CurrencyEnum::Cop]);
+        $variant = $this->createEligibleVariant(stock: 5, copPrice: 100_000);
+        CartItem::factory()->for($cart)->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => 1,
+        ]);
+
+        $preview = app(ValidateCartForCheckoutAction::class)(
+            (int) $cart->id,
+            new CartOwnerDTO(userId: $user->id, sessionId: null),
+            'SAVECOP',
+        );
+
+        $this->assertSame(0, $preview->total);
+        $this->assertSame(100_000, $preview->discount);
     }
 
     private function createOrderDto(
