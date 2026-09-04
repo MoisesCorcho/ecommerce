@@ -31,6 +31,11 @@ class SendWishlistAlertsActionTest extends TestCase
     {
         parent::setUp();
         Mail::fake();
+        Config::set('ecommerce.wishlist_alerts.enabled', true);
+        Config::set('ecommerce.wishlist_alerts.low_stock_threshold', 3);
+        Config::set('ecommerce.wishlist_alerts.price_drop_cooldown_days', 2);
+        Config::set('ecommerce.wishlist_alerts.low_stock_cooldown_days', 7);
+        Config::set('ecommerce.wishlist_alerts.max_alerts_per_user', 3);
         $this->category = Category::factory()->create();
     }
 
