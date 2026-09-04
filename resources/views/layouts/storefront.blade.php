@@ -22,9 +22,9 @@
 
     <header class="sticky top-0 z-50 bg-soft-sand border-b border-intense-cocoa/10" x-data="{ open: false }">
 
-        <div class="relative mx-auto flex max-w-storefront items-center justify-between px-margin-mobile py-5 lg:px-margin-desktop">
+        <div class="relative mx-auto flex max-w-storefront items-center justify-between px-margin-mobile py-5 sm:px-6 xl:px-margin-desktop">
             {{-- Navigation links (desktop) — left side --}}
-            <nav class="hidden flex-1 lg:flex items-center gap-8" aria-label="Primary">
+            <nav class="hidden flex-1 xl:flex items-center gap-8" aria-label="Primary">
                 <a href="{{ url('/') }}" class="text-xs font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-300 hover:text-soft-gold">
                     {{ __('storefront.nav.home') }}
                 </a>
@@ -43,7 +43,7 @@
             </nav>
 
             {{-- Mobile hamburger --}}
-            <button type="button" class="text-intense-cocoa lg:hidden" x-on:click="open = !open" :aria-expanded="open" aria-label="{{ __('storefront.nav.menu_toggle') }}" dusk="mobile-menu-toggle">
+            <button type="button" class="text-intense-cocoa xl:hidden" x-on:click="open = !open" :aria-expanded="open" aria-label="{{ __('storefront.nav.menu_toggle') }}" dusk="mobile-menu-toggle">
                 <svg class="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                 </svg>
@@ -56,10 +56,10 @@
 
             {{-- Trailing icons — right side --}}
             <div class="flex flex-1 justify-end items-center gap-3 sm:gap-5 text-intense-cocoa">
-                <div class="hidden lg:block">
+                <div class="hidden xl:block">
                     <x-currency-switcher />
                 </div>
-                <div class="hidden lg:block">
+                <div class="hidden xl:block">
                     <x-locale-switcher />
                 </div>
                 <a href="{{ route('wishlist') }}" class="transition-colors duration-300 hover:text-soft-gold" aria-label="{{ __('storefront.nav.favorites') }}">
@@ -97,7 +97,7 @@
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100 translate-y-0"
             x-transition:leave-end="opacity-0 -translate-y-2"
-            class="absolute top-full left-0 right-0 z-50 border-b border-intense-cocoa/10 bg-soft-sand shadow-lg lg:hidden"
+            class="absolute top-full left-0 right-0 z-50 border-b border-intense-cocoa/10 bg-soft-sand shadow-lg xl:hidden"
             x-cloak
             aria-label="Mobile"
         >
