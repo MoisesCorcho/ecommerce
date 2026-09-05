@@ -56,6 +56,16 @@ class CartDomainTest extends TestCase
         $this->assertSame(1, Cart::query()->where('session_id', $sessionId)->count());
     }
 
+    public function test_cart_creation_falls_back_to_configured_default_currency(): void
+    {
+        config()->set('ecommerce.default_currency', 'EUR');
+
+        $action = app(GetOrCreateCartAction::class);
+        $cart = $action(new ResolveCartDTO(sessionId: 'session-eur-test'));
+
+        $this->assertSame(CurrencyEnum::Eur, $cart->currency);
+    }
+
     public function test_user_get_or_create_reuses_single_active_cart(): void
     {
         $user = User::factory()->create();

@@ -32,11 +32,21 @@ class CurrencySwitcherTest extends TestCase
     public function test_switching_currency_stores_the_preference_and_redirects_to_origin(): void
     {
         $this->from(route('faq'))
+            ->post(route('currency.update'), ['currency' => 'EUR'])
+            ->assertRedirect(route('faq'))
+            ->assertCookie('currency', 'EUR');
+
+        $this->assertSame('EUR', session(CurrentCurrency::SESSION_KEY));
+    }
+
+    public function test_switching_to_usd_is_rejected_because_it_is_not_available_in_storefront(): void
+    {
+        $this->from(route('faq'))
             ->post(route('currency.update'), ['currency' => 'USD'])
             ->assertRedirect(route('faq'))
-            ->assertCookie('currency', 'USD');
+            ->assertSessionHasErrors('currency');
 
-        $this->assertSame('USD', session(CurrentCurrency::SESSION_KEY));
+        $this->assertNotSame('USD', session(CurrentCurrency::SESSION_KEY));
     }
 
     public function test_the_preference_persists_across_requests(): void
@@ -77,11 +87,20 @@ class CurrencySwitcherTest extends TestCase
 
     public function test_the_country_header_selects_the_market_currency(): void
     {
+        $this->withHeaders(['CF-IPCountry' => 'ES'])
+            ->get(route('faq'))
+            ->assertOk();
+
+        $this->assertSame('EUR', session(CurrentCurrency::SESSION_KEY));
+    }
+
+    public function test_a_country_mapping_to_usd_falls_back_to_default_currency(): void
+    {
         $this->withHeaders(['CF-IPCountry' => 'US'])
             ->get(route('faq'))
             ->assertOk();
 
-        $this->assertSame('USD', session(CurrentCurrency::SESSION_KEY));
+        $this->assertSame('COP', session(CurrentCurrency::SESSION_KEY));
     }
 
     public function test_a_colombian_visitor_gets_pesos(): void
@@ -118,20 +137,20 @@ class CurrencySwitcherTest extends TestCase
         }
     }
 
-    public function test_the_navbar_renders_the_switcher_with_every_supported_currency(): void
+    public function test_the_navbar_renders_the_switcher_with_only_storefront_currencies(): void
     {
         $response = $this->get(route('faq'))->assertOk();
 
-        foreach (CurrencyEnum::cases() as $currency) {
-            $response->assertSee($currency->value, false);
-        }
+        $response->assertSee('COP', false);
+        $response->assertSee('EUR', false);
+        $response->assertDontSee('USD', false);
 
         $response->assertSee(route('currency.update'), false);
     }
 
     public function test_a_cart_line_without_a_price_blocks_the_whole_switch(): void
     {
-        // A storefront in dollars with a cart still in pesos would let a
+        // A storefront in euros with a cart still in pesos would let a
         // shopper read one price and be charged another.
         $variant = ProductVariant::factory()->create(['is_active' => true, 'stock' => 5]);
         ProductVariantPrice::factory()->cop()->create(['product_variant_id' => $variant->id]);
@@ -149,21 +168,21 @@ class CurrencySwitcherTest extends TestCase
 
         $this->actingAs($user)
             ->from(route('faq'))
-            ->post(route('currency.update'), ['currency' => 'USD'])
+            ->post(route('currency.update'), ['currency' => 'EUR'])
             ->assertRedirect(route('faq'))
             ->assertSessionHasErrors('currency');
 
-        $this->assertNotSame('USD', session(CurrentCurrency::SESSION_KEY));
+        $this->assertNotSame('EUR', session(CurrentCurrency::SESSION_KEY));
         $this->assertSame(CurrencyEnum::Cop, $cart->fresh()->currency);
     }
 
-    public function test_the_country_map_covers_the_three_markets(): void
+    public function test_the_country_map_covers_the_markets_filtering_by_storefront(): void
     {
         $this->assertSame(CurrencyEnum::Cop, CountryCurrencyMap::resolve('CO'));
         $this->assertSame(CurrencyEnum::Eur, CountryCurrencyMap::resolve('ES'));
         $this->assertSame(CurrencyEnum::Eur, CountryCurrencyMap::resolve('de'));
-        $this->assertSame(CurrencyEnum::Usd, CountryCurrencyMap::resolve('US'));
-        $this->assertSame(CurrencyEnum::Usd, CountryCurrencyMap::resolve('JP'));
+        $this->assertNull(CountryCurrencyMap::resolve('US'));
+        $this->assertNull(CountryCurrencyMap::resolve('JP'));
         $this->assertNull(CountryCurrencyMap::resolve(null));
         $this->assertNull(CountryCurrencyMap::resolve('XX'));
     }

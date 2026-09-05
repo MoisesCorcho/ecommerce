@@ -42,14 +42,12 @@ final class CountryCurrencyMap
             return null;
         }
 
-        if ($code === 'CO') {
-            return CurrencyEnum::Cop;
-        }
+        $resolved = match (true) {
+            $code === 'CO' => CurrencyEnum::Cop,
+            in_array($code, self::EUR_COUNTRIES, true) => CurrencyEnum::Eur,
+            default => CurrencyEnum::Usd,
+        };
 
-        if (in_array($code, self::EUR_COUNTRIES, true)) {
-            return CurrencyEnum::Eur;
-        }
-
-        return CurrencyEnum::Usd;
+        return $resolved->isAvailableInStorefront() ? $resolved : null;
     }
 }

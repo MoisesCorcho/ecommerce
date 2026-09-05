@@ -68,7 +68,10 @@ final class SendWishlistAlertsAction
                     continue;
                 }
 
-                $currency = $wishlist->currency_when_added ?? CurrentCurrency::default();
+                $addedCurrency = $wishlist->currency_when_added;
+                $currency = ($addedCurrency instanceof CurrencyEnum && $addedCurrency->isAvailableInStorefront())
+                    ? $addedCurrency
+                    : CurrentCurrency::default();
                 $priceModel = $variant->priceIn($currency);
 
                 if (! $priceModel) {

@@ -177,3 +177,16 @@ SIN intentar ninguna consulta externa.
 CUANDO el cambio de moneda alcanza al carrito,
 EL SISTEMA DEBE asertar la propiedad del carrito dentro de la Action,
 y una violación de propiedad NO DEBE tratarse como resultado de dominio ni descartarse en silencio.
+
+---
+
+## Decisiones y Ajustes de Alcance
+
+### D-F14-01 — Restricción Temporal de USD en Vitrina (Pre-Lanzamiento)
+
+Para la salida inicial a producción, el negocio decide desactivar temporalmente `USD` para clientes públicos (vitrina, selector, peticiones HTTP y checkout), operando exclusivamente con `COP` y `EUR`.
+* `USD` permanece 100% soportado por la arquitectura y el modelo de datos en [`CurrencyEnum::Usd`](file:///home/moises/programation_projects/test/marketplace/app/Enums/Commerce/CurrencyEnum.php).
+* La vitrina y puntos de entrada restringen la oferta exclusivamente a los casos devueltos por `CurrencyEnum::storefrontCases()`.
+* La reactivación es inmediata mediante código de dominio.
+
+

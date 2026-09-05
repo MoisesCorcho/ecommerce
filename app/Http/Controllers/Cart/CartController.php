@@ -30,6 +30,7 @@ use App\Http\Requests\Cart\ChangeCartCurrencyRequest;
 use App\Http\Requests\Cart\UpdateCartItemRequest;
 use App\Models\Cart;
 use App\Support\Cart\CartSession;
+use App\Support\Commerce\CurrentCurrency;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Throwable;
@@ -175,12 +176,18 @@ class CartController extends Controller
         $user = $request->user();
 
         if ($user !== null) {
-            return $getOrCreateCart(new ResolveCartDTO(userId: (int) $user->getAuthIdentifier()));
+            return $getOrCreateCart(new ResolveCartDTO(
+                userId: (int) $user->getAuthIdentifier(),
+                currency: CurrentCurrency::get(),
+            ));
         }
 
         $sessionId = CartSession::ensureId();
 
-        return $getOrCreateCart(new ResolveCartDTO(sessionId: $sessionId));
+        return $getOrCreateCart(new ResolveCartDTO(
+            sessionId: $sessionId,
+            currency: CurrentCurrency::get(),
+        ));
     }
 
     private function ownerFromRequest(Request $request): CartOwnerDTO
