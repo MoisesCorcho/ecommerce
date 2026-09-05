@@ -45,6 +45,42 @@ class CartLivewireTest extends TestCase
         ]);
     }
 
+    public function test_product_detail_adds_variant_to_cart_in_active_session_currency(): void
+    {
+        session(['currency' => 'EUR']);
+
+        $product = Product::factory()->create([
+            'name' => 'Bolso Euro',
+            'slug' => 'bolso-euro',
+            'is_active' => true,
+        ]);
+
+        $variant = ProductVariant::factory()->for($product)->create([
+            'sku' => 'BOLSO-EUR-V',
+            'is_active' => true,
+            'stock' => 5,
+        ]);
+
+        ProductVariantPrice::factory()
+            ->for($variant, 'productVariant')
+            ->create([
+                'currency' => CurrencyEnum::Eur,
+                'price' => 50_000,
+            ]);
+
+        Livewire::test('product-detail', ['slug' => 'bolso-euro'])
+            ->assertSet('currency', 'EUR')
+            ->set('selectedVariantId', $variant->id)
+            ->set('quantity', 1)
+            ->call('addToCart')
+            ->assertSet('statusMessage', __('storefront.added_to_cart'))
+            ->assertHasNoErrors();
+
+        $cart = Cart::query()->latest('id')->first();
+        $this->assertNotNull($cart);
+        $this->assertSame(CurrencyEnum::Eur, $cart->currency);
+    }
+
     public function test_cart_page_updates_removes_and_clears_lines(): void
     {
         $product = $this->createPublishedProduct('Cartera', 'cartera-ui', stock: 10, price: 20_000);
