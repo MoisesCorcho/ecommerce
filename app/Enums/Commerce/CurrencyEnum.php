@@ -19,6 +19,21 @@ enum CurrencyEnum: string implements HasLabel
     case Eur = 'EUR';
     case Usd = 'USD';
 
+    /**
+     * Currencies enabled for public customer browsing and checkout.
+     *
+     * @return list<self>
+     */
+    public static function storefrontCases(): array
+    {
+        return [self::Cop, self::Eur];
+    }
+
+    public function isAvailableInStorefront(): bool
+    {
+        return in_array($this, self::storefrontCases(), true);
+    }
+
     public function getLabel(): string
     {
         return $this->label();

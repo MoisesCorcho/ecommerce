@@ -54,4 +54,14 @@ class CurrencyEnumTest extends TestCase
             $this->assertContains($currency->minorUnits(), [1, 100]);
         }
     }
+
+    public function test_storefront_cases_only_expose_cop_and_eur(): void
+    {
+        $cases = CurrencyEnum::storefrontCases();
+
+        $this->assertSame([CurrencyEnum::Cop, CurrencyEnum::Eur], $cases);
+        $this->assertTrue(CurrencyEnum::Cop->isAvailableInStorefront());
+        $this->assertTrue(CurrencyEnum::Eur->isAvailableInStorefront());
+        $this->assertFalse(CurrencyEnum::Usd->isAvailableInStorefront());
+    }
 }

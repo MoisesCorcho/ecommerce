@@ -24,7 +24,7 @@ final class CurrentCurrency
         if (is_string($stored)) {
             $currency = CurrencyEnum::tryFrom($stored);
 
-            if ($currency instanceof CurrencyEnum) {
+            if ($currency instanceof CurrencyEnum && $currency->isAvailableInStorefront()) {
                 return $currency;
             }
         }
@@ -34,7 +34,12 @@ final class CurrentCurrency
 
     public static function default(): CurrencyEnum
     {
-        return CurrencyEnum::tryFrom((string) config('ecommerce.default_currency'))
-            ?? CurrencyEnum::Cop;
+        $configured = CurrencyEnum::tryFrom((string) config('ecommerce.default_currency'));
+
+        if ($configured instanceof CurrencyEnum && $configured->isAvailableInStorefront()) {
+            return $configured;
+        }
+
+        return CurrencyEnum::storefrontCases()[0] ?? CurrencyEnum::Cop;
     }
 }

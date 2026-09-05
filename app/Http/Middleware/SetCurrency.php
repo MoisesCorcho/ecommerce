@@ -43,7 +43,7 @@ class SetCurrency
         if (is_string($cookie)) {
             $fromCookie = CurrencyEnum::tryFrom($cookie);
 
-            if ($fromCookie instanceof CurrencyEnum) {
+            if ($fromCookie instanceof CurrencyEnum && $fromCookie->isAvailableInStorefront()) {
                 return $fromCookie;
             }
         }

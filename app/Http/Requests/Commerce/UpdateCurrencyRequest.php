@@ -21,7 +21,11 @@ class UpdateCurrencyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'currency' => ['required', Rule::enum(CurrencyEnum::class)],
+            'currency' => [
+                'required',
+                'string',
+                Rule::enum(CurrencyEnum::class)->only(CurrencyEnum::storefrontCases()),
+            ],
         ];
     }
 }
