@@ -10,6 +10,7 @@ use App\Exceptions\Orders\CheckoutCartEmptyException;
 use App\Exceptions\Orders\CheckoutCartNotReadyException;
 use App\Exceptions\Orders\InvalidCheckoutAddressException;
 use App\Exceptions\Orders\OrderAccessDeniedException;
+use App\Exceptions\Orders\UnsupportedShippingDestinationException;
 use App\Models\Address;
 use App\Support\Cart\ResolvesCurrentCart;
 use App\Support\Coupons\CouponAttemptRateLimiter;
@@ -101,8 +102,12 @@ new #[Layout('layouts.storefront')] class extends Component
             if ($defaultAddress !== null) {
                 $this->shippingAddressId = $defaultAddress->id;
                 $this->updatedShippingAddressId();
+
+                return;
             }
         }
+
+        $this->loadPreview(app(ValidateCartForCheckoutAction::class));
     }
 
     public function updatedCouponCode(ValidateCartForCheckoutAction $validateCartForCheckout): void
@@ -124,6 +129,16 @@ new #[Layout('layouts.storefront')] class extends Component
             return;
         }
 
+        $this->loadPreview($validateCartForCheckout);
+    }
+
+    public function updatedShippingCity(ValidateCartForCheckoutAction $validateCartForCheckout): void
+    {
+        $this->loadPreview($validateCartForCheckout);
+    }
+
+    public function updatedShippingCountry(ValidateCartForCheckoutAction $validateCartForCheckout): void
+    {
         $this->loadPreview($validateCartForCheckout);
     }
 
@@ -150,6 +165,8 @@ new #[Layout('layouts.storefront')] class extends Component
         $this->shippingState = $address->state;
         $this->shippingCountry = $address->country;
         $this->shippingPostalCode = (string) ($address->postal_code ?? '');
+
+        $this->loadPreview(app(ValidateCartForCheckoutAction::class));
     }
 
     public function confirm(
@@ -208,6 +225,11 @@ new #[Layout('layouts.storefront')] class extends Component
             return $this->redirect($url, navigate: false);
         } catch (InvalidCouponException $e) {
             $this->errorMessage = $e->storefrontSafeMessage();
+
+            return null;
+        } catch (UnsupportedShippingDestinationException $e) {
+            $this->errorMessage = $e->getMessage();
+            $this->addError('shippingCountry', $e->getMessage());
 
             return null;
         } catch (
@@ -294,10 +316,16 @@ new #[Layout('layouts.storefront')] class extends Component
     {
         try {
             $cart = $this->resolveCurrentCart();
+            $shipping = $this->buildShippingDto();
+            $country = $shipping->country !== '' && $shipping->country !== '—' ? $shipping->country : null;
+            $city = $shipping->city !== '' && $shipping->city !== '—' ? $shipping->city : null;
+
             $preview = $validateCartForCheckout(
-                (int) $cart->id,
-                $this->cartOwner(),
-                $this->normalizedCouponCode(),
+                cartId: (int) $cart->id,
+                owner: $this->cartOwner(),
+                couponCode: $this->normalizedCouponCode(),
+                shippingCountry: $country,
+                shippingCity: $city,
             );
 
             $this->preview = [
@@ -325,6 +353,9 @@ new #[Layout('layouts.storefront')] class extends Component
         } catch (InvalidCouponException $e) {
             $this->errorMessage = $e->storefrontSafeMessage();
             $this->loadPreviewWithoutCoupon($validateCartForCheckout);
+        } catch (UnsupportedShippingDestinationException $e) {
+            $this->errorMessage = $e->getMessage();
+            $this->addError('shippingCountry', $e->getMessage());
         } catch (CheckoutCartEmptyException|CheckoutCartNotReadyException|OrderAccessDeniedException $e) {
             session()->flash('checkout_error', $e->getMessage());
             $this->redirect(route('cart.page'), navigate: false);
@@ -335,7 +366,17 @@ new #[Layout('layouts.storefront')] class extends Component
     {
         try {
             $cart = $this->resolveCurrentCart();
-            $preview = $validateCartForCheckout((int) $cart->id, $this->cartOwner(), null);
+            $shipping = $this->buildShippingDto();
+            $country = $shipping->country !== '' && $shipping->country !== '—' ? $shipping->country : null;
+            $city = $shipping->city !== '' && $shipping->city !== '—' ? $shipping->city : null;
+
+            $preview = $validateCartForCheckout(
+                cartId: (int) $cart->id,
+                owner: $this->cartOwner(),
+                couponCode: null,
+                shippingCountry: $country,
+                shippingCity: $city,
+            );
 
             $this->preview = [
                 'cartId' => $preview->cartId,
@@ -359,6 +400,9 @@ new #[Layout('layouts.storefront')] class extends Component
                     $preview->lines,
                 ),
             ];
+        } catch (UnsupportedShippingDestinationException $e) {
+            $this->errorMessage = $e->getMessage();
+            $this->addError('shippingCountry', $e->getMessage());
         } catch (CheckoutCartEmptyException|CheckoutCartNotReadyException|OrderAccessDeniedException $e) {
             session()->flash('checkout_error', $e->getMessage());
             $this->redirect(route('cart.page'), navigate: false);

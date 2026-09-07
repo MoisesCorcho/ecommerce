@@ -189,7 +189,7 @@
                                 @include('components.checkout-page.partials.text-field', [
                                     'field' => 'shippingCountry',
                                     'label' => 'orders.fields.shipping_country',
-                                    'wireModel' => 'wire:model="shippingCountry"',
+                                    'wireModel' => 'wire:model.live.blur="shippingCountry"',
                                     'inputAttributes' => 'maxlength="2"',
                                 ])
                                 @include('components.checkout-page.partials.text-field', [
@@ -208,7 +208,7 @@
                                 @include('components.checkout-page.partials.text-field', [
                                     'field' => 'shippingCity',
                                     'label' => 'orders.fields.shipping_city',
-                                    'wireModel' => 'wire:model="shippingCity"',
+                                    'wireModel' => 'wire:model.live.blur="shippingCity"',
                                     'placeholder' => 'orders.checkout.placeholders.city',
                                 ])
                                 @include('components.checkout-page.partials.text-field', [
@@ -350,6 +350,7 @@
                             class="mt-6 w-full disabled:bg-intense-cocoa/40"
                             data-checkout-submit
                             wire:loading.attr="disabled"
+                            :disabled="$errors->has('shippingCountry')"
                         >
                             {{ __('orders.actions.confirm') }}
                         </x-primary-button>
@@ -403,4 +404,93 @@
             </div>
         @endif
     </div>
+
+    @php
+        $googlePlacesApiKey = (string) config('ecommerce.shipping.google_places_api_key', '');
+    @endphp
+
+    @if ($googlePlacesApiKey !== '')
+        <script>
+            (function () {
+                function initGooglePlacesAutocomplete() {
+                    if (window.google && window.google.maps && window.google.maps.places) {
+                        window.setupCheckoutPlacesAutocomplete();
+                        return;
+                    }
+
+                    if (document.getElementById('google-maps-places-script')) {
+                        return;
+                    }
+
+                    const script = document.createElement('script');
+                    script.id = 'google-maps-places-script';
+                    script.src = `https://maps.googleapis.com/maps/api/js?key={{ $googlePlacesApiKey }}&libraries=places&loading=async&callback=setupCheckoutPlacesAutocomplete`;
+                    script.async = true;
+                    script.defer = true;
+                    document.head.appendChild(script);
+                }
+
+                window.setupCheckoutPlacesAutocomplete = function () {
+                    const input = document.getElementById('shippingAddressLine1');
+                    if (!input || input.dataset.placesInitialized === 'true') {
+                        return;
+                    }
+
+                    if (!window.google || !window.google.maps || !window.google.maps.places) {
+                        return;
+                    }
+
+                    input.dataset.placesInitialized = 'true';
+
+                    const autocomplete = new google.maps.places.Autocomplete(input, {
+                        fields: ['address_components', 'formatted_address'],
+                    });
+
+                    autocomplete.addListener('place_changed', function () {
+                        const place = autocomplete.getPlace();
+                        if (!place || !place.address_components) {
+                            return;
+                        }
+
+                        const getComp = function (types, useShort) {
+                            const comp = place.address_components.find(function (c) {
+                                return types.some(function (t) { return c.types.includes(t); });
+                            });
+                            if (!comp) return '';
+                            return useShort ? (comp.short_name ?? comp.shortText ?? '') : (comp.long_name ?? comp.longText ?? '');
+                        };
+
+                        const country = getComp(['country'], true);
+                        const city = getComp(['locality', 'sublocality', 'postal_town']);
+                        const state = getComp(['administrative_area_level_1']);
+                        const postalCode = getComp(['postal_code']);
+                        const route = getComp(['route']);
+                        const streetNumber = getComp(['street_number']);
+                        const address1 = (route && streetNumber) ? (route + ' ' + streetNumber).trim() : (place.formatted_address || input.value);
+
+                        const livewireEl = input.closest('[wire\\:id]');
+                        if (livewireEl && window.Livewire) {
+                            const component = window.Livewire.find(livewireEl.getAttribute('wire:id'));
+                            if (component) {
+                                component.set('shippingAddressLine1', address1);
+                                component.set('shippingCity', city);
+                                component.set('shippingState', state);
+                                component.set('shippingCountry', country);
+                                if (postalCode) {
+                                    component.set('shippingPostalCode', postalCode);
+                                }
+                            }
+                        }
+                    });
+                };
+
+                document.addEventListener('DOMContentLoaded', initGooglePlacesAutocomplete);
+                document.addEventListener('livewire:navigated', initGooglePlacesAutocomplete);
+                // In case script is loaded after DOMContentLoaded
+                if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                    initGooglePlacesAutocomplete();
+                }
+            })();
+        </script>
+    @endif
 </div>

@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use App\Enums\Commerce\CurrencyEnum;
 
 return [
 
@@ -135,9 +136,58 @@ return [
     */
 
     'shipping' => [
-        'standard_cost_cop' => (int) env('ECOMMERCE_SHIPPING_STANDARD_COST_COP', 0),
-        'standard_cost_eur' => (int) env('ECOMMERCE_SHIPPING_STANDARD_COST_EUR', 0),
-        'standard_cost_usd' => (int) env('ECOMMERCE_SHIPPING_STANDARD_COST_USD', 0),
+        'google_places_api_key' => env('GOOGLE_PLACES_API_KEY', ''),
+
+        // Backwards-compatible defaults (F04)
+        'standard_cost_cop' => (int) env('ECOMMERCE_SHIPPING_STANDARD_COST_COP', 15_000),
+        'standard_cost_eur' => (int) env('ECOMMERCE_SHIPPING_STANDARD_COST_EUR', 3_000),
+        'standard_cost_usd' => (int) env('ECOMMERCE_SHIPPING_STANDARD_COST_USD', 3_000),
+
+        // Hierarchical shipping zones (F20)
+        'zones' => [
+            // 1. City-level overrides per country ISO-2
+            'cities' => [
+                'CO' => [
+                    'cali' => [
+                        'currency' => CurrencyEnum::Cop,
+                        'cost' => (int) env('ECOMMERCE_SHIPPING_COST_CALI', 10_000),
+                        'aliases' => ['santiago-de-cali'],
+                    ],
+                ],
+            ],
+
+            // 2. National flat rates per country ISO-2
+            'countries' => [
+                'CO' => [
+                    'currency' => CurrencyEnum::Cop,
+                    'cost' => (int) env('ECOMMERCE_SHIPPING_COST_COLOMBIA', 15_000),
+                ],
+            ],
+
+            // 3. Macro-regions
+            'regions' => [
+                'europe' => [
+                    'currency' => CurrencyEnum::Eur,
+                    'cost' => (int) env('ECOMMERCE_SHIPPING_COST_EUROPE', 3_000),
+                    'countries' => [
+                        'ES', 'FR', 'DE', 'IT', 'PT', 'GB', 'NL', 'BE', 'CH', 'AT', 'SE', 'NO',
+                        'DK', 'FI', 'IE', 'PL', 'CZ', 'GR', 'RO', 'HU',
+                    ],
+                ],
+                'americas' => [
+                    'currency' => CurrencyEnum::Usd,
+                    'cost' => (int) env('ECOMMERCE_SHIPPING_COST_AMERICAS', 3_000),
+                    'countries' => [
+                        'US', 'MX', 'PA', 'CR', 'EC', 'PE', 'CL', 'AR', 'UY', 'PY',
+                        'BO', 'BR', 'DO', 'GT', 'SV', 'HN', 'NI',
+                    ],
+                ],
+            ],
+
+            // 4. Unlisted destination policy
+            'allow_unlisted' => (bool) env('ECOMMERCE_SHIPPING_ALLOW_UNLISTED', false),
+            'unlisted_fallback_cost_usd' => (int) env('ECOMMERCE_SHIPPING_UNLISTED_COST_USD', 3_000),
+        ],
     ],
 
     /*

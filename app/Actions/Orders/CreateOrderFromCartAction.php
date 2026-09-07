@@ -69,7 +69,11 @@ class CreateOrderFromCartAction
             $shippingSnapshot = $this->resolveShippingSnapshot($dto);
 
             $subtotal = array_sum(array_column($lines, 'lineSubtotal'));
-            $shippingCost = $this->shippingCostService->standardCost($cart->currency);
+            $shippingCost = $this->shippingCostService->calculate(
+                $cart->currency,
+                $shippingSnapshot['shipping_country'] ?? null,
+                $shippingSnapshot['shipping_city'] ?? null,
+            );
             $thresholdDiscount = $cart->currency->calculateThresholdDiscount($subtotal);
             $netSubtotal = max(0, $subtotal - $thresholdDiscount);
             $taxAmount = 0;

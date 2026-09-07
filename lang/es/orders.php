@@ -63,6 +63,9 @@ return [
 
     'shipping' => [
         'standard' => 'Envío estándar',
+        'zone_cali' => 'Envío local (Cali)',
+        'zone_national' => 'Envío nacional (Colombia)',
+        'zone_international' => 'Envío internacional',
     ],
 
     'thank_you' => [
@@ -123,6 +126,7 @@ return [
         'cannot_cancel' => 'Solo se pueden cancelar pedidos pendientes.',
         'cannot_cancel_payment_captured' => 'Este pedido tiene un pago capturado y no se puede cancelar. Se debe resolver con reembolso u ops.',
         'invalid_address' => 'La dirección seleccionada no es válida o no le pertenece.',
+        'unsupported_destination' => 'Actualmente no realizamos envíos al país o destino seleccionado (:country).',
     ],
 
     'notifications' => [

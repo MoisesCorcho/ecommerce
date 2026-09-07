@@ -63,6 +63,9 @@ return [
 
     'shipping' => [
         'standard' => 'Standard shipping',
+        'zone_cali' => 'Local shipping (Cali)',
+        'zone_national' => 'National shipping (Colombia)',
+        'zone_international' => 'International shipping',
     ],
 
     'thank_you' => [
@@ -123,6 +126,7 @@ return [
         'cannot_cancel' => 'Only pending orders can be cancelled.',
         'cannot_cancel_payment_captured' => 'This order has a captured payment and cannot be cancelled. Resolve via refund or ops.',
         'invalid_address' => 'The selected address is invalid or does not belong to you.',
+        'unsupported_destination' => 'We currently do not ship to the selected country or destination (:country).',
     ],
 
     'notifications' => [
