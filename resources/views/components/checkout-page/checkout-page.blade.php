@@ -412,81 +412,188 @@
     @if ($googlePlacesApiKey !== '')
         <script>
             (function () {
-                function initGooglePlacesAutocomplete() {
-                    if (window.google && window.google.maps && window.google.maps.places) {
-                        window.setupCheckoutPlacesAutocomplete();
-                        return;
-                    }
+                const apiKey = '{{ $googlePlacesApiKey }}';
+                if (!apiKey) return;
 
-                    if (document.getElementById('google-maps-places-script')) {
-                        return;
-                    }
+                // Google Maps JavaScript API (New) bootstrap loader
+                (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.googleapis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+                    key: apiKey,
+                    v: "weekly",
+                });
 
-                    const script = document.createElement('script');
-                    script.id = 'google-maps-places-script';
-                    script.src = `https://maps.googleapis.com/maps/api/js?key={{ $googlePlacesApiKey }}&libraries=places&loading=async&callback=setupCheckoutPlacesAutocomplete`;
-                    script.async = true;
-                    script.defer = true;
-                    document.head.appendChild(script);
-                }
+                let placesLib = null;
+                let sessionToken = null;
+                let debounceTimer = null;
 
-                window.setupCheckoutPlacesAutocomplete = function () {
+                async function initGooglePlacesAutocomplete() {
                     const input = document.getElementById('shippingAddressLine1');
                     if (!input || input.dataset.placesInitialized === 'true') {
                         return;
                     }
 
-                    if (!window.google || !window.google.maps || !window.google.maps.places) {
+                    try {
+                        if (!placesLib && window.google?.maps?.importLibrary) {
+                            placesLib = await window.google.maps.importLibrary("places");
+                        }
+                    } catch (e) {
+                        console.warn("Could not load Google Places (New) library:", e);
+                        return;
+                    }
+
+                    if (!placesLib || !placesLib.AutocompleteSuggestion) {
                         return;
                     }
 
                     input.dataset.placesInitialized = 'true';
+                    input.setAttribute('autocomplete', 'off');
 
-                    const autocomplete = new google.maps.places.Autocomplete(input, {
-                        fields: ['address_components', 'formatted_address'],
-                    });
+                    if (!sessionToken && placesLib.AutocompleteSessionToken) {
+                        sessionToken = new placesLib.AutocompleteSessionToken();
+                    }
 
-                    autocomplete.addListener('place_changed', function () {
-                        const place = autocomplete.getPlace();
-                        if (!place || !place.address_components) {
+                    const wrapper = input.parentElement;
+                    if (wrapper) {
+                        wrapper.classList.add('relative');
+                    }
+
+                    let dropdown = document.getElementById('places-autocomplete-dropdown');
+                    if (!dropdown) {
+                        dropdown = document.createElement('div');
+                        dropdown.id = 'places-autocomplete-dropdown';
+                        dropdown.className = 'absolute left-0 right-0 z-50 mt-1 max-h-60 overflow-y-auto border border-intense-cocoa bg-soft-sand shadow-ambient hidden';
+                        if (wrapper) {
+                            wrapper.appendChild(dropdown);
+                        }
+                    }
+
+                    function hideDropdown() {
+                        if (dropdown) {
+                            dropdown.classList.add('hidden');
+                            dropdown.innerHTML = '';
+                        }
+                    }
+
+                    input.addEventListener('input', function () {
+                        const query = input.value.trim();
+                        clearTimeout(debounceTimer);
+
+                        if (query.length < 3) {
+                            hideDropdown();
                             return;
                         }
 
-                        const getComp = function (types, useShort) {
-                            const comp = place.address_components.find(function (c) {
-                                return types.some(function (t) { return c.types.includes(t); });
-                            });
-                            if (!comp) return '';
-                            return useShort ? (comp.short_name ?? comp.shortText ?? '') : (comp.long_name ?? comp.longText ?? '');
-                        };
-
-                        const country = getComp(['country'], true);
-                        const city = getComp(['locality', 'sublocality', 'postal_town']);
-                        const state = getComp(['administrative_area_level_1']);
-                        const postalCode = getComp(['postal_code']);
-                        const route = getComp(['route']);
-                        const streetNumber = getComp(['street_number']);
-                        const address1 = (route && streetNumber) ? (route + ' ' + streetNumber).trim() : (place.formatted_address || input.value);
-
-                        const livewireEl = input.closest('[wire\\:id]');
-                        if (livewireEl && window.Livewire) {
-                            const component = window.Livewire.find(livewireEl.getAttribute('wire:id'));
-                            if (component) {
-                                component.set('shippingAddressLine1', address1);
-                                component.set('shippingCity', city);
-                                component.set('shippingState', state);
-                                component.set('shippingCountry', country);
-                                if (postalCode) {
-                                    component.set('shippingPostalCode', postalCode);
+                        debounceTimer = setTimeout(async function () {
+                            try {
+                                const request = {
+                                    input: query,
+                                };
+                                if (sessionToken) {
+                                    request.sessionToken = sessionToken;
                                 }
+
+                                const response = await placesLib.AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
+                                const suggestions = response?.suggestions || [];
+
+                                if (suggestions.length === 0) {
+                                    hideDropdown();
+                                    return;
+                                }
+
+                                dropdown.innerHTML = '';
+                                suggestions.forEach(function (s) {
+                                    const item = document.createElement('div');
+                                    item.className = 'flex cursor-pointer items-center gap-2 border-b border-intense-cocoa/20 px-3 py-2 text-xs font-medium text-intense-cocoa transition-colors hover:bg-intense-cocoa hover:text-silk-cream last:border-b-0';
+
+                                    const icon = document.createElement('span');
+                                    icon.className = 'shrink-0 opacity-70';
+                                    icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5"><path fill-rule="evenodd" d="m9.69 18.933.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 0 0 .281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 1 0 3 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 0 0 2.273 1.765 11.842 11.842 0 0 0 .976.544l.062.029.018.008.006.003ZM10 11.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z" clip-rule="evenodd" /></svg>`;
+
+                                    const text = document.createElement('span');
+                                    text.className = 'truncate';
+                                    text.textContent = s.placePrediction?.text?.text || '';
+
+                                    item.appendChild(icon);
+                                    item.appendChild(text);
+
+                                    item.addEventListener('click', async function (e) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+
+                                        try {
+                                            const place = s.placePrediction.toPlace();
+                                            await place.fetchFields({
+                                                fields: ['addressComponents', 'formattedAddress']
+                                            });
+
+                                            const comps = place.addressComponents || [];
+                                            const getComp = function (types, useShort) {
+                                                const comp = comps.find(function (c) {
+                                                    return types.some(function (t) { return c.types.includes(t); });
+                                                });
+                                                if (!comp) return '';
+                                                return useShort ? (comp.shortText || comp.short_name || '') : (comp.longText || comp.long_name || '');
+                                            };
+
+                                            const country = getComp(['country'], true);
+                                            const city = getComp(['locality', 'sublocality', 'postal_town']);
+                                            const state = getComp(['administrative_area_level_1']);
+                                            const postalCode = getComp(['postal_code']);
+                                            const route = getComp(['route']);
+                                            const streetNumber = getComp(['street_number']);
+                                            const address1 = (route && streetNumber) ? (route + ' ' + streetNumber).trim() : (place.formattedAddress || input.value);
+
+                                            input.value = address1;
+
+                                            const livewireEl = input.closest('[wire\\:id]');
+                                            if (livewireEl && window.Livewire) {
+                                                const component = window.Livewire.find(livewireEl.getAttribute('wire:id'));
+                                                if (component) {
+                                                    component.set('shippingAddressLine1', address1);
+                                                    component.set('shippingCity', city);
+                                                    component.set('shippingState', state);
+                                                    component.set('shippingCountry', country);
+                                                    if (postalCode) {
+                                                        component.set('shippingPostalCode', postalCode);
+                                                    }
+                                                }
+                                            }
+
+                                            if (placesLib.AutocompleteSessionToken) {
+                                                sessionToken = new placesLib.AutocompleteSessionToken();
+                                            }
+                                        } catch (err) {
+                                            console.error("Error fetching place details:", err);
+                                        } finally {
+                                            hideDropdown();
+                                        }
+                                    });
+
+                                    dropdown.appendChild(item);
+                                });
+
+                                dropdown.classList.remove('hidden');
+                            } catch (err) {
+                                console.warn("Places autocomplete search failed:", err);
+                                hideDropdown();
                             }
+                        }, 300);
+                    });
+
+                    document.addEventListener('click', function (e) {
+                        if (dropdown && !dropdown.contains(e.target) && e.target !== input) {
+                            hideDropdown();
                         }
                     });
-                };
+
+                    input.addEventListener('keydown', function (e) {
+                        if (e.key === 'Escape') {
+                            hideDropdown();
+                        }
+                    });
+                }
 
                 document.addEventListener('DOMContentLoaded', initGooglePlacesAutocomplete);
                 document.addEventListener('livewire:navigated', initGooglePlacesAutocomplete);
-                // In case script is loaded after DOMContentLoaded
                 if (document.readyState === 'complete' || document.readyState === 'interactive') {
                     initGooglePlacesAutocomplete();
                 }
