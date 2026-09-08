@@ -32,6 +32,7 @@ class StorefrontCatalogTest extends TestCase
         int $price = 100_000,
         bool $productActive = true,
         bool $variantActive = true,
+        int $stock = 10,
     ): Product {
         $product = Product::factory()->create([
             'name' => $name,
@@ -42,6 +43,7 @@ class StorefrontCatalogTest extends TestCase
         $variant = ProductVariant::factory()->for($product)->create([
             'sku' => strtoupper($slug).'-V',
             'is_active' => $variantActive,
+            'stock' => $stock,
         ]);
 
         ProductVariantPrice::factory()
