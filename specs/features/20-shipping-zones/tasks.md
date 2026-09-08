@@ -1,7 +1,7 @@
 # F20 — Zonas de Envío y Google Places Autocomplete: Checklist de Tareas
 
 > **Feature:** F20 · `20-shipping-zones`  
-> **Estado:** Implementada y Certificada  
+> **Estado:** Completa  
 > **Criterios EARS:** [`requirements.md`](requirements.md) · **Diseño:** [`design.md`](design.md) · **QA Checklist:** [`qa-checklist.md`](qa-checklist.md)
 
 ---

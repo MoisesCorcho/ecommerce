@@ -200,4 +200,44 @@
   * **Resultado Esperado:**
     - 100% de las pruebas existentes pasan en verde (32 tests de dominio, 21 tests de shipping).
     - Los pedidos con promociones de envío gratis (`standard_cost_cop = 0`) se marcan como `paid` inmediatamente si el total es cero.
+  * **Criterios EARS:** `R2`, `R3`
+
+- [ ] **TC-18 — Desajuste de moneda con divisa activa en storefront (Currency Mismatch)**
+  * **Precondición:** Carrito activo en COP. Seleccionar un destino de zona cuya moneda esté activa en el storefront (ej. España `ES` en zona `europe` con divisa `EUR`).
+  * **Pasos:**
+    1. En el checkout, asignar o autocompletar país `ES`.
+  * **Resultado Esperado:**
+    - Se lanza `UnsupportedShippingDestinationException::currencyMismatch`.
+    - La interfaz muestra advertencia prescriptiva: *"Para envíos a ES, tu pedido debe procesarse en Euro (EUR)"*.
+    - El usuario puede acudir al selector del navbar y cambiar su moneda a EUR para continuar.
   * **Criterios EARS:** `R15`
+
+- [ ] **TC-19 — Destino con divisa inactiva en storefront (Degradación Limpia)**
+  * **Precondición:** Carrito activo en COP o EUR. Seleccionar un destino de zona cuya moneda esté desactivada en el storefront (ej. Estados Unidos `US` o Argentina `AR` en zona `americas` con divisa `USD` inactiva).
+  * **Pasos:**
+    1. En el checkout, asignar o autocompletar país `US` o `AR`.
+  * **Resultado Esperado:**
+    - El sistema NO sugiere cambiar a USD (evita callejón sin salida).
+    - Se lanza `UnsupportedShippingDestinationException::forCountry`.
+    - La interfaz muestra destino no soportado: *"Actualmente no realizamos envíos al país o destino seleccionado (:country)"*.
+  * **Criterios EARS:** `R13`, `R15`
+
+- [ ] **TC-20 — Ciclo de vida y reusabilidad del buscador Google Places**
+  * **Precondición:** API Key configurada.
+  * **Pasos:**
+    1. Escribir una dirección en el buscador y seleccionar una sugerencia.
+    2. Borrar manualmente el texto del input de dirección.
+    3. Volver a escribir una dirección diferente.
+  * **Resultado Esperado:**
+    - El dropdown de sugerencias vuelve a desplegarse reactivamente.
+    - No se producen errores de JavaScript ni miembros privados de clases nativas envueltas en proxies reactivos.
+  * **Criterios EARS:** `R10`, `R16`
+
+- [ ] **TC-21 — Invariante de homogeneidad monetaria en zonas**
+  * **Precondición:** Cálculo de costos en `ShippingCostService`.
+  * **Pasos:**
+    1. Invocar `calculate()` con combinaciones donde la regla de zona tenga una divisa distinta a la del carrito.
+  * **Resultado Esperado:**
+    - El servicio nunca mezcla valores de una moneda en el total de otra divisa.
+    - Se rechaza el cálculo o se ignora la tarifa si no coincide con la moneda del carrito.
+  * **Criterios EARS:** `R17`

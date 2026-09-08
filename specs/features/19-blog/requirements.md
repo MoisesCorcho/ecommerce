@@ -1,6 +1,6 @@
 # F-01: Módulo de Blog Completo (CMS + Vistas Públicas)
 
-> **Estado:** Lista para implementar  
+> **Estado:** Completa  
 > **ID:** F-01 · **Slug:** `19-blog`  
 > **Prerequisitos:** Ninguno (módulo de contenido independiente)  
 > **Desbloquea:** Posicionamiento orgánico (SEO), storytelling de marca y marketing de contenidos  

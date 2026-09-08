@@ -1,6 +1,6 @@
 # F20 — Zonas de Envío y Google Places Autocomplete
 
-> **Estado:** Lista para implementar  
+> **Estado:** Completa  
 > **ID:** F20 · **Slug:** `20-shipping-zones`  
 > **Fase:** 5 · Internacionalización y Checkout  
 > **Prerequisitos:** F04 (checkout y órdenes), F14 (moneda USD y preferencias de mercado)  
