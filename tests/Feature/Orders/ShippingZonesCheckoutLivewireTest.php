@@ -121,7 +121,74 @@ class ShippingZonesCheckoutLivewireTest extends TestCase
         Livewire::test('checkout-page')
             ->set('shippingCountry', 'JP')
             ->assertHasErrors('shippingCountry')
-            ->assertSeeHtml('disabled="disabled"');
+            ->assertSeeHtml('disabled');
+    }
+
+    public function test_cop_cart_with_argentina_destination_shows_unsupported_destination_error(): void
+    {
+        $sessionId = 'checkout-cop-argentina';
+        CartSession::setId($sessionId);
+
+        $cart = Cart::factory()->guest()->create([
+            'session_id' => $sessionId,
+            'currency' => CurrencyEnum::Cop,
+        ]);
+
+        $variant = $this->createVariant(CurrencyEnum::Cop, 50_000);
+        CartItem::factory()->for($cart)->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => 1,
+        ]);
+
+        Livewire::test('checkout-page')
+            ->set('shippingCountry', 'AR')
+            ->assertHasErrors('shippingCountry')
+            ->assertSeeHtml(__('orders.errors.unsupported_destination', ['country' => 'AR']))
+            ->assertDontSeeHtml('USD');
+    }
+
+    public function test_cop_cart_with_spain_destination_shows_eur_requirement_message(): void
+    {
+        $sessionId = 'checkout-cop-spain';
+        CartSession::setId($sessionId);
+
+        $cart = Cart::factory()->guest()->create([
+            'session_id' => $sessionId,
+            'currency' => CurrencyEnum::Cop,
+        ]);
+
+        $variant = $this->createVariant(CurrencyEnum::Cop, 50_000);
+        CartItem::factory()->for($cart)->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => 1,
+        ]);
+
+        Livewire::test('checkout-page')
+            ->set('shippingCountry', 'ES')
+            ->assertHasErrors('shippingCountry')
+            ->assertSeeHtml('EUR');
+    }
+
+    public function test_eur_cart_with_colombian_destination_shows_cop_requirement_message(): void
+    {
+        $sessionId = 'checkout-eur-colombia';
+        CartSession::setId($sessionId);
+
+        $cart = Cart::factory()->guest()->create([
+            'session_id' => $sessionId,
+            'currency' => CurrencyEnum::Eur,
+        ]);
+
+        $variant = $this->createVariant(CurrencyEnum::Eur, 2_000);
+        CartItem::factory()->for($cart)->create([
+            'product_variant_id' => $variant->id,
+            'quantity' => 1,
+        ]);
+
+        Livewire::test('checkout-page')
+            ->set('shippingCountry', 'CO')
+            ->assertHasErrors('shippingCountry')
+            ->assertSeeHtml('COP');
     }
 
     public function test_changing_shipping_country_to_spain_in_eur_cart_applies_europe_rate(): void

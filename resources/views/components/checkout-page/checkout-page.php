@@ -5,6 +5,7 @@ use App\Actions\Orders\ValidateCartForCheckoutAction;
 use App\DTOs\Orders\CheckoutContactDTO;
 use App\DTOs\Orders\CheckoutShippingDTO;
 use App\DTOs\Orders\CreateOrderFromCartDTO;
+use App\Enums\Commerce\CurrencyEnum;
 use App\Exceptions\Coupons\InvalidCouponException;
 use App\Exceptions\Orders\CheckoutCartEmptyException;
 use App\Exceptions\Orders\CheckoutCartNotReadyException;
@@ -87,6 +88,15 @@ new #[Layout('layouts.storefront')] class extends Component
             } else {
                 $this->addressMode = 'one_shot';
             }
+        }
+
+        if ($this->shippingAddressId === null) {
+            $cart = $this->resolveCurrentCart();
+            $this->shippingCountry = match ($cart->currency) {
+                CurrencyEnum::Cop => 'CO',
+                CurrencyEnum::Usd => 'US',
+                CurrencyEnum::Eur => 'ES',
+            };
         }
 
         $this->loadPreview($validateCartForCheckout);
@@ -356,6 +366,10 @@ new #[Layout('layouts.storefront')] class extends Component
         } catch (UnsupportedShippingDestinationException $e) {
             $this->errorMessage = $e->getMessage();
             $this->addError('shippingCountry', $e->getMessage());
+
+            if ($this->preview === null) {
+                $this->loadPreviewFallback($validateCartForCheckout);
+            }
         } catch (CheckoutCartEmptyException|CheckoutCartNotReadyException|OrderAccessDeniedException $e) {
             session()->flash('checkout_error', $e->getMessage());
             $this->redirect(route('cart.page'), navigate: false);
@@ -403,9 +417,53 @@ new #[Layout('layouts.storefront')] class extends Component
         } catch (UnsupportedShippingDestinationException $e) {
             $this->errorMessage = $e->getMessage();
             $this->addError('shippingCountry', $e->getMessage());
+
+            if ($this->preview === null) {
+                $this->loadPreviewFallback($validateCartForCheckout);
+            }
         } catch (CheckoutCartEmptyException|CheckoutCartNotReadyException|OrderAccessDeniedException $e) {
             session()->flash('checkout_error', $e->getMessage());
             $this->redirect(route('cart.page'), navigate: false);
+        }
+    }
+
+    private function loadPreviewFallback(ValidateCartForCheckoutAction $validateCartForCheckout): void
+    {
+        try {
+            $cart = $this->resolveCurrentCart();
+
+            $preview = $validateCartForCheckout(
+                cartId: (int) $cart->id,
+                owner: $this->cartOwner(),
+                couponCode: $this->normalizedCouponCode(),
+                shippingCountry: null,
+                shippingCity: null,
+            );
+
+            $this->preview = [
+                'cartId' => $preview->cartId,
+                'currency' => $preview->currency->value,
+                'subtotal' => $preview->subtotal,
+                'shippingCost' => $preview->shippingCost,
+                'discount' => $preview->discount,
+                'thresholdDiscount' => $preview->thresholdDiscount,
+                'taxAmount' => $preview->taxAmount,
+                'total' => $preview->total,
+                'lines' => array_map(
+                    static fn ($line): array => [
+                        'productVariantId' => $line->productVariantId,
+                        'productName' => $line->productName,
+                        'variantLabel' => $line->variantLabel,
+                        'sku' => $line->sku,
+                        'unitPrice' => $line->unitPrice,
+                        'quantity' => $line->quantity,
+                        'lineSubtotal' => $line->lineSubtotal,
+                    ],
+                    $preview->lines,
+                ),
+            ];
+        } catch (Throwable) {
+            // Fallback failed; preview stays as is
         }
     }
 

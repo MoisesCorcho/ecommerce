@@ -127,6 +127,7 @@ return [
         'cannot_cancel_payment_captured' => 'Este pedido tiene un pago capturado y no se puede cancelar. Se debe resolver con reembolso u ops.',
         'invalid_address' => 'La dirección seleccionada no es válida o no le pertenece.',
         'unsupported_destination' => 'Actualmente no realizamos envíos al país o destino seleccionado (:country).',
+        'currency_mismatch_destination' => 'Para envíos a :country, tu pedido debe procesarse en :currency (:code).',
     ],
 
     'notifications' => [

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Exceptions\Orders;
 
+use App\Enums\Commerce\CurrencyEnum;
 use RuntimeException;
 
 /**
@@ -15,6 +16,15 @@ class UnsupportedShippingDestinationException extends RuntimeException
     {
         return new self(__('orders.errors.unsupported_destination', [
             'country' => $countryCode ?? '—',
+        ]));
+    }
+
+    public static function currencyMismatch(string $countryCode, CurrencyEnum $expectedCurrency): self
+    {
+        return new self(__('orders.errors.currency_mismatch_destination', [
+            'country' => $countryCode,
+            'currency' => $expectedCurrency->label(),
+            'code' => $expectedCurrency->value,
         ]));
     }
 }

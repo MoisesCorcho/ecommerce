@@ -87,4 +87,65 @@ class ShippingCostServiceTest extends TestCase
         Config::set('ecommerce.shipping.standard_cost_eur', 2_500);
         $this->assertSame(2_500, $this->service->standardCost(CurrencyEnum::Eur));
     }
+
+    public function test_currency_mismatch_throws_unsupported_destination_exception(): void
+    {
+        // Argentina (AR) is in americas (USD), so COP cart must be rejected
+        $this->expectException(UnsupportedShippingDestinationException::class);
+        $this->service->calculate(CurrencyEnum::Cop, 'AR', 'Mar del Plata');
+    }
+
+    public function test_cop_cart_rejects_european_destinations(): void
+    {
+        $this->expectException(UnsupportedShippingDestinationException::class);
+        $this->service->calculate(CurrencyEnum::Cop, 'ES', 'Madrid');
+    }
+
+    public function test_eur_cart_rejects_colombian_destinations(): void
+    {
+        $this->expectException(UnsupportedShippingDestinationException::class);
+        $this->service->calculate(CurrencyEnum::Eur, 'CO', 'Cali');
+    }
+
+    public function test_currency_mismatch_throws_descriptive_exception_for_colombia_in_eur_cart(): void
+    {
+        $this->expectException(UnsupportedShippingDestinationException::class);
+        $this->expectExceptionMessage('COP');
+
+        $this->service->calculate(CurrencyEnum::Eur, 'CO', 'Cali');
+    }
+
+    public function test_currency_mismatch_throws_descriptive_exception_for_spain_in_cop_cart(): void
+    {
+        $this->expectException(UnsupportedShippingDestinationException::class);
+        $this->expectExceptionMessage('EUR');
+
+        $this->service->calculate(CurrencyEnum::Cop, 'ES', 'Madrid');
+    }
+
+    public function test_destination_with_inactive_storefront_currency_throws_generic_unsupported_destination_exception(): void
+    {
+        // USD is inactive in storefront (CurrencyEnum::storefrontCases() = [COP, EUR]).
+        // Destinations in Americas zone (like AR or US) must not advise switching to USD.
+        $this->expectException(UnsupportedShippingDestinationException::class);
+        $this->expectExceptionMessage(__('orders.errors.unsupported_destination', ['country' => 'AR']));
+
+        $this->service->calculate(CurrencyEnum::Cop, 'AR', 'Mar del Plata');
+    }
+
+    public function test_destination_with_inactive_storefront_currency_us_throws_generic_unsupported_destination_exception(): void
+    {
+        $this->expectException(UnsupportedShippingDestinationException::class);
+        $this->expectExceptionMessage(__('orders.errors.unsupported_destination', ['country' => 'US']));
+
+        $this->service->calculate(CurrencyEnum::Cop, 'US', 'Miami');
+    }
+
+    public function test_unlisted_destination_without_coverage_throws_generic_exception(): void
+    {
+        $this->expectException(UnsupportedShippingDestinationException::class);
+        $this->expectExceptionMessage(__('orders.errors.unsupported_destination', ['country' => 'JP']));
+
+        $this->service->calculate(CurrencyEnum::Cop, 'JP', 'Tokyo');
+    }
 }

@@ -133,6 +133,17 @@ Review the feature spec against real-world production risks:
 4. **Pattern Drift Detection (Deriva de Patrones vs Features Hermanas)**:
    * Does the spec introduce an ad-hoc mechanism where a sibling feature already established a project standard? (e.g. ad-hoc `_es`/`_en` columns instead of `HasTranslations`, missing `sort_order` or `ordered()` scope, monolithic forms instead of Filament v5 `Schemas/`).
    * Any detected pattern drift MUST be highlighted as a top-priority item in the Architectural Decisions Table.
+5. **Auditoría de Producto Cartesiano (Off-Diagonal Matrix)**:
+   * When a feature combines 2 or more discrete dimensions (e.g., Currency × Geographic Zone, User Role × Order State × Payment Channel), audit MUST NOT evaluate only the happy diagonal (COP + Colombia, USD + USA).
+   * It is mandatory to evaluate **off-diagonal** combinations (e.g., Cart in COP + Destination in Argentina; Cart in EUR + Destination in Colombia; Unlisted country). The domain MUST strictly validate currency-zone alignment and throw typed exceptions rather than silently defaulting to arbitrary rates.
+6. **Frontera de Ciclo de Vida y DOM Morphing (Livewire / Vanilla JS / Alpine)**:
+   * Any UI component integrating third-party JavaScript libraries or dynamic autocomplete (e.g., Google Places, payment element SDKs, flatpickr) inside a Livewire-managed DOM must be audited against morphdom:
+     * Are dynamic elements declared statically in Blade or shielded with `wire:ignore` so morphdom doesn't delete them?
+     * Is the reactive client state encapsulated via Alpine.js (`x-data`, `x-show`, `x-ref`, `$wire`) instead of detached vanilla JS DOM mutations?
+     * Does clearing inputs and retyping re-trigger autocomplete smoothly without requiring a full page refresh?
+7. **Homogeneidad Monetaria del Dominio (Money Pattern)**:
+   * No integer representing minor units (pesos COP, cents USD/EUR) has meaning without its associated ISO currency (`CurrencyEnum`).
+   * All cost-resolving services and price calculations must explicitly check that the rate's configured currency strictly matches the transaction's active currency. Never mix or assume rates across different currencies.
 
 ---
 

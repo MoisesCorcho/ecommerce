@@ -127,6 +127,7 @@ return [
         'cannot_cancel_payment_captured' => 'This order has a captured payment and cannot be cancelled. Resolve via refund or ops.',
         'invalid_address' => 'The selected address is invalid or does not belong to you.',
         'unsupported_destination' => 'We currently do not ship to the selected country or destination (:country).',
+        'currency_mismatch_destination' => 'For shipments to :country, your order must be processed in :currency (:code).',
     ],
 
     'notifications' => [
