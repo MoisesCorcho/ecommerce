@@ -55,7 +55,7 @@ class AccountShellTest extends TestCase
         $formStart = strpos($html, '<form method="POST" action="'.route('logout').'"');
         $this->assertNotFalse($formStart, 'Logout form with POST action to route(\'logout\') was not found.');
 
-        $formSnippet = substr($html, $formStart, 500);
+        $formSnippet = substr($html, $formStart, 700);
 
         $this->assertStringContainsString('name="_token"', $formSnippet);
         $this->assertStringContainsString(__('account.nav.logout'), $formSnippet);

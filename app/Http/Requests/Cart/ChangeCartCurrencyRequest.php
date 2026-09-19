@@ -22,7 +22,11 @@ class ChangeCartCurrencyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'currency' => ['required', 'string', Rule::enum(CurrencyEnum::class)],
+            'currency' => [
+                'required',
+                'string',
+                Rule::enum(CurrencyEnum::class)->only(CurrencyEnum::storefrontCases()),
+            ],
         ];
     }
 

@@ -133,6 +133,10 @@ return [
         'rate_limited' => 'Too many coupon attempts. Please wait a moment and try again.',
     ],
 
+    'ui' => [
+        'applied_successfully' => 'Coupon applied successfully to your order summary!',
+    ],
+
     'relation' => [
         'redemptions_title' => 'Redemptions',
     ],

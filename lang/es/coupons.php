@@ -133,6 +133,10 @@ return [
         'rate_limited' => 'Demasiados intentos de cupón. Espera un momento e intenta nuevamente.',
     ],
 
+    'ui' => [
+        'applied_successfully' => '¡Cupón aplicado correctamente al resumen de tu pedido!',
+    ],
+
     'relation' => [
         'redemptions_title' => 'Redenciones',
     ],

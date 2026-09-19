@@ -43,9 +43,16 @@ return [
         'title' => 'Order summary',
         'items_count' => ':count item|:count items',
         'subtotal' => 'Subtotal',
+        'threshold_discount' => 'Volume discount (10%)',
         'total' => 'Total',
         'checkout' => 'Checkout',
         'continue_shopping' => 'Continue shopping',
+    ],
+
+    'threshold' => [
+        'progress' => 'Add :amount more to get 10% off',
+        'unlocked' => 'You unlocked 10% discount!',
+        'discount_label' => 'Volume discount (10%)',
     ],
 
     'empty' => [

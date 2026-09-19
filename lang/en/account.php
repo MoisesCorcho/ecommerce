@@ -60,7 +60,7 @@ return [
         'confirm_delete' => 'Delete this address?',
         'empty' => 'You have not added any addresses yet.',
         'default_badge' => 'Default',
-        'make_default' => 'Set as default',
+        'make_default' => 'Set default',
         'default_updated' => 'Default address updated.',
         'fields' => [
             'label' => 'Label',

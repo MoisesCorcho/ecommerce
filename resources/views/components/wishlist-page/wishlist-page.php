@@ -14,6 +14,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Wishlist;
 use App\Support\Cart\ResolvesCurrentCart;
+use App\Support\Commerce\CurrentCurrency;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -31,8 +32,7 @@ new #[Layout('layouts.storefront')] class extends Component
 
     public function mount(): void
     {
-        $code = (string) config('ecommerce.default_currency', CurrencyEnum::Cop->value);
-        $this->currency = CurrencyEnum::tryFrom($code)?->value ?? CurrencyEnum::Cop->value;
+        $this->currency = CurrentCurrency::get()->value;
     }
 
     public function render()

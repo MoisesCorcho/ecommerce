@@ -58,6 +58,23 @@ class AddressBookTest extends TestCase
         $this->assertSame('Medellín', $address->fresh()->city);
     }
 
+    public function test_unchecking_default_in_edit_form_sets_is_default_to_false(): void
+    {
+        $user = User::factory()->create();
+        $address = Address::factory()->for($user)->default()->create();
+
+        $this->actingAs($user);
+
+        Livewire::test('profile-addresses-page')
+            ->call('edit', $address->id)
+            ->assertSet('isDefault', true)
+            ->set('isDefault', false)
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertFalse($address->fresh()->is_default);
+    }
+
     public function test_marking_default_clears_previous_default(): void
     {
         $user = User::factory()->create();

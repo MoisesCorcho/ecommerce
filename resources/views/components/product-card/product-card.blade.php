@@ -24,13 +24,13 @@
     $availableColors = $availableColors ?? $product->availableColors();
 @endphp
 
-<article {{ $attributes->merge(['class' => 'group relative flex flex-col bg-surface-container transition-shadow duration-300 ease-out hover:shadow-ambient']) }}>
+<article dusk="product-card" {{ $attributes->merge(['class' => 'group relative flex flex-col h-full bg-surface-container transition-shadow duration-300 ease-out hover:shadow-ambient']) }}>
     {{-- Image --}}
     <div class="relative w-full aspect-[4/5] bg-surface-container overflow-hidden mb-2">
         <a href="{{ $detailUrl }}" class="block h-full">
             @if ($primaryImage)
                 <img
-                    src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($primaryImage->path) }}"
+                    src="/storage/{{ $primaryImage->path }}"
                     alt="{{ $product->name }}"
                     class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 {{ (! $isAvailable || $isOutOfStock) ? 'opacity-60' : '' }}"
                 >
@@ -40,9 +40,21 @@
                 </div>
             @endif
 
-            {{-- Custom badge slot or default unavailable / out of stock overlays --}}
+            {{-- Custom badge slot or default unavailable / out of stock / preorder overlays --}}
             @if (isset($badge))
                 {{ $badge }}
+            @elseif ($product->is_preorder)
+                <div class="absolute top-3 left-3 z-10">
+                    <span class="bg-intense-cocoa text-silk-cream px-3 py-1 text-xs font-semibold uppercase tracking-widest">
+                        {{ __('storefront.products.preorder_badge') ?? 'Preventa' }}
+                    </span>
+                </div>
+            @elseif ($price?->hasDiscount() && $isAvailable && ! $isOutOfStock)
+                <div class="absolute top-3 left-3 z-10">
+                    <span class="bg-soft-gold text-intense-cocoa border border-soft-gold/30 px-2.5 py-1 text-label-caps font-semibold uppercase tracking-wider">
+                        -{{ $price->discountPercentage() }}%
+                    </span>
+                </div>
             @elseif (! $isAvailable)
                 <div class="absolute inset-0 bg-silk-cream/40 backdrop-blur-[1px] flex items-center justify-center z-10" data-wishlist-badge-unavailable>
                     <span class="bg-soft-sand px-5 py-2.5 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa">
@@ -58,9 +70,22 @@
             @endif
         </a>
 
-        {{-- Hover actions (Heart + Cart) --}}
+        {{-- Hover actions (Quick View + Heart + Cart) --}}
         @if ($showHoverActions)
             <div class="absolute top-4 right-4 z-20 flex flex-col gap-2 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                <button
+                    type="button"
+                    wire:click="$dispatch('open-quick-view', { productId: {{ $product->id }} })"
+                    dusk="quick-view-trigger"
+                    aria-label="{{ __('storefront.products.quick_view') }}"
+                    title="{{ __('storefront.products.quick_view') }}"
+                    class="flex h-10 w-10 cursor-pointer items-center justify-center bg-soft-sand text-intense-cocoa shadow-sm transition-colors hover:bg-soft-gold hover:text-intense-cocoa"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                </button>
                 @if ($variant)
                     <livewire:favorite-button :product-variant-id="$variant->id" wire:key="favorite-{{ $variant->id }}" />
                 @endif
@@ -81,16 +106,18 @@
     </div>
 
     {{-- Text content --}}
-    <div class="flex flex-col gap-1.5 px-6 pb-6 pt-4 {{ (! $isAvailable || $isOutOfStock) ? 'opacity-60' : '' }}">
+    <div class="flex flex-col flex-1 gap-1.5 px-6 pb-6 pt-4 {{ (! $isAvailable || $isOutOfStock) ? 'opacity-60' : '' }}">
         @if ($product->category)
             <span class="text-xs font-semibold uppercase tracking-wider text-intense-cocoa/50">
                 {{ $product->category->name }}
             </span>
         @endif
 
-        <h3 class="font-headline-sm text-xl text-intense-cocoa line-clamp-2">
-            <a href="{{ $detailUrl }}">{{ $product->name }}</a>
-        </h3>
+        <div class="h-14 flex items-start overflow-hidden">
+            <h3 class="font-headline-sm text-xl text-intense-cocoa leading-snug">
+                <a href="{{ $detailUrl }}" class="line-clamp-2">{{ $product->name }}</a>
+            </h3>
+        </div>
 
         {{-- Variant info slot --}}
         @if (isset($variantInfo))
@@ -98,9 +125,16 @@
         @endif
 
         @if ($price)
-            <p class="font-headline-sm text-2xl text-soft-gold">
-                {{ $currencyEnum->format($price->price) }}
-            </p>
+            <div class="flex flex-wrap items-baseline gap-2">
+                <p class="font-headline-sm text-2xl text-soft-gold">
+                    {{ $currencyEnum->format($price->price) }}
+                </p>
+                @if ($price->hasDiscount())
+                    <p class="text-sm font-normal line-through text-intense-cocoa/40">
+                        {{ $currencyEnum->format($price->compare_at_price) }}
+                    </p>
+                @endif
+            </div>
         @endif
 
         @if ($availableColors && $availableColors->count() > 1 && !isset($variantInfo))
@@ -108,7 +142,7 @@
                 @foreach ($availableColors->take(5) as $colorName)
                     <span
                         class="h-3 w-3 border border-intense-cocoa/10"
-                        style="background-color: {{ ColorMap::HEX[strtolower($colorName)] ?? '#8B8B8B' }}"
+                        style="background-color: {{ ColorMap::for($colorName) }}"
                         title="{{ $colorName }}"
                     ></span>
                 @endforeach
@@ -120,7 +154,7 @@
 
         {{-- Custom actions slot --}}
         @if (isset($actions))
-            <div class="mt-3">
+            <div class="mt-auto pt-3">
                 {{ $actions }}
             </div>
         @endif

@@ -19,10 +19,12 @@ use App\Models\Cart;
 use App\Models\CouponRedemption;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\ProductVariant;
 use App\Services\Coupons\CouponPricingService;
 use App\Services\Orders\ShippingCostService;
 use App\Support\Orders\OrderNumberGenerator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class CreateOrderFromCartAction
@@ -67,7 +69,13 @@ class CreateOrderFromCartAction
             $shippingSnapshot = $this->resolveShippingSnapshot($dto);
 
             $subtotal = array_sum(array_column($lines, 'lineSubtotal'));
-            $shippingCost = $this->shippingCostService->standardCost($cart->currency);
+            $shippingCost = $this->shippingCostService->calculate(
+                $cart->currency,
+                $shippingSnapshot['shipping_country'] ?? null,
+                $shippingSnapshot['shipping_city'] ?? null,
+            );
+            $thresholdDiscount = $cart->currency->calculateThresholdDiscount($subtotal);
+            $netSubtotal = max(0, $subtotal - $thresholdDiscount);
             $taxAmount = 0;
 
             $couponId = null;
@@ -82,6 +90,7 @@ class CreateOrderFromCartAction
                     currency: $cart->currency,
                     userId: $dto->userId,
                     forUpdate: true,
+                    discountableSubtotal: $netSubtotal,
                 );
                 $lockedCoupon = $quote->coupon;
                 $couponId = (int) $lockedCoupon->id;
@@ -89,18 +98,27 @@ class CreateOrderFromCartAction
                 $redeemCode = $quote->code;
             }
 
-            $total = $subtotal + $shippingCost - $discount + $taxAmount;
+            $total = max(0, $subtotal - $thresholdDiscount - $discount) + $shippingCost + $taxAmount;
+
+            $minChargeable = $cart->currency->minimumChargeableAmount();
+            if ($total > 0 && $total < $minChargeable) {
+                $discount += $total;
+                $total = 0;
+            }
+
+            $isFreeOrder = $total === 0;
 
             $order = Order::query()->create([
                 'order_number' => $this->orderNumberGenerator->generate(),
                 'user_id' => $dto->userId,
                 'email' => $dto->contact->email,
                 'coupon_id' => $couponId,
-                'status' => OrderStatusEnum::Pending,
+                'status' => $isFreeOrder ? OrderStatusEnum::Paid : OrderStatusEnum::Pending,
                 'currency' => $cart->currency,
                 'subtotal' => $subtotal,
                 'shipping_cost' => $shippingCost,
                 'discount' => $discount,
+                'threshold_discount' => $thresholdDiscount,
                 'tax_amount' => $taxAmount,
                 'total' => $total,
                 'shipping_address_id' => $shippingSnapshot['shipping_address_id'],
@@ -114,7 +132,7 @@ class CreateOrderFromCartAction
                 'shipping_postal_code' => $shippingSnapshot['shipping_postal_code'],
                 'tracking_number' => null,
                 'customer_notes' => $this->normalizeNotes($dto->customerNotes),
-                'paid_at' => null,
+                'paid_at' => $isFreeOrder ? now() : null,
                 'shipped_at' => null,
             ]);
 
@@ -127,6 +145,46 @@ class CreateOrderFromCartAction
                     'sku' => $line['sku'],
                     'unit_price' => $line['unitPrice'],
                     'quantity' => $line['quantity'],
+                ]);
+            }
+
+            if ($isFreeOrder) {
+                /** @var array<int, int> $quantityByVariant */
+                $quantityByVariant = [];
+                foreach ($lines as $line) {
+                    $variantId = (int) $line['variant']->id;
+                    $quantityByVariant[$variantId] = ($quantityByVariant[$variantId] ?? 0) + (int) $line['quantity'];
+                }
+
+                foreach ($quantityByVariant as $variantId => $qty) {
+                    /** @var ProductVariant $variant */
+                    $variant = ProductVariant::query()
+                        ->lockForUpdate()
+                        ->findOrFail($variantId);
+
+                    if ((int) $variant->stock < $qty) {
+                        $productName = $variant->product?->name ?? $variant->sku ?? 'Item';
+                        throw CheckoutCartNotReadyException::insufficientStock(
+                            $productName,
+                            max(0, (int) $variant->stock),
+                        );
+                    }
+
+                    $variant->update([
+                        'stock' => (int) $variant->stock - $qty,
+                    ]);
+                }
+
+                Log::channel('payments')->info('orders.free_checkout.completed', [
+                    'order_id' => $order->id,
+                    'order_number' => $order->order_number,
+                    'user_id' => $order->user_id,
+                    'currency' => $order->currency->value,
+                    'subtotal' => $order->subtotal,
+                    'threshold_discount' => $order->threshold_discount,
+                    'discount' => $order->discount,
+                    'shipping_cost' => $order->shipping_cost,
+                    'total' => $order->total,
                 ]);
             }
 

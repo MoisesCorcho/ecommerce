@@ -41,4 +41,24 @@ class ProductVariantPrice extends Model
     {
         return $this->belongsTo(ProductVariant::class);
     }
+
+    /**
+     * Whether this price represents a promotional discount.
+     */
+    public function hasDiscount(): bool
+    {
+        return $this->compare_at_price !== null && $this->compare_at_price > $this->price;
+    }
+
+    /**
+     * Calculate discount percentage relative to compare_at_price.
+     */
+    public function discountPercentage(): ?int
+    {
+        if (! $this->hasDiscount() || $this->compare_at_price === 0) {
+            return null;
+        }
+
+        return (int) round((($this->compare_at_price - $this->price) / $this->compare_at_price) * 100);
+    }
 }

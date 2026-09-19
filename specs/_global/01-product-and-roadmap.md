@@ -50,7 +50,7 @@ Rutas de specs se crean al iniciar cada feature (`specs/features/<slug>/`).
 | ID | Feature | Fase | Estado | Prerequisitos |
 |----|---------|------|--------|---------------|
 | F01 | Catálogo **admin** (Filament: categorías, productos, variantes, precios, imágenes) | 0 · Fundación comercio | Completa | Fundación de dominio |
-| F01-S | Storefront catálogo (UI pública; manual de marca) | 0 · Fundación comercio | No iniciada (diferido) | F01; manual de marca |
+| F01-S | Storefront catálogo (UI pública; manual de marca) | 0 · Fundación comercio | Completa | F01; manual de marca |
 | F02 | Cuentas y direcciones (**admin** Filament: users + addresses; sin Livewire storefront) | 0 · Fundación comercio | Completa | Fundación de dominio |
 | F03 | Carrito | 1 · Compra | Completa | F01 |
 | F04 | Checkout y órdenes | 1 · Compra | Completa | F01, F02, F03 |
@@ -62,8 +62,17 @@ Rutas de specs se crean al iniciar cada feature (`specs/features/<slug>/`).
 | F10 | Wishlist | 3 · Post-compra | Completa | F01, F02, F08 (requiere usuario identificado, sin modo invitado) |
 | F11 | FAQ (página estática de preguntas frecuentes) | 4 · Páginas utilitarias | Completa | Ninguna (página estática) |
 | F12 | About Us (página estática institucional) | 4 · Páginas utilitarias | Completa | Ninguna (página estática) |
+| F13 | i18n Selector de idioma (ES / EN) | 5 · Internacionalización | Completa | Fundación de dominio |
+| F14 | Moneda USD & GeoIP Cloudflare | 5 · Internacionalización | Completa | F01, F04, F13 |
+| F15 | Barra de Anuncios Administrable (Top Bar CMS) | 6 · Marketing & Fidelización | Completa | F01 |
+| F16 | Pop-up Promocional Administrable (Cupones) | 6 · Marketing & Fidelización | Completa | F06 |
+| F17 | Descuento Progresivo en Carrito (Threshold) | 6 · Marketing & Fidelización | Completa | F03, F04, F06 |
+| F18 | Notificaciones Automáticas de Wishlist | 6 · Marketing & Fidelización | Completa | F01, F08, F10 |
+| F19 | Módulo de Blog Completo (CMS + Vistas) | 7 · Contenido | Completa | F01 |
+| F20 | Zonas de Envío y Google Places Autocomplete | 5 · Internacionalización y Checkout | Completa | F04, F14 |
 
 Sincronizar la columna **Estado** con el bloque `> Estado:` de cada `requirements.md` cuando exista.
+
 
 ### Notas de alcance (evitar solapamiento)
 

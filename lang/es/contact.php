@@ -48,8 +48,8 @@ return [
     ],
 
     'error' => [
-        'throttled' => 'Alcanzaste el límite de mensajes. Intenta de nuevo en unos minutos o escríbenos directamente a :email.',
-        'send_failed' => 'No pudimos enviar tu mensaje. Intenta de nuevo o escríbenos directamente a :email.',
+        'throttled' => 'Alcanzaste el límite de mensajes. Intenta de nuevo en unos minutos o escríbenos directamente a',
+        'send_failed' => 'No pudimos enviar tu mensaje. Intenta de nuevo o escríbenos directamente a',
     ],
 
     'faq' => [

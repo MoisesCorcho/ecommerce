@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('sku')->unique();
             $table->string('color')->nullable();
             $table->string('size')->nullable();
+            $table->string('dimensions')->nullable();
             $table->unsignedInteger('stock')->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();

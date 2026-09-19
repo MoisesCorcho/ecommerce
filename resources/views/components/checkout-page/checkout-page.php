@@ -5,11 +5,13 @@ use App\Actions\Orders\ValidateCartForCheckoutAction;
 use App\DTOs\Orders\CheckoutContactDTO;
 use App\DTOs\Orders\CheckoutShippingDTO;
 use App\DTOs\Orders\CreateOrderFromCartDTO;
+use App\Enums\Commerce\CurrencyEnum;
 use App\Exceptions\Coupons\InvalidCouponException;
 use App\Exceptions\Orders\CheckoutCartEmptyException;
 use App\Exceptions\Orders\CheckoutCartNotReadyException;
 use App\Exceptions\Orders\InvalidCheckoutAddressException;
 use App\Exceptions\Orders\OrderAccessDeniedException;
+use App\Exceptions\Orders\UnsupportedShippingDestinationException;
 use App\Models\Address;
 use App\Support\Cart\ResolvesCurrentCart;
 use App\Support\Coupons\CouponAttemptRateLimiter;
@@ -76,9 +78,46 @@ new #[Layout('layouts.storefront')] class extends Component
             $this->email = (string) $user->email;
             $this->phone = (string) ($user->phone ?? '');
             $this->addressMode = 'saved';
+
+            $defaultAddress = $user->addresses()->where('is_default', true)->first()
+                ?? $user->addresses()->first();
+
+            if ($defaultAddress !== null) {
+                $this->shippingAddressId = $defaultAddress->id;
+                $this->updatedShippingAddressId();
+            } else {
+                $this->addressMode = 'one_shot';
+            }
+        }
+
+        if ($this->shippingAddressId === null) {
+            $cart = $this->resolveCurrentCart();
+            $this->shippingCountry = match ($cart->currency) {
+                CurrencyEnum::Cop => 'CO',
+                CurrencyEnum::Usd => 'US',
+                CurrencyEnum::Eur => 'ES',
+            };
         }
 
         $this->loadPreview($validateCartForCheckout);
+    }
+
+    public function updatedAddressMode(): void
+    {
+        if ($this->addressMode === 'saved' && $this->shippingAddressId === null && Auth::check()) {
+            $user = Auth::user();
+            $defaultAddress = $user->addresses()->where('is_default', true)->first()
+                ?? $user->addresses()->first();
+
+            if ($defaultAddress !== null) {
+                $this->shippingAddressId = $defaultAddress->id;
+                $this->updatedShippingAddressId();
+
+                return;
+            }
+        }
+
+        $this->loadPreview(app(ValidateCartForCheckoutAction::class));
     }
 
     public function updatedCouponCode(ValidateCartForCheckoutAction $validateCartForCheckout): void
@@ -100,6 +139,16 @@ new #[Layout('layouts.storefront')] class extends Component
             return;
         }
 
+        $this->loadPreview($validateCartForCheckout);
+    }
+
+    public function updatedShippingCity(ValidateCartForCheckoutAction $validateCartForCheckout): void
+    {
+        $this->loadPreview($validateCartForCheckout);
+    }
+
+    public function updatedShippingCountry(ValidateCartForCheckoutAction $validateCartForCheckout): void
+    {
         $this->loadPreview($validateCartForCheckout);
     }
 
@@ -126,6 +175,8 @@ new #[Layout('layouts.storefront')] class extends Component
         $this->shippingState = $address->state;
         $this->shippingCountry = $address->country;
         $this->shippingPostalCode = (string) ($address->postal_code ?? '');
+
+        $this->loadPreview(app(ValidateCartForCheckoutAction::class));
     }
 
     public function confirm(
@@ -137,6 +188,7 @@ new #[Layout('layouts.storefront')] class extends Component
         // Guest checkout (Auth::check() === false) is intentionally not gated here.
         if (Auth::check() && ! Auth::user()->hasVerifiedEmail()) {
             $this->errorMessage = __('auth.verify_email_required');
+            $this->addError('email', __('auth.verify_email_required'));
 
             return null;
         }
@@ -183,6 +235,11 @@ new #[Layout('layouts.storefront')] class extends Component
             return $this->redirect($url, navigate: false);
         } catch (InvalidCouponException $e) {
             $this->errorMessage = $e->storefrontSafeMessage();
+
+            return null;
+        } catch (UnsupportedShippingDestinationException $e) {
+            $this->errorMessage = $e->getMessage();
+            $this->addError('shippingCountry', $e->getMessage());
 
             return null;
         } catch (
@@ -269,10 +326,16 @@ new #[Layout('layouts.storefront')] class extends Component
     {
         try {
             $cart = $this->resolveCurrentCart();
+            $shipping = $this->buildShippingDto();
+            $country = $shipping->country !== '' && $shipping->country !== '—' ? $shipping->country : null;
+            $city = $shipping->city !== '' && $shipping->city !== '—' ? $shipping->city : null;
+
             $preview = $validateCartForCheckout(
-                (int) $cart->id,
-                $this->cartOwner(),
-                $this->normalizedCouponCode(),
+                cartId: (int) $cart->id,
+                owner: $this->cartOwner(),
+                couponCode: $this->normalizedCouponCode(),
+                shippingCountry: $country,
+                shippingCity: $city,
             );
 
             $this->preview = [
@@ -281,6 +344,7 @@ new #[Layout('layouts.storefront')] class extends Component
                 'subtotal' => $preview->subtotal,
                 'shippingCost' => $preview->shippingCost,
                 'discount' => $preview->discount,
+                'thresholdDiscount' => $preview->thresholdDiscount,
                 'taxAmount' => $preview->taxAmount,
                 'total' => $preview->total,
                 'lines' => array_map(
@@ -299,6 +363,13 @@ new #[Layout('layouts.storefront')] class extends Component
         } catch (InvalidCouponException $e) {
             $this->errorMessage = $e->storefrontSafeMessage();
             $this->loadPreviewWithoutCoupon($validateCartForCheckout);
+        } catch (UnsupportedShippingDestinationException $e) {
+            $this->errorMessage = $e->getMessage();
+            $this->addError('shippingCountry', $e->getMessage());
+
+            if ($this->preview === null) {
+                $this->loadPreviewFallback($validateCartForCheckout);
+            }
         } catch (CheckoutCartEmptyException|CheckoutCartNotReadyException|OrderAccessDeniedException $e) {
             session()->flash('checkout_error', $e->getMessage());
             $this->redirect(route('cart.page'), navigate: false);
@@ -309,7 +380,17 @@ new #[Layout('layouts.storefront')] class extends Component
     {
         try {
             $cart = $this->resolveCurrentCart();
-            $preview = $validateCartForCheckout((int) $cart->id, $this->cartOwner(), null);
+            $shipping = $this->buildShippingDto();
+            $country = $shipping->country !== '' && $shipping->country !== '—' ? $shipping->country : null;
+            $city = $shipping->city !== '' && $shipping->city !== '—' ? $shipping->city : null;
+
+            $preview = $validateCartForCheckout(
+                cartId: (int) $cart->id,
+                owner: $this->cartOwner(),
+                couponCode: null,
+                shippingCountry: $country,
+                shippingCity: $city,
+            );
 
             $this->preview = [
                 'cartId' => $preview->cartId,
@@ -317,6 +398,7 @@ new #[Layout('layouts.storefront')] class extends Component
                 'subtotal' => $preview->subtotal,
                 'shippingCost' => $preview->shippingCost,
                 'discount' => $preview->discount,
+                'thresholdDiscount' => $preview->thresholdDiscount,
                 'taxAmount' => $preview->taxAmount,
                 'total' => $preview->total,
                 'lines' => array_map(
@@ -332,9 +414,56 @@ new #[Layout('layouts.storefront')] class extends Component
                     $preview->lines,
                 ),
             ];
+        } catch (UnsupportedShippingDestinationException $e) {
+            $this->errorMessage = $e->getMessage();
+            $this->addError('shippingCountry', $e->getMessage());
+
+            if ($this->preview === null) {
+                $this->loadPreviewFallback($validateCartForCheckout);
+            }
         } catch (CheckoutCartEmptyException|CheckoutCartNotReadyException|OrderAccessDeniedException $e) {
             session()->flash('checkout_error', $e->getMessage());
             $this->redirect(route('cart.page'), navigate: false);
+        }
+    }
+
+    private function loadPreviewFallback(ValidateCartForCheckoutAction $validateCartForCheckout): void
+    {
+        try {
+            $cart = $this->resolveCurrentCart();
+
+            $preview = $validateCartForCheckout(
+                cartId: (int) $cart->id,
+                owner: $this->cartOwner(),
+                couponCode: $this->normalizedCouponCode(),
+                shippingCountry: null,
+                shippingCity: null,
+            );
+
+            $this->preview = [
+                'cartId' => $preview->cartId,
+                'currency' => $preview->currency->value,
+                'subtotal' => $preview->subtotal,
+                'shippingCost' => $preview->shippingCost,
+                'discount' => $preview->discount,
+                'thresholdDiscount' => $preview->thresholdDiscount,
+                'taxAmount' => $preview->taxAmount,
+                'total' => $preview->total,
+                'lines' => array_map(
+                    static fn ($line): array => [
+                        'productVariantId' => $line->productVariantId,
+                        'productName' => $line->productName,
+                        'variantLabel' => $line->variantLabel,
+                        'sku' => $line->sku,
+                        'unitPrice' => $line->unitPrice,
+                        'quantity' => $line->quantity,
+                        'lineSubtotal' => $line->lineSubtotal,
+                    ],
+                    $preview->lines,
+                ),
+            ];
+        } catch (Throwable) {
+            // Fallback failed; preview stays as is
         }
     }
 

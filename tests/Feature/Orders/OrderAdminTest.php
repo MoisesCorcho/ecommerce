@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Orders;
 
+use App\Enums\Commerce\CurrencyEnum;
 use App\Enums\Orders\OrderStatusEnum;
 use App\Filament\Resources\Orders\Pages\ListOrders;
 use App\Filament\Resources\Orders\Pages\ViewOrder;
@@ -70,5 +71,23 @@ class OrderAdminTest extends TestCase
         Livewire::test(ViewOrder::class, ['record' => $order->getRouteKey()])
             ->assertSuccessful()
             ->assertActionHidden('cancel');
+    }
+
+    public function test_admin_order_view_renders_threshold_discount(): void
+    {
+        $this->actingAsAdmin();
+
+        $order = Order::factory()->create([
+            'currency' => CurrencyEnum::Eur,
+            'subtotal' => 30_000,
+            'threshold_discount' => 3_000,
+            'discount' => 0,
+            'total' => 27_000,
+        ]);
+
+        Livewire::test(ViewOrder::class, ['record' => $order->getRouteKey()])
+            ->assertSuccessful()
+            ->assertSee(__('orders.fields.threshold_discount'))
+            ->assertSee('€ 30,00');
     }
 }

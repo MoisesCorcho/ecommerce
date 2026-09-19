@@ -199,6 +199,20 @@ Steering (anti-alucinación y alineación):
 - project-conventions / `AGENTS.md` (equivalente a “03-conventions”)
 - `app/Models` + migrations + enums (equivalente a “05-data-model”)
 
+## Reglas de robustez sistémica (Invariantes, Producto Cartesiano y Ciclo de Vida UI)
+
+Todo diseño y especificación debe someterse a estas tres comprobaciones transversales:
+
+1. **Auditoría de Producto Cartesiano (Off-Diagonal Matrix)**:
+   Cuando una feature combina dos o más dimensiones discretas (ej. Moneda del Carrito × Zona Geográfica de Destino; Rol de Usuario × Estado del Pedido × Canal de Pago), los criterios de aceptación EARS y las matrices de diseño DEBEN auditar explícitamente las combinaciones "fuera de la diagonal" (ej. Carrito en COP con destino en Argentina/USD; Carrito en EUR con destino en Colombia/COP). El diseño de dominio debe forzar que las monedas de las zonas coincidan exactamente con la moneda de la transacción o lanzar excepciones tipadas de dominio (`UnsupportedShippingDestinationException`), prohibiendo la asunción de defaults cruzados o números arbitrarios sin dimensión monetaria.
+2. **Frontera de Ciclo de Vida y DOM Morphing (Livewire / Vanilla JS / Alpine)**:
+   Toda interacción en el storefront o admin que integre librerías JavaScript de terceros o autocompletado dinámico (Google Places Autocomplete, pasarelas de pago embebidas, calendarios) sobre componentes reactivos de Livewire DEBE respetar el ciclo de vida de morphdom:
+   - Los contenedores dinámicos deben estar declarados estáticamente en la plantilla Blade o protegidos con `wire:ignore` para evitar que morphdom los destruya durante re-renderizados reactivos.
+   - Las suscripciones de eventos no deben quedar ancladas a closures con nodos del DOM desasociados (detached DOM nodes).
+   - Preferir componentes Alpine.js (`x-data`, `x-show`, `x-ref`, `$wire`) para encapsular el estado reactivo del cliente en sincronía con Livewire, permitiendo que limpiar campos y volver a escribir reactive el autocompletado sin requerir recargar la página completa.
+3. **Homogeneidad Monetaria del Dominio (Money Pattern)**:
+   Ningún entero que represente dinero en minor units (pesos COP, centavos USD/EUR) tiene significado sin su divisa ISO asociada (`CurrencyEnum`). Todo servicio que resuelva tarifas o cálculos de precios debe validar la concordancia estricta entre la divisa de la zona/tarifa configurada y la divisa activa del carrito.
+
 ## Las 6 reglas de evaluación
 
 | # | Regla | Qué verificar |

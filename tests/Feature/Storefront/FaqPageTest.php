@@ -145,6 +145,6 @@ class FaqPageTest extends TestCase
 
     public function test_faq_subroute_returns_404(): void
     {
-        $this->get('/faq/something')->assertNotFound();
+        $this->get('/faq/something')->assertRedirect('/');
     }
 }

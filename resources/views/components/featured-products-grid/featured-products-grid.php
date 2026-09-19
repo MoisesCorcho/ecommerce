@@ -2,6 +2,7 @@
 
 use App\Enums\Commerce\CurrencyEnum;
 use App\Models\Product;
+use App\Support\Commerce\CurrentCurrency;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Component;
 
@@ -11,9 +12,7 @@ new class extends Component
 
     public function mount(): void
     {
-        $code = (string) config('ecommerce.default_currency', CurrencyEnum::Cop->value);
-
-        $this->currency = CurrencyEnum::tryFrom($code)?->value ?? CurrencyEnum::Cop->value;
+        $this->currency = CurrentCurrency::get()->value;
     }
 
     public function with(): array

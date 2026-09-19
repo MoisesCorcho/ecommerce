@@ -71,5 +71,6 @@ return [
         'city_required' => 'La ciudad es obligatoria.',
         'state_required' => 'El estado o departamento es obligatorio.',
         'country_invalid' => 'El país debe ser un código ISO de 2 letras.',
+        'max_limit_reached' => 'Has alcanzado el límite máximo de 4 direcciones guardadas.',
     ],
 ];

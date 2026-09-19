@@ -8,6 +8,7 @@ use App\Actions\Cart\GetOrCreateCartAction;
 use App\DTOs\Cart\CartOwnerDTO;
 use App\DTOs\Cart\ResolveCartDTO;
 use App\Models\Cart;
+use App\Support\Commerce\CurrentCurrency;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -34,11 +35,13 @@ trait ResolvesCurrentCart
         if ($user !== null) {
             return $getOrCreateCart(new ResolveCartDTO(
                 userId: (int) $user->getAuthIdentifier(),
+                currency: CurrentCurrency::get(),
             ));
         }
 
         return $getOrCreateCart(new ResolveCartDTO(
             sessionId: CartSession::ensureId(),
+            currency: CurrentCurrency::get(),
         ));
     }
 }

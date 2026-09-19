@@ -193,6 +193,27 @@ class OrderHttpTest extends TestCase
         App::setLocale('en');
     }
 
+    public function test_guest_can_view_thank_you_when_gateway_appends_tracking_query_params(): void
+    {
+        $order = Order::factory()->create([
+            'user_id' => null,
+            'status' => OrderStatusEnum::Pending,
+        ]);
+
+        $signed = URL::temporarySignedRoute(
+            'orders.thank-you',
+            now()->addDay(),
+            ['order' => $order->id, 'payment' => 'processing'],
+        );
+
+        // Simulate Bold returning with gateway query params appended
+        $withGatewayParams = $signed.'&bold-order-id=TX12345&status=approved&utm_source=bold';
+
+        $this->get($withGatewayParams)
+            ->assertOk()
+            ->assertSee($order->order_number, false);
+    }
+
     private function createEligibleVariant(int $stock, int $copPrice): ProductVariant
     {
         $product = Product::factory()->create(['is_active' => true]);

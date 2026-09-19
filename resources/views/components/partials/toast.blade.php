@@ -38,7 +38,7 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 translate-y-0"
         x-transition:leave-end="opacity-0 -translate-y-4"
-        class="fixed top-20 right-4 z-50 flex items-center gap-4 bg-intense-cocoa px-6 py-4 text-base font-medium text-silk-cream shadow-ambient"
+        class="fixed top-20 right-4 z-[100] flex items-center gap-4 bg-intense-cocoa px-6 py-4 text-base font-medium text-silk-cream shadow-ambient"
         role="status"
         aria-live="polite"
     >

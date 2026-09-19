@@ -22,7 +22,7 @@
         <h1 class="font-[family-name:var(--font-chillax)] text-3xl font-semibold tracking-tight text-intense-cocoa lg:text-4xl">
             {{ __('faq.title') }}
         </h1>
-        <p class="mt-2 text-body-md text-intense-cocoa/70">
+        <p class="mt-2 text-body-md text-intense-cocoa/80 leading-relaxed lg:text-body-lg">
             {{ __('faq.subtitle') }}
         </p>
 
@@ -104,7 +104,7 @@
             <h2 class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
                 {{ __('faq.cta.heading') }}
             </h2>
-            <p class="text-body-md text-intense-cocoa/70">
+            <p class="text-body-md text-intense-cocoa/80 leading-relaxed lg:text-body-lg">
                 {{ __('faq.cta.body') }}
             </p>
             <x-primary-button

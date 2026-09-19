@@ -119,26 +119,21 @@ class ReviewSeeder extends Seeder
                 ->take(12)
                 ->get();
 
-            // Fill up to 11 approved reviews if needed
-            $toCreate = max(0, 11 - $existingCount);
+            // Fill up to 25 approved reviews with unique users for pagination testing (3 pages)
+            $toCreate = max(0, 25 - $existingCount);
             for ($i = 0; $i < $toCreate; $i++) {
-                $user = $users[$i % $users->count()];
-                $reviewUser = User::query()->where('id', $user->id)->first();
+                $reviewUser = User::factory()->create();
 
-                Review::query()->updateOrCreate(
-                    [
-                        'user_id' => $reviewUser->id,
-                        'product_id' => $honeyBag->id,
-                    ],
-                    [
-                        'rating' => rand(4, 5),
-                        'comment' => $commentsPositive[array_rand($commentsPositive)],
-                        'is_approved' => true,
-                        'is_verified_purchase' => true,
-                        'purchased_variants' => [$allVariants[array_rand($allVariants)]],
-                        'created_at' => now()->subDays(rand(1, 30)),
-                    ]
-                );
+                Review::query()->create([
+                    'user_id' => $reviewUser->id,
+                    'product_id' => $honeyBag->id,
+                    'rating' => rand(4, 5),
+                    'comment' => $commentsPositive[array_rand($commentsPositive)],
+                    'is_approved' => true,
+                    'is_verified_purchase' => true,
+                    'purchased_variants' => [$allVariants[array_rand($allVariants)]],
+                    'created_at' => now()->subDays(rand(1, 30)),
+                ]);
             }
 
             // Ensure at least 1 review has all 3 purchased variants

@@ -56,6 +56,10 @@ class StartOrderPaymentAction
                 throw OrderNotPayableException::make();
             }
 
+            if ((int) $order->total < $order->currency->minimumChargeableAmount()) {
+                throw OrderNotPayableException::make();
+            }
+
             $this->assertStockAvailable($order);
 
             $provider = $order->currency->paymentProvider();
@@ -108,6 +112,7 @@ class StartOrderPaymentAction
                 'payment_id' => $payment->id,
                 'provider' => $provider->value,
                 'exception' => $e::class,
+                'diagnostic' => $e->diagnostic,
             ]);
             $this->discardUnstartedPayment($payment);
             throw $e;
@@ -117,9 +122,10 @@ class StartOrderPaymentAction
                 'payment_id' => $payment->id,
                 'provider' => $provider->value,
                 'exception' => $e::class,
+                'diagnostic' => $e->getMessage(),
             ]);
             $this->discardUnstartedPayment($payment);
-            throw PaymentGatewayException::make($e);
+            throw PaymentGatewayException::make($e, $e->getMessage());
         }
 
         $payment->update([

@@ -35,7 +35,6 @@ class CreateProductAction
                 'slug' => $this->resolveSlug($dto->slug, $dto->name),
                 'description' => $dto->description,
                 'material' => $dto->material,
-                'dimensions' => $dto->dimensions,
                 'is_preorder' => $dto->isPreorder,
                 'is_active' => $dto->isActive,
             ]);
@@ -56,8 +55,9 @@ class CreateProductAction
 
         $variant = $product->variants()->create([
             'sku' => $variantDto->sku,
-            'color' => $variantDto->color,
+            'color_id' => $variantDto->colorId,
             'size' => $variantDto->size,
+            'dimensions' => $variantDto->dimensions,
             'stock' => $variantDto->stock,
             'is_active' => $variantDto->isActive,
         ]);

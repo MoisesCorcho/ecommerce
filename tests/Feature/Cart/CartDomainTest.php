@@ -17,6 +17,7 @@ use App\DTOs\Cart\ChangeCartCurrencyDTO;
 use App\DTOs\Cart\ResolveCartDTO;
 use App\DTOs\Cart\UpdateCartItemQuantityDTO;
 use App\Enums\Commerce\CurrencyEnum;
+use App\Enums\Products\SizeEnum;
 use App\Exceptions\Cart\CartAccessDeniedException;
 use App\Exceptions\Cart\CartCurrencyChangeBlockedException;
 use App\Exceptions\Cart\CartItemNotEligibleException;
@@ -53,6 +54,16 @@ class CartDomainTest extends TestCase
         $this->assertSame(CurrencyEnum::Cop, $first->currency);
         $this->assertTrue($first->is($second));
         $this->assertSame(1, Cart::query()->where('session_id', $sessionId)->count());
+    }
+
+    public function test_cart_creation_falls_back_to_configured_default_currency(): void
+    {
+        config()->set('ecommerce.default_currency', 'EUR');
+
+        $action = app(GetOrCreateCartAction::class);
+        $cart = $action(new ResolveCartDTO(sessionId: 'session-eur-test'));
+
+        $this->assertSame(CurrencyEnum::Eur, $cart->currency);
     }
 
     public function test_user_get_or_create_reuses_single_active_cart(): void
@@ -234,7 +245,7 @@ class CartDomainTest extends TestCase
             'is_active' => true,
             'stock' => 4,
             'color' => 'Marrón',
-            'size' => 'M',
+            'size' => SizeEnum::Medium,
         ]);
         ProductVariantPrice::factory()->for($variant, 'productVariant')->cop()->create(['price' => 30_000]);
         ProductImage::factory()->for($product)->create([
@@ -252,7 +263,7 @@ class CartDomainTest extends TestCase
         $this->assertSame('products/variant-primary.jpg', $line->imagePath);
         $this->assertSame('bolso-artesanal', $line->productSlug);
         $this->assertSame('Marrón', $line->color);
-        $this->assertSame('M', $line->size);
+        $this->assertSame(SizeEnum::Medium->label(), $line->size);
         $this->assertSame('Cuero', $line->material);
         $this->assertSame(4, $line->stock);
         $this->assertTrue($line->isAvailable);

@@ -88,4 +88,23 @@ return [
         'submit' => 'Cerrar sesión',
     ],
 
+    'emails' => [
+        'footer_note' => 'Todos los derechos reservados.',
+        'verify_email' => [
+            'subject' => 'Verifica tu dirección de correo electrónico',
+            'greeting' => '¡Hola, :name!',
+            'line_1' => 'Gracias por registrarte en Leen Handbags. Para activar tu cuenta y acceder a tu perfil y lista de deseos, por favor confirma tu dirección de correo electrónico haciendo clic en el siguiente botón:',
+            'action' => 'Verificar dirección de correo',
+            'line_2' => 'Si no creaste una cuenta en Leen Handbags, puedes ignorar este mensaje sin inconvenientes.',
+        ],
+        'reset_password' => [
+            'subject' => 'Restablece tu contraseña',
+            'greeting' => '¡Hola, :name!',
+            'line_1' => 'Recibes este correo porque se solicitó un restablecimiento de contraseña para tu cuenta en Leen Handbags.',
+            'action' => 'Restablecer contraseña',
+            'line_2' => 'Este enlace para restablecer la contraseña expirará en :count minutos.',
+            'line_3' => 'Si no solicitaste este cambio, no es necesario realizar ninguna acción.',
+        ],
+    ],
+
 ];

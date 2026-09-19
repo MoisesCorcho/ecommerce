@@ -7,6 +7,7 @@ namespace App\Actions\Cart;
 use App\DTOs\Cart\ResolveCartDTO;
 use App\Enums\Commerce\CurrencyEnum;
 use App\Models\Cart;
+use App\Support\Commerce\CurrentCurrency;
 use InvalidArgumentException;
 
 class GetOrCreateCartAction
@@ -38,7 +39,7 @@ class GetOrCreateCartAction
         return Cart::query()->create([
             'user_id' => $userId,
             'session_id' => null,
-            'currency' => $currency ?? CurrencyEnum::Cop,
+            'currency' => $currency ?? CurrentCurrency::default(),
         ]);
     }
 
@@ -57,7 +58,7 @@ class GetOrCreateCartAction
         return Cart::query()->create([
             'user_id' => null,
             'session_id' => $sessionId,
-            'currency' => $currency ?? CurrencyEnum::Cop,
+            'currency' => $currency ?? CurrentCurrency::default(),
         ]);
     }
 }

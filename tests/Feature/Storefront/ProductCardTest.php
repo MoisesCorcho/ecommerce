@@ -163,6 +163,17 @@ class ProductCardTest extends TestCase
             ->assertSeeHtml('group');
     }
 
+    public function test_product_card_renders_golden_discount_badge_when_variant_has_discount(): void
+    {
+        $product = $this->createStorefrontProduct(price: 100_000, compareAtPrice: 150_000);
+
+        Livewire::test('product-card', ['product' => $product, 'currency' => 'COP'])
+            ->assertOk()
+            ->assertSeeHtml('bg-soft-gold text-intense-cocoa')
+            ->assertSeeHtml('-33%')
+            ->assertDontSeeHtml('bg-terracotta');
+    }
+
     /**
      * Create a storefront-ready Product with eager-loaded relations.
      *
@@ -174,6 +185,7 @@ class ProductCardTest extends TestCase
         int $stock = 10,
         int $price = 150_000,
         bool $withImage = true,
+        ?int $compareAtPrice = null,
     ): Product {
         $category = Category::factory()->create(['name' => 'Handbags']);
 
@@ -195,6 +207,7 @@ class ProductCardTest extends TestCase
             ->create([
                 'currency' => CurrencyEnum::Cop,
                 'price' => $price,
+                'compare_at_price' => $compareAtPrice,
             ]);
 
         if ($withImage) {

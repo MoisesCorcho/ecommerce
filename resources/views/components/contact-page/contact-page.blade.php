@@ -36,7 +36,7 @@
                         </span>
                         <p>
                             <span class="block text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa/60">{{ __('contact.info.email_label') }}</span>
-                            <a href="mailto:{{ config('ecommerce.contact.public_email', 'hola@leenhandbags.com') }}" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">{{ config('ecommerce.contact.public_email', 'hola@leenhandbags.com') }}</a>
+                            <a href="mailto:{{ config('ecommerce.contact.public_email', 'leenhandbags@gmail.com') }}" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">{{ config('ecommerce.contact.public_email', 'leenhandbags@gmail.com') }}</a>
                         </p>
                     </li>
 
@@ -239,7 +239,7 @@
             <h2 id="contact-faq-heading" class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
                 {{ __('contact.faq.heading') }}
             </h2>
-            <p class="max-w-md text-body-md text-intense-cocoa/70">
+            <p class="max-w-md text-body-md text-intense-cocoa/80 leading-relaxed lg:text-body-lg">
                 {{ __('contact.faq.body') }}
             </p>
             <x-secondary-button

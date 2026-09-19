@@ -96,10 +96,13 @@ class BoldPaymentGatewayTest extends TestCase
             ),
         );
 
-        Http::assertSent(function ($request) use ($callback): bool {
+        Http::assertSent(function ($request) use ($callback, $order): bool {
             $data = $request->data();
 
-            return ($data['callback_url'] ?? null) === $callback;
+            return ($data['callback_url'] ?? null) === $callback
+                && ($data['payer_email'] ?? null) === $order->email
+                && is_int($data['expiration_date'] ?? null)
+                && $data['expiration_date'] > (time() * 1_000_000_000);
         });
     }
 
@@ -136,9 +139,50 @@ class BoldPaymentGatewayTest extends TestCase
                 ),
             );
             $this->fail('Expected PaymentGatewayException');
-        } catch (PaymentGatewayException) {
-            // expected
+        } catch (PaymentGatewayException $e) {
+            $this->assertSame('Forbidden', $e->diagnostic);
         }
+    }
+
+    public function test_create_hosted_checkout_throws_in_production_when_webhook_secret_is_empty(): void
+    {
+        $this->app['env'] = 'production';
+
+        config([
+            'ecommerce.payments.bold.api_key' => 'test-identity-key',
+            'ecommerce.payments.bold.webhook_secret' => '',
+            'ecommerce.payments.bold.secret_key' => '',
+        ]);
+
+        [$order, $payment] = $this->makeCopOrderAndPayment();
+
+        $this->expectException(PaymentGatewayException::class);
+
+        app(BoldPaymentGateway::class)->createHostedCheckout(
+            $order,
+            $payment,
+            new HostedCheckoutReturnDTO(
+                successUrl: 'https://shop.example.com/ok',
+                cancelUrl: 'https://shop.example.com/cancel',
+            ),
+        );
+    }
+
+    public function test_webhook_signature_rejects_empty_secret_in_production(): void
+    {
+        $this->app['env'] = 'production';
+
+        config([
+            'ecommerce.payments.bold.webhook_secret' => '',
+            'ecommerce.payments.bold.secret_key' => '',
+        ]);
+
+        $payload = '{"id":"evt_prod_bad","type":"SALE_APPROVED","data":{}}';
+        $signature = hash_hmac('sha256', base64_encode($payload), '');
+
+        $this->expectException(InvalidPaymentWebhookSignatureException::class);
+
+        app(BoldPaymentGateway::class)->verifyWebhookSignature($payload, $signature);
     }
 
     public function test_webhook_signature_accepts_empty_secret_in_test_mode(): void

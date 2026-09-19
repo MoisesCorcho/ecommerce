@@ -20,5 +20,6 @@ readonly class CheckoutPreviewDTO
         public int $discount,
         public int $taxAmount,
         public int $total,
+        public int $thresholdDiscount = 0,
     ) {}
 }

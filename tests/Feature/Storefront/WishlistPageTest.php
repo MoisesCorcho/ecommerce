@@ -303,9 +303,9 @@ class WishlistPageTest extends TestCase
 
         Livewire::actingAs($user)
             ->test('wishlist-page')
-            ->assertSee(__('storefront.wishlist.unavailable_message'))
+            ->assertSee(__('storefront.wishlist.unavailable_badge'))
             ->assertSeeHtml(route('products.index'))
-            ->assertSee(__('storefront.wishlist.out_of_stock_message'));
+            ->assertSee(__('storefront.out_of_stock'));
     }
 
     public function test_color_swatch_renders_next_to_the_color_label_when_the_variant_has_a_color(): void

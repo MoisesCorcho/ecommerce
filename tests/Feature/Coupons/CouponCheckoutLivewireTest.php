@@ -29,6 +29,7 @@ class CouponCheckoutLivewireTest extends TestCase
     public function test_guest_checkout_with_coupon_code_applies_discount_and_consumes(): void
     {
         Config::set('ecommerce.shipping.standard_cost_cop', 5_000);
+        Config::set('ecommerce.shipping.zones.cities.CO.cali.cost', 5_000);
 
         Coupon::factory()->percentage(10)->unlimited()->create(['code' => 'LIVE10']);
 

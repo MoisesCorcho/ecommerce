@@ -45,7 +45,7 @@
                 </x-secondary-button>
             </div>
         @else
-            <div class="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4" data-wishlist-grid>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4" data-wishlist-grid>
                 @foreach ($items as $item)
                     @php
                         $variant = $item['variant'];
@@ -74,26 +74,20 @@
                             @if ($variant->color || $variant->size)
                                 <p class="text-sm text-intense-cocoa/60" data-wishlist-variant-attributes>
                                     @if ($variant->color)
-                                        <span class="inline-block h-3 w-3 border border-intense-cocoa/10 align-middle" style="background-color: {{ ColorMap::HEX[strtolower($variant->color)] ?? '#8B8B8B' }}"></span>
+                                        <span class="inline-block h-3 w-3 border border-intense-cocoa/10 align-middle" style="background-color: {{ ColorMap::for($variant->color) }}"></span>
                                         {{ __('storefront.products.color_label') }}: {{ $variant->color }}
                                     @endif
                                     @if ($variant->color && $variant->size)
                                         &middot;
                                     @endif
                                     @if ($variant->size)
-                                        {{ __('storefront.products.size_label') }}: {{ $variant->size }}
+                                        {{ __('storefront.products.size_label') }}: {{ $variant->size instanceof \App\Enums\Products\SizeEnum ? $variant->size->label() : (\App\Enums\Products\SizeEnum::tryFrom((string) $variant->size)?->label() ?? $variant->size) }}
                                     @endif
                                 </p>
-                            @endif
-
-                            @if (! $isAvailable)
+                            @elseif (! $isAvailable)
                                 <p class="text-xs text-intense-cocoa/50">
                                     {{ __('storefront.wishlist.unavailable_message') }}
                                     <a href="{{ route('products.index') }}" class="underline underline-offset-2 hover:text-intense-cocoa">{{ __('storefront.wishlist.explore_similar') }}</a>
-                                </p>
-                            @elseif ($isOutOfStock)
-                                <p class="text-xs text-intense-cocoa/50">
-                                    {{ __('storefront.wishlist.out_of_stock_message') }}
                                 </p>
                             @endif
                         </x-slot:variantInfo>
@@ -128,11 +122,7 @@
                 @endforeach
             </div>
 
-            @if ($items->hasPages())
-                <div class="mt-12">
-                    {{ $items->links('vendor.pagination.custom') }}
-                </div>
-            @endif
+            <x-pagination :paginator="$items" class="mt-12" />
         @endif
     </div>
 </div>

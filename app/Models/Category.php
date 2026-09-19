@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 #[Fillable([
     'name',
@@ -22,6 +23,15 @@ class Category extends Model
 {
     /** @use HasFactory<CategoryFactory> */
     use HasFactory;
+
+    protected static function booted(): void
+    {
+        static::deleting(static function (Category $category): void {
+            if ($category->image_path && Storage::disk('public')->exists($category->image_path)) {
+                Storage::disk('public')->delete($category->image_path);
+            }
+        });
+    }
 
     /**
      * @return array<string, string>

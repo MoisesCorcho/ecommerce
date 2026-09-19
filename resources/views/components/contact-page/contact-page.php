@@ -1,9 +1,8 @@
 <?php
 
-use App\Mail\Contact\ContactFormSubmittedMail;
+use App\Actions\Contact\SubmitContactFormAction;
+use App\DTOs\Contact\SubmitContactFormDTO;
 use App\Support\Contact\ContactFormRateLimiter;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -39,35 +38,29 @@ new #[Layout('layouts.storefront')] class extends Component
         $this->validateOnly($property);
     }
 
-    public function submit(ContactFormRateLimiter $limiter): void
+    public function submit(ContactFormRateLimiter $limiter, SubmitContactFormAction $action): void
     {
         $this->errorMessage = null;
 
         if (! $limiter->attempt(request()->ip())) {
-            $this->errorMessage = __('contact.error.throttled', ['email' => config('ecommerce.contact.public_email')]);
+            $this->errorMessage = __('contact.error.throttled');
 
             return;
         }
 
         $this->validate();
 
-        try {
-            Mail::to(config('ecommerce.contact.inbox'))->send(new ContactFormSubmittedMail(
-                senderName: $this->name,
-                senderEmail: $this->email,
-                subjectLine: $this->subject,
-                body: $this->message,
-            ));
-        } catch (Throwable $e) {
-            Log::error('Contact form submission failed to send.', [
-                'exception' => $e->getMessage(),
-                'sender_email' => $this->email,
-            ]);
+        $dto = new SubmitContactFormDTO(
+            name: $this->name,
+            email: $this->email,
+            subject: $this->subject,
+            message: $this->message,
+            ipAddress: request()->ip(),
+            userAgent: request()->userAgent(),
+            userId: auth()->id(),
+        );
 
-            $this->errorMessage = __('contact.error.send_failed', ['email' => config('ecommerce.contact.public_email')]);
-
-            return;
-        }
+        $action($dto);
 
         $this->sent = true;
         $this->reset(['name', 'email', 'subject', 'message']);

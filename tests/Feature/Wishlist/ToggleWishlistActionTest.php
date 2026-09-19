@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Wishlist;
 
 use App\Actions\Wishlist\ToggleWishlistAction;
+use App\Enums\Commerce\CurrencyEnum;
 use App\Models\ProductVariant;
 use App\Models\User;
 use App\Models\Wishlist;
@@ -82,5 +83,46 @@ class ToggleWishlistActionTest extends TestCase
             'product_variant_id' => $variant->id,
         ]);
         $this->assertDatabaseCount('wishlists', 2);
+    }
+
+    public function test_it_captures_price_and_currency_when_adding_to_wishlist_with_explicit_currency(): void
+    {
+        $user = User::factory()->create();
+        $variant = ProductVariant::factory()->create();
+        $variant->prices()->create([
+            'currency' => CurrencyEnum::Eur,
+            'price' => 12_500,
+            'compare_at_price' => 15_000,
+        ]);
+
+        $result = app(ToggleWishlistAction::class)($user, $variant, CurrencyEnum::Eur);
+
+        $this->assertTrue($result);
+        $this->assertDatabaseHas('wishlists', [
+            'user_id' => $user->id,
+            'product_variant_id' => $variant->id,
+            'price_when_added' => 12_500,
+            'currency_when_added' => 'EUR',
+        ]);
+    }
+
+    public function test_it_captures_price_and_currency_defaulting_to_current_currency(): void
+    {
+        $user = User::factory()->create();
+        $variant = ProductVariant::factory()->create();
+        $variant->prices()->create([
+            'currency' => CurrencyEnum::Cop,
+            'price' => 250_000,
+        ]);
+
+        $result = app(ToggleWishlistAction::class)($user, $variant);
+
+        $this->assertTrue($result);
+        $this->assertDatabaseHas('wishlists', [
+            'user_id' => $user->id,
+            'product_variant_id' => $variant->id,
+            'price_when_added' => 250_000,
+            'currency_when_added' => 'COP',
+        ]);
     }
 }

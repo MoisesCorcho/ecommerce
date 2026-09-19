@@ -18,10 +18,18 @@
 <x-partials.toast>
 <div
     x-data="{
+        activeImageIndex: @js($mainImageIndex),
         lightbox: false,
-        lightboxIndex: @js($mainImageIndex),
+        lightboxIndex: 0,
+        init() {
+            this.$watch('$wire.mainImageIndex', (val) => {
+                if (val !== undefined && val !== null) {
+                    this.activeImageIndex = val;
+                }
+            });
+        },
         openLightbox(index) {
-            this.lightboxIndex = index;
+            this.lightboxIndex = (index !== undefined) ? index : this.activeImageIndex;
             this.lightbox = true;
         },
         closeLightbox() {
@@ -50,17 +58,20 @@
         {{-- LEFT: Gallery (R2, R3, R4) --}}
         <div>
             {{-- Main image — centered in container --}}
-            <div class="group relative flex aspect-[4/5] cursor-zoom-in items-center justify-center overflow-hidden bg-soft-sand lg:max-h-[70vh]" wire:click="openLightbox({{ $mainImageIndex }})">
+            <div
+                class="group relative flex aspect-[4/5] cursor-zoom-in items-center justify-center overflow-hidden bg-soft-sand lg:max-h-[70vh]"
+                @click="openLightbox(activeImageIndex)"
+            >
                 @if ($product->images->count() > 0)
-                    @php
-                        $currentImage = $product->images->get($mainImageIndex) ?? $product->images->first();
-                    @endphp
-                    <img
-                        src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($currentImage->path) }}"
-                        alt="{{ $product->name }}"
-                        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                        wire:key="main-image-{{ $mainImageIndex }}"
-                    >
+                    @foreach ($product->images as $index => $image)
+                        <img
+                            x-show="activeImageIndex === {{ $index }}"
+                            x-cloak
+                            src="/storage/{{ $image->path }}"
+                            alt="{{ $product->name }} — {{ $loop->iteration }}"
+                            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                        >
+                    @endforeach
                     {{-- Zoom hint --}}
                     <div class="absolute inset-0 flex items-center justify-center bg-intense-cocoa/0 transition-colors group-hover:bg-intense-cocoa/10">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-8 w-8 text-silk-cream opacity-0 transition-opacity group-hover:opacity-80" aria-hidden="true">
@@ -80,14 +91,15 @@
                     @foreach ($product->images as $index => $image)
                         <button
                             type="button"
-                            wire:click="$set('mainImageIndex', {{ $index }})"
+                            @click="activeImageIndex = {{ $index }}"
                             role="option"
-                            aria-selected="{{ $mainImageIndex === $index ? 'true' : 'false' }}"
+                            :aria-selected="activeImageIndex === {{ $index }} ? 'true' : 'false'"
                             aria-label="Image {{ $loop->iteration }}"
-                            class="group/thumbnail relative flex-shrink-0 overflow-hidden border-2 transition-all duration-200 {{ $mainImageIndex === $index ? 'border-intense-cocoa' : 'border-transparent hover:border-intense-cocoa/30' }}"
+                            class="group/thumbnail relative flex-shrink-0 overflow-hidden border-2 transition-all duration-200"
+                            :class="activeImageIndex === {{ $index }} ? 'border-intense-cocoa' : 'border-transparent hover:border-intense-cocoa/30'"
                         >
                             <img
-                                src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($image->path) }}"
+                                src="/storage/{{ $image->path }}"
                                 alt="{{ $product->name }} — {{ $loop->iteration }}"
                                 class="h-16 w-16 object-cover sm:h-20 sm:w-20"
                             >
@@ -110,13 +122,20 @@
                         {{ $product->category->name }}
                     </p>
                 @endif
-                <h1 class="font-[family-name:var(--font-chillax)] text-3xl font-semibold tracking-tight text-intense-cocoa sm:text-4xl">
-                    {{ $product->name }}
-                </h1>
+                <div class="flex flex-wrap items-center gap-3">
+                    <h1 class="font-[family-name:var(--font-chillax)] text-3xl font-semibold tracking-tight text-intense-cocoa sm:text-4xl">
+                        {{ $product->name }}
+                    </h1>
+                    @if ($product->is_preorder)
+                        <span class="inline-flex items-center bg-intense-cocoa px-3 py-1 text-xs font-semibold uppercase tracking-widest text-silk-cream">
+                            {{ __('storefront.products.preorder_badge') }}
+                        </span>
+                    @endif
+                </div>
             </div>
 
             {{-- Price + Stock (R5, R18) --}}
-            <div class="flex flex-wrap items-baseline gap-3">
+            <div class="flex flex-wrap items-center gap-3">
                 @if ($selectedVariant && $selectedVariant->priceIn($currencyEnum))
                     @php
                         $price = $selectedVariant->priceIn($currencyEnum);
@@ -124,6 +143,14 @@
                     <span class="font-[family-name:var(--font-sans)] text-2xl font-semibold tabular-nums text-intense-cocoa">
                         {{ $currencyEnum->format($price->price) }}
                     </span>
+                    @if ($price->hasDiscount())
+                        <span class="font-[family-name:var(--font-sans)] text-xl font-normal line-through text-intense-cocoa/40">
+                            {{ $currencyEnum->format($price->compare_at_price) }}
+                        </span>
+                        <span class="bg-soft-gold text-intense-cocoa border border-soft-gold/30 px-2.5 py-0.5 text-label-caps font-semibold uppercase tracking-wider">
+                            -{{ $price->discountPercentage() }}%
+                        </span>
+                    @endif
                 @elseif($pricedVariants->first()?->priceIn($currencyEnum))
                     @php
                         $price = $pricedVariants->first()->priceIn($currencyEnum);
@@ -131,11 +158,19 @@
                     <span class="font-[family-name:var(--font-sans)] text-2xl font-semibold tabular-nums text-intense-cocoa">
                         {{ $currencyEnum->format($price->price) }}
                     </span>
+                    @if ($price->hasDiscount())
+                        <span class="font-[family-name:var(--font-sans)] text-xl font-normal line-through text-intense-cocoa/40">
+                            {{ $currencyEnum->format($price->compare_at_price) }}
+                        </span>
+                        <span class="bg-soft-gold text-intense-cocoa border border-soft-gold/30 px-2.5 py-0.5 text-label-caps font-semibold uppercase tracking-wider">
+                            -{{ $price->discountPercentage() }}%
+                        </span>
+                    @endif
                 @endif
 
                 {{-- Out of stock badge (R18) --}}
                 @if ($selectedVariant && $selectedVariant->stock <= 0 && ! $product->is_preorder)
-                    <span class="bg-soft-gold px-2.5 py-1 text-label-caps font-semibold uppercase tracking-wider text-intense-cocoa">
+                    <span class="inline-flex items-center justify-center bg-soft-gold px-2.5 py-1 text-label-caps font-semibold uppercase tracking-wider text-intense-cocoa">
                         {{ __('storefront.out_of_stock') }}
                     </span>
                 @endif
@@ -145,7 +180,7 @@
             @if ($selectedVariant)
                 @if ($selectedVariant->stock > 0 && $selectedVariant->stock <= 5)
                     <p class="text-sm text-intense-cocoa/70">
-                        {{ __('storefront.products.stock_low', ['count' => $selectedVariant->stock]) }}
+                        {{ $selectedVariant->stock === 1 ? __('storefront.products.stock_low_one') : __('storefront.products.stock_low', ['count' => $selectedVariant->stock]) }}
                     </p>
                 @elseif ($selectedVariant->stock > 5)
                     <p class="text-sm text-intense-cocoa/70">
@@ -163,7 +198,7 @@
 
             {{-- Brief description (R5) --}}
             @if ($product->description)
-                <p class="leading-relaxed text-intense-cocoa/80 line-clamp-3">
+                <p class="text-body-md leading-relaxed text-intense-cocoa/80 lg:text-body-lg line-clamp-3">
                     {{ Str::limit($product->description, 200) }}
                 </p>
             @endif
@@ -178,7 +213,7 @@
                     <div class="flex flex-wrap gap-2.5" role="radiogroup" aria-label="{{ __('storefront.products.color_label') }}">
                         @foreach ($availableColors as $colorName)
                             @php
-                                $hex = ColorMap::HEX[strtolower($colorName)] ?? '#8B8B8B';
+                                $hex = ColorMap::for($colorName);
                                 $isSelected = $selectedColor === $colorName;
                             @endphp
                             <button
@@ -208,8 +243,7 @@
             @if ($availableSizes->count() > 0)
                 <div>
                     <p class="mb-2.5 text-sm font-medium text-intense-cocoa">
-                        {{ __('storefront.products.size_label') }}:
-                        <span class="font-normal text-intense-cocoa/60">{{ $selectedSize ?? '—' }}</span>
+                        {{ __('storefront.products.size_label') }}
                     </p>
                     <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="{{ __('storefront.products.size_label') }}">
                         @foreach ($availableSizes as $sizeName)
@@ -221,9 +255,9 @@
                                 wire:click="$set('selectedSize', '{{ $sizeName }}')"
                                 role="radio"
                                 aria-checked="{{ $isSelected ? 'true' : 'false' }}"
-                                class="min-h-[44px] min-w-[44px] border px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none {{ $isSelected ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-intense-cocoa/20 bg-soft-sand text-intense-cocoa hover:border-intense-cocoa' }}"
+                                class="min-h-[44px] min-w-[44px] border px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none {{ $isSelected ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-transparent bg-soft-sand text-intense-cocoa hover:border-intense-cocoa' }}"
                             >
-                                {{ $sizeName }}
+                                {{ \App\Enums\Products\SizeEnum::tryFrom($sizeName)?->label() ?? $sizeName }}
                             </button>
                         @endforeach
                     </div>
@@ -232,26 +266,29 @@
 
                 {{-- Select variant hint (R18) --}}
                 @if (! $selectedVariant)
-                    <p class="bg-soft-sand px-4 py-2.5 text-sm text-intense-cocoa/70" data-select-variant-hint>
+                    <p class="bg-soft-sand px-4 py-2.5 text-body-md text-intense-cocoa/80 leading-relaxed lg:text-body-lg" data-select-variant-hint>
                         {{ __('storefront.products.select_variant') }}
                     </p>
                 @elseif ($selectedVariant->stock > 0 && $availableStock <= 0)
-                    <p class="bg-soft-gold/20 px-4 py-2.5 text-sm text-intense-cocoa/70">
+                    <p class="bg-soft-gold/20 px-4 py-2.5 text-body-md text-intense-cocoa/80 leading-relaxed lg:text-body-lg">
                         {{ __('storefront.products.stock_in_cart') }}
                     </p>
                 @endif
 
             {{-- Quantity selector (R8) --}}
             @if ($selectedVariant && $selectedVariant->stock > 0)
-                <div>
+                <div class="flex flex-col items-start">
                     <label for="product-qty" class="mb-2 block text-sm font-medium text-intense-cocoa">
                         {{ __('storefront.products.quantity_label') }}
                     </label>
 
                     @if ($cartQuantity > 0)
-                        <p class="mb-2 text-sm text-intense-cocoa/60">
-                            {{ __('storefront.products.already_in_cart', ['count' => $cartQuantity]) }}
-                        </p>
+                        <div class="mb-2.5 inline-flex items-center gap-1.5 rounded-none bg-soft-sand px-2.5 py-1 text-xs font-medium text-intense-cocoa">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5 text-intense-cocoa/70" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M6 5v1H4.667a1.75 1.75 0 0 0-1.741 1.575l-.834 8.5A1.75 1.75 0 0 0 3.834 18h12.332a1.75 1.75 0 0 0 1.742-1.925l-.834-8.5A1.75 1.75 0 0 0 15.333 6H14V5a4 4 0 0 0-8 0Zm4-2.5A2.5 2.5 0 0 0 7.5 5v1h5V5A2.5 2.5 0 0 0 10 2.5ZM4.333 7.5h11.334l.833 8.5a.25.25 0 0 1-.249.275H3.834a.25.25 0 0 1-.249-.275l.833-8.5Z" clip-rule="evenodd" />
+                            </svg>
+                            <span>{{ __('storefront.products.already_in_cart', ['count' => $cartQuantity]) }}</span>
+                        </div>
                     @endif
 
                     <div class="inline-flex items-center overflow-hidden border border-intense-cocoa">
@@ -304,12 +341,12 @@
                         wire:click="addToCart"
                         class="w-full focus:outline-none disabled:bg-intense-cocoa/40 disabled:hover:bg-intense-cocoa/40 disabled:hover:text-silk-cream"
                         data-add-to-cart
-                        aria-label="{{ __('storefront.products.add_to_cart') }}"
+                        aria-label="{{ $product->is_preorder ? __('storefront.products.add_to_cart_preorder') : __('storefront.products.add_to_cart') }}"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mr-2 h-5 w-5" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.46 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM11.25 10.5h.008v.008h-.008V10.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
                         </svg>
-                        {{ __('storefront.products.add_to_cart') }}
+                        {{ $product->is_preorder ? __('storefront.products.add_to_cart_preorder') : __('storefront.products.add_to_cart') }}
                     </x-primary-button>
                 @else
                     <x-primary-button
@@ -368,7 +405,7 @@
 
             {{-- Error message --}}
             @if ($errorMessage)
-                <div class="rounded-lg border border-error/20 bg-error/5 px-4 py-3 text-sm text-error" role="alert" data-add-error>
+                <div class="rounded-none border border-error/20 bg-error/5 px-4 py-3 text-sm text-error" role="alert" data-add-error>
                     {{ $errorMessage }}
                 </div>
             @endif
@@ -379,20 +416,20 @@
     @if ($product->description)
         <section class="mt-16 bg-soft-sand" aria-labelledby="description-heading">
             <div class="mx-auto max-w-4xl px-margin-mobile py-12 sm:py-16 lg:px-margin-desktop">
-                    <h2 id="description-heading" class="mb-6 font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
+                    <h2 id="description-heading" class="mb-6 font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa lg:text-3xl">
                         {{ __('storefront.products.description_title') }}
                     </h2>
-                    <div class="space-y-4 leading-relaxed text-intense-cocoa/80">
+                    <div class="space-y-4 text-body-md leading-relaxed text-intense-cocoa/80 lg:text-body-lg">
                         @if ($product->material)
                             <div>
-                                <span class="text-sm font-medium text-intense-cocoa">{{ __('storefront.products.material_label') }}:</span>
+                                <span class="font-medium text-intense-cocoa">{{ __('storefront.products.material_label') }}:</span>
                                 <span class="text-intense-cocoa/70">{{ $product->material }}</span>
                             </div>
                         @endif
-                        @if ($product->dimensions)
+                        @if ($selectedVariant?->dimensions)
                             <div>
-                                <span class="text-sm font-medium text-intense-cocoa">{{ __('storefront.products.dimensions_label') }}:</span>
-                                <span class="text-intense-cocoa/70">{{ $product->dimensions }}</span>
+                                <span class="font-medium text-intense-cocoa">{{ __('storefront.products.dimensions_label') }}:</span>
+                                <span class="text-intense-cocoa/70">{{ $selectedVariant->dimensions }}</span>
                             </div>
                         @endif
                         <p class="whitespace-pre-line">{{ $product->description }}</p>
@@ -422,11 +459,9 @@
                     </p>
                 @endif
             </div>
-        </div>
-
-        <div class="grid items-start gap-10 lg:grid-cols-[1.2fr_1fr]">
-            {{-- Public approved list --}}
-            <div class="space-y-6" data-approved-reviews>
+             <div class="grid items-start gap-10 lg:grid-cols-[1.2fr_1fr]">
+            {{-- Public approved list (order-2 on mobile/tablet, order-1 on desktop) --}}
+            <div class="order-2 space-y-6 lg:order-1" data-approved-reviews>
                 @forelse ($approvedReviews as $review)
                     <article class="bg-surface-container p-5 shadow-sm" wire:key="review-{{ $review->id }}">
                         <div class="mb-2 flex flex-wrap items-center gap-2">
@@ -453,7 +488,7 @@
                             </div>
                         @endif
                         @if ($review->comment)
-                            <p class="text-sm leading-relaxed text-intense-cocoa/80">{{ $review->comment }}</p>
+                            <p class="text-body-md leading-relaxed text-intense-cocoa/80 lg:text-body-lg">{{ $review->comment }}</p>
                         @endif
                         <time class="mt-2 block text-xs text-intense-cocoa/40" datetime="{{ $review->created_at?->toIso8601String() }}">
                             {{ $review->created_at?->format('d/m/Y') }}
@@ -465,16 +500,16 @@
                     </p>
                 @endforelse
                 @if ($totalPages > 1)
-                    <nav class="mt-6 flex items-center justify-center gap-1" aria-label="{{ __('reviews.ui.pagination') }}">
+                    <nav class="mt-6 flex items-center justify-center gap-1.5" aria-label="{{ __('reviews.ui.pagination') }}">
                         @if ($reviewsPage > 1)
                             <button
                                 type="button"
                                 wire:click="goToReviewsPage({{ $reviewsPage - 1 }})"
-                                class="h-9 border border-intense-cocoa/20 px-3 text-xs font-semibold uppercase tracking-widest text-intense-cocoa/70 transition-all duration-200 hover:border-intense-cocoa hover:text-intense-cocoa"
+                                class="flex h-9 w-9 items-center justify-center border border-intense-cocoa bg-transparent text-xs font-semibold uppercase tracking-widest text-intense-cocoa transition-all duration-200 hover:border-soft-gold hover:text-soft-gold focus:outline-none"
                                 aria-label="{{ __('reviews.ui.previous_page') }}"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+                                    <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 0 1-.02 1.06L8.832 10l3.938 3.71a.75.75 0 1 1-1.04 1.08l-4.5-4.25a.75.75 0 0 1 0-1.08l4.5-4.25a.75.75 0 0 1 1.06.02Z" clip-rule="evenodd" />
                                 </svg>
                             </button>
                         @endif
@@ -483,7 +518,7 @@
                             <button
                                 type="button"
                                 wire:click="goToReviewsPage({{ $i }})"
-                                class="flex h-9 w-9 items-center justify-center border text-xs font-semibold uppercase tracking-widest transition-all duration-200 focus:outline-none {{ $reviewsPage === $i ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-intense-cocoa/20 bg-transparent text-intense-cocoa/60 hover:border-intense-cocoa hover:text-intense-cocoa' }}"
+                                class="flex h-9 w-9 items-center justify-center border text-xs font-semibold uppercase tracking-widest transition-all duration-200 focus:outline-none {{ $reviewsPage === $i ? 'border-intense-cocoa bg-intense-cocoa text-silk-cream' : 'border-intense-cocoa bg-transparent text-intense-cocoa hover:border-soft-gold hover:text-soft-gold' }}"
                                 aria-current="{{ $reviewsPage === $i ? 'page' : false }}"
                             >
                                 {{ $i }}
@@ -494,11 +529,11 @@
                             <button
                                 type="button"
                                 wire:click="goToReviewsPage({{ $reviewsPage + 1 }})"
-                                class="h-9 border border-intense-cocoa/20 px-3 text-xs font-semibold uppercase tracking-widest text-intense-cocoa/70 transition-all duration-200 hover:border-intense-cocoa hover:text-intense-cocoa"
+                                class="flex h-9 w-9 items-center justify-center border border-intense-cocoa bg-transparent text-xs font-semibold uppercase tracking-widest text-intense-cocoa transition-all duration-200 hover:border-soft-gold hover:text-soft-gold focus:outline-none"
                                 aria-label="{{ __('reviews.ui.next_page') }}"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                    <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 0 1 .02-1.06L11.168 10 7.23 6.29a.75.75 0 1 1 1.04-1.08l4.5 4.25a.75.75 0 0 1 0 1.08l-4.5 4.25a.75.75 0 0 1-1.06-.02Z" clip-rule="evenodd" />
                                 </svg>
                             </button>
                         @endif
@@ -506,8 +541,8 @@
                 @endif
             </div>
 
-            {{-- Viewer form / notices --}}
-            <div class="bg-surface-container p-6 shadow-sm" data-review-form>
+            {{-- Viewer form / notices (order-1 on mobile/tablet, order-2 on desktop) --}}
+            <div class="order-1 bg-surface-container p-6 shadow-sm lg:order-2" data-review-form>
                 @auth
                     @if ($canCreateReview || $canEditReview)
                         <h3 class="mb-4 font-[family-name:var(--font-chillax)] text-lg font-semibold text-intense-cocoa">
@@ -515,7 +550,7 @@
                         </h3>
 
                         @if ($viewerReview && ! $viewerReview->is_approved)
-                            <p class="mb-4 rounded-sm border border-soft-gold/40 bg-soft-sand/60 px-3 py-2 text-sm text-intense-cocoa/80" data-review-pending>
+                            <p class="mb-4 rounded-none border border-soft-gold/40 bg-soft-sand/60 px-3 py-2 text-sm text-intense-cocoa/80" data-review-pending>
                                 {{ __('reviews.ui.pending_notice') }}
                             </p>
                         @endif
@@ -557,10 +592,10 @@
                                 @enderror
                             </div>
 
-                            <div class="flex flex-wrap gap-3">
+                            <div class="flex flex-col items-center justify-center gap-3 pt-2 sm:flex-row">
                                 <button
                                     type="submit"
-                                    class="h-11 bg-intense-cocoa px-5 text-sm font-semibold text-silk-cream transition-colors hover:bg-intense-cocoa/90 focus:outline-none"
+                                    class="h-11 w-full min-w-[180px] bg-intense-cocoa px-5 text-xs font-semibold uppercase tracking-wider text-silk-cream transition-colors duration-200 hover:bg-soft-gold hover:text-intense-cocoa focus:outline-none sm:w-auto"
                                     wire:loading.attr="disabled"
                                 >
                                     {{ $canEditReview ? __('reviews.actions.update') : __('reviews.actions.submit') }}
@@ -571,7 +606,7 @@
                                         type="button"
                                         wire:click="deleteReview"
                                         wire:confirm="{{ __('reviews.ui.delete_confirm') }}"
-                                        class="h-11 border border-intense-cocoa/30 px-5 text-sm font-medium text-intense-cocoa transition-colors hover:border-error hover:text-error focus:outline-none"
+                                        class="h-11 w-full min-w-[180px] border border-error/50 px-5 text-xs font-semibold uppercase tracking-wider text-error transition-colors duration-200 hover:border-error hover:bg-error hover:text-silk-cream focus:outline-none sm:w-auto"
                                     >
                                         {{ __('reviews.actions.delete_own') }}
                                     </button>
@@ -595,7 +630,7 @@
                     </p>
                 @endif
                 @if ($reviewErrorMessage)
-                    <p class="mt-4 rounded-sm border border-error/20 bg-error/5 px-3 py-2 text-sm text-error" role="alert" data-review-error>
+                    <p class="mt-4 rounded-none border border-error/20 bg-error/5 px-3 py-2 text-sm text-error" role="alert" data-review-error>
                         {{ $reviewErrorMessage }}
                     </p>
                 @endif
@@ -607,7 +642,7 @@
     @if ($relatedProducts->count() > 0)
         <section class="mx-auto mt-16 max-w-storefront px-margin-mobile sm:mt-20 lg:px-margin-desktop" aria-labelledby="related-heading">
             <div class="mb-8 flex items-end justify-between">
-                <h2 id="related-heading" class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa">
+                <h2 id="related-heading" class="font-[family-name:var(--font-chillax)] text-2xl font-semibold text-intense-cocoa lg:text-3xl">
                     {{ __('storefront.products.related_title') }}
                 </h2>
                 <a href="{{ route('products.index', ['category' => $product->category?->slug]) }}" class="text-sm font-medium text-intense-cocoa/60 transition-colors hover:text-intense-cocoa hover:underline">

@@ -48,6 +48,7 @@ class CouponPricingService
         ?int $userId = null,
         ?CarbonInterface $now = null,
         bool $forUpdate = false,
+        ?int $discountableSubtotal = null,
     ): CouponQuoteDTO {
         $normalized = $this->normalizeCode($code);
 
@@ -70,7 +71,8 @@ class CouponPricingService
 
         $this->assertApplicable($coupon, $subtotal, $currency, $userId, $now ?? now());
 
-        $discount = $this->calculateDiscount($coupon, $subtotal, $currency);
+        $effectiveSubtotal = $discountableSubtotal !== null ? max(0, $discountableSubtotal) : $subtotal;
+        $discount = $this->calculateDiscount($coupon, $effectiveSubtotal, $currency);
 
         return new CouponQuoteDTO(
             coupon: $coupon,

@@ -20,6 +20,7 @@ return [
         'subtotal' => 'Subtotal',
         'shipping_cost' => 'Envío',
         'discount' => 'Descuento',
+        'threshold_discount' => 'Descuento por volumen (10%)',
         'coupon_code' => 'Código de cupón',
         'tax_amount' => 'Impuestos',
         'total' => 'Total',
@@ -62,11 +63,15 @@ return [
 
     'shipping' => [
         'standard' => 'Envío estándar',
+        'zone_cali' => 'Envío local (Cali)',
+        'zone_national' => 'Envío nacional (Colombia)',
+        'zone_international' => 'Envío internacional',
     ],
 
     'thank_you' => [
         'title' => 'Gracias por su compra',
         'body' => 'Su pedido :number fue recibido y está pendiente de pago.',
+        'body_confirmed' => 'Su pedido :number fue recibido y confirmado.',
         'status' => 'Estado: :status',
         'continue_shopping' => 'Seguir comprando',
         'banner' => [
@@ -121,6 +126,8 @@ return [
         'cannot_cancel' => 'Solo se pueden cancelar pedidos pendientes.',
         'cannot_cancel_payment_captured' => 'Este pedido tiene un pago capturado y no se puede cancelar. Se debe resolver con reembolso u ops.',
         'invalid_address' => 'La dirección seleccionada no es válida o no le pertenece.',
+        'unsupported_destination' => 'Actualmente no realizamos envíos al país o destino seleccionado (:country).',
+        'currency_mismatch_destination' => 'Para envíos a :country, tu pedido debe procesarse en :currency (:code).',
     ],
 
     'notifications' => [

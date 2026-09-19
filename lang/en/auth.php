@@ -88,4 +88,23 @@ return [
         'submit' => 'Log out',
     ],
 
+    'emails' => [
+        'footer_note' => 'All rights reserved.',
+        'verify_email' => [
+            'subject' => 'Verify your email address',
+            'greeting' => 'Hello, :name!',
+            'line_1' => 'Thank you for registering at Leen Handbags. To activate your account and access your profile and wishlist, please confirm your email address by clicking the button below:',
+            'action' => 'Verify Email Address',
+            'line_2' => 'If you did not create an account at Leen Handbags, no further action is required.',
+        ],
+        'reset_password' => [
+            'subject' => 'Reset your password',
+            'greeting' => 'Hello, :name!',
+            'line_1' => 'You are receiving this email because we received a password reset request for your account at Leen Handbags.',
+            'action' => 'Reset Password',
+            'line_2' => 'This password reset link will expire in :count minutes.',
+            'line_3' => 'If you did not request a password reset, no further action is required.',
+        ],
+    ],
+
 ];

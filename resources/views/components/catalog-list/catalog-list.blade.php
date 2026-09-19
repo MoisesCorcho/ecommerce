@@ -40,9 +40,9 @@
                 <button
                     type="button"
                     x-on:click="mobileFiltersOpen = true"
-                    class="inline-flex items-center gap-2 rounded border border-intense-cocoa/20 px-4 py-2 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors hover:bg-soft-sand"
+                    class="inline-flex cursor-pointer items-center gap-2 rounded-none border border-intense-cocoa bg-transparent px-4 py-2 text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa transition-colors duration-200 hover:bg-intense-cocoa hover:text-silk-cream focus:bg-intense-cocoa focus:text-silk-cream focus:outline-none"
                 >
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <svg class="h-4 w-4 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
                     </svg>
                     {{ __('storefront.shop.filters_button') }}
@@ -51,7 +51,7 @@
 
             {{-- Sidebar filters (desktop) --}}
             <aside
-                class="hidden w-[240px] shrink-0 flex-col gap-stack-lg self-start rounded-sm bg-soft-sand p-6 lg:sticky lg:top-32 lg:flex"
+                class="hidden w-[240px] shrink-0 flex-col gap-stack-lg self-start rounded-none bg-soft-sand p-6 lg:sticky lg:top-32 lg:flex"
                 aria-label="{{ __('storefront.shop.filters_title') }}"
             >
                 @include('components.catalog-list._filters')
@@ -165,9 +165,7 @@
                     </div>
 
                     {{-- Pagination --}}
-                    <div class="mt-24">
-                        {{ $products->links('vendor.pagination.custom') }}
-                    </div>
+                    <x-pagination :paginator="$products" class="mt-16" />
                 @endif
             </div>
         </div>

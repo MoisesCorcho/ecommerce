@@ -6,6 +6,7 @@ return [
     'currency' => [
         'COP' => 'Colombian peso',
         'EUR' => 'Euro',
+        'USD' => 'US dollar',
     ],
 
     'order_status' => [
@@ -33,5 +34,24 @@ return [
     'coupon_type' => [
         'percentage' => 'Percentage',
         'fixed' => 'Fixed amount',
+    ],
+
+    'contact_submission_status' => [
+        'new' => 'New',
+        'read' => 'Read',
+        'replied' => 'Replied',
+        'archived' => 'Archived',
+    ],
+
+    'size' => [
+        'mini' => 'Mini',
+        'medium' => 'Medium',
+        'maxi' => 'Maxi',
+        'one_size' => 'One Size',
+    ],
+
+    'post_status' => [
+        'draft' => 'Draft',
+        'published' => 'Published',
     ],
 ];
