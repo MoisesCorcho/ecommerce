@@ -39,6 +39,25 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Storefront currencies
+    |--------------------------------------------------------------------------
+    |
+    | Comma-separated ISO codes the storefront exposes to customers. It can
+    | only narrow the supported set (COP, EUR): unknown codes such as USD are
+    | ignored, and an empty result falls back to both. Disabling a currency
+    | hides it from the switcher, skips it in country detection and treats its
+    | shipping zones as uncovered. Use it to switch off a market whose payment
+    | gateway (COP -> Bold, EUR -> Stripe) is not configured yet.
+    |
+    */
+
+    'storefront_currencies' => array_values(array_filter(array_map(
+        static fn (string $code): string => strtoupper(trim($code)),
+        explode(',', (string) env('ECOMMERCE_STOREFRONT_CURRENCIES', 'COP,EUR')),
+    ))),
+
+    /*
+    |--------------------------------------------------------------------------
     | Storefront currency preference (F14)
     |--------------------------------------------------------------------------
     |
