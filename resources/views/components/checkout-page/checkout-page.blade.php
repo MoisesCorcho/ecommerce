@@ -189,16 +189,54 @@
                                 @include('components.checkout-page.partials.text-field', [
                                     'field' => 'shippingCountry',
                                     'label' => 'orders.fields.shipping_country',
-                                    'wireModel' => 'wire:model="shippingCountry"',
+                                    'wireModel' => 'wire:model.live.blur="shippingCountry"',
                                     'inputAttributes' => 'maxlength="2"',
                                 ])
-                                @include('components.checkout-page.partials.text-field', [
-                                    'field' => 'shippingAddressLine1',
-                                    'label' => 'orders.fields.shipping_address_line_1',
-                                    'wireModel' => 'wire:model="shippingAddressLine1"',
-                                    'placeholder' => 'orders.checkout.placeholders.address_line_1',
-                                    'colSpan' => 'sm:col-span-2',
-                                ])
+                                <div class="sm:col-span-2 relative" x-data="googlePlacesAutocomplete()" x-init="init()">
+                                    <label for="shippingAddressLine1" class="mb-1 block text-sm font-medium text-intense-cocoa">
+                                        {{ __('orders.fields.shipping_address_line_1') }}
+                                    </label>
+                                    <input
+                                        id="shippingAddressLine1"
+                                        type="text"
+                                        wire:model="shippingAddressLine1"
+                                        x-ref="input"
+                                        @input="onInput($event)"
+                                        @keydown.escape="hideDropdown()"
+                                        placeholder="{{ __('orders.checkout.placeholders.address_line_1') }}"
+                                        autocomplete="off"
+                                        class="w-full border border-intense-cocoa/40 bg-silk-cream px-3 py-2 text-sm text-intense-cocoa placeholder:text-intense-cocoa/80 transition-colors focus:border-intense-cocoa focus:outline-none"
+                                    />
+                                    <div
+                                        x-show="open"
+                                        x-cloak
+                                        @click.outside="hideDropdown()"
+                                        class="absolute left-0 right-0 z-50 mt-1 max-h-60 overflow-y-auto border border-intense-cocoa bg-soft-sand shadow-ambient"
+                                        style="display: none;"
+                                    >
+                                        <template x-for="s in suggestions" :key="s.id">
+                                            <div
+                                                @click="selectSuggestion(s.id)"
+                                                class="flex cursor-pointer items-center justify-between gap-2 border-b border-intense-cocoa/20 px-3 py-2 text-xs font-medium text-intense-cocoa transition-colors hover:bg-intense-cocoa hover:text-silk-cream last:border-b-0"
+                                            >
+                                                <div class="flex items-center gap-2 overflow-hidden">
+                                                    <span class="shrink-0 opacity-70">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5">
+                                                            <path fill-rule="evenodd" d="m9.69 18.933.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 0 0 .281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 1 0 3 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 0 0 2.273 1.765 11.842 11.842 0 0 0 .976.544l.062.029.018.008.006.003ZM10 11.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                    </span>
+                                                    <span class="truncate">
+                                                        <span class="font-semibold" x-text="s.mainText"></span>
+                                                        <span class="opacity-75" x-show="s.secondaryText" x-text="' — ' + s.secondaryText"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                    @error('shippingAddressLine1')
+                                        <p class="mt-1 text-sm text-error">{{ $message }}</p>
+                                    @enderror
+                                </div>
                                 @include('components.checkout-page.partials.text-field', [
                                     'field' => 'shippingAddressLine2',
                                     'label' => 'orders.fields.shipping_address_line_2',
@@ -208,7 +246,7 @@
                                 @include('components.checkout-page.partials.text-field', [
                                     'field' => 'shippingCity',
                                     'label' => 'orders.fields.shipping_city',
-                                    'wireModel' => 'wire:model="shippingCity"',
+                                    'wireModel' => 'wire:model.live.blur="shippingCity"',
                                     'placeholder' => 'orders.checkout.placeholders.city',
                                 ])
                                 @include('components.checkout-page.partials.text-field', [
@@ -350,6 +388,7 @@
                             class="mt-6 w-full disabled:bg-intense-cocoa/40"
                             data-checkout-submit
                             wire:loading.attr="disabled"
+                            :disabled="$errors->has('shippingCountry')"
                         >
                             {{ __('orders.actions.confirm') }}
                         </x-primary-button>
@@ -403,4 +442,182 @@
             </div>
         @endif
     </div>
+
+    @php
+        $googlePlacesApiKey = (string) config('ecommerce.shipping.google_places_api_key', '');
+    @endphp
+
+    @if ($googlePlacesApiKey !== '')
+        <script>
+            (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.googleapis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+                key: '{{ $googlePlacesApiKey }}',
+                v: "weekly",
+            });
+
+            let _rawGooglePlacesSuggestions = [];
+
+            function googlePlacesAutocomplete() {
+                return {
+                    open: false,
+                    suggestions: [],
+                    placesLib: null,
+                    sessionToken: null,
+                    debounceTimer: null,
+                    async init() {
+                        try {
+                            if (window.google?.maps?.importLibrary) {
+                                this.placesLib = await window.google.maps.importLibrary("places");
+                                if (this.placesLib?.AutocompleteSessionToken) {
+                                    this.sessionToken = new this.placesLib.AutocompleteSessionToken();
+                                }
+                            }
+                        } catch (e) {
+                            console.warn("Could not load Google Places (New) library:", e);
+                        }
+                    },
+                    onInput(e) {
+                        const query = e.target.value.trim();
+                        clearTimeout(this.debounceTimer);
+
+                        if (query.length < 3) {
+                            this.hideDropdown();
+                            return;
+                        }
+
+                        this.debounceTimer = setTimeout(async () => {
+                            await this.fetchSuggestions(query);
+                        }, 300);
+                    },
+                    async fetchSuggestions(query) {
+                        try {
+                            if (!this.placesLib && window.google?.maps?.importLibrary) {
+                                this.placesLib = await window.google.maps.importLibrary("places");
+                            }
+                            if (!this.placesLib?.AutocompleteSuggestion) {
+                                return;
+                            }
+
+                            if (!this.sessionToken && this.placesLib.AutocompleteSessionToken) {
+                                this.sessionToken = new this.placesLib.AutocompleteSessionToken();
+                            }
+
+                            const request = { input: query };
+                            if (this.sessionToken) {
+                                request.sessionToken = this.sessionToken;
+                            }
+
+                            const response = await this.placesLib.AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
+                            _rawGooglePlacesSuggestions = response?.suggestions || [];
+
+                            this.suggestions = _rawGooglePlacesSuggestions.map((s, index) => {
+                                const p = s.placePrediction;
+                                const main = p?.mainText?.text || (typeof p?.mainText?.toString === 'function' ? p.mainText.toString() : '');
+                                const secondary = p?.secondaryText?.text || (typeof p?.secondaryText?.toString === 'function' ? p.secondaryText.toString() : '');
+                                let full = '';
+                                if (main && secondary) {
+                                    full = `${main}, ${secondary}`;
+                                } else if (main) {
+                                    full = main;
+                                } else if (secondary) {
+                                    full = secondary;
+                                } else if (p?.text) {
+                                    full = typeof p.text === 'string' ? p.text : (p.text.text || (typeof p.text.toString === 'function' ? p.text.toString() : ''));
+                                }
+
+                                return {
+                                    id: index,
+                                    mainText: main || full || 'Ubicación sugerida',
+                                    secondaryText: secondary,
+                                };
+                            });
+
+                            this.open = this.suggestions.length > 0;
+                        } catch (err) {
+                            console.warn("Places autocomplete search failed:", err);
+                            this.hideDropdown();
+                        }
+                    },
+                    async selectSuggestion(id) {
+                        const raw = _rawGooglePlacesSuggestions[id];
+                        if (!raw || !raw.placePrediction) {
+                            this.hideDropdown();
+                            return;
+                        }
+
+                        try {
+                            const place = raw.placePrediction.toPlace();
+                            await place.fetchFields({
+                                fields: ['addressComponents', 'formattedAddress']
+                            });
+
+                            const comps = place.addressComponents || [];
+                            const getComp = (types, useShort) => {
+                                const comp = comps.find(c => types.some(t => c.types.includes(t)));
+                                if (!comp) return '';
+                                return useShort ? (comp.shortText || comp.short_name || '') : (comp.longText || comp.long_name || '');
+                            };
+
+                            const country = getComp(['country'], true);
+                            const city = getComp(['locality', 'sublocality', 'sublocality_level_1', 'postal_town', 'administrative_area_level_2']);
+                            const state = getComp(['administrative_area_level_1']);
+                            const postalCode = getComp(['postal_code']);
+                            const route = getComp(['route']);
+                            const streetNumber = getComp(['street_number']);
+                            const rawMain = raw.placePrediction.mainText?.text || (typeof raw.placePrediction.mainText?.toString === 'function' ? raw.placePrediction.mainText.toString() : '');
+
+                            let address1 = '';
+                            if (route && streetNumber) {
+                                address1 = `${route} ${streetNumber}`.trim();
+                            } else if (rawMain) {
+                                address1 = rawMain;
+                            } else if (route) {
+                                address1 = route;
+                            } else {
+                                address1 = place.formattedAddress || (this.$refs.input ? this.$refs.input.value : '');
+                            }
+
+                            if (this.$refs.input) {
+                                this.$refs.input.value = address1;
+                            }
+
+                            const setVal = (fieldId, val) => {
+                                const el = document.getElementById(fieldId);
+                                if (el && val) {
+                                    el.value = val;
+                                }
+                            };
+                            setVal('shippingAddressLine1', address1);
+                            setVal('shippingCity', city);
+                            setVal('shippingState', state);
+                            setVal('shippingCountry', country);
+                            setVal('shippingPostalCode', postalCode);
+
+                            const wire = this.$wire || (window.Livewire ? window.Livewire.find(this.$el.closest('[wire\\:id]')?.getAttribute('wire:id')) : null);
+                            if (wire) {
+                                wire.set('shippingAddressLine1', address1);
+                                wire.set('shippingCity', city);
+                                wire.set('shippingState', state);
+                                wire.set('shippingCountry', country);
+                                if (postalCode) {
+                                    wire.set('shippingPostalCode', postalCode);
+                                }
+                            }
+
+                            if (this.placesLib?.AutocompleteSessionToken) {
+                                this.sessionToken = new this.placesLib.AutocompleteSessionToken();
+                            }
+                        } catch (err) {
+                            console.error("Error fetching place details:", err);
+                        } finally {
+                            this.hideDropdown();
+                        }
+                    },
+                    hideDropdown() {
+                        this.open = false;
+                        this.suggestions = [];
+                    }
+                };
+            }
+        </script>
+    @endif
 </div>

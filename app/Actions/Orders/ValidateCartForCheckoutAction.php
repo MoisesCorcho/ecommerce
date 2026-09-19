@@ -35,8 +35,13 @@ class ValidateCartForCheckoutAction
      * @throws CheckoutCartNotReadyException
      * @throws InvalidCouponException
      */
-    public function __invoke(int $cartId, CartOwnerDTO $owner, ?string $couponCode = null): CheckoutPreviewDTO
-    {
+    public function __invoke(
+        int $cartId,
+        CartOwnerDTO $owner,
+        ?string $couponCode = null,
+        ?string $shippingCountry = null,
+        ?string $shippingCity = null,
+    ): CheckoutPreviewDTO {
         /** @var Cart $cart */
         $cart = Cart::query()->with(['items.productVariant.product', 'items.productVariant.prices'])->findOrFail($cartId);
 
@@ -48,7 +53,11 @@ class ValidateCartForCheckoutAction
 
         $lines = $this->validatedCheckoutLines($cart);
         $subtotal = array_sum(array_column($lines, 'lineSubtotal'));
-        $shippingCost = $this->shippingCostService->standardCost($cart->currency);
+        $shippingCost = $this->shippingCostService->calculate(
+            $cart->currency,
+            $shippingCountry,
+            $shippingCity,
+        );
         $thresholdDiscount = $cart->currency->calculateThresholdDiscount($subtotal);
         $netSubtotal = max(0, $subtotal - $thresholdDiscount);
         $discount = 0;
