@@ -6,6 +6,8 @@
 #   APP_ROOT=/home/<site-user>/htdocs/<dominio> bash deploy/rollback.sh
 #   APP_ROOT=... bash deploy/rollback.sh <release>   # una puntual
 #
+# En producción el worker es otro: agregar QUEUE_SERVICE=leen-prod-queue.
+#
 # OJO: revierte el CÓDIGO, no la base de datos. Si la release rota corrió una
 # migración destructiva, esto no la deshace — hay que restaurar el backup.
 #

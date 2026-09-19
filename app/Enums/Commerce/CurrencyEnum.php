@@ -22,11 +22,26 @@ enum CurrencyEnum: string implements HasLabel
     /**
      * Currencies enabled for public customer browsing and checkout.
      *
+     * COP and EUR are the only currencies the storefront supports. The
+     * `ecommerce.storefront_currencies` config can narrow that list (e.g. to
+     * COP alone while a gateway is not configured) but never widen it: USD
+     * has no storefront prices and enabling it is development work, not config.
+     * An empty or fully invalid list falls back to every supported currency.
+     *
      * @return list<self>
      */
     public static function storefrontCases(): array
     {
-        return [self::Cop, self::Eur];
+        $supported = [self::Cop, self::Eur];
+
+        $configured = (array) config('ecommerce.storefront_currencies', []);
+
+        $enabled = array_values(array_filter(
+            $supported,
+            static fn (self $currency): bool => in_array($currency->value, $configured, true),
+        ));
+
+        return $enabled === [] ? $supported : $enabled;
     }
 
     public function isAvailableInStorefront(): bool

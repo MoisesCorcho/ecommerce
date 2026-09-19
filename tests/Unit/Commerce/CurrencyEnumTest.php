@@ -64,4 +64,27 @@ class CurrencyEnumTest extends TestCase
         $this->assertTrue(CurrencyEnum::Eur->isAvailableInStorefront());
         $this->assertFalse(CurrencyEnum::Usd->isAvailableInStorefront());
     }
+
+    public function test_storefront_currencies_config_narrows_the_supported_set(): void
+    {
+        config(['ecommerce.storefront_currencies' => ['COP']]);
+
+        $this->assertSame([CurrencyEnum::Cop], CurrencyEnum::storefrontCases());
+        $this->assertFalse(CurrencyEnum::Eur->isAvailableInStorefront());
+    }
+
+    public function test_storefront_currencies_config_cannot_enable_usd(): void
+    {
+        config(['ecommerce.storefront_currencies' => ['EUR', 'USD']]);
+
+        $this->assertSame([CurrencyEnum::Eur], CurrencyEnum::storefrontCases());
+        $this->assertFalse(CurrencyEnum::Usd->isAvailableInStorefront());
+    }
+
+    public function test_storefront_currencies_fall_back_to_supported_set_when_nothing_valid_is_configured(): void
+    {
+        config(['ecommerce.storefront_currencies' => ['USD']]);
+
+        $this->assertSame([CurrencyEnum::Cop, CurrencyEnum::Eur], CurrencyEnum::storefrontCases());
+    }
 }

@@ -1,14 +1,16 @@
-name: CI & Deploy (staging)
+name: CI & Deploy
 
+# develop -> staging (leen.moisescorchodev.tech)
+# main    -> production (leenhoney.com)
 on:
   push:
-    branches: [develop]
+    branches: [develop, main]
   workflow_dispatch:
 
-# Un solo despliegue a la vez. No se cancela el que está en curso:
+# Un solo despliegue a la vez POR ENTORNO. No se cancela el que está en curso:
 # abortar a mitad de un swap de release deja el servidor en estado incierto.
 concurrency:
-  group: deploy-staging
+  group: deploy-${{ github.ref_name }}
   cancel-in-progress: false
 
 env:
@@ -93,13 +95,42 @@ jobs:
         run: php artisan test --compact
 
   deploy:
-    name: Deploy to staging VPS
+    name: Deploy to ${{ github.ref_name == 'main' && 'production' || 'staging' }}
     needs: test
+    # Un workflow_dispatch desde otra rama corre los tests pero no despliega.
+    if: github.ref_name == 'develop' || github.ref_name == 'main'
     runs-on: ubuntu-latest
     # Sin `environment:`: crear environments requiere admin sobre el repo y
-    # sólo tenemos write. Los secrets viven a nivel repositorio.
+    # sólo tenemos write. Los secrets viven a nivel repositorio, así que el
+    # entorno se elige acá: los de producción llevan el prefijo PROD_.
+    env:
+      SSH_HOST: ${{ github.ref_name == 'main' && secrets.PROD_SSH_HOST || secrets.SSH_HOST }}
+      SSH_USER: ${{ github.ref_name == 'main' && secrets.PROD_SSH_USER || secrets.SSH_USER }}
+      APP_ROOT: ${{ github.ref_name == 'main' && secrets.PROD_APP_ROOT || secrets.APP_ROOT }}
+      QUEUE_SERVICE: ${{ github.ref_name == 'main' && 'leen-prod-queue' || 'leen-queue' }}
 
     steps:
+      # El `cond && prod || staging` de arriba cae al valor de staging si el
+      # secret de producción está vacío o no existe: sin esta guarda, un push a
+      # main con un secret faltante desplegaría producción SOBRE staging.
+      - name: Guard production secrets
+        if: github.ref_name == 'main'
+        env:
+          PROD_SSH_HOST: ${{ secrets.PROD_SSH_HOST }}
+          PROD_SSH_USER: ${{ secrets.PROD_SSH_USER }}
+          PROD_APP_ROOT: ${{ secrets.PROD_APP_ROOT }}
+          PROD_SSH_PRIVATE_KEY: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+          PROD_SSH_KNOWN_HOSTS: ${{ secrets.PROD_SSH_KNOWN_HOSTS }}
+        run: |
+          missing=0
+          for name in PROD_SSH_HOST PROD_SSH_USER PROD_APP_ROOT PROD_SSH_PRIVATE_KEY PROD_SSH_KNOWN_HOSTS; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Falta el secret $name"
+              missing=1
+            fi
+          done
+          exit "$missing"
+
       - uses: actions/checkout@v7
 
       - name: Setup PHP
@@ -136,11 +167,14 @@ jobs:
             .
 
       - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ github.ref_name == 'main' && secrets.PROD_SSH_PRIVATE_KEY || secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ github.ref_name == 'main' && secrets.PROD_SSH_KNOWN_HOSTS || secrets.SSH_KNOWN_HOSTS }}
         run: |
           install -m 700 -d ~/.ssh
-          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          printf '%s\n' "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
       # Cada comando remoto va envuelto en with-retry.sh: el 22 de este host se
@@ -148,10 +182,6 @@ jobs:
       # ConnectTimeout baja la detección de la falla de ~136s a 15s, que es lo
       # que hace viable reintentar cinco veces.
       - name: Upload release
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          APP_ROOT: ${{ secrets.APP_ROOT }}
         run: |
           bash deploy/with-retry.sh \
             ssh -o ConnectTimeout=15 -i ~/.ssh/id_ed25519 "$SSH_USER@$SSH_HOST" \
@@ -168,11 +198,7 @@ jobs:
               "if [ -f '$APP_ROOT/releases/$RELEASE.tar.gz' ]; then tar -xzf '$APP_ROOT/releases/$RELEASE.tar.gz' -C '$APP_ROOT/releases/$RELEASE' && rm -f '$APP_ROOT/releases/$RELEASE.tar.gz'; fi"
 
       - name: Activate release
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          APP_ROOT: ${{ secrets.APP_ROOT }}
         run: |
           bash deploy/with-retry.sh \
             ssh -o ConnectTimeout=15 -i ~/.ssh/id_ed25519 "$SSH_USER@$SSH_HOST" \
-              "APP_ROOT='$APP_ROOT' bash '$APP_ROOT/releases/$RELEASE/deploy/remote-activate.sh' '$RELEASE'"
+              "APP_ROOT='$APP_ROOT' QUEUE_SERVICE='$QUEUE_SERVICE' bash '$APP_ROOT/releases/$RELEASE/deploy/remote-activate.sh' '$RELEASE'"

@@ -94,6 +94,38 @@ class CurrencySwitcherTest extends TestCase
         $this->assertSame('EUR', session(CurrentCurrency::SESSION_KEY));
     }
 
+    public function test_a_eurozone_visitor_gets_pesos_while_eur_is_disabled(): void
+    {
+        config()->set('ecommerce.storefront_currencies', ['COP']);
+
+        $this->withHeaders(['CF-IPCountry' => 'ES'])
+            ->get(route('faq'))
+            ->assertOk();
+
+        $this->assertSame('COP', session(CurrentCurrency::SESSION_KEY));
+    }
+
+    public function test_a_stale_eur_cookie_is_ignored_while_eur_is_disabled(): void
+    {
+        config()->set('ecommerce.storefront_currencies', ['COP']);
+
+        $this->withCookie('currency', 'EUR')
+            ->get(route('faq'))
+            ->assertOk();
+
+        $this->assertSame('COP', session(CurrentCurrency::SESSION_KEY));
+    }
+
+    public function test_switching_to_a_disabled_currency_is_rejected(): void
+    {
+        config()->set('ecommerce.storefront_currencies', ['COP']);
+
+        $this->from(route('faq'))
+            ->post(route('currency.update'), ['currency' => 'EUR'])
+            ->assertRedirect(route('faq'))
+            ->assertSessionHasErrors('currency');
+    }
+
     public function test_a_country_mapping_to_usd_falls_back_to_default_currency(): void
     {
         $this->withHeaders(['CF-IPCountry' => 'US'])
