@@ -198,6 +198,18 @@
     color: var(--color-intense-cocoa);
 }
 
+.price-slider__range {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0.625rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-intense-cocoa);
+    white-space: nowrap;
+}
+
 /* Scroll reveal animations */
 .reveal {
     opacity: 0;

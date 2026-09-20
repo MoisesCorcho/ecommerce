@@ -81,6 +81,9 @@
 
 {{-- Price filter --}}
 @if ($globalMinPrice !== null && $globalMaxPrice !== null)
+    @php
+        $shortSymbol = $currencyEnum === \App\Enums\Commerce\CurrencyEnum::Eur ? '€' : '$';
+    @endphp
     <div class="flex flex-col gap-stack-sm">
         <x-filter-heading>
             {{ __('storefront.shop.filter_price') }}
@@ -90,20 +93,26 @@
                 floor: {{ $globalMinPrice }},
                 ceil: {{ $globalMaxPrice }},
                 minorUnits: {{ $currencyEnum->minorUnits() }},
-                symbol: '{{ $currencyEnum->symbol() }}',
+                currencyCode: '{{ $currencyEnum->value }}',
+                shortSymbol: '{{ $shortSymbol }}',
                 decimals: {{ $currencyEnum->minorUnits() === 1 ? 0 : 2 }},
                 step: {{ $currencyEnum->minorUnits() === 1 ? 1000 : 100 }},
                 wireMin: $wire.entangle('minPrice').live,
                 wireMax: $wire.entangle('maxPrice').live,
                 localMin: {{ $globalMinPrice }},
                 localMax: {{ $globalMaxPrice }},
-                fmt(v) {
+                fmtNum(v) {
                     var val = Number(v) / this.minorUnits;
-                    var formatted = new Intl.NumberFormat('es-CO', {
+                    return new Intl.NumberFormat('es-CO', {
                         minimumFractionDigits: this.decimals,
                         maximumFractionDigits: this.decimals,
                     }).format(val);
-                    return this.symbol + ' ' + formatted;
+                },
+                fmt(v) {
+                    return this.shortSymbol + ' ' + this.fmtNum(v);
+                },
+                fmtRange() {
+                    return this.fmt(this.localMin) + ' — ' + this.fmt(this.localMax) + ' ' + this.currencyCode;
                 },
                 updateFill() {
                     var lo = parseInt(this.localMin);
@@ -177,13 +186,9 @@
                     @change="sync()"
                 >
             </div>
-            <div class="price-slider__labels">
-                <span class="price-slider__label price-slider__label--min" x-text="fmt(localMin)">{{ $currencyEnum->format($globalMinPrice) }}</span>
-                <span class="price-slider__label price-slider__label--max" x-text="fmt(localMax)">{{ $currencyEnum->format($globalMaxPrice) }}</span>
+            <div class="price-slider__range">
+                <span x-text="fmtRange()">{{ $shortSymbol }} {{ $currencyEnum->format($globalMinPrice, false) }} — {{ $shortSymbol }} {{ $currencyEnum->format($globalMaxPrice, false) }} {{ $currencyEnum->value }}</span>
             </div>
-            <p class="text-center text-[11px] font-semibold uppercase tracking-widest text-intense-cocoa/40">
-                {{ $currencyEnum->value }}
-            </p>
         </div>
     </div>
 @endif
