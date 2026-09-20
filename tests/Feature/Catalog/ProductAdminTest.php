@@ -15,6 +15,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\User;
+use Filament\Forms\Components\Repeater;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Config;
@@ -549,5 +550,17 @@ class ProductAdminTest extends TestCase
         $component
             ->call('save')
             ->assertHasNoFormErrors();
+    }
+
+    public function test_variants_repeater_is_not_cloneable(): void
+    {
+        $this->actingAsAdmin();
+
+        $component = Livewire::test(CreateProduct::class);
+
+        /** @var Repeater $repeater */
+        $repeater = $component->instance()->form->getComponent('variants');
+
+        $this->assertFalse($repeater->isCloneable());
     }
 }
