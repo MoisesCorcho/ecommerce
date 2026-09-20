@@ -301,6 +301,7 @@ class StorefrontCatalogTest extends TestCase
         Livewire::test('catalog-list')
             ->assertSeeHtml('class="price-slider__range"')
             ->assertSeeHtml('x-text="fmtRange()"')
-            ->assertSee('$ 100.000 — $ 500.000 COP');
+            ->assertSee('$ 100.000 — $ 500.000')
+            ->assertSee('COP');
     }
 }

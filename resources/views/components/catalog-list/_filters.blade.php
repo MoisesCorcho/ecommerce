@@ -112,7 +112,7 @@
                     return this.shortSymbol + ' ' + this.fmtNum(v);
                 },
                 fmtRange() {
-                    return this.fmt(this.localMin) + ' — ' + this.fmt(this.localMax) + ' ' + this.currencyCode;
+                    return this.fmt(this.localMin) + ' — ' + this.fmt(this.localMax);
                 },
                 updateFill() {
                     var lo = parseInt(this.localMin);
@@ -187,8 +187,11 @@
                 >
             </div>
             <div class="price-slider__range">
-                <span x-text="fmtRange()">{{ $shortSymbol }} {{ $currencyEnum->format($globalMinPrice, false) }} — {{ $shortSymbol }} {{ $currencyEnum->format($globalMaxPrice, false) }} {{ $currencyEnum->value }}</span>
+                <span x-text="fmtRange()">{{ $shortSymbol }} {{ $currencyEnum->format($globalMinPrice, false) }} — {{ $shortSymbol }} {{ $currencyEnum->format($globalMaxPrice, false) }}</span>
             </div>
+            <p class="text-center text-[11px] font-semibold uppercase tracking-widest text-intense-cocoa/40">
+                {{ $currencyEnum->value }}
+            </p>
         </div>
     </div>
 @endif
