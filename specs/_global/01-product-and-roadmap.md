@@ -70,6 +70,7 @@ Rutas de specs se crean al iniciar cada feature (`specs/features/<slug>/`).
 | F18 | Notificaciones Automáticas de Wishlist | 6 · Marketing & Fidelización | Completa | F01, F08, F10 |
 | F19 | Módulo de Blog Completo (CMS + Vistas) | 7 · Contenido | Completa | F01 |
 | F20 | Zonas de Envío y Google Places Autocomplete | 5 · Internacionalización y Checkout | Completa | F04, F14 |
+| F21 | Optimización SEO & Schema (Técnico, On-Page y Datos Estructurados) | 7 · Contenido & Posicionamiento | Completa | F01, F01-S, F19 |
 
 Sincronizar la columna **Estado** con el bloque `> Estado:` de cada `requirements.md` cuando exista.
 
