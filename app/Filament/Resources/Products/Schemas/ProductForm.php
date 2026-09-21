@@ -257,7 +257,6 @@ final class ProductForm
                         ->defaultItems(1)
                         ->minItems(0)
                         ->collapsible()
-                        ->cloneable()
                         ->reorderable(false)
                         ->addActionLabel(__('products.actions.add_variant'))
                         ->itemLabel(function (array $state): ?string {

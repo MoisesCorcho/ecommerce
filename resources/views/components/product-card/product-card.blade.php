@@ -24,9 +24,9 @@
     $availableColors = $availableColors ?? $product->availableColors();
 @endphp
 
-<article dusk="product-card" {{ $attributes->merge(['class' => 'group relative flex flex-col h-full bg-surface-container transition-shadow duration-300 ease-out hover:shadow-ambient']) }}>
+<article dusk="product-card" {{ $attributes->merge(['class' => 'group relative flex flex-col h-full bg-surface-container border border-intense-cocoa/15 overflow-hidden transition-all duration-300 ease-out hover:border-intense-cocoa/30 hover:shadow-ambient']) }}>
     {{-- Image --}}
-    <div class="relative w-full aspect-[4/5] bg-surface-container overflow-hidden mb-2">
+    <div class="relative w-full aspect-[4/5] bg-surface-container overflow-hidden border-b border-intense-cocoa/10">
         <a href="{{ $detailUrl }}" class="block h-full">
             @if ($primaryImage)
                 <img

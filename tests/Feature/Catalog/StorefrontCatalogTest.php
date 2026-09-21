@@ -292,4 +292,16 @@ class StorefrontCatalogTest extends TestCase
             ->assertSee('800.000')
             ->assertSee('-25%');
     }
+
+    public function test_price_filter_renders_unified_price_range_with_short_symbol_and_currency(): void
+    {
+        $this->createPublishedProduct('Range Bag 1', 'range-bag-1', CurrencyEnum::Cop, 100_000);
+        $this->createPublishedProduct('Range Bag 2', 'range-bag-2', CurrencyEnum::Cop, 500_000);
+
+        Livewire::test('catalog-list')
+            ->assertSeeHtml('class="price-slider__range"')
+            ->assertSeeHtml('x-text="fmtRange()"')
+            ->assertSee('$ 100.000 — $ 500.000')
+            ->assertSee('COP');
+    }
 }

@@ -103,4 +103,9 @@ class EditProduct extends EditRecord
             ]);
         }
     }
+
+    protected function afterSave(): void
+    {
+        $this->fillForm();
+    }
 }
