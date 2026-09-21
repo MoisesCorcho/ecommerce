@@ -27,7 +27,7 @@
 
 @theme {
     /* Colors — brand palette (00-design-tokens.md) */
-    --color-silk-cream: #FFF8CF;
+    --color-silk-cream: #FFFFFF;
     --color-soft-sand: #E9DED3;
     --color-surface-container: #E9DED3;
     --color-intense-cocoa: #372621;
@@ -196,6 +196,18 @@
     font-size: 0.875rem;
     font-variant-numeric: tabular-nums;
     color: var(--color-intense-cocoa);
+}
+
+.price-slider__range {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0.625rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-intense-cocoa);
+    white-space: nowrap;
 }
 
 /* Scroll reveal animations */
