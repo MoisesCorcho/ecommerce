@@ -316,8 +316,9 @@ new #[Layout('layouts.storefront')] class extends Component
     public function render()
     {
         $product = $this->findPublishedProduct(CurrencyEnum::from($this->currency));
+        $seoTitle = __('seo.product_title_format', ['name' => $product->name]);
 
-        return $this->view();
+        return $this->view()->title($seoTitle);
     }
 
     public function with(): array

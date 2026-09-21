@@ -30,7 +30,12 @@ new #[Layout('layouts.storefront')] class extends Component
 
     public function render()
     {
-        return $this->view();
+        return $this->view()
+            ->layout('layouts.storefront', [
+                'metaDescription' => __('seo.contact_description'),
+                'canonicalUrl' => route('contact'),
+            ])
+            ->title(__('seo.contact_title'));
     }
 
     public function updated(string $property): void

@@ -4,6 +4,8 @@
 --}}
 @php
     use App\Support\ColorMap;
+    use Illuminate\Support\Facades\Storage;
+    use Illuminate\Support\Str;
 
     $breadcrumbItems = [
         ['label' => __('storefront.products.breadcrumb_home'), 'href' => route('home')],
@@ -13,7 +15,31 @@
         $breadcrumbItems[] = ['label' => $product->category->name, 'href' => route('products.index', ['category' => $product->category->slug])];
     }
     $breadcrumbItems[] = ['label' => $product->name];
+
+    $cleanDescription = Str::limit(Str::squish(strip_tags((string) $product->description)), 155, '...');
+    if (empty($cleanDescription)) {
+        $cleanDescription = __('seo.product_fallback_description', ['name' => $product->name]);
+    }
+    $primaryImage = $product->images->firstWhere('is_primary', true) ?? $product->images->first();
+    $primaryImageUrl = $primaryImage ? Storage::disk('public')->url($primaryImage->path) : asset('images/logos/leen-brown.png');
 @endphp
+
+@push('meta')
+    <link rel="canonical" href="{{ route('products.show', $product->slug) }}">
+    <meta name="description" content="{{ $cleanDescription }}">
+    <meta property="og:type" content="product">
+    <meta property="og:title" content="{{ __('seo.product_title_format', ['name' => $product->name]) }}">
+    <meta property="og:description" content="{{ $cleanDescription }}">
+    <meta property="og:url" content="{{ route('products.show', $product->slug) }}">
+    <meta property="og:image" content="{{ $primaryImageUrl }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ __('seo.product_title_format', ['name' => $product->name]) }}">
+    <meta name="twitter:description" content="{{ $cleanDescription }}">
+    <meta name="twitter:image" content="{{ $primaryImageUrl }}">
+
+    <x-seo.product-schema :product="$product" :currency="$currency" :selected-variant-id="$selectedVariantId" />
+    <x-seo.breadcrumbs-schema :items="$breadcrumbItems" />
+@endpush
 
 <x-partials.toast>
 <div
@@ -68,7 +94,7 @@
                             x-show="activeImageIndex === {{ $index }}"
                             x-cloak
                             src="/storage/{{ $image->path }}"
-                            alt="{{ $product->name }} — {{ $loop->iteration }}"
+                            alt="{{ $image->is_primary ? __('seo.image_alt_primary', ['name' => $product->name]) : __('seo.image_alt_detail', ['name' => $product->name, 'number' => $loop->iteration]) }}"
                             class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                         >
                     @endforeach
@@ -100,7 +126,7 @@
                         >
                             <img
                                 src="/storage/{{ $image->path }}"
-                                alt="{{ $product->name }} — {{ $loop->iteration }}"
+                                alt="{{ $image->is_primary ? __('seo.image_alt_primary', ['name' => $product->name]) : __('seo.image_alt_detail', ['name' => $product->name, 'number' => $loop->iteration]) }}"
                                 class="h-16 w-16 object-cover sm:h-20 sm:w-20"
                             >
                         </button>
@@ -738,7 +764,7 @@
                     <img
                         x-show="lightboxIndex === {{ $index }}"
                         src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($image->path) }}"
-                        alt="{{ $product->name }} — {{ $loop->iteration }}"
+                        alt="{{ $image->is_primary ? __('seo.image_alt_primary', ['name' => $product->name]) : __('seo.image_alt_detail', ['name' => $product->name, 'number' => $loop->iteration]) }}"
                         class="max-h-[85vh] max-w-[90vw] object-contain"
                     >
                 @endforeach

@@ -3,7 +3,34 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title ?? 'Leen' }}</title>
+    @php
+        $seoTitle = $title ?? __('seo.default_title');
+        $seoDescription = $metaDescription ?? __('seo.default_description');
+        $seoCanonical = $canonicalUrl ?? url()->current();
+        $seoOgImage = $ogImage ?? asset('images/logos/leen-brown.png');
+        $seoOgType = $ogType ?? 'website';
+    @endphp
+    <title>{{ $seoTitle }}</title>
+    <link rel="canonical" href="{{ $seoCanonical }}">
+    <meta name="description" content="{{ $seoDescription }}">
+
+    {{-- Open Graph --}}
+    <meta property="og:site_name" content="{{ __('seo.brand_name') }}">
+    <meta property="og:type" content="{{ $seoOgType }}">
+    <meta property="og:title" content="{{ $seoTitle }}">
+    <meta property="og:description" content="{{ $seoDescription }}">
+    <meta property="og:url" content="{{ $seoCanonical }}">
+    <meta property="og:image" content="{{ $seoOgImage }}">
+
+    {{-- Twitter Card --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $seoTitle }}">
+    <meta name="twitter:description" content="{{ $seoDescription }}">
+    <meta name="twitter:image" content="{{ $seoOgImage }}">
+
+    @if (request()->is('/'))
+        <x-seo.organization-schema />
+    @endif
 
     @stack('meta')
 
