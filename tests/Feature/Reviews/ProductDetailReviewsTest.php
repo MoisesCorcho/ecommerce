@@ -197,6 +197,19 @@ class ProductDetailReviewsTest extends TestCase
         ]);
     }
 
+    public function test_reviews_header_is_properly_closed_and_not_wrapping_reviews_grid(): void
+    {
+        $this->createPublishedProduct('Structural Bag', 'structural-bag');
+
+        $html = Livewire::test('product-detail', ['slug' => 'structural-bag'])->html();
+
+        $this->assertMatchesRegularExpression(
+            '/id="reviews-heading"[\s\S]*?<\/div>\s*<\/div>\s*<div class="grid items-start gap-10 lg:grid-cols-\[1\.2fr_1fr\]"/',
+            $html,
+            'The reviews header flex container must close before the reviews grid begins, preventing the grid from nesting inside the header row.',
+        );
+    }
+
     private function createPublishedProduct(string $name, string $slug): Product
     {
         $product = Product::factory()->create([

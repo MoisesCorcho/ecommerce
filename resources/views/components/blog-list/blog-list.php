@@ -45,7 +45,12 @@ new #[Layout('layouts.storefront')] class extends Component
 
     public function render()
     {
-        return $this->view();
+        return $this->view()
+            ->layout('layouts.storefront', [
+                'metaDescription' => __('seo.blog_description'),
+                'canonicalUrl' => route('blog.index'),
+            ])
+            ->title(__('seo.blog_title'));
     }
 
     public function with(): array

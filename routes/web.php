@@ -9,6 +9,7 @@ use App\Http\Controllers\Localization\UpdateLocaleController;
 use App\Http\Controllers\Orders\OrderThankYouController;
 use App\Http\Controllers\Orders\StartOrderPaymentController;
 use App\Http\Controllers\Payments\PaymentWebhookController;
+use App\Http\Controllers\Seo\SitemapController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('home'))->name('home');
@@ -74,5 +75,13 @@ Route::prefix('api/cart')->name('cart.')->group(function (): void {
     Route::delete('/', [CartController::class, 'clear'])->name('clear');
     Route::post('/currency', [CartController::class, 'updateCurrency'])->name('currency');
 });
+
+Route::get('/robots.txt', function () {
+    return response(file_get_contents(public_path('robots.txt')), 200, [
+        'Content-Type' => 'text/plain',
+    ]);
+})->name('seo.robots');
+
+Route::get('/sitemap.xml', SitemapController::class)->name('seo.sitemap');
 
 Route::fallback(fn () => redirect('/'));

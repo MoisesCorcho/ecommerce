@@ -12,6 +12,12 @@
       "sourceType": "github",
       "skillPath": "skills/laravel-security/SKILL.md",
       "computedHash": "6ec0611d65b0787530f725ca630d9075e5e2eb3d7779abb43447983174dce854"
+    },
+    "seo-audit": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-audit/SKILL.md",
+      "computedHash": "01f9f8a3feb3ea69c6c212d61189c610f96ef2cc363adc27fd314d78254bf6ae"
     }
   }
 }
