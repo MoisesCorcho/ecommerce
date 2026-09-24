@@ -485,7 +485,9 @@
                     </p>
                 @endif
             </div>
-             <div class="grid items-start gap-10 lg:grid-cols-[1.2fr_1fr]">
+        </div>
+
+        <div class="grid items-start gap-10 lg:grid-cols-[1.2fr_1fr]">
             {{-- Public approved list (order-2 on mobile/tablet, order-1 on desktop) --}}
             <div class="order-2 space-y-6 lg:order-1" data-approved-reviews>
                 @forelse ($approvedReviews as $review)
