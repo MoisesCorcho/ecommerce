@@ -30,7 +30,38 @@ new #[Layout('layouts.storefront')] class extends Component
 
     public function render()
     {
-        return $this->view();
+        $activeCategory = $this->resolveActiveCategory();
+
+        $title = $activeCategory !== null
+            ? __('seo.category_title_format', ['name' => $activeCategory->name])
+            : __('seo.shop_title');
+
+        $metaDescription = $activeCategory !== null
+            ? ($activeCategory->description ?: __('seo.category_fallback_description', ['name' => $activeCategory->name]))
+            : __('seo.shop_description');
+
+        $canonicalUrl = $activeCategory !== null
+            ? route('products.index', ['category' => $activeCategory->slug])
+            : route('products.index');
+
+        return $this->view()
+            ->layout('layouts.storefront', [
+                'metaDescription' => $metaDescription,
+                'canonicalUrl' => $canonicalUrl,
+            ])
+            ->title($title);
+    }
+
+    private function resolveActiveCategory(): ?Category
+    {
+        if (is_array($this->category) && count($this->category) === 1) {
+            $slug = reset($this->category);
+            if (is_string($slug) && $slug !== '') {
+                return Category::query()->where('slug', $slug)->first();
+            }
+        }
+
+        return null;
     }
 
     public string $currency;
@@ -254,6 +285,7 @@ new #[Layout('layouts.storefront')] class extends Component
         return [
             'products' => $products,
             'currencyEnum' => $currency,
+            'activeCategory' => $this->resolveActiveCategory(),
             'categories' => $categories,
             'colors' => $colors,
             'sizes' => $sizes,

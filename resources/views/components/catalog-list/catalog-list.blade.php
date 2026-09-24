@@ -17,16 +17,25 @@
     {{-- Main content --}}
     <div class="pt-8 pb-section-gap lg:pt-12">
         {{-- Breadcrumb --}}
-        <x-breadcrumb.breadcrumb :items="[
-            ['label' => __('storefront.shop.breadcrumb_home'), 'href' => url('/')],
-            ['label' => __('storefront.shop.breadcrumb_shop')],
-        ]" />
+        @php
+            $breadcrumbItems = [
+                ['label' => __('storefront.shop.breadcrumb_home'), 'href' => url('/')],
+            ];
+            if ($activeCategory) {
+                $breadcrumbItems[] = ['label' => __('storefront.shop.breadcrumb_shop'), 'href' => route('products.index')];
+                $breadcrumbItems[] = ['label' => $activeCategory->name];
+            } else {
+                $breadcrumbItems[] = ['label' => __('storefront.shop.breadcrumb_shop')];
+            }
+        @endphp
+        <x-breadcrumb.breadcrumb :items="$breadcrumbItems" />
+        <x-seo.breadcrumbs-schema :items="$breadcrumbItems" />
 
         <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
             {{-- Page header --}}
             <header class="mb-stack-lg flex flex-col items-center text-center md:items-start md:text-left">
             <h1 class="font-chillax text-display-lg-mobile text-intense-cocoa md:text-display-lg">
-                {{ __('storefront.shop.title') }}
+                {{ $activeCategory ? $activeCategory->name : __('storefront.shop.title') }}
             </h1>
         </header>
 

@@ -11,11 +11,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
- * Every page in the storefront/account/auth areas shares one literal browser
- * tab title ("Leen") — no per-page suffix. Locked in across a representative
- * sample of pages using each of the two title-setting mechanisms in this app
- * (Livewire full-page `#[Layout]` components, and plain Blade views wrapped
- * by the `<x-layouts::storefront>`/`<x-layouts::auth>` components).
+ * Browser tab title verification across representative pages.
+ * Storefront pages share the default SEO brand title (__('seo.default_title')),
+ * while auth pages retain the concise "Leen" title.
  */
 class BrowserTabTitleTest extends TestCase
 {
@@ -31,7 +29,7 @@ class BrowserTabTitleTest extends TestCase
 
     public function test_home_page_shows_the_literal_leen_title(): void
     {
-        $this->get('/')->assertOk()->assertSeeHtml('<title>Leen</title>', false);
+        $this->get('/')->assertOk()->assertSeeHtml('<title>'.e(__('seo.default_title')).'</title>', false);
     }
 
     public function test_login_page_shows_the_literal_leen_title(): void
@@ -46,7 +44,7 @@ class BrowserTabTitleTest extends TestCase
         $this->actingAs($user)
             ->get(route('wishlist'))
             ->assertOk()
-            ->assertSeeHtml('<title>Leen</title>', false);
+            ->assertSeeHtml('<title>'.e(__('seo.default_title')).'</title>', false);
     }
 
     public function test_order_detail_page_shows_the_literal_leen_title(): void
@@ -58,6 +56,6 @@ class BrowserTabTitleTest extends TestCase
         $this->actingAs($user)
             ->get(route('profile.orders.show', $order))
             ->assertOk()
-            ->assertSeeHtml('<title>Leen</title>', false);
+            ->assertSeeHtml('<title>'.e(__('seo.default_title')).'</title>', false);
     }
 }

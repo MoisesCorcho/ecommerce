@@ -29,14 +29,18 @@ class AccountShellTest extends TestCase
 
         $html = $response->getContent();
 
-        $ordersAnchorStart = strpos($html, 'href="'.route('profile.orders').'"');
-        $addressesAnchorStart = strpos($html, 'href="'.route('profile.addresses').'"');
+        $navStart = strpos($html, '<nav');
+        $this->assertNotFalse($navStart, 'Navigation element not found.');
+        $navHtml = substr($html, $navStart);
+
+        $ordersAnchorStart = strpos($navHtml, 'href="'.route('profile.orders').'"');
+        $addressesAnchorStart = strpos($navHtml, 'href="'.route('profile.addresses').'"');
 
         $this->assertNotFalse($ordersAnchorStart);
         $this->assertNotFalse($addressesAnchorStart);
 
-        $ordersAnchorTag = substr($html, $ordersAnchorStart, 400);
-        $addressesAnchorTag = substr($html, $addressesAnchorStart, 400);
+        $ordersAnchorTag = substr($navHtml, $ordersAnchorStart, 400);
+        $addressesAnchorTag = substr($navHtml, $addressesAnchorStart, 400);
 
         $this->assertStringContainsString('border-soft-gold', $ordersAnchorTag);
         $this->assertStringNotContainsString('border-soft-gold', $addressesAnchorTag);
