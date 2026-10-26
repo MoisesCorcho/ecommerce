@@ -1,4 +1,8 @@
 <x-layouts::storefront>
+    @push('meta')
+        <link rel="preload" as="image" href="{{ asset('images/banners/banner-10.webp') }}" fetchpriority="high">
+    @endpush
+
     {{-- 1. Hero — static Blade (D1), ~70vh, CTA → products.index (PD-S4) --}}
     <section
         class="relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-soft-sand bg-cover bg-center px-margin-mobile py-24 text-center lg:px-margin-desktop"
@@ -140,12 +144,12 @@
     {{-- 6. Instagram — static Blade (D1), external link (R8a) --}}
     @php
         $instagramPosts = [
-            ['image' => 'post-1.webp', 'position' => '[object-position:center_65%]'],
-            ['image' => 'post-2.webp', 'position' => '[object-position:center_65%]'],
-            ['image' => 'post-3.webp', 'position' => '[object-position:center_66%]'],
-            ['image' => 'post-4.webp', 'position' => '[object-position:center_20%]', 'scale' => 'scale-105 origin-[center_20%]', 'hover' => 'group-hover:scale-110'],
-            ['image' => 'post-5.webp', 'position' => '[object-position:center_35%]'],
-            ['image' => 'post-6.webp', 'position' => '[object-position:center_32%]', 'scale' => 'scale-[1.20] origin-[center_32%]', 'hover' => 'group-hover:scale-[1.25]'],
+            ['image' => 'post-1.webp', 'position' => 'center 65%'],
+            ['image' => 'post-2.webp', 'position' => 'center 65%'],
+            ['image' => 'post-3.webp', 'position' => 'center 66%'],
+            ['image' => 'post-4.webp', 'position' => 'center top'],
+            ['image' => 'post-5.webp', 'position' => 'center 10%'],
+            ['image' => 'post-6.webp', 'position' => 'center 15%'],
         ];
     @endphp
     <section class="mx-auto max-w-storefront px-margin-mobile py-section-gap lg:px-margin-desktop" aria-labelledby="instagram-heading">
@@ -166,7 +170,10 @@
                         alt="{{ __('storefront.home.instagram_title') }} {{ $index + 1 }}"
                         loading="lazy"
                         decoding="async"
-                        class="h-full w-full object-cover {{ $post['position'] }} {{ $post['scale'] ?? '' }} transition-transform duration-500 ease-out {{ $post['hover'] ?? 'group-hover:scale-105' }}"
+                        width="600"
+                        height="750"
+                        class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                        style="object-position: {{ $post['position'] }};"
                     >
                     <div class="absolute inset-0 flex items-center justify-center bg-intense-cocoa/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" aria-hidden="true">
                         <svg class="h-6 w-6 text-white drop-shadow-sm" fill="currentColor" viewBox="0 0 24 24">
