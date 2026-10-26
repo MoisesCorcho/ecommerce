@@ -1,4 +1,8 @@
 <x-layouts::storefront>
+    @push('meta')
+        <link rel="preload" as="image" href="{{ asset('images/banners/banner-10.webp') }}" fetchpriority="high">
+    @endpush
+
     {{-- 1. Hero — static Blade (D1), ~70vh, CTA → products.index (PD-S4) --}}
     <section
         class="relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-soft-sand bg-cover bg-center px-margin-mobile py-24 text-center lg:px-margin-desktop"
@@ -166,6 +170,8 @@
                         alt="{{ __('storefront.home.instagram_title') }} {{ $index + 1 }}"
                         loading="lazy"
                         decoding="async"
+                        width="600"
+                        height="750"
                         class="h-full w-full object-cover {{ $post['position'] }} {{ $post['scale'] ?? '' }} transition-transform duration-500 ease-out {{ $post['hover'] ?? 'group-hover:scale-105' }}"
                     >
                     <div class="absolute inset-0 flex items-center justify-center bg-intense-cocoa/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" aria-hidden="true">
