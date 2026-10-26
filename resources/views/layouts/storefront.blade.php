@@ -38,8 +38,13 @@
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon" href="/favicon.png">
 
+    {{-- Google Fonts preconnect & Montserrat --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    {{-- Critical brand font preload --}}
     <link rel="preload" href="/fonts/chillax/Chillax-Regular.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/fonts/montserrat/Montserrat-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
