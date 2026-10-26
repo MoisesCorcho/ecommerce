@@ -60,7 +60,7 @@
                 x-transition:leave-end="opacity-0 -translate-y-1"
                 x-cloak
                 dusk="currency-panel"
-                class="absolute right-0 z-50 mt-3 min-w-[12rem] rounded-md border border-intense-cocoa/10 bg-soft-sand py-2 shadow-lg"
+                class="absolute right-0 z-50 mt-3 min-w-[12rem] rounded-sm border border-intense-cocoa/10 bg-soft-sand py-2 shadow-lg"
             >
                 @foreach ($currencies as $currency)
                     <form method="POST" action="{{ route('currency.update') }}">

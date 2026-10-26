@@ -57,7 +57,7 @@
             x-transition:leave-end="opacity-0 -translate-y-1"
             x-cloak
             dusk="locale-panel"
-            class="absolute right-0 z-50 mt-3 min-w-[8rem] rounded-md border border-intense-cocoa/10 bg-soft-sand py-2 shadow-lg"
+            class="absolute right-0 z-50 mt-3 min-w-[8rem] rounded-sm border border-intense-cocoa/10 bg-soft-sand py-2 shadow-lg"
         >
             @foreach (LocaleEnum::cases() as $locale)
                 <form method="POST" action="{{ route('locale.update') }}">

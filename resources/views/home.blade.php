@@ -26,7 +26,7 @@
 
     {{-- Subtle separator --}}
     <div class="mx-auto max-w-storefront px-margin-mobile lg:px-margin-desktop">
-        <hr class="border-t border-intense-cocoa/10" aria-hidden="true">
+        <hr class="border-t border-intense-cocoa/20" aria-hidden="true">
     </div>
 
     {{-- 3. Featured products (dynamic, R7/R18) --}}
