@@ -16,7 +16,7 @@
             >
         @else
             <div class="w-full h-full flex flex-col items-center justify-center p-6 bg-gradient-to-br from-soft-sand to-soft-sand/60">
-                <img src="/images/logos/leen-brown.png" alt="Leen" class="h-10 w-auto opacity-30">
+                <img src="/images/logos/leen-brown.webp" alt="Leen" class="h-10 w-auto opacity-30" loading="lazy">
                 <span class="font-labelle-aurore text-sm text-intense-cocoa/40 mt-2">Leen Journal</span>
             </div>
         @endif

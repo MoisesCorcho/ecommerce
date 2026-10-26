@@ -2,11 +2,11 @@
     $pillars = __('about.pillars.items');
     $differential = __('about.differential');
     $galleryImages = [
-        '/images/about/banner-9.jpg',
-        '/images/about/05.jpeg',
-        '/images/about/18.jpg',
-        '/images/about/09.jpeg',
-        '/images/about/14.jpeg',
+        '/images/about/banner-9.webp',
+        '/images/about/05.webp',
+        '/images/about/18.webp',
+        '/images/about/09.webp',
+        '/images/about/14.webp',
     ];
 
     $pillarIcons = [
@@ -51,7 +51,7 @@
 
     {{-- 1. Hero Section --}}
     <section class="relative isolate flex h-[50vh] min-h-[400px] w-full flex-col items-center justify-center overflow-hidden" aria-label="{{ __('about.hero.title') }}">
-        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('/images/about/17.jpg')">
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('/images/about/17.webp')">
             <div class="absolute inset-0 bg-intense-cocoa/40" style="mix-blend-mode: multiply"></div>
         </div>
         <div class="reveal relative z-10 mx-auto max-w-4xl px-6 text-center">
@@ -80,7 +80,7 @@
             </div>
             <div class="reveal delay-100 relative h-[400px] bg-soft-sand md:h-[500px] lg:h-[600px]">
                 <img
-                    src="/images/about/banner-2.png"
+                    src="/images/about/banner-2.webp"
                     alt="{{ __('about.story.title') }}"
                     class="h-full w-full object-contain p-4"
                     loading="lazy"
@@ -125,7 +125,7 @@
         <section class="grid grid-cols-1 items-center gap-6 py-section-gap md:grid-cols-2 lg:gap-gutter">
             <div class="reveal relative h-[400px] md:h-[500px] lg:h-[600px]">
                 <img
-                    src="/images/about/banner-8.jpg"
+                    src="/images/about/banner-8.webp"
                     alt="{{ __('about.differential.title') }}"
                     class="h-full w-full object-contain"
                     loading="lazy"

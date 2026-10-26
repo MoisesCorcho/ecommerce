@@ -38,8 +38,13 @@
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon" href="/favicon.png">
 
+    {{-- Google Fonts preconnect & Montserrat --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    {{-- Critical brand font preload --}}
     <link rel="preload" href="/fonts/chillax/Chillax-Regular.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/fonts/montserrat/Montserrat-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
@@ -78,7 +83,7 @@
 
             {{-- Brand logo (centered) --}}
             <a href="{{ url('/') }}" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                <img src="/images/logos/leen-brown.png" alt="{{ config('app.name', 'Leen') }}" class="h-[2.625rem] w-auto sm:h-11 lg:h-12">
+                <img src="/images/logos/leen-brown.webp" alt="{{ config('app.name', 'Leen') }}" class="h-[2.625rem] w-auto sm:h-11 lg:h-12">
             </a>
 
             {{-- Trailing icons — right side --}}
@@ -170,7 +175,7 @@
             <div class="flex flex-col items-center gap-6">
                 {{-- Brand logo --}}
                 <a href="{{ url('/') }}">
-                    <img src="/images/logos/leen-brown.png" alt="{{ config('app.name', 'Leen') }}" class="h-20 w-auto">
+                    <img src="/images/logos/leen-brown.webp" alt="{{ config('app.name', 'Leen') }}" class="h-20 w-auto" loading="lazy">
                 </a>
 
                 {{-- Emotional script accent --}}
