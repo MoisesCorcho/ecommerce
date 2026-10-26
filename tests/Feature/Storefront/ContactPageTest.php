@@ -53,6 +53,68 @@ class ContactPageTest extends TestCase
             ->assertSeeHtml('/faq');
     }
 
+    // --- Contact channels: config/ecommerce.php defaults are the single source of truth ---
+
+    public function test_contact_channels_render_from_config_without_hardcoded_fallbacks(): void
+    {
+        // Sentinel values: if the Blade ever hardcodes a number again, the
+        // sentinel stops appearing and the stale placeholder resurfaces.
+        config([
+            'ecommerce.contact.phone' => '+57 999 999 9999',
+            'ecommerce.contact.phone_raw' => '+579999999999',
+            'ecommerce.contact.whatsapp' => '+57 999 999 9999',
+            'ecommerce.contact.whatsapp_url' => 'https://wa.me/579999999999',
+        ]);
+
+        Livewire::test('contact-page')
+            ->assertSeeHtml('href="tel:+579999999999"')
+            ->assertSeeHtml('href="https://wa.me/579999999999"')
+            ->assertSee('+57 999 999 9999')
+            ->assertDontSee('+57 300 123 4567');
+    }
+
+    public function test_contact_channels_have_real_defaults_so_deploys_need_no_env_setup(): void
+    {
+        // config/ecommerce.php ships complete defaults: a server whose .env
+        // declares no CONTACT_* key must still render working phone/WhatsApp
+        // links (the release archive does not carry .env, so this is the only
+        // thing standing between a deploy and a blank contact channel).
+        $this->assertNotEmpty(config('ecommerce.contact.phone'));
+        $this->assertNotEmpty(config('ecommerce.contact.phone_raw'));
+        $this->assertNotEmpty(config('ecommerce.contact.whatsapp'));
+        $this->assertNotEmpty(config('ecommerce.contact.whatsapp_url'));
+
+        $this->assertMatchesRegularExpression('/^\+\d{7,15}$/', (string) config('ecommerce.contact.phone_raw'));
+        $this->assertStringStartsWith('https://wa.me/', (string) config('ecommerce.contact.whatsapp_url'));
+
+        Livewire::test('contact-page')
+            ->assertSeeHtml('href="tel:'.config('ecommerce.contact.phone_raw').'"')
+            ->assertSeeHtml('href="'.config('ecommerce.contact.whatsapp_url').'"');
+    }
+
+    public function test_contact_phone_identity_is_locked_to_the_real_business_number(): void
+    {
+        // Golden value: the two assertions above only prove the channels are
+        // non-empty and well-formed, so a DIFFERENT but valid number would pass
+        // them. Locking the identity here means an accidental edit to the config
+        // default fails loudly instead of quietly pointing customers at the
+        // wrong phone or WhatsApp. Changing the business number is deliberate:
+        // update these strings in the same commit as config/ecommerce.php.
+        $this->assertSame('+573188667308', config('ecommerce.contact.phone_raw'));
+        $this->assertSame('https://wa.me/573188667308', config('ecommerce.contact.whatsapp_url'));
+
+        // The human-formatted strings must carry the very same digits, or the
+        // visitor would read one number while the link dials another.
+        $this->assertSame(
+            str_replace(' ', '', (string) config('ecommerce.contact.phone')),
+            (string) config('ecommerce.contact.phone_raw'),
+        );
+        $this->assertSame(
+            str_replace(' ', '', (string) config('ecommerce.contact.whatsapp')),
+            (string) config('ecommerce.contact.phone_raw'),
+        );
+    }
+
     public function test_authenticated_user_sees_prefilled_name_and_email_that_remain_editable(): void
     {
         $user = User::factory()->create(['name' => 'Jane Doe', 'email' => 'jane@example.com']);

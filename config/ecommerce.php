@@ -253,19 +253,25 @@ return [
     |
     | - inbox: Receives every contact-form submission (Mail::to).
     | - public_email: Displayed in UI and used as fallback in error banners.
-    | - phone: Human-formatted phone string for presentation (e.g. '+57 300 123 4567').
+    | - phone: Human-formatted phone string for presentation.
     | - phone_raw: E.164 normalized phone string without spaces for 'tel:' links.
     | - whatsapp_url: Pre-encoded URL for direct WhatsApp web/app redirection.
+    |
+    | phone, phone_raw, whatsapp and whatsapp_url ship their real values as
+    | defaults so every environment renders working channels with zero setup.
+    | They remain overridable via .env for an environment that needs a different
+    | number; an EMPTY override value would blank the channel, so only set them
+    | with a real number.
     |
     */
 
     'contact' => [
         'inbox' => env('CONTACT_MAIL_TO', env('CONTACT_PUBLIC_EMAIL', 'leenhandbags@gmail.com')),
         'public_email' => env('CONTACT_PUBLIC_EMAIL', 'leenhandbags@gmail.com'),
-        'phone' => env('CONTACT_PHONE', '+57 300 123 4567'),
-        'phone_raw' => env('CONTACT_PHONE_RAW', '+573001234567'),
-        'whatsapp' => env('CONTACT_WHATSAPP', '+57 300 123 4567'),
-        'whatsapp_url' => env('CONTACT_WHATSAPP_URL', 'https://wa.me/573001234567'),
+        'phone' => env('CONTACT_PHONE', '+57 318 866 7308'),
+        'phone_raw' => env('CONTACT_PHONE_RAW', '+573188667308'),
+        'whatsapp' => env('CONTACT_WHATSAPP', '+57 318 866 7308'),
+        'whatsapp_url' => env('CONTACT_WHATSAPP_URL', 'https://wa.me/573188667308'),
         'social' => [
             'instagram' => env('SOCIAL_INSTAGRAM_URL', 'https://www.instagram.com/leen_____________________/'),
             'tiktok' => env('SOCIAL_TIKTOK_URL', 'https://www.tiktok.com/@leenhandbags'),
