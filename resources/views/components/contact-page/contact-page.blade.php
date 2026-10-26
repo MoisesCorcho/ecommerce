@@ -49,7 +49,7 @@
                         </span>
                         <p>
                             <span class="block text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa/60">{{ __('contact.info.phone_label') }}</span>
-                            <a href="tel:{{ config('ecommerce.contact.phone_raw', '+573001234567') }}" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">{{ config('ecommerce.contact.phone', '+57 300 123 4567') }}</a>
+                            <a href="tel:{{ config('ecommerce.contact.phone_raw') }}" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">{{ config('ecommerce.contact.phone') }}</a>
                         </p>
                     </li>
 
@@ -63,7 +63,7 @@
                         </span>
                         <p>
                             <span class="block text-label-caps font-semibold uppercase tracking-widest text-intense-cocoa/60">{{ __('contact.info.whatsapp_label') }}</span>
-                            <a href="{{ config('ecommerce.contact.whatsapp_url', 'https://wa.me/573001234567') }}" target="_blank" rel="noopener noreferrer" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">{{ config('ecommerce.contact.whatsapp', '+57 300 123 4567') }}</a>
+                            <a href="{{ config('ecommerce.contact.whatsapp_url') }}" target="_blank" rel="noopener noreferrer" class="font-medium text-intense-cocoa transition-colors hover:text-soft-gold">{{ config('ecommerce.contact.whatsapp') }}</a>
                         </p>
                     </li>
 
