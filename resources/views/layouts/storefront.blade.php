@@ -83,7 +83,7 @@
 
             {{-- Brand logo (centered) --}}
             <a href="{{ url('/') }}" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                <img src="/images/logos/leen-brown.png" alt="{{ config('app.name', 'Leen') }}" class="h-[2.625rem] w-auto sm:h-11 lg:h-12">
+                <img src="/images/logos/leen-brown.webp" alt="{{ config('app.name', 'Leen') }}" class="h-[2.625rem] w-auto sm:h-11 lg:h-12">
             </a>
 
             {{-- Trailing icons — right side --}}
@@ -175,7 +175,7 @@
             <div class="flex flex-col items-center gap-6">
                 {{-- Brand logo --}}
                 <a href="{{ url('/') }}">
-                    <img src="/images/logos/leen-brown.png" alt="{{ config('app.name', 'Leen') }}" class="h-20 w-auto">
+                    <img src="/images/logos/leen-brown.webp" alt="{{ config('app.name', 'Leen') }}" class="h-20 w-auto" loading="lazy">
                 </a>
 
                 {{-- Emotional script accent --}}

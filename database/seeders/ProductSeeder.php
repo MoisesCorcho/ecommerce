@@ -18,13 +18,13 @@ class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->seedCategoryImageFile('15.jpeg');
+        $this->seedCategoryImageFile('15.webp');
 
         $category = Category::query()->updateOrCreate(
             ['slug' => 'honeycomb'],
             [
                 'name' => 'Honeycomb',
-                'image_path' => 'categories/15.jpeg',
+                'image_path' => 'categories/15.webp',
                 'sort_order' => 0,
             ],
         );
