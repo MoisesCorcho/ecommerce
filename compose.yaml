@@ -26,7 +26,6 @@ services:
             - redis
             - meilisearch
             - mailpit
-            - selenium
     mysql:
         image: 'mysql:8.4'
         ports:
@@ -95,6 +94,8 @@ services:
             - sail
     selenium:
         image: selenium/standalone-chromium
+        profiles:
+            - testing
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         volumes:
